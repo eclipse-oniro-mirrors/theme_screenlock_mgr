@@ -1,39 +1,77 @@
 # miscservices_screenlock
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+#### Introduction
+Provide three-party APP with the ability to request unlockScreen, query the screenlock status, and query whether to set the screenlock password. 
+Provide screenOn callback, screenOff callback, screenSaver in and out callback, user switching callback, and screenlock manager service running status callback to the operation management
 
-#### 软件架构
-软件架构说明
+**subsystem architecture diagram**   
+![](figures/subsystem_architecture_zh.png "subsystem architecture diagram")
+
+#### Warehouse path
+/base/miscservices/screenlock
+
+#### Introduction to framework code
+/base/miscservices/screenlock
+├── figures                  # architecture diagram
+├── frameworks/innerkitsimpl # interface provided for app 
+├── interfaces               # interface code provided by module
+│   ├── innerkits            # inter service interface
+│   └── kits                 # napi interface
+├── sa_profile               # module contains the config files of system services and processes
+├── services                 # implementation of screenlock manager service
+├── test                     # unit test of interface
+└── utils                    # module contains log printing and constants for ordered commonEvent
+
+#### JS APIs and instructions
+1.   JS APIs
+function isScreenLocked(callback: AsyncCallback<boolean>): void; query the screenlock status，callback mode
+function isScreenLocked(): Promise<boolean>; void; query the screenlock status，Promise mode
+
+function isSecureMode(callback: AsyncCallback<boolean>): void; query whether to set screenlock password (gesture, digital password, pin, SIM)，callback mode
+function isSecureMode(): Promise<boolean>; query whether to set screenlock password (gesture, digital password, pin, SIM)，Promise mode
+
+function unlockScreen(callback: AsyncCallback<void>): void; request unlockScreen，callback mode
+function unlockScreen(): Promise<void>; request unlockScreen，Promise mode
+
+2.  JS APIs instructions
+// Import module
+import screenLock from '@ohos.screenLock';
+
+// query the screenlock status asynchronously with a Promise
+screenLock.isScreenLocked()    
+      .then((value) => {        
+          console.log(`success to screenLock.isScreenLocked: ${value}`);   
+       }).catch((err) => {        
+          console.error(`failed to screenLock.isScreenLocked because ${err.message}`)  
+    });
 
 
-#### 安装教程
+// query the screenlock status asynchronously with a callback
+screenLock.isScreenLocked((err, value) => {   
+     if (err) {        
+          console.error(`failed to screenLock.isScreenLocked because ${err.message}`);   
+           return;   
+         }    
+       console.log(`success to screenLock.isScreenLocked: ${value}`);   
+    });
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### Debugging method
 
-#### 使用说明
+1.   Compile command
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+./build.sh --product-name (Fill in the specific product name, such as：Hi3516DV300) --build-target screenlock_native
 
-#### 参与贡献
+2.  push so file
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+in $root\out\ohos-arm-release\miscservices\screenlock_native，push libscreenlock_server.z.so libscreenlock_client.z.so 
+libscreenlock_utils.z.so to system/lib，and push libscreenlockability.z.so to system/lib/module/app下.make sure the four so files is readable at least.
 
+3.  reboot
 
-#### 特技
+#### Participation contribution
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+1. Fork warehouse
+2. Submission code
+3. Create a new pull request
+4. Commit is complete
+
