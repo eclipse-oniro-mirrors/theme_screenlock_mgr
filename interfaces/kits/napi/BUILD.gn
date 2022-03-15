@@ -13,9 +13,7 @@
 import("//build/ohos.gni")
 config("screenlock_interfaces_kits_napi_config") {
   visibility = [ ":*" ]
-  include_dirs = [
-    "include",
-  ]
+  include_dirs = [ "include" ]
 
   cflags_cc = [ "-fexceptions" ]
 }
@@ -29,22 +27,20 @@ ohos_shared_library("screenlock") {
     "//base/miscservices/screenlock/services/include",
     "//base/miscservices/screenlock/utils/include",
   ]
-  public_configs = [
-    ":screenlock_interfaces_kits_napi_config",
-  ]
+  public_configs = [ ":screenlock_interfaces_kits_napi_config" ]
   sources = [
-    "src/napi_screenlock_ability.cpp",
-    "src/screenlock_system_ability_callback.cpp",
     "src/async_call.cpp",
+    "src/napi_screenlock_ability.cpp",
     "src/screenlock_js_util.cpp",
+    "src/screenlock_system_ability_callback.cpp",
     "src/screenlock_unlock_callback.cpp",
   ]
   deps = [
+    "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
+    "//base/miscservices/screenlock/utils:screenlock_utils",
     "//foundation/ace/napi:ace_napi",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//utils/native/base:utils",
-    "//base/miscservices/screenlock/utils:screenlock_utils",
-    "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
   ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",

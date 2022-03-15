@@ -22,9 +22,10 @@ ohos_unittest("ScreenLockServiceTest") {
     "//base/miscservices/screenlock/frameworks/kitsimpl/include",
   ]
 
-  sources = [ "unittest/screenlock_service_test.cpp",
-              "unittest/screenlock_notify_test_instance.cpp",
-              "unittest/screenlock_unlock_callback_test.cpp"
+  sources = [
+    "unittest/screenlock_notify_test_instance.cpp",
+    "unittest/screenlock_service_test.cpp",
+    "unittest/screenlock_unlock_callback_test.cpp",
   ]
 
   external_deps = [
@@ -32,19 +33,19 @@ ohos_unittest("ScreenLockServiceTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
-    "window_manager:libwm",
     "window_manager:libdm",
+    "window_manager:libwm",
   ]
 
   deps = [
     "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
     "//base/miscservices/screenlock/services:screenlock_server",
     "//base/miscservices/screenlock/utils:screenlock_utils",
-    "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
   ]
 }
 

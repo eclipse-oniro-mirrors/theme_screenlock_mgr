@@ -23,30 +23,25 @@ config("screenlock_utils_config") {
   cflags_cc = [ "-fexceptions" ]
 }
 ohos_shared_library("screenlock_utils") {
-  sources = [
-    "src/screenlock_bundlename.cpp",
-  ]
+  sources = [ "src/screenlock_bundlename.cpp" ]
 
-  public_configs = [
-    ":screenlock_utils_config",
-  ]
+  public_configs = [ ":screenlock_utils_config" ]
 
-  include_dirs = [
-    "//utils/native/base/include",
-  ]
-  
+  include_dirs = [ "//utils/native/base/include" ]
+
   deps = [
-    "//utils/native/base:utils",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//utils/native/base:utils",
   ]
   external_deps = [
     "ability_base:base",
     "ability_base:want",
-    "ipc:ipc_core",
-    "hiviewdfx_hilog_native:libhilog",
+    "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_services",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
   ]
   relative_install_dir = "module"
   subsystem_name = "miscservices"
