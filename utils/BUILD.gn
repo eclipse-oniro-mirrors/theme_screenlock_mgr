@@ -47,6 +47,7 @@ ohos_shared_library("screenlock_utils") {
     "hiviewdfx_hilog_native:libhilog",
     "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_services",
+    "bundle_framework:appexecfwk_base",
   ]
   relative_install_dir = "module"
   subsystem_name = "miscservices"
