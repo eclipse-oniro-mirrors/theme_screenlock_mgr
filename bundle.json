@@ -13,7 +13,7 @@
     "name": "screenlock",
     "subsystem": "miscservices",
     "syscap": [
-      "SystemCapability.Miscservices.ScreenLock"
+      "SystemCapability.MiscServices.ScreenLock"
     ],
     "features": [
     ],
