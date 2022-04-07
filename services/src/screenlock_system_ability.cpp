@@ -467,7 +467,7 @@ bool ScreenLockSystemAbility::GetSecure()
         std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> pinInfo;
         getInfoCallback->OnGetInfo(pinInfo);
         if (pinInfo.size()) {
-            SCLOCK_HILOGI("pinInfo.size() = %{public}d", pinInfo.size());
+            SCLOCK_HILOGI("pinInfo.size() = %{public}zu", pinInfo.size());
             return true;
         }
     }
@@ -477,7 +477,7 @@ bool ScreenLockSystemAbility::GetSecure()
         std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> faceInfo;
         getInfoCallback->OnGetInfo(faceInfo);
         if (faceInfo.size()) {
-            SCLOCK_HILOGI("faceInfo.size() = %{public}d", faceInfo.size());
+            SCLOCK_HILOGI("faceInfo.size() = %{public}zu", faceInfo.size());
             return true;
         }
     }

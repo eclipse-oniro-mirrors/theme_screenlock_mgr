@@ -97,7 +97,7 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_ZERO || argc == ARGS_SIZE_ONE, " should 0 or 1 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}d", argc);
+        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
@@ -164,7 +164,7 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_ZERO || argc == ARGS_SIZE_ONE, " should 0 or 1 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}d", argc);
+        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
@@ -294,7 +294,7 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_TWO || argc == ARGS_SIZE_THREE, " should 2 or 3 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}d", argc);
+        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[ARGV_ZERO], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_string, "type is not a string type", napi_invalid_arg);
@@ -334,7 +334,7 @@ napi_value NAPI_TestSetScreenLocked(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_ONE || argc == ARGS_SIZE_TWO, " should 1 or 2 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}d", argc);
+        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[ARGV_ZERO], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_boolean, "type is not a boolean type", napi_invalid_arg);
@@ -362,7 +362,7 @@ napi_value NAPI_TestRuntimeNotify(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_TWO || argc == ARGS_SIZE_THREE, " should 2 or 3 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}d", argc);
+        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[ARGV_ZERO], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_string, "type is not a string type", napi_invalid_arg);
@@ -397,7 +397,7 @@ napi_value NAPI_TestGetRuntimeState(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_ONE || argc == ARGS_SIZE_TWO, " should 1 or 2 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}d", argc);
+        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[ARGV_ZERO], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_string, "type is not a string type", napi_invalid_arg);
