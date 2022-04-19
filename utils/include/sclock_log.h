@@ -48,7 +48,7 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {
     "SclockKit"
 };
 
-#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+#define FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define SCLOCK_HILOGF(fmt, ...)            \
     (void)OHOS::HiviewDFX::HiLog::Fatal(            \

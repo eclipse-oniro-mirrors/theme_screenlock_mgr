@@ -30,6 +30,5 @@ bool ScreenLockBundleName::GetBundleNameByUid(std::int32_t uid, std::string &bna
     }
     return true;
 }
-
 } // namespace ScreenLock
 } // namespace OHOS
