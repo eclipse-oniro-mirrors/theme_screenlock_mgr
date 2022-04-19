@@ -107,6 +107,5 @@ void ScreenlockNotifyTestInstance::OnCallBack(const std::string &event, int resu
         }
     }
 }
-
 } // namespace ScreenLock
 } // namespace OHOS

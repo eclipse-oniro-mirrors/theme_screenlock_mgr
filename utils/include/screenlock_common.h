@@ -114,7 +114,6 @@ static const uint32_t SCREENLOCK_CHANGE_USER = 0x00000400;
 static const uint32_t SCREENLOCK_SCREENLOCK_ENABLED = 0x00000800;
 static const uint32_t SCREENLOCK_EXIT_ANIMATION = 0x00001000;
 static const uint32_t SCREENLOCK_SYSTEM_READY = 0x00002000;
-
 } // namespace ScreenLock
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_SCREENLOCK_COMMON_H

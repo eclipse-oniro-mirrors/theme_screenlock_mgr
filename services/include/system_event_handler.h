@@ -22,10 +22,8 @@
 
 namespace OHOS {
 namespace ScreenLock {
-
 using namespace std;
 class SystemEvent {
-
 public:
     SystemEvent() {};
     ~SystemEvent() {};
@@ -37,7 +35,6 @@ public:
     int eventParams3_ = 0;
 };
 class SystemEventHandler {
-
 public:
     SystemEventHandler() {};
     ~SystemEventHandler() {};
