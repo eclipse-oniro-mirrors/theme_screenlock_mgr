@@ -505,7 +505,7 @@ bool ScreenLockSystemAbility::On(const sptr<ScreenLockSystemAbilityInterface> &l
     auto iter = registeredListeners_.find(type);
     if (iter == registeredListeners_.end()) {
         std::lock_guard<std::mutex> lck(listenerMapMutex_);
-        const auto temp = registeredListeners_.insert({type, listener});
+        const auto temp = registeredListeners_.insert({ type, listener });
         if (!temp.second) {
             SCLOCK_HILOGE("ScreenLockSystemAbility::On insert type=%{public}s object fail.", type.c_str());
             return false;
