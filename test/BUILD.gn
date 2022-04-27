@@ -30,6 +30,7 @@ ohos_unittest("ScreenLockServiceTest") {
 
   external_deps = [
     "ability_base:base",
+    "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
@@ -41,7 +42,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
     "//base/miscservices/screenlock/services:screenlock_server",
     "//base/miscservices/screenlock/utils:screenlock_utils",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",

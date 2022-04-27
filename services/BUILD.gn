@@ -45,7 +45,6 @@ ohos_shared_library("screenlock_server") {
     "//base/miscservices/screenlock/utils:screenlock_utils",
     "//base/telephony/core_service/interfaces/innerkits:tel_core_service_api",
     "//base/user_iam/user_auth/frameworks/user_idm:useridm_framework",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/windowmanager/utils:libwmutil",
@@ -53,6 +52,7 @@ ohos_shared_library("screenlock_server") {
   ]
   external_deps = [
     "bundle_framework:appexecfwk_core",
+    "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
