@@ -39,7 +39,6 @@ ohos_shared_library("screenlock") {
     "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
     "//base/miscservices/screenlock/utils:screenlock_utils",
     "//foundation/ace/napi:ace_napi",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//utils/native/base:utils",
   ]
   external_deps = [
