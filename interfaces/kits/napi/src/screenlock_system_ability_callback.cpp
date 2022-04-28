@@ -209,9 +209,14 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const std::string &event)
 
 auto OnIntUvWorkCallback = [](uv_work_t *work, int status) {
     SCLOCK_HILOGD("OnIntUvWorkCallback status = %{public}d", status);
+    if (work == nullptr) {
+        return;
+    }
+    
     ScreenlockOnCallBack *screenlockOnCallBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
     if (screenlockOnCallBackPtr == nullptr) {
         delete work;
+        work = nullptr;
         return;
     }
     napi_value undefined = 0;
