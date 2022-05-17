@@ -83,9 +83,13 @@ bool ScreenlockSystemAbilityCallback::MatchEventType(const std::string &type, co
 
 auto OnUvWorkBoolCallback = [](uv_work_t *work, int status) {
     SCLOCK_HILOGD("OnUvWorkBoolCallback status = %{public}d", status);
+    if (work == nullptr) {
+        return;
+    }
     ScreenlockOnCallBack *screenlockOnCallBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
     if (screenlockOnCallBackPtr == nullptr) {
         delete work;
+        work = nullptr;
         return;
     }
     napi_value undefined = 0;
