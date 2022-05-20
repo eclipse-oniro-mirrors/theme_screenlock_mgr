@@ -191,7 +191,7 @@ private:
     std::mutex lock_;
     const int32_t startTime_ = 1900;
     const int32_t extraMonth_ = 1;
-    bool isFoucs_ = false;    
+    bool isFoucs_ = false;
     bool flag_ = false;
 };
 } // namespace ScreenLock
