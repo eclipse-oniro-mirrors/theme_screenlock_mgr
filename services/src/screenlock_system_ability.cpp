@@ -109,7 +109,7 @@ void ScreenLockSystemAbility::OnStart()
     WindowManager::GetInstance().RegisterFocusChangedListener(focusChangedListener_);
     int trytime = 3;
     int minTimeValue = 0;
-    while (trytime > minTimeValue) {        
+    while (trytime > minTimeValue) {
         flag_ = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
         if (flag_) {
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener success.");
@@ -268,7 +268,7 @@ void ScreenLockSystemAbility::OnSystemReady()
             iter->second->OnCallBack(type);
             isExitFlag = true;
         } else {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady type not found.,flag_ = %{public}d",flag_);
+            SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady type not found., flag_ = %{public}d", flag_);
             sleep(1);
         }
         --tryTime;
@@ -505,7 +505,7 @@ bool ScreenLockSystemAbility::On(const sptr<ScreenLockSystemAbilityInterface> &l
     auto iter = registeredListeners_.find(type);
     if (iter == registeredListeners_.end()) {
         std::lock_guard<std::mutex> lck(listenerMapMutex_);
-        const auto temp = registeredListeners_.insert({type, listener});
+        const auto temp = registeredListeners_.insert({ type, listener });
         if (!temp.second) {
             SCLOCK_HILOGE("ScreenLockSystemAbility::On insert type=%{public}s object fail.", type.c_str());
             return false;

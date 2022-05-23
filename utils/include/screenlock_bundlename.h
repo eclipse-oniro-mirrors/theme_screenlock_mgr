@@ -26,7 +26,6 @@ public:
     ~ScreenLockBundleName() = default;
     static bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
 };
-
 } // namespace ScreenLock
 } // namespace OHOS
 

@@ -18,6 +18,18 @@
 
 namespace OHOS {
 namespace ScreenLock {
+constexpr int32_t LISTEN_MASK_BEGIN_WAKEUP = SCREENLOCK_BEGIN_WAKEUP;
+constexpr int32_t LISTEN_MASK_END_WAKEUP = SCREENLOCK_END_WAKEUP;
+constexpr int32_t LISTEN_MASK_BEGIN_SCREEN_ON = SCREENLOCK_BEGIN_SCREEN_ON;
+constexpr int32_t LISTEN_MASK_END_SCREEN_ON = SCREENLOCK_END_SCREEN_ON;
+constexpr int32_t LISTEN_MASK_BEGIN_SCREEN_OFF = SCREENLOCK_BEGIN_SCREEN_OFF;
+constexpr int32_t LISTEN_MASK_END_SCREEN_OFF = SCREENLOCK_END_SCREEN_OFF;
+constexpr int32_t LISTEN_MASK_UNLOCK_SCREEN = SCREENLOCK_UNLOCK_SCREEN;
+constexpr int32_t LISTEN_MASK_BEGIN_SLEEP = SCREENLOCK_BEGIN_SLEEP;
+constexpr int32_t LISTEN_MASK_END_SLEEP = SCREENLOCK_END_SLEEP;
+constexpr int32_t LISTEN_MASK_CHANGE_USER = SCREENLOCK_CHANGE_USER;
+constexpr int32_t LISTEN_MASK_SCREENLOCK_ENABLED = SCREENLOCK_SCREENLOCK_ENABLED;
+constexpr int32_t LISTEN_MASK_EXIT_ANIMATION = SCREENLOCK_EXIT_ANIMATION;
 ScreenlockNotifyTestInstance::ScreenlockNotifyTestInstance(
     int32_t eventType, std::list<EventListenerTest> &listenerList)
 {
@@ -107,6 +119,5 @@ void ScreenlockNotifyTestInstance::OnCallBack(const std::string &event, int resu
         }
     }
 }
-
 } // namespace ScreenLock
 } // namespace OHOS

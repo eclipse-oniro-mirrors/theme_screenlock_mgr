@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace ScreenLock {
-
 class ScreenLockSystemAbilityProxy : public IRemoteProxy<ScreenLockSystemAbilityInterface> {
 public:
     explicit ScreenLockSystemAbilityProxy(const sptr<IRemoteObject> &impl);
