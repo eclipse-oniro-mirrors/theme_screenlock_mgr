@@ -42,7 +42,8 @@
       "inner_kits": [
       ],
       "test": [
-        "//base/miscservices/screenlock/test:unittest"
+        "//base/miscservices/screenlock/test:unittest",
+       "//base/miscservices/screenlock/test/fuzztest:fuzztest"
       ]
     }
   }
