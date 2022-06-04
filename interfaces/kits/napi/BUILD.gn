@@ -21,7 +21,7 @@ ohos_shared_library("screenlock") {
   include_dirs = [
     "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
-    "//foundation/aafwk/standard/services/common/include",
+    "//foundation/ability/ability_runtime/services/common/include",
     "//utils/system/safwk/native/include",
     "//base/miscservices/screenlock/interfaces/kits/napi/include",
     "//base/miscservices/screenlock/services/include",
