@@ -150,15 +150,7 @@ void ScreenLockSystemAbility::OnStop()
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     WindowManager::GetInstance().UnregisterFocusChangedListener(focusChangedListener_);
-    if (focusChangedListener_ != nullptr) {
-        delete focusChangedListener_;
-        focusChangedListener_ = nullptr;
-    }
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
-    if (displayPowerEventListener_ != nullptr) {
-        delete displayPowerEventListener_;
-        displayPowerEventListener_ = nullptr;
-    }
     SCLOCK_HILOGI("OnStop end.");
 }
 
