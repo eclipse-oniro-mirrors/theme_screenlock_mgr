@@ -57,7 +57,7 @@ ohos_shared_library("screenlock_server") {
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
     "os_account:os_account_innerkits",
-    "ril_adapter:hril_innerkits",
+    "ril_device_driver_interface:hril_innerkits",
     "window_manager:libdm",
     "window_manager:libwm",
   ]
