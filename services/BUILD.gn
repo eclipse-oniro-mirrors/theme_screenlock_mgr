@@ -44,7 +44,7 @@ ohos_shared_library("screenlock_server") {
   deps = [
     "//base/miscservices/screenlock/utils:screenlock_utils",
     "//base/telephony/core_service/interfaces/innerkits:tel_core_service_api",
-    "//base/user_iam/user_auth/frameworks/user_idm:useridm_framework",
+    "//base/useriam/user_auth_framework/frameworks/user_idm:useridm_framework",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/windowmanager/utils:libwmutil",
