@@ -437,7 +437,7 @@ extern "C" __attribute__((constructor)) void RegisterModule(void)
         .nm_flags = 0,                     // normal
         .nm_filename = nullptr,
         .nm_register_func = ScreenlockInit,
-        .nm_modname = "screenlock",
+        .nm_modname = "screenLock",
         .nm_priv = nullptr,
         .reserved = {}};
     napi_module_register(&module);
