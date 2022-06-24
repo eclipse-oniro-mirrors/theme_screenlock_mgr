@@ -27,6 +27,7 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::MiscServicesDfx;
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
@@ -75,6 +76,7 @@ bool ScreenLockManagerStub::OnIsScreenLocked(Parcel &data, Parcel &reply)
 {
     bool result = IsScreenLocked();
     if (!reply.WriteBool(result)) {
+        ReportRuntimeFault(E_ERRORTYPE_SCREENLOCK_FAILED, E_ERRORCODE_EXITANIMATION_FAILED);
         SCLOCK_HILOGE("WriteBool failed");
         return false;
     }
@@ -98,6 +100,7 @@ void ScreenLockManagerStub::OnRequestUnlock(MessageParcel &data, MessageParcel &
     if (remote == nullptr) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock remote is nullptr");
         if (!reply.WriteInt32(ERR_NONE)) {
+            ReportRuntimeFault(E_ERRORTYPE_UNSCREENLOCK_FAILED, E_ERRORCODE_UNSCREENLOCK_FAILED);
             return;
         }
         return;
@@ -105,6 +108,7 @@ void ScreenLockManagerStub::OnRequestUnlock(MessageParcel &data, MessageParcel &
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
     SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock addr=%{public}p", listener.GetRefPtr());
     if (listener.GetRefPtr() == nullptr) {
+        ReportRuntimeFault(E_ERRORTYPE_UNSCREENLOCK_FAILED, E_ERRORCODE_WAKEUP_FAILED);
         SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock listener is null");
         return;
     }
@@ -118,6 +122,7 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
     SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn  type=%{public}s ", type.c_str());
     if (type.empty()) {
         SCLOCK_HILOGE("ScreenLockManagerStub::OnScreenLockOn type is null.");
+        ReportRuntimeFault(E_ERRORTYPE_UNSCREENLOCK_FAILED, E_ERRORCODE_SCREENON_FAILED);
         return false;
     }
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
@@ -151,6 +156,7 @@ int32_t ScreenLockManagerStub::OnScreenLockOff(MessageParcel &data, MessageParce
     bool status = Off(type);
     int32_t ret = (status == true) ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
+        ReportRuntimeFault(E_ERRORTYPE_SCREENLOCK_FAILED, E_ERRORCODE_SCREENOFF_FAILED);
         return -1;
     }
     SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOff out");

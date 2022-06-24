@@ -41,9 +41,11 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
 using namespace OHOS::UserIAM::UserIDM;
 using namespace OHOS::Telephony;
+using namespace OHOS::MiscServicesDfx;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t INIT_INTERVAL = 5000L;
 const std::int64_t INTERVAL_ZERO = 0L;
+const std::int64_t CONFIG_USERID = 0;
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
@@ -73,7 +75,11 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
 int32_t ScreenLockSystemAbility::Init()
 {
     bool ret = Publish(ScreenLockSystemAbility::GetInstance());
+    int userId = CONFIG_USERID;
+    std::string bundleName;
     if (!ret) {
+        ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
+        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, bundleName);
         SCLOCK_HILOGE("ScreenLockSystemAbility Publish failed.");
         return E_SCREENLOCK_PUBLISH_FAIL;
     }
@@ -86,6 +92,8 @@ int32_t ScreenLockSystemAbility::Init()
 void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
+    int userId = CONFIG_USERID;
+    std::string bundleName;
     if (instance_ == nullptr) {
         instance_ = this;
     }
@@ -93,11 +101,16 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGI("ScreenLockSystemAbility is already running.");
         return;
     }
+    InitHiTrace();
+    ScreenlockHiTraceAsyncTrace tracer("ScreenLockSystemAbility service onstart");
+    ValueTrace("unlockScreen", -1);
     InitServiceHandler();
     if (Init() != ERR_OK) {
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
+        ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
+        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, msg);
         return;
     }
     if (focusChangedListener_ == nullptr) {
@@ -115,6 +128,8 @@ void ScreenLockSystemAbility::OnStart()
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener success.");
             break;
         } else {
+            ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
+            ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_TRYTIME_FAILED, userId, msg);
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener fail.");
         }
         --trytime;
