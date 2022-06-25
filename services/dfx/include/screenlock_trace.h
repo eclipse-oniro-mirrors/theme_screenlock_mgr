@@ -17,9 +17,14 @@
 #define MISCSERVICES_SCREENLOCK_DFX_HITRACE_ADAPTER_H
 
 #include <string>
+#include <ctime>
+#include <sys/time.h>
 
 namespace OHOS {
 namespace MiscServicesDfx {
+constexpr int64_t MICROSEC_TO_MILLISEC = 1000;
+constexpr int64_t SEC_TO_MILLISEC = 1000;
+uint64_t startTime_{ 0 };
 void InitHiTrace();
 void ValueTrace(const std::string& name, int64_t count);
 
@@ -27,6 +32,13 @@ class ScreenlockHiTraceAsyncTrace {
 public:
     explicit ScreenlockHiTraceAsyncTrace(const std::string &value);
     virtual ~ScreenlockHiTraceAsyncTrace();
+    uint64_t TimeConsuming()
+    {
+        struct timeval tv = { 0, 0 };
+        gettimeofday(&tv, nullptr);
+        uint64_t msecNeed = (tv.tv_sec * SEC_TO_MILLISEC) + (tv.tv_usec / MICROSEC_TO_MILLISEC);
+        return msecNeed;
+    }
 };
 } // MiscServicesDfx
 } // OHOS

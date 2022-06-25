@@ -25,6 +25,7 @@ constexpr int32_t SUB_CMD_PARAM = 1;
 constexpr int32_t CMD_NO_PARAM = 1;
 constexpr int32_t CMD_HAS_PARAM = 2;
 constexpr const char *CMD_HELP = "-h";
+constexpr const char *CMD_ALL = "all";
 constexpr const char *CMD_ERROR_INFO = "-errorInfo";
 constexpr const char *ILLEGAL_INFOMATION = "The arguments are illegal and you can enter '-h' for help.\n";
 }

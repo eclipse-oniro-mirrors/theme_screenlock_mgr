@@ -14,6 +14,7 @@
  */
 #include "screenlock_trace.h"
 #include "hitrace_meter.h"
+#include "sclock_log.h"
 
 namespace OHOS {
 namespace MiscServicesDfx {
@@ -30,11 +31,15 @@ void ValueTrace(const std::string& name, int64_t count)
 ScreenlockHiTraceAsyncTrace::ScreenlockHiTraceAsyncTrace(const std::string &value)
 {
     StartTrace(HITRACE_TAG_SCREENLOCK_MANAGER, value);
+    startTime_ = ScreenlockHiTraceAsyncTrace::TimeConsuming();
 }
 
 ScreenlockHiTraceAsyncTrace::~ScreenlockHiTraceAsyncTrace()
 {
     FinishTrace(HITRACE_TAG_SCREENLOCK_MANAGER);
+    uint64_t endTime = ScreenlockHiTraceAsyncTrace::TimeConsuming();
+    uint64_t result = endTime - startTime_;
+    SCLOCK_HILOGE("unlockscreen time is %{public}luL", result);
 }
 } // MiscServicesDfx
 } // OHOS
