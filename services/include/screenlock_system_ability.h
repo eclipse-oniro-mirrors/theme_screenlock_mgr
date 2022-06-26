@@ -138,6 +138,7 @@ public:
     bool On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type) override;
     bool Off(const std::string &type) override;
     bool SendScreenLockEvent(const std::string &event, int param) override;
+    int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     StateValue &GetState()
     {
@@ -176,6 +177,7 @@ private:
     void OnScreenlockEnabled(bool enable);
     void OnExitAnimation();
     void OnSystemReady();
+    void ScreenlockDump(int fd);
     int32_t Init();
     ServiceRunningState state_;
     void InitServiceHandler();

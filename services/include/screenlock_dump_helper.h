@@ -18,31 +18,29 @@
 
 #include <string>
 #include <vector>
-#include <map>
 #include <list>
+#include <functional>
 #include "singleton.h"
 
 namespace OHOS {
-namespace MiscServicesDfx {
+namespace ScreenLock {
 class DumpHelper : public Singleton<DumpHelper> {
 public:
     using DumpNoParamFunc = std::function<void(int)>;
-    using DumpWithParamFunc = std::function<void(int, const std::string &)>;
     DumpHelper() = default;
     virtual ~DumpHelper() = default;
-    void AddDumpOperation(const DumpNoParamFunc &dumpUserInfo, const DumpWithParamFunc &dumpScreenInfo);
+    void AddDumpOperation(const DumpNoParamFunc &dumpscreenlockInfo);
     void AddErrorInfo(const std::string &error);
     void ShowError(int fd);
     bool Dump(int fd, const std::vector<std::string> &args);
 private:
-    void DumpAll();
     void ShowHelp(int fd);
     void ShowIllealInfomation(int fd);
     mutable std::mutex hidumperMutex_;
     std::list<std::string> g_errorInfo;
-    DumpNoParamFunc dumpAll_;
+    DumpNoParamFunc dumpscreenlockInfo_;
 };
-}  // namespace MiscServicesDfx
+}  // namespace ScreenLock
 }  // namespace OHOS
 
 #endif  // MISCSERVICES_SCREENLOCK_DFX_HIDUMPER_ADAPTER_H

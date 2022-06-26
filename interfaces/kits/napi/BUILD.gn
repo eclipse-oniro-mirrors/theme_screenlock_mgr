@@ -26,6 +26,7 @@ ohos_shared_library("screenlock") {
     "//base/miscservices/screenlock/interfaces/kits/napi/include",
     "//base/miscservices/screenlock/services/include",
     "//base/miscservices/screenlock/utils/include",
+    "//base/hiviewdfx/hitrace/interfaces/native/innerkits/include",
   ]
   public_configs = [ ":screenlock_interfaces_kits_napi_config" ]
   sources = [
@@ -38,12 +39,15 @@ ohos_shared_library("screenlock") {
   deps = [
     "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
     "//base/miscservices/screenlock/utils:screenlock_utils",
+    "//base/miscservices/screenlock/services:screenlock_server",
     "//foundation/arkui/napi:ace_napi",
     "//utils/native/base:utils",
   ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "hitrace_native:hitrace_meter",
+    "hitrace_native:libhitrace",
   ]
   relative_install_dir = "module"
   subsystem_name = "miscservices"

@@ -14,10 +14,9 @@
  */
 
 #include "screenlock_dump_helper.h"
-#include <regex>
 
 namespace OHOS {
-namespace MiscServicesDfx {
+namespace ScreenLock {
 namespace {
 constexpr int32_t MAX_RECORED_ERROR = 10;
 constexpr int32_t SUB_CMD_NAME = 0;
@@ -30,12 +29,12 @@ constexpr const char *CMD_ERROR_INFO = "-errorInfo";
 constexpr const char *ILLEGAL_INFOMATION = "The arguments are illegal and you can enter '-h' for help.\n";
 }
 
-void DumpHelper::AddDumpOperation(const DumpNoParamFunc &dumpAll)
+void DumpHelper::AddDumpOperation(const DumpNoParamFunc &dumpscreenlockInfo)
 {
-    if ( dumpAll == nullptr ) {
+    if ( dumpscreenlockInfo == nullptr ) {
         return;
     }
-    dumpAll_ = dumpAll;
+    dumpscreenlockInfo_ = dumpscreenlockInfo;
 }
 
 void DumpHelper::AddErrorInfo(const std::string &error)
@@ -58,10 +57,12 @@ void DumpHelper::ShowError(int fd)
     }
 }
 
+
 bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
 {
     std::string command = "";
     std::string param = "";
+    std::lock_guard<std::mutex> lock(hidumperMutex_);
 
     if (args.size() == CMD_NO_PARAM) {
         command = args.at(SUB_CMD_NAME);
@@ -70,45 +71,41 @@ bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
         param = args.at(SUB_CMD_PARAM);
     } else {
         ShowError(fd);
-        if (!dumpAll_) {
-            return false;
-        }
-        dumpAll_(fd);
     }
 
     if (command == CMD_HELP) {
         ShowHelp(fd);
     } else if (command == CMD_ERROR_INFO) {
         ShowError(fd);
+    } else if (command == CMD_ALL) {
+        if (!dumpscreenlockInfo_) {
+            return false;
+        }
+        dumpscreenlockInfo_(fd); 
     } else {
         ShowIllealInfomation(fd);
     }
     return true;
 }
 
-void DumpHelper::DumpAll(int fd)
-{
-    dprintf(fd, "------------------------------------------------------------------------------------\n");
-    std::string ret;
-    ret.append("field   type    desc\n")
-        .append("screenLocked   boolean    whether there is lock screen status\n")
-        .append("keyguardEnabled   boolean    whether there is PIN code, gesture, password, SIM card lock\n"\n)
-        .append("inputForbidden   boolean    whether disable input\n")
-        .append("systemReady   boolean    Is the system in place\n")
-        .append("bootCompleted   boolean    Whether the system has been started and completed\n")
-        .append("screenState   int    Screen on / off status\n")
-        .append("offReason   string    Screen failure reason\n")
-        .append("interactiveState   int    Screen interaction status\n")
-    dprintf(fd, "%s\n", result.c_str());
-}
-
 void DumpHelper::ShowHelp(int fd)
 {
     std::string result;
-    result.append("Usage:dump  <command> [options]\n")
+    result.append("Usage:dumper <command> [options]\n")
           .append("Description:\n")
+		  .append("CMD_ALL")
 		  .append("             ")
-          .append("--help show help\n")
+		  .append("dump screenlock information\n")
+          .append("screenLocked--")
+          .append("whether there is lock screen status\n")
+		  .append("systemReady--")
+          .append("Is the system in place\n")
+          .append("screenState--")
+          .append("Screen on / off status\n")
+		  .append("offReason--")
+          .append("Screen failure reason\n")
+		  .append("interactiveState--")
+          .append("Screen interaction status\n");
     dprintf(fd, "%s\n", result.c_str());
 }
 
@@ -116,5 +113,5 @@ void DumpHelper::ShowIllealInfomation(int fd)
 {
     dprintf(fd, "%s\n", ILLEGAL_INFOMATION);
 }
-} // namespace MiscServicesDfx
+} // namespace ScreenLock
 } // namespace OHOS

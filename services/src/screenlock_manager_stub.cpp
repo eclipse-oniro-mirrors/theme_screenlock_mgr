@@ -23,11 +23,11 @@
 #include "sclock_log.h"
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
+#include "screenlock_hisysevent_adapter.h"
 
 namespace OHOS {
 namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
-using namespace OHOS::MiscServicesDfx;
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)

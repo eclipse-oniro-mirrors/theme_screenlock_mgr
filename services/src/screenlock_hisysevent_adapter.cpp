@@ -12,39 +12,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "hisysevent_adapter.h"
+#include "screenlock_hisysevent_adapter.h"
 #include "sclock_log.h"
 #include "hisysevent.h"
+#include "screenlock_common.h"
 
 namespace OHOS {
-namespace MiscServicesDfx {
+namespace ScreenLock {
 namespace {
 using HiSysEventNameSpace = OHOS::HiviewDFX::HiSysEvent;
-const std::string DOMAIN_STR = std::string(HiSysEventNameSpace::Domain::SCREENLOCK);
+const std::string DOMAIN_STR = std::string(HiSysEventNameSpace::Domain::DISTRIBUTED_DATAMGR);
 }
 
-void ReportServiceFault(ErrorType errType, ERRORCODE errCode, int32_t userId, const std::string& msg)
+void ReportServiceFault(int32_t errType, int32_t errCode, int32_t userId, const std::string& msg)
 {
-    int ret = HiSysEventNameSpace::Write(DOMAIN_STR, "SERVICE_START_FAILED",
+    int ret = HiSysEventNameSpace::Write(DOMAIN_STR, "SERVICE_FAULT",
         HiSysEventNameSpace::EventType::FAULT,
         "ERROR_TYPE", errType,
         "ERROR_COED", errCode,
-        "USER_ID", userID,
+        "USER_ID", userId,
         "MSG", msg);
     if (ret != 0) {
-        SCLOCK_HILOGE("hisysevent write failed! ret %{public}d. errCode %{public}d", ret, errType, errCode, userID, msg);
+        SCLOCK_HILOGE("hisysevent write failed! errType %{public}d. errCode %{public}d userId %{public}d msg %{public}s" , errType, errCode, userId, msg.c_str());
     }
 }
 
-void ReportRuntimeFault(ErrorType errType, ErrorCode errCode)
+void ReportRuntimeFault(int32_t errType, int32_t errCode)
 {
-    int ret = HiSysEventNameSpace::Write(DOMAIN_STR, "RUNTIME_START_FAILED",
+    int ret = HiSysEventNameSpace::Write(DOMAIN_STR, "RUNTIME_FAULT",
         HiSysEventNameSpace::EventType::FAULT,
         "ERROR_TYPE", errType,
-        "ERROR_CODE", errCode,
+        "ERROR_CODE", errCode);
     if (ret != 0) {
-        SCLOCK_HILOGE("hisysevent write failed! ret %{public}d. errCode %{public}d", errType, errCode.);
+        SCLOCK_HILOGE("hisysevent write failed! errType %{public}d. errCode %{public}d", errType, errCode);
     }
 }
-} // MiscServicesDfx
+} // ScreenLock
 } // OHOS

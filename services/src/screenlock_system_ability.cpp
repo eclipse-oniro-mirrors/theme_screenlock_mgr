@@ -19,6 +19,7 @@
 #include <string>
 #include <sys/time.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "core_service_client.h"
 #include "display_manager.h"
@@ -33,6 +34,10 @@
 #include "screenlock_bundlename.h"
 #include "screenlock_common.h"
 #include "screenlock_get_info_callback.h"
+#include "screenlock_dump_helper.h"
+#include "screenlock_hisysevent_adapter.h"
+#include "screenlock_trace.h"
+#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -41,11 +46,9 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
 using namespace OHOS::UserIAM::UserIDM;
 using namespace OHOS::Telephony;
-using namespace OHOS::MiscServicesDfx;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t INIT_INTERVAL = 5000L;
 const std::int64_t INTERVAL_ZERO = 0L;
-const std::int64_t CONFIG_USERID = 0;
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
@@ -75,8 +78,8 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
 int32_t ScreenLockSystemAbility::Init()
 {
     bool ret = Publish(ScreenLockSystemAbility::GetInstance());
-    int userId = CONFIG_USERID;
-    std::string bundleName;
+    int userId = IPCSkeleton::GetCallingUid();
+    std::string bundleName = "";
     if (!ret) {
         ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
         ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, bundleName);
@@ -92,8 +95,8 @@ int32_t ScreenLockSystemAbility::Init()
 void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
-    int userId = CONFIG_USERID;
-    std::string bundleName;
+    int userId = IPCSkeleton::GetCallingUid();
+    std::string bundleName = "";
     if (instance_ == nullptr) {
         instance_ = this;
     }
@@ -101,16 +104,13 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGI("ScreenLockSystemAbility is already running.");
         return;
     }
-    InitHiTrace();
-    ScreenlockHiTraceAsyncTrace tracer("ScreenLockSystemAbility service onstart");
-    ValueTrace("unlockScreen", -1);
     InitServiceHandler();
     if (Init() != ERR_OK) {
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
         ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
-        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, msg);
+        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, bundleName);
         return;
     }
     if (focusChangedListener_ == nullptr) {
@@ -129,7 +129,7 @@ void ScreenLockSystemAbility::OnStart()
             break;
         } else {
             ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
-            ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_TRYTIME_FAILED, userId, msg);
+            ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_TRYTIME_FAILED, userId, bundleName);
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener fail.");
         }
         --trytime;
@@ -140,6 +140,9 @@ void ScreenLockSystemAbility::OnStart()
         auto callback = [=]() { OnSystemReady(); };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
+    DumpHelper::GetInstance().AddDumpOperation(
+        std::bind(&ScreenLockSystemAbility::ScreenlockDump, this, std::placeholders::_1)
+    );
     return;
 }
 
@@ -350,6 +353,7 @@ void ScreenLockSystemAbility::OnBeginSleep(const int why)
 void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started.");
+    SetScreenlocked(true);
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
     std::string type = END_SLEEP;
     auto iter = registeredListeners_.find(type);
@@ -680,6 +684,41 @@ void ScreenLockSystemAbility::OnDump()
     } else {
         SCLOCK_HILOGI("ScreenLockSystemAbility dump, time(0) is nullptr");
     }
+}
+
+int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &args)
+{
+    int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
+    const int maxUid = 10000;
+    if (uid > maxUid) {
+        return 0;
+    }
+
+    std::vector<std::string> argsStr;
+    for (auto item : args) {
+        argsStr.emplace_back(Str16ToStr8(item));
+    }
+
+    if (DumpHelper::GetInstance().Dump(fd, argsStr)) {
+        return 0;
+    }
+
+    return ERROR;
+}
+
+void ScreenLockSystemAbility::ScreenlockDump(int fd)
+{
+    dprintf(fd, "\n - Screenlock System State :\n");
+    bool screenLocked =  stateValue_.GetScreenlockedState();
+    dprintf(fd, " * screenLocked = %d\n", screenLocked);
+    auto systemReady = [=]() { OnSystemReady(); };
+    dprintf(fd, " * systemReady = %d\n", systemReady);
+    bool  screenState = stateValue_.GetScreenState();
+    dprintf(fd, " * screenState = %d\n", screenState);  
+    int offReason = stateValue_.GetOffReason();
+    dprintf(fd, " * offReason = %d\n", offReason);  
+    int interactiveState = stateValue_.GetInteractiveState();
+    dprintf(fd, " * interactiveState = %d\n", interactiveState); 
 }
 } // namespace ScreenLock
 } // namespace OHOS

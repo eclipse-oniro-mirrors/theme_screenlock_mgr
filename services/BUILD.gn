@@ -26,6 +26,9 @@ ohos_shared_library("screenlock_server") {
     "src/screenlock_manager_stub.cpp",
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
+    "src/screenlock_dump_helper.cpp",
+    "src/screenlock_hisysevent_adapter.cpp",
+    "src/screenlock_trace.cpp",
   ]
 
   public_configs = [
@@ -40,6 +43,9 @@ ohos_shared_library("screenlock_server") {
     "//base/miscservices/screenlock/frameworks/kitsimpl/include",
     "//base/user_idm/interfaces/innerkits/include",
     "//third_party/json/include",
+    "//base/hiviewdfx/hitrace/interfaces/native/innerkits/include",
+    "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
+    "//base/miscservices/screenlock/utils/include",
   ]
   deps = [
     "//base/miscservices/screenlock/utils:screenlock_utils",
@@ -49,6 +55,8 @@ ohos_shared_library("screenlock_server") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/windowmanager/utils:libwmutil",
     "//utils/native/base:utils",
+    "//base/hiviewdfx/hitrace/interfaces/native/innerkits:libhitrace",
+    "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent:libhisysevent",
   ]
   external_deps = [
     "bundle_framework:appexecfwk_core",
@@ -60,6 +68,10 @@ ohos_shared_library("screenlock_server") {
     "ril_device_driver_interface:hril_innerkits",
     "window_manager:libdm",
     "window_manager:libwm",
+    "hisysevent_native:libhisysevent",
+    "hitrace_native:hitrace_meter",
+    "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
   ]
   relative_install_dir = "module"
   subsystem_name = "miscservices"
