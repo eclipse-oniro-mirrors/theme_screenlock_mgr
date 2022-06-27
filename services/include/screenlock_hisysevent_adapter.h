@@ -17,7 +17,6 @@
 #define MISCSERVICES_SCREENLOCK_DFX_HITRACE_ADAPTER_H
 
 #include <string>
-#include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {

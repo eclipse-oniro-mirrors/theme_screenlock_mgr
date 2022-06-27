@@ -15,13 +15,12 @@
 #include "screenlock_hisysevent_adapter.h"
 #include "sclock_log.h"
 #include "hisysevent.h"
-#include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {
 namespace {
 using HiSysEventNameSpace = OHOS::HiviewDFX::HiSysEvent;
-const std::string DOMAIN_STR = std::string(HiSysEventNameSpace::Domain::DISTRIBUTED_DATAMGR);
+const std::string DOMAIN_STR = std::string(HiSysEventNameSpace::Domain::ACCOUNT);
 }
 
 void ReportServiceFault(int32_t errType, int32_t errCode, int32_t userId, const std::string& msg)

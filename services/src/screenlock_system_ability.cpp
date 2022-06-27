@@ -79,10 +79,8 @@ int32_t ScreenLockSystemAbility::Init()
 {
     bool ret = Publish(ScreenLockSystemAbility::GetInstance());
     int userId = IPCSkeleton::GetCallingUid();
-    std::string bundleName = "";
     if (!ret) {
-        ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
-        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, bundleName);
+        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, BUNDLE_NAME);
         SCLOCK_HILOGE("ScreenLockSystemAbility Publish failed.");
         return E_SCREENLOCK_PUBLISH_FAIL;
     }
@@ -96,7 +94,6 @@ void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
     int userId = IPCSkeleton::GetCallingUid();
-    std::string bundleName = "";
     if (instance_ == nullptr) {
         instance_ = this;
     }
@@ -109,8 +106,7 @@ void ScreenLockSystemAbility::OnStart()
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
-        ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
-        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, bundleName);
+        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, BUNDLE_NAME);
         return;
     }
     if (focusChangedListener_ == nullptr) {
@@ -128,8 +124,7 @@ void ScreenLockSystemAbility::OnStart()
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener success.");
             break;
         } else {
-            ScreenLockBundleName::GetBundleNameByUid(userId, bundleName);
-            ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_TRYTIME_FAILED, userId, bundleName);
+            ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_TRYTIME_FAILED, userId, BUNDLE_NAME);
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener fail.");
         }
         --trytime;
@@ -353,7 +348,6 @@ void ScreenLockSystemAbility::OnBeginSleep(const int why)
 void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started.");
-    SetScreenlocked(true);
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
     std::string type = END_SLEEP;
     auto iter = registeredListeners_.find(type);
