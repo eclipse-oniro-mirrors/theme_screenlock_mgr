@@ -36,7 +36,6 @@
 #include "screenlock_get_info_callback.h"
 #include "screenlock_dump_helper.h"
 #include "screenlock_hisysevent_adapter.h"
-#include "screenlock_trace.h"
 #include "hitrace_meter.h"
 
 namespace OHOS {
@@ -80,7 +79,6 @@ int32_t ScreenLockSystemAbility::Init()
     bool ret = Publish(ScreenLockSystemAbility::GetInstance());
     int userId = IPCSkeleton::GetCallingUid();
     if (!ret) {
-        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, BUNDLE_NAME);
         SCLOCK_HILOGE("ScreenLockSystemAbility Publish failed.");
         return E_SCREENLOCK_PUBLISH_FAIL;
     }
@@ -93,7 +91,6 @@ int32_t ScreenLockSystemAbility::Init()
 void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
-    int userId = IPCSkeleton::GetCallingUid();
     if (instance_ == nullptr) {
         instance_ = this;
     }
@@ -106,7 +103,6 @@ void ScreenLockSystemAbility::OnStart()
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
-        ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_INIT_FAILED, userId, BUNDLE_NAME);
         return;
     }
     if (focusChangedListener_ == nullptr) {
@@ -124,7 +120,6 @@ void ScreenLockSystemAbility::OnStart()
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener success.");
             break;
         } else {
-            ReportServiceFault(E_ERRORTYPE_SERVICE_UNAVAILABLE, E_ERRORCODE_TRYTIME_FAILED, userId, BUNDLE_NAME);
             SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener fail.");
         }
         --trytime;
@@ -412,6 +407,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
+    StartAsyncTrace(HITRACE_TAG_MISC,"Services_UnlockScreen start",HITTACE_UNSCREENLOCK_SECOND);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
@@ -702,17 +698,17 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 
 void ScreenLockSystemAbility::ScreenlockDump(int fd)
 {
-    dprintf(fd, "\n - Screenlock System State :\n");
+    dprintf(fd, "\n - screenlock system state\t\t:value\n");
     bool screenLocked =  stateValue_.GetScreenlockedState();
-    dprintf(fd, " * screenLocked = %d\n", screenLocked);
+    dprintf(fd, " * screenLocked  \t\t\t:%d\n", screenLocked);
     auto systemReady = [=]() { OnSystemReady(); };
-    dprintf(fd, " * systemReady = %d\n", systemReady);
+    dprintf(fd, " * systemReady  \t\t\t:%d\n", systemReady);
     bool  screenState = stateValue_.GetScreenState();
-    dprintf(fd, " * screenState = %d\n", screenState);  
+    dprintf(fd, " * screenState  \t\t\t:%d\n", screenState);  
     int offReason = stateValue_.GetOffReason();
-    dprintf(fd, " * offReason = %d\n", offReason);  
+    dprintf(fd, " * offReason  \t\t\t\t:%d\n", offReason);  
     int interactiveState = stateValue_.GetInteractiveState();
-    dprintf(fd, " * interactiveState = %d\n", interactiveState); 
+    dprintf(fd, " * interactiveState  \t\t\t:%d\n", interactiveState); 
 }
 } // namespace ScreenLock
 } // namespace OHOS

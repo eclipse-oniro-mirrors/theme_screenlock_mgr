@@ -56,7 +56,6 @@ ohos_shared_library("screenlock_server") {
     "//foundation/windowmanager/utils:libwmutil",
     "//utils/native/base:utils",
     "//base/hiviewdfx/hitrace/interfaces/native/innerkits:libhitrace",
-    "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent:libhisysevent",
   ]
   external_deps = [
     "bundle_framework:appexecfwk_core",
@@ -68,7 +67,6 @@ ohos_shared_library("screenlock_server") {
     "ril_device_driver_interface:hril_innerkits",
     "window_manager:libdm",
     "window_manager:libwm",
-    "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",

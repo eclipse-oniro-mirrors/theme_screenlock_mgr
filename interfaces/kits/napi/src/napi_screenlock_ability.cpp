@@ -30,7 +30,6 @@
 #include "screenlock_manager.h"
 #include "screenlock_system_ability_callback.h"
 #include "screenlock_unlock_callback.h"
-#include "screenlock_trace.h"
 #include <hitrace_meter.h>
 
 using namespace OHOS;
@@ -121,8 +120,7 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_UnlockScreen begin");
-    InitHiTrace();
-    ScreenlockHiTraceAsyncTrace tracer("NAPI_UnlockScreen");
+    StartAsyncTrace(HITRACE_TAG_MISC,"NAPI_UnlockScreen start",HITTACE_UNSCREENLOCK_FIRST);
     napi_value ret = nullptr;
     size_t argc = ARGS_SIZE_ONE;
     napi_value argv[ARGS_SIZE_ONE] = {nullptr};
