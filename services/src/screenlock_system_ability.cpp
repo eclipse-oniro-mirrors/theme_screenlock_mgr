@@ -34,7 +34,7 @@
 #include "screenlock_bundlename.h"
 #include "screenlock_common.h"
 #include "screenlock_get_info_callback.h"
-#include "screenlock_dump_helper.h"
+#include "dump_helper.h"
 #include "hitrace_meter.h"
 
 namespace OHOS {
