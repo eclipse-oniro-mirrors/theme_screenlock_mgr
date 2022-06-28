@@ -14,11 +14,11 @@
  */
 #include "screenlock_system_ability_callback.h"
 
+#include <hitrace_meter.h>
 #include <uv.h>
 
 #include "sclock_log.h"
 #include "screenlock_common.h"
-#include <hitrace_meter.h>
 
 namespace OHOS {
 namespace ScreenLock {
