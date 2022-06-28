@@ -27,8 +27,6 @@ ohos_shared_library("screenlock_server") {
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
     "src/screenlock_dump_helper.cpp",
-    "src/screenlock_hisysevent_adapter.cpp",
-    "src/screenlock_trace.cpp",
   ]
 
   public_configs = [

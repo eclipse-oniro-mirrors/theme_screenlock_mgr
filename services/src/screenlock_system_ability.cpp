@@ -696,17 +696,17 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 
 void ScreenLockSystemAbility::ScreenlockDump(int fd)
 {
-    dprintf(fd, "\n - screenlock system state\t\t:value\n");
+    dprintf(fd, "\n - screenlock system state\t:value\n");
     bool screenLocked =  stateValue_.GetScreenlockedState();
-    dprintf(fd, " * screenLocked  \t\t\t:%d\n", screenLocked);
+    dprintf(fd, " * screenLocked  \t\t:%d\n", screenLocked);
     auto systemReady = [=]() { OnSystemReady(); };
-    dprintf(fd, " * systemReady  \t\t\t:%d\n", systemReady);
+    dprintf(fd, " * systemReady  \t\t:%d\n", systemReady);
     bool  screenState = stateValue_.GetScreenState();
-    dprintf(fd, " * screenState  \t\t\t:%d\n", screenState);  
+    dprintf(fd, " * screenState  \t\t:%d\n", screenState);  
     int offReason = stateValue_.GetOffReason();
-    dprintf(fd, " * offReason  \t\t\t\t:%d\n", offReason);  
+    dprintf(fd, " * offReason  \t\t\t:%d\n", offReason);  
     int interactiveState = stateValue_.GetInteractiveState();
-    dprintf(fd, " * interactiveState  \t\t\t:%d\n", interactiveState); 
+    dprintf(fd, " * interactiveState  \t\t:%d\n", interactiveState); 
 }
 } // namespace ScreenLock
 } // namespace OHOS
