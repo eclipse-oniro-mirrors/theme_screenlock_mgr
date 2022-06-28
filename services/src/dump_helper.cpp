@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "screenlock_dump_helper.h"
+#include "dump_helper.h"
 
 namespace OHOS {
 namespace ScreenLock {
