@@ -35,7 +35,6 @@
 #include "screenlock_common.h"
 #include "screenlock_get_info_callback.h"
 #include "screenlock_dump_helper.h"
-#include "screenlock_hisysevent_adapter.h"
 #include "hitrace_meter.h"
 
 namespace OHOS {
@@ -77,7 +76,6 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
 int32_t ScreenLockSystemAbility::Init()
 {
     bool ret = Publish(ScreenLockSystemAbility::GetInstance());
-    int userId = IPCSkeleton::GetCallingUid();
     if (!ret) {
         SCLOCK_HILOGE("ScreenLockSystemAbility Publish failed.");
         return E_SCREENLOCK_PUBLISH_FAIL;

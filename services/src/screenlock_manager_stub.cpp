@@ -23,7 +23,6 @@
 #include "sclock_log.h"
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
-#include "screenlock_hisysevent_adapter.h"
 
 namespace OHOS {
 namespace ScreenLock {
