@@ -14,14 +14,14 @@
  */
 #include "napi_screenlock_ability.h"
 
+#include <hitrace_meter.h>
 #include <napi/native_api.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <uv.h>
 
-#include "ipc_skeleton.h"
-
 #include "event_listener.h"
+#include "ipc_skeleton.h"
 #include "sclock_log.h"
 #include "screenlock_app_manager.h"
 #include "screenlock_bundlename.h"
@@ -30,7 +30,6 @@
 #include "screenlock_manager.h"
 #include "screenlock_system_ability_callback.h"
 #include "screenlock_unlock_callback.h"
-#include <hitrace_meter.h>
 
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
