@@ -31,7 +31,7 @@ constexpr const char *ILLEGAL_INFOMATION = "The arguments are illegal and you ca
 
 void DumpHelper::AddDumpOperation(const DumpNoParamFunc &dumpscreenlockInfo)
 {
-    if ( dumpscreenlockInfo == nullptr ) {
+    if (dumpscreenlockInfo == nullptr) {
         return;
     }
     dumpscreenlockInfo_ = dumpscreenlockInfo;
@@ -57,7 +57,6 @@ void DumpHelper::ShowError(int fd)
     }
 }
 
-
 bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
 {
     std::string command = "";
@@ -81,7 +80,7 @@ bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
         if (!dumpscreenlockInfo_) {
             return false;
         }
-        dumpscreenlockInfo_(fd); 
+        dumpscreenlockInfo_(fd);
     } else {
         ShowIllealInfomation(fd);
     }
@@ -92,19 +91,19 @@ void DumpHelper::ShowHelp(int fd)
 {
     std::string result;
     result.append("Usage:dumper <command> [options]\n")
-          .append("Description:\n")
-		  .append("all\t\t")
-		  .append("dump all screenlock information\n")
-          .append("\t\tscreenLocked:\t\t")
-          .append("whether there is lock screen status\n")
-		  .append("\t\tsystemReady:\t\t")
-          .append("is the system in place\n")
-          .append("\t\tscreenState:\t\t")
-          .append("screen on / off status\n")
-		  .append("\t\toffReason:\t\t")
-          .append("screen failure reason\n")
-		  .append("\t\tinteractiveState:\t")
-          .append("screen interaction status\n");
+        .append("Description:\n")
+        .append("all\t\t")
+        .append("dump all screenlock information\n")
+        .append("\t\tscreenLocked:\t\t")
+        .append("whether there is lock screen status\n")
+        .append("\t\tsystemReady:\t\t")
+        .append("is the system in place\n")
+        .append("\t\tscreenState:\t\t")
+        .append("screen on / off status\n")
+        .append("\t\toffReason:\t\t")
+        .append("screen failure reason\n")
+        .append("\t\tinteractiveState:\t")
+        .append("screen interaction status\n");
     dprintf(fd, "%s\n", result.c_str());
 }
 

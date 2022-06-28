@@ -283,8 +283,8 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const std::string &event, int r
             }
         }
     }
-    FinishAsyncTrace(HITRACE_TAG_MISC,"NAPI_UnlockScreen finish",HITTACE_UNSCREENLOCK_FIRST);
-    FinishAsyncTrace(HITRACE_TAG_MISC,"Services_UnlockScreen finish",HITTACE_UNSCREENLOCK_SECOND);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "NAPI_UnlockScreen finish", HITTACE_UNSCREENLOCK_FIRST);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "Services_UnlockScreen finish", HITTACE_UNSCREENLOCK_SECOND);
 }
 } // namespace ScreenLock
 } // namespace OHOS

@@ -69,7 +69,6 @@ enum ScreenLockError {
     E_SCREENLOCK_NO_PERMISSION,
 };
 
-
 enum TraceTaskId {
     HITTACE_UNSCREENLOCK_FIRST,
     HITTACE_UNSCREENLOCK_SECOND,

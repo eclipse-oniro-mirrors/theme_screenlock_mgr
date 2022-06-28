@@ -33,6 +33,7 @@ public:
     void AddErrorInfo(const std::string &error);
     void ShowError(int fd);
     bool Dump(int fd, const std::vector<std::string> &args);
+
 private:
     void ShowHelp(int fd);
     void ShowIllealInfomation(int fd);

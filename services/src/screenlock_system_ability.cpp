@@ -129,8 +129,7 @@ void ScreenLockSystemAbility::OnStart()
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     DumpHelper::GetInstance().AddDumpOperation(
-        std::bind(&ScreenLockSystemAbility::ScreenlockDump, this, std::placeholders::_1)
-    );
+        std::bind(&ScreenLockSystemAbility::ScreenlockDump, this, std::placeholders::_1));
     return;
 }
 
@@ -405,7 +404,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    StartAsyncTrace(HITRACE_TAG_MISC,"Services_UnlockScreen start",HITTACE_UNSCREENLOCK_SECOND);
+    StartAsyncTrace(HITRACE_TAG_MISC, "Services_UnlockScreen start", HITTACE_UNSCREENLOCK_SECOND);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
@@ -697,16 +696,16 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 void ScreenLockSystemAbility::ScreenlockDump(int fd)
 {
     dprintf(fd, "\n - screenlock system state\t:value\n");
-    bool screenLocked =  stateValue_.GetScreenlockedState();
+    bool screenLocked = stateValue_.GetScreenlockedState();
     dprintf(fd, " * screenLocked  \t\t:%d\n", screenLocked);
     auto systemReady = [=]() { OnSystemReady(); };
     dprintf(fd, " * systemReady  \t\t:%d\n", systemReady);
-    bool  screenState = stateValue_.GetScreenState();
-    dprintf(fd, " * screenState  \t\t:%d\n", screenState);  
+    bool screenState = stateValue_.GetScreenState();
+    dprintf(fd, " * screenState  \t\t:%d\n", screenState);
     int offReason = stateValue_.GetOffReason();
-    dprintf(fd, " * offReason  \t\t\t:%d\n", offReason);  
+    dprintf(fd, " * offReason  \t\t\t:%d\n", offReason);
     int interactiveState = stateValue_.GetInteractiveState();
-    dprintf(fd, " * interactiveState  \t\t:%d\n", interactiveState); 
+    dprintf(fd, " * interactiveState  \t\t:%d\n", interactiveState);
 }
 } // namespace ScreenLock
 } // namespace OHOS

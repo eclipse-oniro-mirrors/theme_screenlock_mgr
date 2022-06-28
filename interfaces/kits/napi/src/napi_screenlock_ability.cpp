@@ -120,7 +120,7 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_UnlockScreen begin");
-    StartAsyncTrace(HITRACE_TAG_MISC,"NAPI_UnlockScreen start",HITTACE_UNSCREENLOCK_FIRST);
+    StartAsyncTrace(HITRACE_TAG_MISC, "NAPI_UnlockScreen start", HITTACE_UNSCREENLOCK_FIRST);
     napi_value ret = nullptr;
     size_t argc = ARGS_SIZE_ONE;
     napi_value argv[ARGS_SIZE_ONE] = {nullptr};
