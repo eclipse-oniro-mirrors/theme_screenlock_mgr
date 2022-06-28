@@ -22,11 +22,11 @@ config("screenlock_service_config") {
 
 ohos_shared_library("screenlock_server") {
   sources = [
+    "src/dump_helper.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
-    "src/dump_helper.cpp",
   ]
 
   public_configs = [
@@ -46,6 +46,7 @@ ohos_shared_library("screenlock_server") {
     "//base/miscservices/screenlock/utils/include",
   ]
   deps = [
+    "//base/hiviewdfx/hitrace/interfaces/native/innerkits:libhitrace",
     "//base/miscservices/screenlock/utils:screenlock_utils",
     "//base/telephony/core_service/interfaces/innerkits:tel_core_service_api",
     "//base/useriam/user_auth_framework/frameworks/user_idm:useridm_framework",
@@ -53,11 +54,13 @@ ohos_shared_library("screenlock_server") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/windowmanager/utils:libwmutil",
     "//utils/native/base:utils",
-    "//base/hiviewdfx/hitrace/interfaces/native/innerkits:libhitrace",
   ]
   external_deps = [
     "bundle_framework:appexecfwk_core",
     "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
+    "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
@@ -65,9 +68,6 @@ ohos_shared_library("screenlock_server") {
     "ril_device_driver_interface:hril_innerkits",
     "window_manager:libdm",
     "window_manager:libwm",
-    "hitrace_native:hitrace_meter",
-    "hitrace_native:libhitrace",
-    "hiviewdfx_hilog_native:libhilog",
   ]
   relative_install_dir = "module"
   subsystem_name = "miscservices"
