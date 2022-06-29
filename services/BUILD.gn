@@ -41,12 +41,9 @@ ohos_shared_library("screenlock_server") {
     "//base/miscservices/screenlock/frameworks/kitsimpl/include",
     "//base/user_idm/interfaces/innerkits/include",
     "//third_party/json/include",
-    "//base/hiviewdfx/hitrace/interfaces/native/innerkits/include",
-    "//base/hiviewdfx/hisysevent/interfaces/native/innerkits/hisysevent/include",
     "//base/miscservices/screenlock/utils/include",
   ]
   deps = [
-    "//base/hiviewdfx/hitrace/interfaces/native/innerkits:libhitrace",
     "//base/miscservices/screenlock/utils:screenlock_utils",
     "//base/telephony/core_service/interfaces/innerkits:tel_core_service_api",
     "//base/useriam/user_auth_framework/frameworks/user_idm:useridm_framework",
