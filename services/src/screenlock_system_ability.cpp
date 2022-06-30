@@ -335,7 +335,6 @@ void ScreenLockSystemAbility::OnBeginSleep(const int why)
 void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started.");
-    SetScreenlocked(true);
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
     std::string type = END_SLEEP;
     auto iter = registeredListeners_.find(type);
@@ -574,6 +573,7 @@ bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int 
         }
         lock_.unlock();
     } else if (event == SCREEN_DRAWDONE) {
+	    SetScreenlocked(true);
         DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     }
     return true;
