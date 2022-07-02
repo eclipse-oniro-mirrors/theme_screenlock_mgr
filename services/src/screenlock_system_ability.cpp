@@ -14,28 +14,31 @@
  */
 #include "screenlock_system_ability.h"
 
-#include <cerrno>
-#include <ctime>
-#include <string>
+#include <fcntl.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <fcntl.h>
 
+#include <cerrno>
+#include <ctime>
+#include <functional>
+#include <iostream>
+#include <string>
+
+#include "command.h"
 #include "core_service_client.h"
 #include "display_manager.h"
+#include "dump_helper.h"
+#include "hitrace_meter.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
-#include "system_ability_definition.h"
-#include "system_ability.h"
-#include "useridm_client.h"
 #include "os_account_manager.h"
-
 #include "sclock_log.h"
 #include "screenlock_bundlename.h"
 #include "screenlock_common.h"
 #include "screenlock_get_info_callback.h"
-#include "dump_helper.h"
-#include "hitrace_meter.h"
+#include "system_ability.h"
+#include "system_ability_definition.h"
+#include "useridm_client.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -128,7 +131,7 @@ void ScreenLockSystemAbility::OnStart()
         auto callback = [=]() { OnSystemReady(); };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
-    DumpHelper::GetInstance().AddDumpOperation(
+    ScreenlockDump();
         std::bind(&ScreenLockSystemAbility::ScreenlockDump, this, std::placeholders::_1));
     return;
 }
@@ -686,26 +689,31 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
         argsStr.emplace_back(Str16ToStr8(item));
     }
 
-    if (DumpHelper::GetInstance().Dump(fd, argsStr)) {
-        return 0;
-    }
-
-    return ERROR;
+    DumpHelper::GetInstance().Dump(fd, argsStr);
+    return ERR_OK;
 }
 
-void ScreenLockSystemAbility::ScreenlockDump(int fd)
+void ScreenLockSystemAbility::ScreenlockDump()
 {
-    dprintf(fd, "\n - screenlock system state\t:value\n");
-    bool screenLocked = stateValue_.GetScreenlockedState();
-    dprintf(fd, " * screenLocked  \t\t:%d\n", screenLocked);
-    auto systemReady = [=]() { OnSystemReady(); };
-    dprintf(fd, " * systemReady  \t\t:%d\n", systemReady);
-    bool screenState = stateValue_.GetScreenState();
-    dprintf(fd, " * screenState  \t\t:%d\n", screenState);
-    int offReason = stateValue_.GetOffReason();
-    dprintf(fd, " * offReason  \t\t\t:%d\n", offReason);
-    int interactiveState = stateValue_.GetInteractiveState();
-    dprintf(fd, " * interactiveState  \t\t:%d\n", interactiveState);
+    auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
+        [this](const std::vector<std::string> &input, std::string &output) -> bool {
+            bool screenLocked = stateValue_.GetScreenlockedState();
+            bool screenState = stateValue_.GetScreenState();
+            int32_t offReason = stateValue_.GetOffReason();
+            int32_t interactiveState = stateValue_.GetInteractiveState();
+            string temp_screenLocked = "";
+            screenLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
+            string temp_screenState = "";
+            screenState ? temp_screenState = "true" : temp_screenState = "false";
+            output.append("\n - screenlock system state\tvalue\t\tdescription\n")
+                .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
+                .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
+                .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
+                .append(
+                    " * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
+            return true;
+        });
+    DumpHelper::GetInstance().AddCmdProcess(*cmd);
 }
 } // namespace ScreenLock
 } // namespace OHOS

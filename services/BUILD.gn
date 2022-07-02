@@ -22,6 +22,7 @@ config("screenlock_service_config") {
 
 ohos_shared_library("screenlock_server") {
   sources = [
+    "src/command.cpp",
     "src/dump_helper.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",

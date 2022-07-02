@@ -13,28 +13,30 @@
  * limitations under the License.
  */
 
-#ifndef SCREENLOCK_DFX_DUMP_HELPER_H
-#define SCREENLOCK_DFX_DUMP_HELPER_H
+#ifndef SCREENLOCK_DFX_COMMAND_H
+#define SCREENLOCK_DFX_COMMAND_H
 
 #include <functional>
-#include <map>
 #include <string>
 #include <vector>
 
-#include "command.h"
-
 namespace OHOS {
 namespace ScreenLock {
-class DumpHelper {
+class Command {
 public:
-    static DumpHelper &GetInstance();
-    void AddCmdProcess(Command &);
-    bool Dump(int fd, const std::vector<std::string> &args);
+    using Action = std::function<bool(const std::vector<std::string> &input, std::string &output)>;
+    Command(const std::vector<std::string> &argsFormat, const std::string &help, const Action &action);
+    std::string ShowHelp();
+    bool DoAction(const std::vector<std::string> &input, std::string &output);
+    std::string GetOption();
+    std::string GetFormat();
 
 private:
-    std::map<std::string, Command> cmdHandler;
+    std::vector<std::string> format;
+    std::string help;
+    Action action;
 };
 } // namespace ScreenLock
 } // namespace OHOS
 
-#endif // SCREENLOCK_DFX_DUMP_HELPER_H
+#endif // SCREENLOCK_DFX_COMMAND_H

@@ -15,101 +15,47 @@
 
 #include "dump_helper.h"
 
+#include <cstdio>
+#include <iostream>
+#include <memory>
+
+#include "command.h"
+#include "sclock_log.h"
+
 namespace OHOS {
 namespace ScreenLock {
-namespace {
-constexpr int32_t MAX_RECORED_ERROR = 10;
-constexpr int32_t SUB_CMD_NAME = 0;
-constexpr int32_t SUB_CMD_PARAM = 1;
-constexpr int32_t CMD_NO_PARAM = 1;
-constexpr int32_t CMD_HAS_PARAM = 2;
-constexpr const char *CMD_HELP = "-h";
-constexpr const char *CMD_ALL = "all";
-constexpr const char *CMD_ERROR_INFO = "-errorInfo";
-constexpr const char *ILLEGAL_INFOMATION = "The arguments are illegal and you can enter '-h' for help.\n";
+DumpHelper &DumpHelper::GetInstance()
+{
+    static DumpHelper instance;
+    return instance;
 }
 
-void DumpHelper::AddDumpOperation(const DumpNoParamFunc &dumpscreenlockInfo)
+void DumpHelper::AddCmdProcess(Command &cmd)
 {
-    if (dumpscreenlockInfo == nullptr) {
-        return;
-    }
-    dumpscreenlockInfo_ = dumpscreenlockInfo;
-}
-
-void DumpHelper::AddErrorInfo(const std::string &error)
-{
-    std::lock_guard<std::mutex> lock(hidumperMutex_);
-    if (g_errorInfo.size() + 1 > MAX_RECORED_ERROR) {
-        g_errorInfo.pop_front();
-        g_errorInfo.push_back(error);
-    } else {
-        g_errorInfo.push_back(error);
-    }
-}
-
-void DumpHelper::ShowError(int fd)
-{
-    dprintf(fd, "The number of recent errors recorded is %d\n", g_errorInfo.size());
-    int i = 0;
-    for (const auto &it : g_errorInfo) {
-        dprintf(fd, "Error ID: %d        ErrorInfo: %s\n", ++i, it.c_str());
-    }
+    cmdHandler.insert(std::make_pair(cmd.GetOption(), cmd));
 }
 
 bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
 {
-    std::string command = "";
-    std::string param = "";
-    std::lock_guard<std::mutex> lock(hidumperMutex_);
-
-    if (args.size() == CMD_NO_PARAM) {
-        command = args.at(SUB_CMD_NAME);
-    } else if (args.size() == CMD_HAS_PARAM) {
-        command = args.at(SUB_CMD_NAME);
-        param = args.at(SUB_CMD_PARAM);
-    } else {
-        ShowError(fd);
-    }
-
-    if (command == CMD_HELP) {
-        ShowHelp(fd);
-    } else if (command == CMD_ERROR_INFO) {
-        ShowError(fd);
-    } else if (command == CMD_ALL) {
-        if (!dumpscreenlockInfo_) {
-            return false;
+    if (args.empty() || args.at(0) == "-h") {
+        dprintf(fd, "\n%-15s  %-20s", "Option", "Description");
+        for (auto &[key, handler] : cmdHandler) {
+            dprintf(fd, "\n%-15s: %-20s", handler.GetFormat().c_str(), handler.ShowHelp().c_str());
         }
-        dumpscreenlockInfo_(fd);
-    } else {
-        ShowIllealInfomation(fd);
+        return false;
     }
-    return true;
-}
 
-void DumpHelper::ShowHelp(int fd)
-{
-    std::string result;
-    result.append("Usage:dumper <command> [options]\n")
-          .append("Description:\n")
-          .append("all\t\t")
-          .append("dump all screenlock information\n")
-          .append("\t\tscreenLocked:\t\t")
-          .append("whether there is lock screen status\n")
-          .append("\t\tsystemReady:\t\t")
-          .append("is the system in place\n")
-          .append("\t\tscreenState:\t\t")
-          .append("screen on / off status\n")
-          .append("\t\toffReason:\t\t")
-          .append("screen failure reason\n")
-          .append("\t\tinteractiveState:\t")
-          .append("screen interaction status\n");
-    dprintf(fd, "%s\n", result.c_str());
-}
-
-void DumpHelper::ShowIllealInfomation(int fd)
-{
-    dprintf(fd, "%s\n", ILLEGAL_INFOMATION);
+    auto handler = cmdHandler.find(args.at(0));
+    if (handler != cmdHandler.end()) {
+        std::string output;
+        auto ret = handler->second.DoAction(args, output);
+        if (!ret) {
+            SCLOCK_HILOGE(" failed");
+        }
+        dprintf(fd, "\n%s", output.c_str());
+        return ret;
+    }
+    return false;
 }
 } // namespace ScreenLock
 } // namespace OHOS
