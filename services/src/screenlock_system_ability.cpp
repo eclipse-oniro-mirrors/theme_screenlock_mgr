@@ -132,7 +132,6 @@ void ScreenLockSystemAbility::OnStart()
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     ScreenlockDump();
-        std::bind(&ScreenLockSystemAbility::ScreenlockDump, this, std::placeholders::_1));
     return;
 }
 

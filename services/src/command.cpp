@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace ScreenLock {
-
 Command::Command(const std::vector<std::string> &argsFormat, const std::string &help, const Command::Action &action)
     : format(argsFormat), help(help), action(action)
 {

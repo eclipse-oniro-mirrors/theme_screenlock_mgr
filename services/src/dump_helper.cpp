@@ -15,10 +15,6 @@
 
 #include "dump_helper.h"
 
-#include <cstdio>
-#include <iostream>
-#include <memory>
-
 #include "command.h"
 #include "sclock_log.h"
 
