@@ -16,10 +16,10 @@
 
 #include <cerrno>
 #include <ctime>
+#include <fcntl.h>
 #include <functional>
 #include <iostream>
 #include <string>
-#include <fcntl.h>
 #include <sys/time.h>
 #include <unistd.h>
 
