@@ -15,9 +15,10 @@
 
 #include "dump_helper.h"
 
+#include <vector>
+
 #include "command.h"
 #include "sclock_log.h"
-
 namespace OHOS {
 namespace ScreenLock {
 DumpHelper &DumpHelper::GetInstance()

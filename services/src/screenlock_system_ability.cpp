@@ -14,14 +14,15 @@
  */
 #include "screenlock_system_ability.h"
 
+#include <fcntl.h>
+#include <sys/time.h>
+#include <unistd.h>
+
 #include <cerrno>
 #include <ctime>
-#include <fcntl.h>
 #include <functional>
 #include <iostream>
 #include <string>
-#include <sys/time.h>
-#include <unistd.h>
 
 #include "command.h"
 #include "core_service_client.h"
