@@ -14,15 +14,14 @@
  */
 #include "screenlock_system_ability.h"
 
-#include <fcntl.h>
-#include <sys/time.h>
-#include <unistd.h>
-
 #include <cerrno>
 #include <ctime>
 #include <functional>
 #include <iostream>
 #include <string>
+#include <fcntl.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #include "command.h"
 #include "core_service_client.h"
@@ -694,7 +693,7 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 
 void ScreenLockSystemAbility::ScreenlockDump()
 {
-    auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
+    auto cmd = std::make_shared<Command>(std::vector<std::string> ({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             bool screenLocked = stateValue_.GetScreenlockedState();
             bool screenState = stateValue_.GetScreenState();
@@ -708,8 +707,8 @@ void ScreenLockSystemAbility::ScreenlockDump()
                 .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
                 .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
-                .append(
-                    " * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
+                .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
+                        "\t\tscreen interaction status\n");
             return true;
         });
     DumpHelper::GetInstance().AddCmdProcess(*cmd);
