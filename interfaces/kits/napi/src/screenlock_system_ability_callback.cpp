@@ -14,7 +14,6 @@
  */
 #include "screenlock_system_ability_callback.h"
 
-#include <hitrace_meter.h>
 #include <uv.h>
 
 #include "sclock_log.h"
@@ -283,8 +282,6 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const std::string &event, int r
             }
         }
     }
-    FinishAsyncTrace(HITRACE_TAG_MISC, "NAPI_UnlockScreen finish", HITTACE_UNSCREENLOCK_FIRST);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "Services_UnlockScreen finish", HITTACE_UNSCREENLOCK_SECOND);
 }
 } // namespace ScreenLock
 } // namespace OHOS

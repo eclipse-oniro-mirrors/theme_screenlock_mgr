@@ -22,6 +22,10 @@ Command::Command(const std::vector<std::string> &argsFormat, const std::string &
 {
 }
 
+Command::Command(const std::vector<std::string> &argsFormat, const std::string &help) : format(argsFormat), help(help)
+{
+}
+
 std::string Command::ShowHelp()
 {
     return help;

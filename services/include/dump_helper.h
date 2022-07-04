@@ -19,6 +19,7 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "command.h"
 
@@ -27,11 +28,11 @@ namespace ScreenLock {
 class DumpHelper {
 public:
     static DumpHelper &GetInstance();
-    void AddCmdProcess(Command &);
+    void RegisterCommand(std::shared_ptr<Command> &cmd);
     bool Dump(int fd, const std::vector<std::string> &args);
 
 private:
-    std::map<std::string, Command> cmdHandler;
+    std::map<std::string, std::shared_ptr<Command>> cmdHandler;
 };
 } // namespace ScreenLock
 } // namespace OHOS

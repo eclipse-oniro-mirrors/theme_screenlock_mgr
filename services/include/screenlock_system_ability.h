@@ -177,7 +177,7 @@ private:
     void OnScreenlockEnabled(bool enable);
     void OnExitAnimation();
     void OnSystemReady();
-    void ScreenlockDump();
+    void RegisterDumpCommand();
     int32_t Init();
     ServiceRunningState state_;
     void InitServiceHandler();

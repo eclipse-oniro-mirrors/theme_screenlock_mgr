@@ -25,11 +25,14 @@ namespace ScreenLock {
 class Command {
 public:
     using Action = std::function<bool(const std::vector<std::string> &input, std::string &output)>;
+    explicit Command() = default;
     Command(const std::vector<std::string> &argsFormat, const std::string &help, const Action &action);
-    std::string ShowHelp();
-    bool DoAction(const std::vector<std::string> &input, std::string &output);
-    std::string GetOption();
-    std::string GetFormat();
+    Command(const std::vector<std::string> &argsFormat, const std::string &help);
+    virtual ~Command() = default;
+    virtual std::string ShowHelp();
+    virtual bool DoAction(const std::vector<std::string> &vector, std::string &output);
+    virtual std::string GetOption();
+    virtual std::string GetFormat();
 
 private:
     std::vector<std::string> format;

@@ -14,15 +14,14 @@
  */
 #include "screenlock_system_ability.h"
 
-#include <fcntl.h>
-#include <sys/time.h>
-#include <unistd.h>
-
 #include <cerrno>
 #include <ctime>
+#include <fcntl.h>
 #include <functional>
 #include <iostream>
 #include <string>
+#include <sys/time.h>
+#include <unistd.h>
 
 #include "command.h"
 #include "core_service_client.h"
@@ -131,7 +130,7 @@ void ScreenLockSystemAbility::OnStart()
         auto callback = [=]() { OnSystemReady(); };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
-    ScreenlockDump();
+    RegisterDumpCommand();
     return;
 }
 
@@ -406,7 +405,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    StartAsyncTrace(HITRACE_TAG_MISC, "Services_UnlockScreen start", HITTACE_UNSCREENLOCK_SECOND);
+    StartAsyncTrace(HITRACE_TAG_MISC,"ScreenLockSystemAbility RequestUnlock start",HITTACE_UNLOCKSCREEN);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
@@ -692,9 +691,9 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
     return ERR_OK;
 }
 
-void ScreenLockSystemAbility::ScreenlockDump()
+void ScreenLockSystemAbility::RegisterDumpCommand()
 {
-    auto cmd = std::make_shared<Command>(std::vector<std::string> ({ "-all" }), "Show all",
+    auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "Show all", 
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             bool screenLocked = stateValue_.GetScreenlockedState();
             bool screenState = stateValue_.GetScreenState();
@@ -712,7 +711,7 @@ void ScreenLockSystemAbility::ScreenlockDump()
                         "\t\tscreen interaction status\n");
             return true;
         });
-    DumpHelper::GetInstance().AddCmdProcess(*cmd);
+    DumpHelper::GetInstance().RegisterCommand(cmd);
 }
 } // namespace ScreenLock
 } // namespace OHOS

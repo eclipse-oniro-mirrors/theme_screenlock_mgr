@@ -16,9 +16,6 @@
 #include "dump_helper.h"
 
 #include <vector>
-
-#include "command.h"
-#include "sclock_log.h"
 namespace OHOS {
 namespace ScreenLock {
 DumpHelper &DumpHelper::GetInstance()
@@ -27,17 +24,18 @@ DumpHelper &DumpHelper::GetInstance()
     return instance;
 }
 
-void DumpHelper::AddCmdProcess(Command &cmd)
+void DumpHelper::RegisterCommand(std::shared_ptr<Command> &cmd)
 {
-    cmdHandler.insert(std::make_pair(cmd.GetOption(), cmd));
+    cmdHandler.insert(std::make_pair(cmd->GetOption(), cmd));
 }
 
 bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
 {
+    dprintf(fd, "\n---------------------------------\n");
     if (args.empty() || args.at(0) == "-h") {
         dprintf(fd, "\n%-15s  %-20s", "Option", "Description");
         for (auto &[key, handler] : cmdHandler) {
-            dprintf(fd, "\n%-15s: %-20s", handler.GetFormat().c_str(), handler.ShowHelp().c_str());
+            dprintf(fd, "\n%-15s: %-20s\n", handler->GetFormat().c_str(), handler->ShowHelp().c_str());
         }
         return false;
     }
@@ -45,12 +43,9 @@ bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
     auto handler = cmdHandler.find(args.at(0));
     if (handler != cmdHandler.end()) {
         std::string output;
-        auto ret = handler->second.DoAction(args, output);
-        if (!ret) {
-            SCLOCK_HILOGE(" failed");
-        }
-        dprintf(fd, "\n%s", output.c_str());
-        return ret;
+        handler->second->DoAction(args, output);
+        dprintf(fd, "%s\n", output.c_str());
+        return true;
     }
     return false;
 }

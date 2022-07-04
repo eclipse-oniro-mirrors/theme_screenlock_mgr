@@ -19,6 +19,7 @@
 #include "iservice_registry.h"
 
 #include "sclock_log.h"
+#include <hitrace_meter.h>
 
 namespace OHOS {
 namespace ScreenLock {
@@ -90,6 +91,7 @@ void ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterfac
         return;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestUnlock succeeded.");
+    StartAsyncTrace(HITRACE_TAG_MISC,"ScreenLockManager RequestUnlock start",HITTACE_UNLOCKSCREEN);
     screenlockManagerProxy_->RequestUnlock(listener);
 }
 
