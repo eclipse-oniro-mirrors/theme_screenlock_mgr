@@ -15,11 +15,11 @@
 
 #include "screenlock_manager.h"
 
-#include "system_ability_definition.h"
-#include "iservice_registry.h"
-
-#include "sclock_log.h"
 #include <hitrace_meter.h>
+
+#include "iservice_registry.h"
+#include "sclock_log.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -91,7 +91,7 @@ void ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterfac
         return;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestUnlock succeeded.");
-    StartAsyncTrace(HITRACE_TAG_MISC,"ScreenLockManager RequestUnlock start",HITTACE_UNLOCKSCREEN);
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITTACE_UNLOCKSCREEN);
     screenlockManagerProxy_->RequestUnlock(listener);
 }
 
