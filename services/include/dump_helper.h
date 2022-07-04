@@ -29,7 +29,7 @@ class DumpHelper {
 public:
     static DumpHelper &GetInstance();
     void RegisterCommand(std::shared_ptr<Command> &cmd);
-    bool Dump(int fd, const std::vector<std::string> &args);
+    bool Dispatch(int fd, const std::vector<std::string>& args);
 
 private:
     std::map<std::string, std::shared_ptr<Command>> cmdHandler;

@@ -29,7 +29,7 @@ void DumpHelper::RegisterCommand(std::shared_ptr<Command> &cmd)
     cmdHandler.insert(std::make_pair(cmd->GetOption(), cmd));
 }
 
-bool DumpHelper::Dump(int fd, const std::vector<std::string> &args)
+bool DumpHelper::Dispatch(int fd, const std::vector<std::string> &args)
 {
     dprintf(fd, "\n---------------------------------\n");
     if (args.empty() || args.at(0) == "-h") {
