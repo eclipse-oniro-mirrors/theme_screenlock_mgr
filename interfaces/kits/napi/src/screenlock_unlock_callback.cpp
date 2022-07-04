@@ -14,7 +14,6 @@
  */
 #include "screenlock_unlock_callback.h"
 
-#include <hitrace_meter.h>
 #include <uv.h>
 
 #include "sclock_log.h"
@@ -85,7 +84,6 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     if (work != nullptr) {
         delete work;
     }
-    FinishAsyncTrace(HITRACE_TAG_MISC, "UvWorkOnCallBackInt finish", HITTACE_UNLOCKSCREEN);
     SCLOCK_HILOGD("UvWorkOnCallBackInt end");
 }
 
@@ -120,7 +118,6 @@ void ScreenlockUnlockCallback::OnCallBack(const std::string &event, int result)
         screenlockOnCallBack = nullptr;
         delete work;
     }
-    FinishAsyncTrace(HITRACE_TAG_MISC, "unlockscreen callback finish", HITTACE_UNLOCKSCREEN);
 }
 } // namespace ScreenLock
 } // namespace OHOS
