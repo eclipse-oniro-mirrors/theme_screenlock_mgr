@@ -581,6 +581,7 @@ bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int 
         }
         lock_.unlock();
     } else if (event == SCREEN_DRAWDONE) {
+        SetScreenlocked(true);
         DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     }
     return true;
