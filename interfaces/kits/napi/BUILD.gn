@@ -42,6 +42,8 @@ ohos_shared_library("screenlock") {
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "hitrace_native:hitrace_meter",
+    "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

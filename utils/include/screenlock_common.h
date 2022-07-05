@@ -69,6 +69,10 @@ enum ScreenLockError {
     E_SCREENLOCK_NO_PERMISSION,
 };
 
+enum TraceTaskId {
+    HITRACE_UNLOCKSCREEN,
+};
+
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
 constexpr int BEGIN_SLEEP_USER_REASON = 2;
 constexpr int BEGIN_SLEEP_LONG_TIME_UNOPERATOR = 3;

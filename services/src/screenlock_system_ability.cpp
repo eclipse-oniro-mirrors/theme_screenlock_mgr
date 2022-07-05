@@ -14,25 +14,31 @@
  */
 #include "screenlock_system_ability.h"
 
-#include <cerrno>
-#include <ctime>
-#include <string>
+#include <fcntl.h>
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <cerrno>
+#include <ctime>
+#include <functional>
+#include <iostream>
+#include <string>
+
+#include "command.h"
 #include "core_service_client.h"
 #include "display_manager.h"
+#include "dump_helper.h"
+#include "hitrace_meter.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
-#include "system_ability_definition.h"
-#include "system_ability.h"
-#include "useridm_client.h"
 #include "os_account_manager.h"
-
 #include "sclock_log.h"
 #include "screenlock_bundlename.h"
 #include "screenlock_common.h"
 #include "screenlock_get_info_callback.h"
+#include "system_ability.h"
+#include "system_ability_definition.h"
+#include "useridm_client.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -125,6 +131,7 @@ void ScreenLockSystemAbility::OnStart()
         auto callback = [=]() { OnSystemReady(); };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
+    RegisterDumpCommand();
     return;
 }
 
@@ -399,6 +406,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
@@ -407,6 +415,8 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
     if (instance_->isFoucs_) {
+        FinishAsyncTrace(
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return;
     }
@@ -415,7 +425,13 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     std::string type = UNLOCKSCREEN;
     auto iter = registeredListeners_.find(type);
     if (iter != registeredListeners_.end()) {
-        auto callback = [=]() { iter->second->OnCallBack(type); };
+        auto callback = [=]() {
+            StartAsyncTrace(
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
+            iter->second->OnCallBack(type);
+            FinishAsyncTrace(
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock end callback", HITRACE_UNLOCKSCREEN);
+        };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
 }
@@ -666,6 +682,46 @@ void ScreenLockSystemAbility::OnDump()
     } else {
         SCLOCK_HILOGI("ScreenLockSystemAbility dump, time(0) is nullptr");
     }
+}
+
+int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &args)
+{
+    int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
+    const int maxUid = 10000;
+    if (uid > maxUid) {
+        return 0;
+    }
+
+    std::vector<std::string> argsStr;
+    for (auto item : args) {
+        argsStr.emplace_back(Str16ToStr8(item));
+    }
+
+    DumpHelper::GetInstance().Dispatch(fd, argsStr);
+    return ERR_OK;
+}
+
+void ScreenLockSystemAbility::RegisterDumpCommand()
+{
+    auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "dump all screenlock information", 
+        [this](const std::vector<std::string> &input, std::string &output) -> bool {
+            bool screenLocked = stateValue_.GetScreenlockedState();
+            bool screenState = stateValue_.GetScreenState();
+            int32_t offReason = stateValue_.GetOffReason();
+            int32_t interactiveState = stateValue_.GetInteractiveState();
+            string temp_screenLocked = "";
+            screenLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
+            string temp_screenState = "";
+            screenState ? temp_screenState = "true" : temp_screenState = "false";
+            output.append("\n Screenlock system state\\tValue\\t\\tDescription\n")
+                .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
+                .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
+                .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
+                .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
+                        "\t\tscreen interaction status\n");
+            return true;
+        });
+    DumpHelper::GetInstance().RegisterCommand(cmd);
 }
 } // namespace ScreenLock
 } // namespace OHOS

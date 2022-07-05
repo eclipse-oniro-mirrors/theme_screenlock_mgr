@@ -22,6 +22,8 @@ config("screenlock_service_config") {
 
 ohos_shared_library("screenlock_server") {
   sources = [
+    "src/command.cpp",
+    "src/dump_helper.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",
     "src/screenlock_system_ability.cpp",
@@ -40,6 +42,7 @@ ohos_shared_library("screenlock_server") {
     "//base/miscservices/screenlock/frameworks/kitsimpl/include",
     "//base/user_idm/interfaces/innerkits/include",
     "//third_party/json/include",
+    "//base/miscservices/screenlock/utils/include",
   ]
   deps = [
     "//base/miscservices/screenlock/utils:screenlock_utils",
@@ -54,6 +57,8 @@ ohos_shared_library("screenlock_server") {
     "bundle_framework:appexecfwk_core",
     "drivers_interface_ril:hril_innerkits",
     "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
+    "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
