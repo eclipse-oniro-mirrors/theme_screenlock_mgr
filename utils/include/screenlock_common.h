@@ -70,7 +70,7 @@ enum ScreenLockError {
 };
 
 enum TraceTaskId {
-    HITTACE_UNLOCKSCREEN,
+    HITRACE_UNLOCKSCREEN,
 };
 
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;

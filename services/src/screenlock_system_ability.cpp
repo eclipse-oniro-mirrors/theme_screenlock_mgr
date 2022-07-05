@@ -406,7 +406,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility RequestUnlock start1", HITTACE_UNLOCKSCREEN);
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
@@ -415,7 +415,7 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
     if (instance_->isFoucs_) {
-        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenlockSystemAbilityCallback OnCallBack finish", HITTACE_UNLOCKSCREEN);
+        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return;
     }
@@ -425,10 +425,10 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     auto iter = registeredListeners_.find(type);
     if (iter != registeredListeners_.end()) {
         auto callback = [=]() {
-            StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility RequestUnlock start2", HITTACE_UNLOCKSCREEN);
+            StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
             iter->second->OnCallBack(type);
             FinishAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenlockSystemAbilityCallback OnCallBack finish", HITTACE_UNLOCKSCREEN);
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock end callback", HITRACE_UNLOCKSCREEN);
         };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
@@ -710,7 +710,7 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
             screenLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
             string temp_screenState = "";
             screenState ? temp_screenState = "true" : temp_screenState = "false";
-            output.append("\n - screenlock system state\tvalue\t\tdescription\n")
+            output.append("\n Screenlock system state\\tValue\\t\\tDescription\n")
                 .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
                 .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
