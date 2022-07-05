@@ -415,7 +415,8 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
     if (instance_->isFoucs_) {
-        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
+        FinishAsyncTrace(
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return;
     }
@@ -425,7 +426,8 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     auto iter = registeredListeners_.find(type);
     if (iter != registeredListeners_.end()) {
         auto callback = [=]() {
-            StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
+            StartAsyncTrace(
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
             iter->second->OnCallBack(type);
             FinishAsyncTrace(
                 HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock end callback", HITRACE_UNLOCKSCREEN);
