@@ -703,7 +703,7 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 
 void ScreenLockSystemAbility::RegisterDumpCommand()
 {
-    auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "dump all screenlock information", 
+    auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "dump all screenlock information",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             bool screenLocked = stateValue_.GetScreenlockedState();
             bool screenState = stateValue_.GetScreenState();
