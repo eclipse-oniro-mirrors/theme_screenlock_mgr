@@ -45,7 +45,7 @@ namespace ScreenLock {
 using namespace std;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
-using namespace OHOS::UserIAM::UserIDM;
+using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Telephony;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t INIT_INTERVAL = 5000L;
@@ -471,7 +471,7 @@ bool ScreenLockSystemAbility::GetSecure()
     auto getInfoCallback = std::make_shared<ScreenLockGetInfoCallback>();
     int32_t result = UserIDMClient::GetInstance().GetAuthInfo(userId, AuthType::PIN, getInfoCallback);
     SCLOCK_HILOGI("GetAuthInfo AuthType::PIN result = %{public}d", result);
-    if (result == static_cast<int32_t>(IDMResultCode::SUCCESS)) {
+    if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
         std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> pinInfo;
         getInfoCallback->OnGetInfo(pinInfo);
         if (pinInfo.size()) {
@@ -481,7 +481,7 @@ bool ScreenLockSystemAbility::GetSecure()
     }
     result = UserIDMClient::GetInstance().GetAuthInfo(userId, AuthType::FACE, getInfoCallback);
     SCLOCK_HILOGI("GetAuthInfo AuthType::FACE result = %{public}d", result);
-    if (result == static_cast<int32_t>(IDMResultCode::SUCCESS)) {
+    if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
         std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> faceInfo;
         getInfoCallback->OnGetInfo(faceInfo);
         if (faceInfo.size()) {
