@@ -50,7 +50,7 @@ ohos_shared_library("screenlock_server") {
     "//base/useriam/user_auth_framework/frameworks/user_idm:useridm_framework",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//foundation/windowmanager/utils:libwmutil",
+    "//foundation/window/window_manager/utils:libwmutil",
     "//utils/native/base:utils",
   ]
   external_deps = [
