@@ -16,9 +16,9 @@
 #ifndef SCREENLOCK_DFX_DUMP_HELPER_H
 #define SCREENLOCK_DFX_DUMP_HELPER_H
 
-#include <functional>
+#include <iosfwd>
 #include <map>
-#include <string>
+#include <memory>
 #include <vector>
 
 #include "command.h"

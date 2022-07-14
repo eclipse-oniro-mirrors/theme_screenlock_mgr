@@ -19,7 +19,6 @@
 #include <string>
 
 #include "iremote_broker.h"
-
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
 

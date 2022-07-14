@@ -14,8 +14,8 @@
  */
 #include "screenlock_system_ability_proxy.h"
 
+#include "message_option.h"
 #include "message_parcel.h"
-
 #include "sclock_log.h"
 
 namespace OHOS {

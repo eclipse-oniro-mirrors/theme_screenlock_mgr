@@ -16,6 +16,9 @@
 
 #include "async_call.h"
 
+#include <memory>
+#include <new>
+
 #include "sclock_log.h"
 
 namespace OHOS::ScreenLock {

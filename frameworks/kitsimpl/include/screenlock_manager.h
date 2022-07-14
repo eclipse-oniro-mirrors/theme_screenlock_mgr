@@ -16,13 +16,14 @@
 #ifndef SERVICES_INCLUDE_SCLOCK_MANAGER_H
 #define SERVICES_INCLUDE_SCLOCK_MANAGER_H
 
-#include <map>
+#include <refbase.h>
+
+#include <iosfwd>
+#include <mutex>
 
 #include "iremote_object.h"
-#include "refbase.h"
-
 #include "screenlock_manager_interface.h"
-#include "screenlock_system_ability_stub.h"
+#include "screenlock_system_ability_interface.h"
 
 namespace OHOS {
 namespace ScreenLock {

@@ -16,8 +16,17 @@
 
 #include <uv.h>
 
+#include <cstdint>
+#include <new>
+#include <string>
+
+#include "js_native_api.h"
+#include "js_native_api_types.h"
+#include "napi_screenlock_ability.h"
+#include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
+#include "string.h"
 
 namespace OHOS {
 namespace ScreenLock {

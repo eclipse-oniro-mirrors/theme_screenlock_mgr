@@ -16,10 +16,12 @@
 #ifndef SCREENLOCK_CALLBACK_INTERFACE_H
 #define SCREENLOCK_CALLBACK_INTERFACE_H
 
-#include <memory>
+#include <cstdint>
+#include <iosfwd>
 
 #include "iremote_stub.h"
-
+#include "message_option.h"
+#include "message_parcel.h"
 #include "screenlock_system_ability_interface.h"
 
 namespace OHOS {

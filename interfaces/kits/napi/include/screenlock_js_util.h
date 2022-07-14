@@ -16,11 +16,9 @@
 #define SCREENLOCK_JS_UTIL_H
 
 #include <cstdint>
-#include<string>
+#include <iosfwd>
 
-#include "napi/native_api.h"
-#include "napi/native_common.h"
-#include "napi/native_node_api.h"
+#include "js_native_api_types.h"
 
 namespace OHOS::ScreenLock {
 class ScreenLockJsUtil {

@@ -14,10 +14,12 @@
  */
 #ifndef NAPI_SCREENLOCK_CALL_BACK_INSTANCE_H
 #define NAPI_SCREENLOCK_CALL_BACK_INSTANCE_H
+
+#include <cstdint>
+#include <iosfwd>
 #include <list>
 
 #include "event_listener.h"
-#include "napi_screenlock_ability.h"
 #include "screenlock_system_ability_stub.h"
 
 namespace OHOS {

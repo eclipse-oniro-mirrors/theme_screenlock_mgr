@@ -15,10 +15,9 @@
 #ifndef NAPI_SCREENLOCK_ABILITY_H
 #define NAPI_SCREENLOCK_ABILITY_H
 
+#include "async_call.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
-
-#include "async_call.h"
 
 namespace OHOS {
 namespace ScreenLock {
