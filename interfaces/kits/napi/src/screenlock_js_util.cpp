@@ -20,10 +20,6 @@
 #include <new>
 #include <string>
 
-#include "js_native_api.h"
-#include "napi/native_api.h"
-#include "napi/native_common.h"
-
 namespace OHOS::ScreenLock {
 std::string ScreenLockJsUtil::Convert2String(const napi_env env, napi_value jsString)
 {
