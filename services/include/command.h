@@ -16,7 +16,6 @@
 #ifndef SCREENLOCK_DFX_COMMAND_H
 #define SCREENLOCK_DFX_COMMAND_H
 
-#include <functional>
 #include <iosfwd>
 #include <string>
 #include <vector>

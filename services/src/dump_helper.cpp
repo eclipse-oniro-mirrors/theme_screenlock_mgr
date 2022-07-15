@@ -16,7 +16,6 @@
 #include "dump_helper.h"
 
 #include <cstdio>
-#include <utility>
 
 namespace OHOS {
 namespace ScreenLock {

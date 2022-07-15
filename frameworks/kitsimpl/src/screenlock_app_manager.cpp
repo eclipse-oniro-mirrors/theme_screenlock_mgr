@@ -15,8 +15,6 @@
 
 #include "screenlock_app_manager.h"
 
-#include <new>
-
 #include "if_system_ability_manager.h"
 #include "iremote_broker.h"
 #include "iservice_registry.h"

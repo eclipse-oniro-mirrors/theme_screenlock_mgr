@@ -26,7 +26,6 @@
 #include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
-#include "string.h"
 
 namespace OHOS {
 namespace ScreenLock {

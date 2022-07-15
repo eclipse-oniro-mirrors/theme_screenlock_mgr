@@ -14,8 +14,6 @@
  */
 #include "screenlock_manager_proxy.h"
 
-#include <cstdint>
-
 #include "hilog/log_cpp.h"
 #include "ipc_types.h"
 #include "message_option.h"

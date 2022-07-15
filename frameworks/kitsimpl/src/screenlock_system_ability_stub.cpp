@@ -15,8 +15,6 @@
 
 #include "screenlock_system_ability_stub.h"
 
-#include <string>
-
 #include "ipc_types.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
