@@ -16,7 +16,7 @@
 #define SCREENLOCK_JS_UTIL_H
 
 #include <cstdint>
-#include <iosfwd>
+#include <string>
 
 #include "napi/native_api.h"
 #include "napi/native_common.h"

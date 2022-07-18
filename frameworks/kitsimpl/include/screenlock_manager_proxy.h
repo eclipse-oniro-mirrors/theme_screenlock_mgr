@@ -16,13 +16,10 @@
 #ifndef SERVICES_INCLUDE_SCLOCK_SERVICE_PROXY_H
 #define SERVICES_INCLUDE_SCLOCK_SERVICE_PROXY_H
 
-#include <refbase.h>
+#include <string>
 
-#include <iosfwd>
-
-#include "iremote_broker.h"
-#include "iremote_object.h"
 #include "iremote_proxy.h"
+#include "refbase.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability_interface.h"
 

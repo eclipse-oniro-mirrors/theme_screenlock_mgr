@@ -16,12 +16,11 @@
 #ifndef SERVICES_INCLUDE_SCLOCK_MANAGER_H
 #define SERVICES_INCLUDE_SCLOCK_MANAGER_H
 
-#include <refbase.h>
-
-#include <iosfwd>
 #include <mutex>
+#include <string>
 
 #include "iremote_object.h"
+#include "refbase.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability_interface.h"
 

@@ -16,8 +16,8 @@
 #ifndef SERVICES_INCLUDE_SCLOCK_SYSTEMAPP_MANAGER_H
 #define SERVICES_INCLUDE_SCLOCK_SYSTEMAPP_MANAGER_H
 
-#include <iosfwd>
 #include <mutex>
+#include <string>
 
 #include "iremote_object.h"
 #include "refbase.h"

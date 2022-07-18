@@ -18,7 +18,6 @@
 #include <hitrace_meter.h>
 
 #include "if_system_ability_manager.h"
-#include "iremote_broker.h"
 #include "iservice_registry.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"

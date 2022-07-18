@@ -15,7 +15,7 @@
 #ifndef NAPI_SCREENLOCK_UNLOCK_CALL_BACK_H
 #define NAPI_SCREENLOCK_UNLOCK_CALL_BACK_H
 
-#include <iosfwd>
+#include <string>
 
 #include "event_listener.h"
 #include "screenlock_system_ability_stub.h"

@@ -16,8 +16,8 @@
 #define NAPI_SCREENLOCK_CALL_BACK_INSTANCE_H
 
 #include <cstdint>
-#include <iosfwd>
 #include <list>
+#include <string>
 
 #include "event_listener.h"
 #include "screenlock_system_ability_stub.h"

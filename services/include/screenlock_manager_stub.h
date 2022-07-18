@@ -19,8 +19,6 @@
 #include <cstdint>
 
 #include "iremote_stub.h"
-#include "message_option.h"
-#include "message_parcel.h"
 #include "screenlock_manager_interface.h"
 
 namespace OHOS {

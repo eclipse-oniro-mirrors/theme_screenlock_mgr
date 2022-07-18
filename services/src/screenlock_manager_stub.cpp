@@ -15,13 +15,8 @@
 
 #include "screenlock_manager_stub.h"
 
-#include <iosfwd>
+#include <string>
 
-#include "hilog/log_cpp.h"
-#include "ipc_object_stub.h"
-#include "ipc_types.h"
-#include "iremote_broker.h"
-#include "iremote_object.h"
 #include "parcel.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"

@@ -17,11 +17,9 @@
 #define SCREENLOCK_CALLBACK_INTERFACE_H
 
 #include <cstdint>
-#include <iosfwd>
+#include <string>
 
 #include "iremote_stub.h"
-#include "message_option.h"
-#include "message_parcel.h"
 #include "screenlock_system_ability_interface.h"
 
 namespace OHOS {

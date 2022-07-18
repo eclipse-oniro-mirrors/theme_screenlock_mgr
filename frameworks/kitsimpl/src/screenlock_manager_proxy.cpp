@@ -15,9 +15,7 @@
 #include "screenlock_manager_proxy.h"
 
 #include "hilog/log_cpp.h"
-#include "ipc_types.h"
-#include "message_option.h"
-#include "message_parcel.h"
+#include "iremote_broker.h"
 #include "sclock_log.h"
 
 namespace OHOS {
