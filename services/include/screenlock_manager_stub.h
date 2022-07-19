@@ -16,8 +16,9 @@
 #ifndef SERVICES_INCLUDE_SCLOCK_SERVICE_STUB_H
 #define SERVICES_INCLUDE_SCLOCK_SERVICE_STUB_H
 
-#include "iremote_stub.h"
+#include <cstdint>
 
+#include "iremote_stub.h"
 #include "screenlock_manager_interface.h"
 
 namespace OHOS {

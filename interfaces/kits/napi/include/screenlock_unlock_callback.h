@@ -15,8 +15,9 @@
 #ifndef NAPI_SCREENLOCK_UNLOCK_CALL_BACK_H
 #define NAPI_SCREENLOCK_UNLOCK_CALL_BACK_H
 
+#include <string>
+
 #include "event_listener.h"
-#include "napi_screenlock_ability.h"
 #include "screenlock_system_ability_stub.h"
 
 namespace OHOS {

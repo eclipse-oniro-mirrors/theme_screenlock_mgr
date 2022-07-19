@@ -15,11 +15,9 @@
 
 #include "screenlock_manager_stub.h"
 
-#include <cinttypes>
+#include <string>
 
-#include "ipc_skeleton.h"
 #include "parcel.h"
-
 #include "sclock_log.h"
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"

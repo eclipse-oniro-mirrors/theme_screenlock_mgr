@@ -16,7 +16,10 @@
 #ifndef SCREENLOCK_GET_INFO_CALLBACK_H
 #define SCREENLOCK_GET_INFO_CALLBACK_H
 
+#include <vector>
+
 #include "user_idm_client_callback.h"
+#include "user_idm_client_defines.h"
 
 namespace OHOS {
 namespace ScreenLock {

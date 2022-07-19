@@ -15,7 +15,8 @@
 
 #include "dump_helper.h"
 
-#include <vector>
+#include <cstdio>
+
 namespace OHOS {
 namespace ScreenLock {
 DumpHelper &DumpHelper::GetInstance()
