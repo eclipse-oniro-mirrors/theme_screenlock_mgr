@@ -14,10 +14,9 @@
  */
 #include "screenlock_manager_proxy.h"
 
+#include "hilog/log_cpp.h"
 #include "iremote_broker.h"
-
 #include "sclock_log.h"
-#include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {

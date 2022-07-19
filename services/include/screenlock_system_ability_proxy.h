@@ -16,8 +16,10 @@
 #ifndef I_SCREENLOCK_CALLBACK_LISTENER_PROXY_H
 #define I_SCREENLOCK_CALLBACK_LISTENER_PROXY_H
 
-#include "iremote_proxy.h"
+#include <string>
 
+#include "iremote_proxy.h"
+#include "refbase.h"
 #include "screenlock_system_ability_interface.h"
 
 namespace OHOS {

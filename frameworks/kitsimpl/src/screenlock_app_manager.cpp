@@ -15,10 +15,10 @@
 
 #include "screenlock_app_manager.h"
 
+#include "if_system_ability_manager.h"
 #include "iservice_registry.h"
-#include "system_ability_definition.h"
-
 #include "sclock_log.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace ScreenLock {

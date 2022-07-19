@@ -16,6 +16,10 @@
 
 #include "screenlock_js_util.h"
 
+#include <cstddef>
+#include <new>
+#include <string>
+
 namespace OHOS::ScreenLock {
 std::string ScreenLockJsUtil::Convert2String(const napi_env env, napi_value jsString)
 {

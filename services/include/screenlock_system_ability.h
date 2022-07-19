@@ -23,11 +23,10 @@
 #include "dm_common.h"
 #include "event_handler.h"
 #include "iremote_object.h"
-#include "system_ability.h"
-#include "window_manager.h"
-
 #include "screenlock_manager_stub.h"
 #include "screenlock_system_ability_interface.h"
+#include "system_ability.h"
+#include "window_manager.h"
 
 namespace OHOS {
 namespace ScreenLock {
