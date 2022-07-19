@@ -38,7 +38,7 @@
 #include "screenlock_get_info_callback.h"
 #include "system_ability.h"
 #include "system_ability_definition.h"
-#include "useridm_client.h"
+#include "user_idm_client.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -469,21 +469,21 @@ bool ScreenLockSystemAbility::GetSecure()
     AccountSA::OsAccountManager::GetOsAccountLocalIdFromUid(callingUid, userId);
     SCLOCK_HILOGD("userId=%{public}d", userId);
     auto getInfoCallback = std::make_shared<ScreenLockGetInfoCallback>();
-    int32_t result = UserIDMClient::GetInstance().GetAuthInfo(userId, AuthType::PIN, getInfoCallback);
-    SCLOCK_HILOGI("GetAuthInfo AuthType::PIN result = %{public}d", result);
+    int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
+    SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
     if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
-        std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> pinInfo;
-        getInfoCallback->OnGetInfo(pinInfo);
+        std::vector<CredentialInfo> pinInfo;
+        getInfoCallback->OnCredentialInfo(pinInfo);
         if (pinInfo.size()) {
             SCLOCK_HILOGI("pinInfo.size() = %{public}zu", pinInfo.size());
             return true;
         }
     }
-    result = UserIDMClient::GetInstance().GetAuthInfo(userId, AuthType::FACE, getInfoCallback);
-    SCLOCK_HILOGI("GetAuthInfo AuthType::FACE result = %{public}d", result);
+    result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::FACE, getInfoCallback);
+    SCLOCK_HILOGI("GetCredentialInfo AuthType::FACE result = %{public}d", result);
     if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
-        std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> faceInfo;
-        getInfoCallback->OnGetInfo(faceInfo);
+        std::vector<CredentialInfo> faceInfo;
+        getInfoCallback->OnCredentialInfo(faceInfo);
         if (faceInfo.size()) {
             SCLOCK_HILOGI("faceInfo.size() = %{public}zu", faceInfo.size());
             return true;

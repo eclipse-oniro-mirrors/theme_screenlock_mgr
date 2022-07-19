@@ -16,7 +16,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
-void ScreenLockGetInfoCallback::OnGetInfo(std::vector<OHOS::UserIAM::UserIDM::CredentialInfo>& info)
+void ScreenLockGetInfoCallback::OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList)
 {
 }
 } // namespace ScreenLock

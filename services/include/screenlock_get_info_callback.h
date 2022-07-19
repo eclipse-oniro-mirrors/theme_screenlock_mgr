@@ -18,19 +18,19 @@
 
 #include <vector>
 
-#include "user_idm_callback.h"
-#include "user_idm_defines.h"
+#include "user_idm_client_callback.h"
+#include "user_idm_client_defines.h"
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenLockGetInfoCallback final : public OHOS::UserIAM::UserIDM::GetInfoCallback {
+class ScreenLockGetInfoCallback final : public OHOS::UserIam::UserAuth::GetCredentialInfoCallback {
 public:
     /**
      * @brief
      * @param info.
      * @return void.
      */
-    void OnGetInfo(std::vector<OHOS::UserIAM::UserIDM::CredentialInfo> &info) override;
+    void OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList) override;
 };
 } // namespace ScreenLock
 } // namespace OHOS
