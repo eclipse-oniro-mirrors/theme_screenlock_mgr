@@ -18,6 +18,6 @@ import("//build/ohos.gni")
 ohos_prebuilt_etc("screenlockservice.cfg") {
   source = "screenlockservice.cfg"
   relative_install_dir = "init"
-  part_name = "screenlock"
-  subsystem_name = "miscservices"
+  part_name = "screenlock_mgr"
+  subsystem_name = "theme"
 }

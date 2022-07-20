@@ -19,7 +19,7 @@ ohos_unittest("ScreenLockServiceTest") {
   module_out_path = module_output_path
   include_dirs = [
     "unittest",
-    "//base/miscservices/screenlock/frameworks/kitsimpl/include",
+    "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
   ]
 
   sources = [
@@ -39,9 +39,9 @@ ohos_unittest("ScreenLockServiceTest") {
   ]
 
   deps = [
-    "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
-    "//base/miscservices/screenlock/services:screenlock_server",
-    "//base/miscservices/screenlock/utils:screenlock_utils",
+    "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
+    "//base/theme/screenlock_mgr/services:screenlock_server",
+    "//base/theme/screenlock_mgr/utils:screenlock_utils",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",

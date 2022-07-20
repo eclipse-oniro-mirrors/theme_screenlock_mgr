@@ -12,7 +12,7 @@
 # limitations under the License.
 import("//build/ohos.gni")
 import("//build/ohos/sa_profile/sa_profile.gni")
-ohos_sa_profile("screenlock_sa_profiles") {
+ohos_sa_profile("screenlock_mgr_sa_profiles") {
   sources = [ "3704.xml" ]
-  part_name = "screenlock"
+  part_name = "screenlock_mgr"
 }

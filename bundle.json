@@ -1,17 +1,17 @@
 {
-  "name": "@ohos/screenlock",
+  "name": "@ohos/screenlock_mgr",
   "description": "Provide communication capability between windowmanager and screenlock app",
   "version": "3.1",
   "license": "Apache License 2.0",
   "publishAs": "code-segment",
   "segment": {
-    "destpath": "base/miscservices/screenlock"
+    "destpath": "base/theme/screenlock_mgr"
   },
   "dirs": {},
   "scripts": {},
   "component": {
-    "name": "screenlock",
-    "subsystem": "miscservices",
+    "name": "screenlock_mgr",
+    "subsystem": "theme",
     "syscap": [
       "SystemCapability.MiscServices.ScreenLock"
     ],
@@ -37,13 +37,13 @@
     },
     "build": {
       "sub_component": [
-        "//base/miscservices/screenlock:screenlock_packages"
+        "//base/theme/screenlock_mgr:screenlock_mgr_packages"
       ],
       "inner_kits": [
       ],
       "test": [
-        "//base/miscservices/screenlock/test:unittest",
-       "//base/miscservices/screenlock/test/fuzztest:fuzztest"
+        "//base/theme/screenlock_mgr/test:unittest",
+       "//base/theme/screenlock_mgr/test/fuzztest:fuzztest"
       ]
     }
   }
