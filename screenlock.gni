@@ -11,6 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-screenlock_path = "//base/miscservices/screenlock"
+screenlock_mgr_path = "//base/theme/screenlock_mgr"
 
-adapter_path = "${screenlock_path}/adapter"
+adapter_path = "${screenlock_mgr_path}/adapter"

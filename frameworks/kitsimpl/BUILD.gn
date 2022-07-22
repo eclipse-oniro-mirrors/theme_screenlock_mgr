@@ -13,7 +13,7 @@
 
 import("//build/ohos.gni")
 
-config("screenlock_frameworks_innerkitsimpl_config") {
+config("screenlock_mgr_frameworks_innerkitsimpl_config") {
   visibility = [ ":*" ]
   include_dirs = [ "include" ]
 
@@ -30,18 +30,18 @@ ohos_shared_library("screenlock_client") {
 
   public_configs = [
     "//utils/native/base:utils_config",
-    ":screenlock_frameworks_innerkitsimpl_config",
+    ":screenlock_mgr_frameworks_innerkitsimpl_config",
   ]
   include_dirs = [
     "include",
-    "//base/miscservices/screenlock/services/include",
-    "//base/miscservices/screenlock/interfaces/innerkits/notify/native/include",
-    "//base/miscservices/screenlock/frameworks/kitsimpl/include",
+    "//base/theme/screenlock_mgr/services/include",
+    "//base/theme/screenlock_mgr/interfaces/innerkits/notify/native/include",
+    "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
   ]
   deps = [
-    "//base/miscservices/screenlock/utils:screenlock_utils",
+    "//base/theme/screenlock_mgr/utils:screenlock_utils",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//utils/native/base:utils",
@@ -54,6 +54,6 @@ ohos_shared_library("screenlock_client") {
     "ipc:ipc_core",
   ]
   relative_install_dir = "module"
-  subsystem_name = "miscservices"
-  part_name = "screenlock"
+  subsystem_name = "theme"
+  part_name = "screenlock_mgr"
 }
