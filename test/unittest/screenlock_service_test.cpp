@@ -58,6 +58,8 @@ void ScreenLockServiceTest::TearDown()
 * @tc.name: SetScreenLockTest002
 * @tc.desc: get unlockstate, IsScreenLocked state.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest002, TestSize.Level0)
 {
@@ -75,6 +77,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest002, TestSize.Level0)
 * @tc.name: SetScreenLockTest003
 * @tc.desc: get lockstate, IsScreenLocked state.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest003, TestSize.Level0)
 {
@@ -92,6 +96,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest003, TestSize.Level0)
 * @tc.name: SetScreenLockTest004
 * @tc.desc: get secure.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest004, TestSize.Level0)
 {
@@ -105,6 +111,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest004, TestSize.Level0)
 * @tc.name: SetScreenLockTest006
 * @tc.desc: can not get foucs, unlock fail.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest006, TestSize.Level0)
 {
@@ -128,6 +136,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest006, TestSize.Level0)
 * @tc.name: SetScreenLockTest007
 * @tc.desc: screnlockapp notice unlock fail.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest007, TestSize.Level0)
 {
@@ -151,6 +161,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest007, TestSize.Level0)
 * @tc.name: SetScreenLockTest008
 * @tc.desc: power off screen.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest008, TestSize.Level0)
 {
@@ -185,6 +197,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest008, TestSize.Level0)
 * @tc.name: SetScreenLockTest009
 * @tc.desc: context event.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest009, TestSize.Level0)
 {
@@ -225,6 +239,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest009, TestSize.Level0)
 * @tc.name: SetScreenLockTest010
 * @tc.desc: screnlockapp call event.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest010, TestSize.Level0)
 {
@@ -265,6 +281,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest010, TestSize.Level0)
 * @tc.name: SetScreenLockTest011
 * @tc.desc: test user ID is 10.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest011, TestSize.Level0)
 {
@@ -281,6 +299,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest011, TestSize.Level0)
 * @tc.name: SetScreenLockTest012
 * @tc.desc: test user ID is 0.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest012, TestSize.Level0)
 {
@@ -297,6 +317,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest012, TestSize.Level0)
 * @tc.name: SetScreenLockTest013
 * @tc.desc: test negative value.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest013, TestSize.Level0)
 {
@@ -310,6 +332,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest013, TestSize.Level0)
 * @tc.name: SetScreenLockTest014
 * @tc.desc: test large values.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest014, TestSize.Level0)
 {
@@ -323,6 +347,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest014, TestSize.Level0)
 * @tc.name: SetScreenLockTest015
 * @tc.desc: whether the lock screen application is available.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest015, TestSize.Level0)
 {
@@ -338,6 +364,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest015, TestSize.Level0)
 * @tc.name: SetScreenLockTest016
 * @tc.desc: whether the lock screen application is available.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest016, TestSize.Level0)
 {
@@ -353,6 +381,8 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest016, TestSize.Level0)
 * @tc.name: SetScreenLockTest017
 * @tc.desc: test exit animation.
 * @tc.type: FUNC
+* @tc.require:
+* @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest017, TestSize.Level0)
 {
