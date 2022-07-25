@@ -18,19 +18,18 @@ import("//build/test.gni")
 
 ##############################fuzztest##########################################
 ohos_fuzztest("ScreenlockUnlockCallbackFuzzTest") {
-  module_out_path = "miscservices/screenlock"
+  module_out_path = "theme/screenlock_mgr"
 
-  fuzz_config_file =
-      "//base/miscservices/screenlock/test/fuzztest/screenlockunlockcallback_fuzzer"
+  fuzz_config_file = "//base/miscservices/screenlock/test/fuzztest/screenlockunlockcallback_fuzzer"
 
   include_dirs = [
     "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
     "//foundation/ability/ability_runtime/services/common/include",
     "//utils/system/safwk/native/include",
-    "//base/miscservices/screenlock/interfaces/kits/napi/include",
-    "//base/miscservices/screenlock/services/include",
-    "//base/miscservices/screenlock/utils/include",
+    "//base/theme/screenlock_mgr/interfaces/kits/napi/include",
+    "//base/theme/screenlock_mgr/services/include",
+    "//base/theme/screenlock_mgr/utils/include",
   ]
 
   cflags = [
@@ -41,9 +40,9 @@ ohos_fuzztest("ScreenlockUnlockCallbackFuzzTest") {
   ]
 
   deps = [
-    "//base/miscservices/screenlock/frameworks/kitsimpl:screenlock_client",
-    "//base/miscservices/screenlock/interfaces/kits/napi:screenlock",
-    "//base/miscservices/screenlock/utils:screenlock_utils",
+    "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
+    "//base/theme/screenlock_mgr/interfaces/kits/napi:screenlock",
+    "//base/theme/screenlock_mgr/utils:screenlock_utils",
     "//foundation/arkui/napi:ace_napi",
     "//utils/native/base:utils",
   ]
