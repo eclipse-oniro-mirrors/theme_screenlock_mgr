@@ -20,7 +20,7 @@ import("//build/test.gni")
 ohos_fuzztest("ScreenlockUnlockCallbackFuzzTest") {
   module_out_path = "theme/screenlock_mgr"
 
-  fuzz_config_file = "//base/miscservices/screenlock/test/fuzztest/screenlockunlockcallback_fuzzer"
+  fuzz_config_file = "//base/theme/screenlock_mgr/test/fuzztest/screenlockunlockcallback_fuzzer"
 
   include_dirs = [
     "//foundation/arkui/napi/interfaces/kits",
