@@ -29,7 +29,7 @@ ohos_shared_library("screenlock_client") {
   ]
 
   public_configs = [
-    "//utils/native/base:utils_config",
+    "//commonlibrary/c_utils/base:utils_config",
     ":screenlock_mgr_frameworks_innerkitsimpl_config",
   ]
   include_dirs = [
@@ -37,17 +37,17 @@ ohos_shared_library("screenlock_client") {
     "//base/theme/screenlock_mgr/services/include",
     "//base/theme/screenlock_mgr/interfaces/innerkits/notify/native/include",
     "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//utils/system/safwk/native/include",
   ]
   deps = [
     "//base/theme/screenlock_mgr/utils:screenlock_utils",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//utils/native/base:utils",
   ]
   external_deps = [
     "ability_base:base",
+    "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",

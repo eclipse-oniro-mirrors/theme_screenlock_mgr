@@ -31,11 +31,11 @@ ohos_shared_library("screenlock_server") {
   ]
 
   public_configs = [
-    "//utils/native/base:utils_config",
+    "//commonlibrary/c_utils/base:utils_config",
     ":screenlock_mgr_service_config",
   ]
   include_dirs = [
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "//utils/system/safwk/native/include",
     "//base/telephony/core_service/utils/log/include",
     "//base/telephony/core_service/interfaces/innerkits/include",
@@ -51,10 +51,10 @@ ohos_shared_library("screenlock_server") {
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/window/window_manager/utils:libwmutil",
-    "//utils/native/base:utils",
   ]
   external_deps = [
     "bundle_framework:appexecfwk_core",
+    "c_utils:utils",
     "drivers_interface_ril:hril_innerkits",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
