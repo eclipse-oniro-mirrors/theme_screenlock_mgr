@@ -39,9 +39,9 @@ ohos_shared_library("screenlock") {
     "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
     "//base/theme/screenlock_mgr/utils:screenlock_utils",
     "//foundation/arkui/napi:ace_napi",
-    "//utils/native/base:utils",
   ]
   external_deps = [
+    "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
