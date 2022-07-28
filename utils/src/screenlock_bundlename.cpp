@@ -14,7 +14,7 @@
  */
 #include "screenlock_bundlename.h"
 
-#include "bundle_manager_helper.h"
+#include "bundle_mgr_client.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -24,9 +24,9 @@ ScreenLockBundleName::ScreenLockBundleName()
 
 bool ScreenLockBundleName::GetBundleNameByUid(std::int32_t uid, std::string &bname)
 {
-    std::shared_ptr<EventFwk::BundleManagerHelper> bundleManager = EventFwk::BundleManagerHelper::GetInstance();
+    std::shared_ptr<AppExecFwk::BundleMgrClient> bundleManager = std::make_shared<AppExecFwk::BundleMgrClient>();
     if (bundleManager != nullptr) {
-        bname = bundleManager->GetBundleName(uid);
+        bundleManager->GetBundleNameForUid(uid, bname);
     }
     return true;
 }
