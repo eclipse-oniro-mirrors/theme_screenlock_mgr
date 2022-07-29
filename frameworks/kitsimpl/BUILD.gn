@@ -40,9 +40,7 @@ ohos_shared_library("screenlock_client") {
     "//commonlibrary/c_utils/base/include",
     "//utils/system/safwk/native/include",
   ]
-  deps = [
-    "//base/theme/screenlock_mgr/utils:screenlock_utils",
-  ]
+  deps = [ "//base/theme/screenlock_mgr/utils:screenlock_utils" ]
   external_deps = [
     "ability_base:base",
     "c_utils:utils",
