@@ -38,14 +38,13 @@ ohos_shared_library("screenlock") {
   deps = [
     "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
     "//base/theme/screenlock_mgr/utils:screenlock_utils",
-    "//foundation/arkui/napi:ace_napi",
   ]
   external_deps = [
     "c_utils:utils",
     "hitrace_native:hitrace_meter",
-    "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "napi:ace_napi",
   ]
   relative_install_dir = "module"
   subsystem_name = "theme"

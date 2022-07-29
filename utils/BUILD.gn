@@ -29,12 +29,7 @@ ohos_shared_library("screenlock_utils") {
 
   include_dirs = [ "//commonlibrary/c_utils/base/include" ]
 
-  deps = [
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-  ]
   external_deps = [
-    "ability_base:base",
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
