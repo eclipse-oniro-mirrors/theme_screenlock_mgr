@@ -60,7 +60,7 @@ ohos_shared_library("screenlock_server") {
     "multimedia_image_standard:image_native",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",

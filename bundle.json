@@ -27,7 +27,7 @@
         "multimedia_image_standard",
         "safwk",
         "napi",
-        "samgr_standard",
+        "samgr",
         "common_event_service",
         "ipc",
         "eventhandler",
