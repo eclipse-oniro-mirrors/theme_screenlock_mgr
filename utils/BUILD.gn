@@ -23,21 +23,23 @@ config("screenlock_utils_config") {
   cflags_cc = [ "-fexceptions" ]
 }
 ohos_shared_library("screenlock_utils") {
-  sources = [ "src/screenlock_bundlename.cpp" ]
+  if (is_standard_system) {
+    sources = [ "src/screenlock_bundlename.cpp" ]
 
-  public_configs = [ ":screenlock_utils_config" ]
+    public_configs = [ ":screenlock_utils_config" ]
 
-  include_dirs = [ "//commonlibrary/c_utils/base/include" ]
+    include_dirs = [ "//commonlibrary/c_utils/base/include" ]
 
-  external_deps = [
-    "ability_base:want",
-    "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
-    "c_utils:utils",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-  ]
-  relative_install_dir = "module"
-  subsystem_name = "theme"
-  part_name = "screenlock_mgr"
+    external_deps = [
+      "ability_base:want",
+      "bundle_framework:appexecfwk_base",
+      "bundle_framework:appexecfwk_core",
+      "c_utils:utils",
+      "hiviewdfx_hilog_native:libhilog",
+      "ipc:ipc_core",
+    ]
+    relative_install_dir = "module"
+    subsystem_name = "theme"
+    part_name = "screenlock_mgr"
+  }
 }
