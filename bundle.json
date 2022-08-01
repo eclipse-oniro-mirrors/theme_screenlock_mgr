@@ -38,7 +38,6 @@
         "ril_device_driver_interface",
         "user_auth_framework",
         "core_service",
-        "window_manager",
         "utils_base"
       ],
       "third_party": []

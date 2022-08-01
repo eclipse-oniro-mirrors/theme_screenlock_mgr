@@ -188,10 +188,8 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_On in");
     napi_value result = nullptr;
-    int callingUid = IPCSkeleton::GetCallingUid();
-    SCLOCK_HILOGD("NAPI_On callingUid=%{public}d", callingUid);
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
+    std::string bundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
         return result;
     }
     if (bundleName.empty()) {
@@ -242,9 +240,8 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_Off in");
     napi_value result = nullptr;
-    int callingUid = IPCSkeleton::GetCallingUid();
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
+    std::string bundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
         return result;
     }
     if (bundleName.empty()) {

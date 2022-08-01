@@ -31,10 +31,7 @@ ohos_shared_library("screenlock_utils") {
     include_dirs = [ "//commonlibrary/c_utils/base/include" ]
 
     external_deps = [
-      "ability_base:want",
-      "bundle_framework:appexecfwk_base",
-      "bundle_framework:appexecfwk_core",
-      "c_utils:utils",
+      "access_token:libaccesstoken_sdk",
       "hiviewdfx_hilog_native:libhilog",
       "ipc:ipc_core",
     ]

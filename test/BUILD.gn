@@ -36,7 +36,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
     "window_manager:libdm",
-    "window_manager:libwm",
   ]
 
   deps = [
