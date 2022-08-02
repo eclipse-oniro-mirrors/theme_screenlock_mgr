@@ -36,10 +36,7 @@ ohos_shared_library("screenlock") {
       "src/screenlock_system_ability_callback.cpp",
       "src/screenlock_unlock_callback.cpp",
     ]
-    deps = [
-      "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
-      "//base/theme/screenlock_mgr/utils:screenlock_utils",
-    ]
+    deps = [ "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client" ]
     external_deps = [
       "c_utils:utils",
       "hitrace_native:hitrace_meter",
