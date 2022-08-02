@@ -701,13 +701,13 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
 bool ScreenLockSystemAbility::CheckAppInForeground(int32_t tokenId)
 {
     using namespace OHOS::AAFwk;
-    auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
     std::string bundleName;
     auto ret  = ScreenLockBundleName::GetBundleNameByToken(tokenId, bundleName);
     if(!ret || bundleName.empty()) {
         SCLOCK_HILOGI("get bundle name by token failed");
         return false;
     }
+    auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
     return elementName.GetBundleName() == bundleName;
 }
 } // namespace ScreenLock
