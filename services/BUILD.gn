@@ -50,7 +50,7 @@ ohos_shared_library("screenlock_server") {
   ]
   external_deps = [
     "ability_base:want",
-    "ability_runtime:app_manager",
+    "ability_runtime:ability_manager",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",

@@ -24,6 +24,7 @@
 #include <iostream>
 #include <string>
 
+#include "ability_manager_client.h"
 #include "command.h"
 #include "core_service_client.h"
 #include "display_manager.h"
@@ -395,8 +396,7 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
-    int32_t callingUid = IPCSkeleton::GetCallingUid();
-    if (CheckAppInForeground(callingUid)) {
+    if (!CheckAppInForeground(IPCSkeleton::GetCallingTokenID())) {
         FinishAsyncTrace(
             HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
@@ -698,44 +698,17 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
     DumpHelper::GetInstance().RegisterCommand(cmd);
 }
 
-sptr<AppExecFwk::IAppMgr> ScreenLockSystemAbility::GetAppMgrProxy()
+bool ScreenLockSystemAbility::CheckAppInForeground(int32_t tokenId)
 {
-    sptr<ISystemAbilityManager> systemAbilityManager =
-        SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (systemAbilityManager == nullptr) {
-        SCLOCK_HILOGE("GetSystemAbilityManager failed.");
-        return nullptr;
-    }
-
-    sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(APP_MGR_SERVICE_ID);
-    if (remoteObject == nullptr) {
-        SCLOCK_HILOGE("GetSystemAbility failed.");
-        return nullptr;
-    }
-
-    auto appMgrProxy_ = iface_cast<AppExecFwk::IAppMgr>(remoteObject);
-    if ((appMgrProxy_ == nullptr) || (appMgrProxy_->AsObject() == nullptr)) {
-        SCLOCK_HILOGE("iface_cast remoteObject failed.");
-        return nullptr;
-    }
-
-    return appMgrProxy_;
-}
-
-bool ScreenLockSystemAbility::CheckAppInForeground(int32_t uid)
-{
-    auto appMgrProxy_ = GetAppMgrProxy();
-    if (!appMgrProxy_) {
+    using namespace OHOS::AAFwk;
+    auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
+    std::string bundleName;
+    auto ret  = ScreenLockBundleName::GetBundleNameByToken(tokenId, bundleName);
+    if(!ret || bundleName.empty()) {
+        SCLOCK_HILOGI("get bundle name by token failed");
         return false;
     }
-    vector<AppExecFwk::AppStateData> fgAppList;
-    appMgrProxy_->GetForegroundApplications(fgAppList);
-    for (auto fgApp : fgAppList) {
-        if (fgApp.uid == uid) {
-            return true;
-        }
-    }
-    return false;
+    return elementName.GetBundleName() == bundleName;
 }
 } // namespace ScreenLock
 } // namespace OHOS

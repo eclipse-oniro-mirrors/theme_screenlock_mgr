@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "app_mgr_interface.h"
 #include "dm_common.h"
 #include "event_handler.h"
 #include "iremote_object.h"
@@ -172,8 +171,7 @@ private:
     void RegisterDumpCommand();
     int32_t Init();
     void InitServiceHandler();
-    static sptr<AppExecFwk::IAppMgr> GetAppMgrProxy();
-    static bool CheckAppInForeground(int32_t uid);
+    static bool CheckAppInForeground(int32_t tokenId);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
