@@ -19,11 +19,8 @@ group("screenlock_mgr_packages") {
   if (is_standard_system) {
     deps = [
       "etc/init:screenlockservice.cfg",
-      "frameworks/kitsimpl:screenlock_client",
-      "interfaces/kits/napi:screenlock",
       "sa_profile:screenlock_sa_profiles",
       "services:screenlock_server",
-      "utils:screenlock_utils",
     ]
   }
 }
