@@ -702,8 +702,8 @@ bool ScreenLockSystemAbility::CheckAppInForeground(int32_t tokenId)
 {
     using namespace OHOS::AAFwk;
     std::string bundleName;
-    auto ret  = ScreenLockBundleName::GetBundleNameByToken(tokenId, bundleName);
-    if(!ret || bundleName.empty()) {
+    auto ret = ScreenLockBundleName::GetBundleNameByToken(tokenId, bundleName);
+    if (!ret || bundleName.empty()) {
         SCLOCK_HILOGI("get bundle name by token failed");
         return false;
     }
