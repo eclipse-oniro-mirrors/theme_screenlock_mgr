@@ -24,7 +24,6 @@
 #include "ipc_skeleton.h"
 #include "sclock_log.h"
 #include "screenlock_app_manager.h"
-#include "screenlock_bundlename.h"
 #include "screenlock_common.h"
 #include "screenlock_js_util.h"
 #include "screenlock_manager.h"
@@ -188,20 +187,6 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_On in");
     napi_value result = nullptr;
-    int callingUid = IPCSkeleton::GetCallingUid();
-    SCLOCK_HILOGD("NAPI_On callingUid=%{public}d", callingUid);
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
-        return result;
-    }
-    if (bundleName.empty()) {
-        SCLOCK_HILOGI("NAPI_On calling app is null");
-        return result;
-    }
-    if (bundleName != BUNDLE_NAME) {
-        SCLOCK_HILOGI("NAPI_On calling app is not Screenlock APP");
-        return result;
-    }
     size_t argc = ARGS_SIZE_TWO;
     napi_value argv[ARGV_TWO] = {nullptr};
     napi_value thisVar = nullptr;
@@ -242,19 +227,6 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_Off in");
     napi_value result = nullptr;
-    int callingUid = IPCSkeleton::GetCallingUid();
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
-        return result;
-    }
-    if (bundleName.empty()) {
-        SCLOCK_HILOGI("NAPI_Off calling app is null");
-        return result;
-    }
-    if (bundleName != BUNDLE_NAME) {
-        SCLOCK_HILOGI("NAPI_Off calling app is not Screenlock APP");
-        return result;
-    }
     size_t argc = ARGS_SIZE_TWO;
     napi_value argv[ARGV_TWO] = {nullptr};
     napi_value thisVar = nullptr;
