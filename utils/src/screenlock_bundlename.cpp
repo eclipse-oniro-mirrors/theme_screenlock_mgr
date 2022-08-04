@@ -14,21 +14,41 @@
  */
 #include "screenlock_bundlename.h"
 
-#include "bundle_mgr_client.h"
+#include "accesstoken_kit.h"
+#include "sclock_log.h"
 
 namespace OHOS {
 namespace ScreenLock {
-ScreenLockBundleName::ScreenLockBundleName()
+using namespace Security::AccessToken;
+bool ScreenLockBundleName::GetBundleNameByToken(std::int32_t tokenId, std::string &bundleName)
 {
-}
-
-bool ScreenLockBundleName::GetBundleNameByUid(std::int32_t uid, std::string &bname)
-{
-    std::shared_ptr<AppExecFwk::BundleMgrClient> bundleManager = std::make_shared<AppExecFwk::BundleMgrClient>();
-    if (bundleManager != nullptr) {
-        bundleManager->GetBundleNameForUid(uid, bname);
+    int32_t tokenType = AccessTokenKit::GetTokenTypeFlag(tokenId);
+    switch (tokenType) {
+        case ATokenTypeEnum::TOKEN_HAP: {
+            HapTokenInfo hapInfo;
+            if (AccessTokenKit::GetHapTokenInfo(tokenId, hapInfo) != 0) {
+                SCLOCK_HILOGE("get hap token info fail");
+                return false;
+            }
+            bundleName = hapInfo.bundleName;
+            return true;
+        }
+        case ATokenTypeEnum::TOKEN_NATIVE:
+        case ATokenTypeEnum::TOKEN_SHELL: {
+            NativeTokenInfo tokenInfo;
+            if (AccessTokenKit::GetNativeTokenInfo(tokenId, tokenInfo) != 0) {
+                SCLOCK_HILOGE("get native token info fail");
+                return false;
+            }
+            bundleName = tokenInfo.processName;
+            return true;
+        }
+        default: {
+            SCLOCK_HILOGI("token type not match");
+            break;
+        }
     }
-    return true;
+    return false;
 }
 } // namespace ScreenLock
 } // namespace OHOS

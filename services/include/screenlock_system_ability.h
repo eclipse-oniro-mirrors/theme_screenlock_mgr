@@ -26,12 +26,10 @@
 #include "screenlock_manager_stub.h"
 #include "screenlock_system_ability_interface.h"
 #include "system_ability.h"
-#include "window_manager.h"
 
 namespace OHOS {
 namespace ScreenLock {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
-class IKeyguardStateCallback;
 class StateValue {
 public:
     StateValue() {};
@@ -147,12 +145,6 @@ public:
     bool Test_RuntimeNotify(const std::string &event, int param) override;
     int Test_GetRuntimeState(const std::string &event) override;
 
-    class ScreenLockFocusChangedListener : public Rosen::IFocusChangedListener {
-    public:
-        void OnFocused(const sptr<Rosen::FocusChangeInfo> &focusChangeInfo) override;
-        void OnUnfocused(const sptr<Rosen::FocusChangeInfo> &focusChangeInfo) override;
-    };
-
     class ScreenLockDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
     public:
         void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
@@ -178,12 +170,13 @@ private:
     void OnSystemReady();
     void RegisterDumpCommand();
     int32_t Init();
-    ServiceRunningState state_;
     void InitServiceHandler();
+    static bool CheckAppInForeground(int32_t tokenId);
+
+    ServiceRunningState state_;
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
-    sptr<Rosen::IFocusChangedListener> focusChangedListener_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::map<std::string, sptr<ScreenLockSystemAbilityInterface>> registeredListeners_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
@@ -192,7 +185,6 @@ private:
     std::mutex lock_;
     const int32_t startTime_ = 1900;
     const int32_t extraMonth_ = 1;
-    bool isFoucs_ = false;
     bool flag_ = false;
 };
 } // namespace ScreenLock

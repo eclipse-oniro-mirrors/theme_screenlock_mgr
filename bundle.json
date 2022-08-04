@@ -38,15 +38,23 @@
         "ril_device_driver_interface",
         "user_auth_framework",
         "core_service",
-        "window_manager",
         "utils_base"
       ],
       "third_party": []
     },
     "build": {
-      "sub_component": [
-        "//base/theme/screenlock_mgr:screenlock_mgr_packages"
-      ],
+      "group_type": {
+        "base_group": [
+        ],
+        "fwk_group": [
+          "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
+          "//base/theme/screenlock_mgr/interfaces/kits/napi:screenlock",
+          "//base/theme/screenlock_mgr/utils:screenlock_utils"
+        ],
+        "service_group": [
+          "//base/theme/screenlock_mgr:screenlock_mgr_packages"
+        ]
+      },
       "inner_kits": [
       ],
       "test": [

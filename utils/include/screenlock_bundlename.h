@@ -22,9 +22,9 @@ namespace OHOS {
 namespace ScreenLock {
 class ScreenLockBundleName {
 public:
-    ScreenLockBundleName();
+    ScreenLockBundleName() = default;
     ~ScreenLockBundleName() = default;
-    static bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
+    static bool GetBundleNameByToken(std::int32_t tokenId, std::string &bundleName);
 };
 } // namespace ScreenLock
 } // namespace OHOS

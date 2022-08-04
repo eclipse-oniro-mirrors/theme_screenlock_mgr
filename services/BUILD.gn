@@ -49,10 +49,9 @@ ohos_shared_library("screenlock_server") {
     "//foundation/window/window_manager/utils:libwmutil",
   ]
   external_deps = [
-    "bundle_framework:appexecfwk_core",
+    "ability_base:want",
+    "ability_runtime:ability_manager",
     "c_utils:utils",
-    "core_service:tel_core_service_api",
-    "drivers_interface_ril:hril_innerkits",
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
@@ -63,7 +62,6 @@ ohos_shared_library("screenlock_server") {
     "samgr:samgr_proxy",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
-    "window_manager:libwm",
   ]
   relative_install_dir = "module"
   subsystem_name = "theme"

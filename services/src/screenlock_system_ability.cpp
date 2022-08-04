@@ -24,6 +24,7 @@
 #include <iostream>
 #include <string>
 
+#include "ability_manager_client.h"
 #include "command.h"
 #include "core_service_client.h"
 #include "display_manager.h"
@@ -106,13 +107,9 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
         return;
     }
-    if (focusChangedListener_ == nullptr) {
-        focusChangedListener_ = new ScreenLockSystemAbility::ScreenLockFocusChangedListener();
-    }
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
-    WindowManager::GetInstance().RegisterFocusChangedListener(focusChangedListener_);
     int trytime = 3;
     int minTimeValue = 0;
     while (trytime > minTimeValue) {
@@ -156,23 +153,8 @@ void ScreenLockSystemAbility::OnStop()
     serviceHandler_ = nullptr;
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
-    WindowManager::GetInstance().UnregisterFocusChangedListener(focusChangedListener_);
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
     SCLOCK_HILOGI("OnStop end.");
-}
-
-void ScreenLockSystemAbility::ScreenLockFocusChangedListener::OnFocused(
-    const sptr<Rosen::FocusChangeInfo> &focusChangeInfo)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility::ScreenLockFocusChangedListener OnFocused");
-    instance_->isFoucs_ = true;
-}
-
-void ScreenLockSystemAbility::ScreenLockFocusChangedListener::OnUnfocused(
-    const sptr<Rosen::FocusChangeInfo> &focusChangeInfo)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility::ScreenLockFocusChangedListener OnUnfocused.");
-    instance_->isFoucs_ = false;
 }
 
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(
@@ -414,7 +396,7 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
-    if (instance_->isFoucs_) {
+    if (!CheckAppInForeground(IPCSkeleton::GetCallingTokenID())) {
         FinishAsyncTrace(
             HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
@@ -456,13 +438,6 @@ bool ScreenLockSystemAbility::GetSecure()
         OnStart();
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure started.");
-    int32_t slotId = DelayedRefSingleton<Telephony::CoreServiceClient>::GetInstance().GetPrimarySlotId();
-    int32_t simState =
-        DelayedRefSingleton<Telephony::CoreServiceClient>::GetInstance().GetSimState(static_cast<int>(slotId));
-    const int32_t simLockStatus = 2;
-    if (simState == simLockStatus) {
-        return true;
-    }
     int callingUid = IPCSkeleton::GetCallingUid();
     SCLOCK_HILOGD("ScreenLockSystemAbility::GetSecure callingUid=%{public}d", callingUid);
     int userId = 0;
@@ -497,8 +472,8 @@ bool ScreenLockSystemAbility::On(const sptr<ScreenLockSystemAbilityInterface> &l
     SCLOCK_HILOGI("ScreenLockSystemAbility::On started. type=%{public}s", type.c_str());
     int callingUid = IPCSkeleton::GetCallingUid();
     SCLOCK_HILOGD("ScreenLockSystemAbility::On callingUid=%{public}d", callingUid);
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
+    std::string bundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
         return false;
     }
     SCLOCK_HILOGD("ScreenLockSystemAbility::On bundleName=%{public}s", bundleName.c_str());
@@ -528,8 +503,8 @@ bool ScreenLockSystemAbility::Off(const std::string &type)
     SCLOCK_HILOGI("ScreenLockSystemAbility::Off started. type=%{public}s", type.c_str());
     int callingUid = IPCSkeleton::GetCallingUid();
     SCLOCK_HILOGD("ScreenLockSystemAbility::Off callingUid=%{public}d", callingUid);
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
+    std::string bundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
         return false;
     }
     SCLOCK_HILOGD("ScreenLockSystemAbility::Off bundleName=%{public}s", bundleName.c_str());
@@ -554,9 +529,8 @@ bool ScreenLockSystemAbility::Off(const std::string &type)
 bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SendScreenLockEvent started.");
-    int callingUid = IPCSkeleton::GetCallingUid();
-    std::string bundleName = "";
-    if (!ScreenLockBundleName::GetBundleNameByUid(callingUid, bundleName)) {
+    std::string bundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
         return false;
     }
     if (bundleName.empty()) {
@@ -722,6 +696,19 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
+}
+
+bool ScreenLockSystemAbility::CheckAppInForeground(int32_t tokenId)
+{
+    using namespace OHOS::AAFwk;
+    std::string bundleName;
+    auto ret = ScreenLockBundleName::GetBundleNameByToken(tokenId, bundleName);
+    if (!ret || bundleName.empty()) {
+        SCLOCK_HILOGI("get bundle name by token failed");
+        return false;
+    }
+    auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
+    return elementName.GetBundleName() == bundleName;
 }
 } // namespace ScreenLock
 } // namespace OHOS
