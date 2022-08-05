@@ -18,7 +18,7 @@
 ## 目录
 
 ```
-/base/miscservices/screenlock
+/base/theme/screenlock_mgr
 ├── figures                  # 构架图
 ├── frameworks/kitsimpl      # 对应用提供的接口
 ├── interfaces/kits          # 组件对外提供的接口代码
@@ -140,6 +140,7 @@ screenLock.unlockScreen().then((data) => {
 
 ## 相关仓
 
-**Misc软件服务子系统**
+**主题框架子系统**
 
- miscservices_screenlock
+[theme\_screenlock_mgr](https://gitee.com/openharmony/theme_screenlock_mgr)
+

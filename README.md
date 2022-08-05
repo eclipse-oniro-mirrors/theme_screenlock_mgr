@@ -1,4 +1,4 @@
-# miscservices_screenlock
+# theme_screenlock_mgr
 
 #### Introduction
 Provide three-party APP with the ability to request unlockScreen, query the screenlock status, and query whether to set the screenlock password. 
@@ -8,10 +8,10 @@ Provide screenOn callback, screenOff callback, screenSaver in and out callback, 
 ![](figures/subsystem_architecture_zh.png "subsystem architecture diagram")
 
 #### Warehouse path
-/base/miscservices/screenlock
+/base/theme/screenlock_mgr
 
 #### Introduction to framework code
-/base/miscservices/screenlock
+/base/theme/screenlock_mgr
 ├── figures                  # architecture diagram
 ├── frameworks/innerkitsimpl # interface provided for app 
 ├── interfaces               # interface code provided by module
