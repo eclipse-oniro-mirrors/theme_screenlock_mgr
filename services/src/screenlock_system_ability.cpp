@@ -418,6 +418,55 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     }
 }
 
+void ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock begin", HITRACE_UNLOCKSCREEN);
+    if (state_ != ServiceRunningState::STATE_RUNNING) {
+        SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock restart.");
+        OnStart();
+    }
+    SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock started.");
+    // check whether the page of app request unlock is the focus page
+    std::lock_guard<std::mutex> guard(lock_);
+    if (!CheckAppInForeground(IPCSkeleton::GetCallingTokenID())) {
+        FinishAsyncTrace(
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock finish by foucus", HITRACE_UNLOCKSCREEN);
+        SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  Unfocused.");
+        return;
+    }
+
+    std::string bundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
+        return ;
+    }
+    SCLOCK_HILOGD("ScreenLockSystemAbility::RequestLock bundleName=%{public}s", bundleName.c_str());
+    if (bundleName.empty()) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock calling app is null");
+        return ;
+    }
+    if (bundleName != BUNDLE_NAME) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock calling app is not Screenlock APP");
+        return ;
+    }
+
+    lockVecListeners_.push_back(listener);
+    SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
+    std::string type = LOCKSCREEN;
+    auto iter = registeredListeners_.find(type);
+    if (iter != registeredListeners_.end()) {
+        auto callback = [=]() {
+            StartAsyncTrace(
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock begin callback", HITRACE_UNLOCKSCREEN);
+            iter->second->OnCallBack(type);
+            FinishAsyncTrace(
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock end callback", HITRACE_UNLOCKSCREEN);
+        };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    } else {
+        SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  iter == registeredListeners_.end().");
+    }
+}
+
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
@@ -565,6 +614,8 @@ bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int 
     } else if (event == SCREEN_DRAWDONE) {
         SetScreenlocked(true);
         DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
+    } else if (event == LOCK_SCREEN_RESULT) {
+        LockScreentEvent(stateResult);
     }
     return true;
 }
@@ -708,7 +759,31 @@ bool ScreenLockSystemAbility::CheckAppInForeground(int32_t tokenId)
         return false;
     }
     auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
+    SCLOCK_HILOGD(" TopelementName:%{public}s, elementName.GetBundleName:%{public}s",
+        elementName.GetBundleName().c_str(), bundleName.c_str());
     return elementName.GetBundleName() == bundleName;
+}
+
+void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
+{
+    if (stateResult == LOCKSCREEN_SUCC) {
+        SetScreenlocked(true);
+        DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
+    } else if (stateResult == LOCKSCREEN_FAIL || stateResult == LOCKSCREEN_CANCEL) {
+        SetScreenlocked(false);
+    }
+    lock_.lock();
+    if (lockVecListeners_.size()) {
+        auto callback = [=]() {
+            for (size_t i = 0; i < lockVecListeners_.size(); i++) {
+                std::string type;
+                lockVecListeners_[i]->OnCallBack(type, stateResult);
+            }
+            lockVecListeners_.clear();
+        };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    }
+    lock_.unlock();
 }
 } // namespace ScreenLock
 } // namespace OHOS

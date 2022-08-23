@@ -33,6 +33,7 @@ ohos_shared_library("screenlock") {
       "src/async_call.cpp",
       "src/napi_screenlock_ability.cpp",
       "src/screenlock_js_util.cpp",
+      "src/screenlock_lock_callback.cpp",
       "src/screenlock_system_ability_callback.cpp",
       "src/screenlock_unlock_callback.cpp",
     ]

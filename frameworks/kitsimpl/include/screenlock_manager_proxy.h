@@ -33,6 +33,7 @@ public:
     bool IsScreenLocked() override;
     bool GetSecure() override;
     void RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    void RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     bool On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type) override;
     bool Off(const std::string &type) override;
     bool SendScreenLockEvent(const std::string &event, int param) override;

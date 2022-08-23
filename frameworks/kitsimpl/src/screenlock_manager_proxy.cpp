@@ -81,6 +81,28 @@ void ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInt
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock succeeded.");
 }
 
+void ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
+    MessageParcel data, reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock started.");
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return;
+    }
+    if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
+        SCLOCK_HILOGE("write parcel failed.");
+        return;
+    }
+    int32_t ret = Remote()->SendRequest(REQUEST_LOCK, data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
+        return;
+    }
+    SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock succeeded.");
+}
+
 bool ScreenLockManagerProxy::On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type)
 {
     SCLOCK_HILOGD("ScreenLockManagerProxy::On listener=%{public}p", listener.GetRefPtr());
