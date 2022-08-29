@@ -65,6 +65,9 @@ int32_t ScreenlockSystemAbilityCallback::GetEventType(const std::string &type)
     if (MatchEventType(type, UNLOCKSCREEN)) {
         return static_cast<uint32_t>(SCREENLOCK_UNLOCK_SCREEN);
     }
+    if (MatchEventType(type, LOCKSCREEN)) {
+        return static_cast<uint32_t>(SCREENLOCK_LOCK_SCREEN);
+    }
     if (MatchEventType(type, BEGIN_SLEEP)) {
         return static_cast<uint32_t>(SCREENLOCK_BEGIN_SLEEP);
     }

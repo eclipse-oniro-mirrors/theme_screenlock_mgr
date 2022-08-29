@@ -132,6 +132,7 @@ public:
     bool IsScreenLocked() override;
     bool GetSecure() override;
     void RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     bool On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type) override;
     bool Off(const std::string &type) override;
     bool SendScreenLockEvent(const std::string &event, int param) override;
@@ -171,7 +172,8 @@ private:
     void RegisterDumpCommand();
     int32_t Init();
     void InitServiceHandler();
-    static bool CheckAppInForeground(int32_t tokenId);
+    static bool IsAppInForeground(int32_t tokenId);
+    void LockScreentEvent(int stateResult);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
@@ -180,6 +182,7 @@ private:
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::map<std::string, sptr<ScreenLockSystemAbilityInterface>> registeredListeners_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
+    std::vector<sptr<ScreenLockSystemAbilityInterface>> lockVecListeners_;
     StateValue stateValue_;
     std::mutex listenerMapMutex_;
     std::mutex lock_;

@@ -25,6 +25,7 @@ constexpr int32_t LISTEN_MASK_END_SCREEN_ON = SCREENLOCK_END_SCREEN_ON;
 constexpr int32_t LISTEN_MASK_BEGIN_SCREEN_OFF = SCREENLOCK_BEGIN_SCREEN_OFF;
 constexpr int32_t LISTEN_MASK_END_SCREEN_OFF = SCREENLOCK_END_SCREEN_OFF;
 constexpr int32_t LISTEN_MASK_UNLOCK_SCREEN = SCREENLOCK_UNLOCK_SCREEN;
+constexpr int32_t LISTEN_MASK_LOCK_SCREEN = SCREENLOCK_LOCK_SCREEN;
 constexpr int32_t LISTEN_MASK_BEGIN_SLEEP = SCREENLOCK_BEGIN_SLEEP;
 constexpr int32_t LISTEN_MASK_END_SLEEP = SCREENLOCK_END_SLEEP;
 constexpr int32_t LISTEN_MASK_CHANGE_USER = SCREENLOCK_CHANGE_USER;
@@ -66,6 +67,9 @@ int32_t ScreenlockNotifyTestInstance::GetEventType(const std::string &type)
     }
     if (MatchEventType(type, UNLOCKSCREEN)) {
         return LISTEN_MASK_UNLOCK_SCREEN;
+    }
+    if (MatchEventType(type, LOCKSCREEN)) {
+        return LISTEN_MASK_LOCK_SCREEN;
     }
     if (MatchEventType(type, BEGIN_SLEEP)) {
         return LISTEN_MASK_BEGIN_SLEEP;

@@ -27,6 +27,7 @@ ohos_shared_library("screenlock_client") {
       "src/screenlock_manager.cpp",
       "src/screenlock_manager_proxy.cpp",
       "src/screenlock_system_ability_stub.cpp",
+      "src/uv_queue.cpp",
     ]
 
     public_configs = [
@@ -39,6 +40,7 @@ ohos_shared_library("screenlock_client") {
       "//base/theme/screenlock_mgr/interfaces/innerkits/notify/native/include",
       "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
       "//commonlibrary/c_utils/base/include",
+      "//third_party/libuv/include",
       "//utils/system/safwk/native/include",
     ]
     deps = [ "//base/theme/screenlock_mgr/utils:screenlock_utils" ]
@@ -48,6 +50,7 @@ ohos_shared_library("screenlock_client") {
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
       "ipc:ipc_core",
+      "napi:ace_napi",
       "samgr:samgr_proxy",
     ]
     relative_install_dir = "module"

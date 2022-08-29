@@ -28,7 +28,7 @@
 #include "screenlock_js_util.h"
 #include "screenlock_manager.h"
 #include "screenlock_system_ability_callback.h"
-#include "screenlock_unlock_callback.h"
+#include "screenlock_callback.h"
 
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
@@ -38,6 +38,7 @@ namespace ScreenLock {
 static thread_local uint32_t g_eventMasks = 0;
 static thread_local std::list<EventListener> g_eventListenerList;
 static thread_local EventListener g_unlockListener;
+static thread_local EventListener g_lockListener;
 
 static bool AddEventListener(uint32_t eventType, const std::string &event)
 {
@@ -57,6 +58,7 @@ napi_status Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor exportFuncs[] = {
         DECLARE_NAPI_FUNCTION("isScreenLocked", OHOS::ScreenLock::NAPI_IsScreenLocked),
+        DECLARE_NAPI_FUNCTION("lockScreen", OHOS::ScreenLock::NAPI_LockScreen),
         DECLARE_NAPI_FUNCTION("unlockScreen", OHOS::ScreenLock::NAPI_UnlockScreen),
         DECLARE_NAPI_FUNCTION("isSecureMode", OHOS::ScreenLock::NAPI_IsSecureMode),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
@@ -75,7 +77,7 @@ bool IsCheckedTypeRegisterMessage(const std::string &type)
     if (type == BEGIN_WAKEUP || type == END_WAKEUP || type == BEGIN_SCREEN_ON || type == END_SCREEN_ON ||
         type == BEGIN_SLEEP || type == END_SLEEP || type == BEGIN_SCREEN_OFF || type == END_SCREEN_OFF ||
         type == CHANGE_USER || type == SCREENLOCK_ENABLED || type == EXIT_ANIMATION || type == UNLOCKSCREEN ||
-        type == SYSTEM_READY) {
+        type == SYSTEM_READY || type == LOCKSCREEN) {
         return true;
     }
     return false;
@@ -83,7 +85,7 @@ bool IsCheckedTypeRegisterMessage(const std::string &type)
 
 bool IsCheckedTypeSendEventMessage(const std::string &type)
 {
-    if (type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE) {
+    if (type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE || type == LOCK_SCREEN_RESULT) {
         return true;
     }
     return false;
@@ -113,6 +115,69 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGS_SIZE_ZERO);
     return asyncCall.Call(env, exec);
+}
+
+void AsyncCallLockScreen(napi_env env)
+{
+    napi_async_work work;
+    napi_value resource = nullptr;
+    auto execute = [](napi_env env, void *data) {
+        EventListener *eventListener = reinterpret_cast<EventListener *>(data);
+        if (eventListener == nullptr) {
+            return;
+        }
+
+        sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallback(*eventListener);
+        if (listener == nullptr) {
+            SCLOCK_HILOGE("NAPI_LockScreen create callback object fail");
+            return;
+        }
+        int32_t status = ScreenLockManager::GetInstance()->RequestLock(listener);
+        if (status != ERR_NONE) {
+            std::string type = "";
+            listener->OnCallBack(type, status);
+        }
+    };
+    auto complete = [](napi_env env, napi_status status, void *data) {};
+    napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource);
+    napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work);
+    napi_queue_async_work(env, work);
+}
+
+napi_value NAPI_LockScreen(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_LockScreen begin");
+    napi_value ret = nullptr;
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = {nullptr};
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    NAPI_ASSERT(env, argc == ARGS_SIZE_ZERO || argc == ARGS_SIZE_ONE, "Wrong number of arguments, requires one");
+    napi_ref callbackRef = nullptr;
+
+    napi_valuetype valueType = napi_undefined;
+    if (argc == ARGS_SIZE_ONE) {
+        napi_typeof(env, argv[ARGV_ZERO], &valueType);
+        SCLOCK_HILOGD("NAPI_LockScreen callback");
+        NAPI_ASSERT(env, valueType == napi_function, "callback is not a function");
+        if (valueType == napi_function) {
+            SCLOCK_HILOGD("NAPI_LockScreen create callback");
+            napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
+            g_lockListener = {env, RESULT_ZERO, thisVar, callbackRef};
+        }
+    }
+    if (callbackRef == nullptr) {
+        SCLOCK_HILOGD("NAPI_LockScreen create promise");
+        napi_deferred deferred;
+        napi_create_promise(env, &deferred, &ret);
+        g_lockListener = {env, RESULT_ZERO, thisVar, nullptr, deferred};
+    } else {
+        SCLOCK_HILOGD("NAPI_LockScreen create callback");
+        napi_get_undefined(env, &ret);
+    }
+    AsyncCallLockScreen(env);
+    return ret;
 }
 
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
@@ -148,7 +213,7 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
         napi_get_undefined(env, &ret);
     }
-    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockUnlockCallback(g_unlockListener);
+    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallback(g_unlockListener);
     if (listener == nullptr) {
         SCLOCK_HILOGE("NAPI_UnlockScreen create callback object fail");
         return ret;

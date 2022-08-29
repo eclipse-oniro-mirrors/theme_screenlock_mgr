@@ -12,9 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "screenlock_unlock_callback.h"
+#include "screenlock_callback.h"
 
-#include <uv.h>
 
 #include <cstdint>
 #include <new>
@@ -26,23 +25,24 @@
 #include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
+#include "uv_queue.h"
 
 namespace OHOS {
 namespace ScreenLock {
-ScreenlockUnlockCallback::ScreenlockUnlockCallback(const EventListener &eventListener)
+ScreenlockCallback::ScreenlockCallback(const EventListener &eventListener)
 {
-    unlockListener_ = &eventListener;
+    eventListener_ = eventListener;
 }
 
-ScreenlockUnlockCallback::~ScreenlockUnlockCallback()
-{
-}
-
-void ScreenlockUnlockCallback::OnCallBack(const std::string &event, bool result)
+ScreenlockCallback::~ScreenlockCallback()
 {
 }
 
-void ScreenlockUnlockCallback::OnCallBack(const std::string &event)
+void ScreenlockCallback::OnCallBack(const std::string &event, bool result)
+{
+}
+
+void ScreenlockCallback::OnCallBack(const std::string &event)
 {
 }
 
@@ -50,35 +50,35 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
 {
     SCLOCK_HILOGD("UvWorkOnCallBackInt begin");
     if (work == nullptr) {
-        SCLOCK_HILOGD("UvWorkNotifyMissionChanged, work is null");
+        SCLOCK_HILOGE("UvWorkNotifyMissionChanged, work is null");
         return;
     }
     ScreenlockOnCallBack *screenlockOnCallBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
     if (screenlockOnCallBackPtr == nullptr) {
-        SCLOCK_HILOGD("UvWorkOnCallBackInt, screenlockOnCallBackPtr is null");
+        SCLOCK_HILOGE("UvWorkOnCallBackInt, screenlockOnCallBackPtr is null");
         delete work;
         return;
     }
     napi_value isResult = 0;
     if (screenlockOnCallBackPtr->deferred) {
         napi_get_undefined(screenlockOnCallBackPtr->env, &isResult);
-        if (screenlockOnCallBackPtr->intCallbackValue == UNLOCKSCREEN_SUCC) {
+        if (screenlockOnCallBackPtr->intCallbackValue == SCREEN_SUCC) {
             napi_resolve_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, isResult);
         } else {
             napi_reject_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, isResult);
         }
     } else {
-        SCLOCK_HILOGD("unlock callback style");
+        SCLOCK_HILOGD("ScreenlockCallback style");
         napi_value callbackFunc = nullptr;
         napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackref, &callbackFunc);
         napi_value callbackResult = nullptr;
         napi_value callBackValue[ARGS_SIZE_TWO] = {0};
-        if (screenlockOnCallBackPtr->intCallbackValue == UNLOCKSCREEN_SUCC) {
+        if (screenlockOnCallBackPtr->intCallbackValue == SCREEN_SUCC) {
             napi_get_undefined(screenlockOnCallBackPtr->env, &callBackValue[0]);
             napi_create_int32(screenlockOnCallBackPtr->env,
                 static_cast<int32_t>(screenlockOnCallBackPtr->intCallbackValue), &callBackValue[1]);
         } else {
-            const char *str = "UnlockScreen failed";
+            const char *str = "ScreenlockCallback failed";
             napi_create_string_utf8(screenlockOnCallBackPtr->env, str, strlen(str), &callBackValue[0]);
             napi_get_undefined(screenlockOnCallBackPtr->env, &callBackValue[1]);
         }
@@ -95,36 +95,23 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     SCLOCK_HILOGD("UvWorkOnCallBackInt end");
 }
 
-void ScreenlockUnlockCallback::OnCallBack(const std::string &event, int result)
+void ScreenlockCallback::OnCallBack(const std::string &event, int result)
 {
     SCLOCK_HILOGD("event=%{public}s,result=%{public}d", event.c_str(), result);
-    uv_loop_s *loop = nullptr;
-    napi_get_uv_event_loop(unlockListener_->env, &loop);
-    if (loop == nullptr) {
-        return;
-    }
-    uv_work_t *work = new (std::nothrow) uv_work_t;
-    if (work == nullptr) {
-        return;
-    }
+    
     ScreenlockOnCallBack *screenlockOnCallBack = new (std::nothrow) ScreenlockOnCallBack;
     if (screenlockOnCallBack == nullptr) {
-        delete work;
-        work = nullptr;
+        SCLOCK_HILOGE("new  ScreenlockOnCallBack failed");
         return;
     }
-    screenlockOnCallBack->env = unlockListener_->env;
-    screenlockOnCallBack->callbackref = unlockListener_->callbackRef;
+    screenlockOnCallBack->env = eventListener_.env;
+    screenlockOnCallBack->callbackref = eventListener_.callbackRef;
     screenlockOnCallBack->intCallbackValue = result;
-    screenlockOnCallBack->thisVar = unlockListener_->thisVar;
-    screenlockOnCallBack->deferred = unlockListener_->deferred;
-    work->data = (void *)screenlockOnCallBack;
-    int rev = uv_queue_work(
-        loop, work, [](uv_work_t *work) {}, UvWorkOnCallBackInt);
-    if (rev != 0) {
-        delete screenlockOnCallBack;
-        screenlockOnCallBack = nullptr;
-        delete work;
+    screenlockOnCallBack->deferred = eventListener_.deferred;
+    bool bRet = UvQueue::Call(eventListener_.env, (void *)screenlockOnCallBack, UvWorkOnCallBackInt);
+    if (!bRet) {
+        SCLOCK_HILOGE(
+            "ScreenlockCallback::OnCallBack faild, event=%{public}s,result=%{public}d", event.c_str(), result);
     }
 }
 } // namespace ScreenLock

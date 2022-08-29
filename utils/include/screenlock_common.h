@@ -45,6 +45,8 @@ const std::string SCREENLOCK_ENABLED = "screenlockEnabled";
 const std::string EXIT_ANIMATION = "beginExitAnimation";
 const std::string UNLOCKSCREEN = "unlockScreen";
 const std::string UNLOCK_SCREEN_RESULT = "unlockScreenResult";
+const std::string LOCKSCREEN = "lockScreen";
+const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
 const std::string SCREEN_DRAWDONE = "screenDrawDone";
 const std::string SYSTEM_READY = "systemReady";
 const std::string BUNDLE_NAME = "com.ohos.systemui";
@@ -71,6 +73,13 @@ enum ScreenLockError {
 
 enum TraceTaskId {
     HITRACE_UNLOCKSCREEN,
+    HITRACE_LOCKSCREEN,
+};
+
+enum ScreenChange {
+    SCREEN_SUCC = 0,
+    SCREEN_FAIL,
+    SCREEN_CANCEL,
 };
 
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
@@ -80,10 +89,6 @@ constexpr int BEGIN_SLEEP_LONG_TIME_UNOPERATOR = 3;
 constexpr int END_SLEEP_DEVICE_ADMIN_REASON = 1;
 constexpr int END_SLEEP_USER_REASON = 2;
 constexpr int END_SLEEP_LONG_TIME_UNOPERATE = 3;
-
-constexpr int UNLOCKSCREEN_SUCC = 0;
-constexpr int UNLOCKSCREEN_FAIL = 1;
-constexpr int UNLOCKSCREEN_CANCEL = 2;
 
 constexpr int SCREENLOCK_APP_CAN_USE = 1;
 constexpr int SCREENLOCK_APP_CAN_NOT_USE = 0;
@@ -118,6 +123,7 @@ static const uint32_t SCREENLOCK_CHANGE_USER = 0x00000400;
 static const uint32_t SCREENLOCK_SCREENLOCK_ENABLED = 0x00000800;
 static const uint32_t SCREENLOCK_EXIT_ANIMATION = 0x00001000;
 static const uint32_t SCREENLOCK_SYSTEM_READY = 0x00002000;
+static const uint32_t SCREENLOCK_LOCK_SCREEN = 0x00004000;
 } // namespace ScreenLock
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_SCREENLOCK_COMMON_H

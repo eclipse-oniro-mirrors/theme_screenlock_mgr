@@ -81,6 +81,7 @@ bool IsCheckedTypeSendEventMessage(const std::string &type);
 napi_status Init(napi_env env, napi_value exports);
 napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info);
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info);
+napi_value NAPI_LockScreen(napi_env env, napi_callback_info info);
 napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info);
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_On(napi_env env, napi_callback_info info);

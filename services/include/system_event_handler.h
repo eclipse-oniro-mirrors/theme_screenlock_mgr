@@ -77,6 +77,9 @@ public:
             case REQUEST_UNLOCK:
                 ScreenLockSystemAbility::GetInstance()->RequestUnlock();
                 return true;
+            case REQUEST_LOCK:
+                ScreenLockSystemAbility::GetInstance()->RequestLock();
+                return true;
             default:
                 SCLOCK_HILOGE("SystemEventHandler::SendSystemEvent is no matching code .");
                 return false;
@@ -97,6 +100,7 @@ private:
         ON_SCREENLOCK_ENABLED = 9,
         ON_EXIT_ANIMATION = 10,
         REQUEST_UNLOCK = 11,
+        REQUEST_LOCK = 12,
     };
 };
 } // namespace ScreenLock

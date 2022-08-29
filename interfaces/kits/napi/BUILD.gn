@@ -32,9 +32,9 @@ ohos_shared_library("screenlock") {
     sources = [
       "src/async_call.cpp",
       "src/napi_screenlock_ability.cpp",
+      "src/screenlock_callback.cpp",
       "src/screenlock_js_util.cpp",
       "src/screenlock_system_ability_callback.cpp",
-      "src/screenlock_unlock_callback.cpp",
     ]
     deps =
         [ "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client" ]
