@@ -12,31 +12,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "screenlock_unlock_callback_test.h"
-
+#include "screenlock_callback_test.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {
-ScreenlockUnlockCallbackTest::ScreenlockUnlockCallbackTest(const EventListenerTest &eventListener)
+ScreenlockCallbackTest::ScreenlockCallbackTest(const EventListenerTest &eventListener)
 {
-    unlockListener_ = &eventListener;
+    eventListener_ = eventListener;
 }
 
-ScreenlockUnlockCallbackTest::~ScreenlockUnlockCallbackTest()
-{
-}
-
-void ScreenlockUnlockCallbackTest::OnCallBack(const std::string &event, bool result)
+ScreenlockCallbackTest::~ScreenlockCallbackTest()
 {
 }
 
-void ScreenlockUnlockCallbackTest::OnCallBack(const std::string &event)
+void ScreenlockCallbackTest::OnCallBack(const std::string &event, bool result)
 {
 }
 
-void ScreenlockUnlockCallbackTest::OnCallBack(const std::string &event, int result)
+void ScreenlockCallbackTest::OnCallBack(const std::string &event)
+{
+}
+
+void ScreenlockCallbackTest::OnCallBack(const std::string &event, int result)
 {
     SCLOCK_HILOGD("event=%{public}s,result=%{public}d", event.c_str(), result);
 }

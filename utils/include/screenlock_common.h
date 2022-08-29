@@ -73,6 +73,13 @@ enum ScreenLockError {
 
 enum TraceTaskId {
     HITRACE_UNLOCKSCREEN,
+    HITRACE_LOCKSCREEN,
+};
+
+enum ScreenChange {
+    SCREEN_SUCC = 0,
+    SCREEN_FAIL,
+    SCREEN_CANCEL,
 };
 
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
@@ -82,14 +89,6 @@ constexpr int BEGIN_SLEEP_LONG_TIME_UNOPERATOR = 3;
 constexpr int END_SLEEP_DEVICE_ADMIN_REASON = 1;
 constexpr int END_SLEEP_USER_REASON = 2;
 constexpr int END_SLEEP_LONG_TIME_UNOPERATE = 3;
-
-constexpr int UNLOCKSCREEN_SUCC = 0;
-constexpr int UNLOCKSCREEN_FAIL = 1;
-constexpr int UNLOCKSCREEN_CANCEL = 2;
-
-constexpr int LOCKSCREEN_SUCC = 0;
-constexpr int LOCKSCREEN_FAIL = 1;
-constexpr int LOCKSCREEN_CANCEL = 2;
 
 constexpr int SCREENLOCK_APP_CAN_USE = 1;
 constexpr int SCREENLOCK_APP_CAN_NOT_USE = 0;

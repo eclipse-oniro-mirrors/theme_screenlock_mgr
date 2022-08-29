@@ -18,7 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "screenlock_unlock_callback.h"
+#include "screenlock_callback.h"
 #include "message_parcel.h"
 
 using namespace OHOS::ScreenLock;
@@ -51,7 +51,7 @@ bool FuzzScreenlockUnlockCallback(const uint8_t* rawData, size_t size)
     MessageParcel reply;
     MessageOption option;
     
-    sptr<ScreenlockUnlockCallback> mScreenlock = new ScreenlockUnlockCallback(mEventListener);
+    sptr<ScreenlockCallback> mScreenlock = new ScreenlockCallback(mEventListener);
     mScreenlock->OnRemoteRequest(code, data, reply, option);
 
     return true;

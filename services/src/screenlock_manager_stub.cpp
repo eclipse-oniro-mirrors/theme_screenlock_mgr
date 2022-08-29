@@ -116,22 +116,19 @@ void ScreenLockManagerStub::OnRequestUnlock(MessageParcel &data, MessageParcel &
 void ScreenLockManagerStub::OnRequestLock(MessageParcel &data, MessageParcel &reply)
 {
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestLock  addr=%{public}p", remote.GetRefPtr());
     if (remote == nullptr) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestLock remote is nullptr");
-        if (!reply.WriteInt32(ERR_NONE)) {
-            return;
-        }
+        reply.WriteInt32(-1);
         return;
     }
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestLock addr=%{public}p", listener.GetRefPtr());
     if (listener.GetRefPtr() == nullptr) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestLock listener is null");
+        SCLOCK_HILOGE("ScreenLockManagerStub::OnRequestLock listener is null");
+        reply.WriteInt32(-1);
         return;
     }
-    RequestLock(listener);
-    return;
+    int32_t status = RequestLock(listener);
+    reply.WriteInt32(status);
 }
 
 int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel &reply)

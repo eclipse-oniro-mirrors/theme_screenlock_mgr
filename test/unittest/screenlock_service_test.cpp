@@ -28,7 +28,7 @@
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
 #include "screenlock_app_manager.h"
-#include "screenlock_unlock_callback_test.h"
+#include "screenlock_callback_test.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -108,6 +108,31 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest004, TestSize.Level0)
 }
 
 /**
+* @tc.name: SetScreenLockTest005
+* @tc.desc: can not get foucs, lock fail.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, SetScreenLockTest005, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test can not get foucs,expect lock fail");
+    ScreenLockManager::GetInstance()->Test_SetScreenLocked(false);
+    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallbackTest(g_unlockTestListener);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener object is nullptr");
+        EXPECT_EQ(false, true);
+        return ;
+    }
+    ScreenLockManager::GetInstance()->RequestLock(listener);
+    std::string event = LOCK_SCREEN_RESULT;
+    ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, SCREEN_FAIL);
+    bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("get not foucs IsScreenLocked  result is-------->%{public}d", result);
+    EXPECT_EQ(result, false);
+}
+
+/**
 * @tc.name: SetScreenLockTest006
 * @tc.desc: can not get foucs, unlock fail.
 * @tc.type: FUNC
@@ -118,7 +143,7 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest006, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test can not get foucs,expect unlock fail");
     ScreenLockManager::GetInstance()->Test_SetScreenLocked(true);
-    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockUnlockCallbackTest(g_unlockTestListener);
+    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallbackTest(g_unlockTestListener);
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
         EXPECT_EQ(false, true);
@@ -126,7 +151,7 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest006, TestSize.Level0)
     }
     ScreenLockManager::GetInstance()->RequestUnlock(listener);
     std::string event = UNLOCK_SCREEN_RESULT;
-    ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, UNLOCKSCREEN_FAIL);
+    ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, SCREEN_FAIL);
     bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("get not foucs IsScreenLocked  result is-------->%{public}d", result);
     EXPECT_EQ(result, true);
@@ -143,7 +168,7 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest007, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test screnlockapp notice unlock fail");
     ScreenLockManager::GetInstance()->Test_SetScreenLocked(true);
-    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockUnlockCallbackTest(g_unlockTestListener);
+    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallbackTest(g_unlockTestListener);
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
         EXPECT_EQ(false, true);
@@ -151,7 +176,7 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest007, TestSize.Level0)
     }
     ScreenLockManager::GetInstance()->RequestUnlock(listener);
     std::string event = UNLOCK_SCREEN_RESULT;
-    ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, UNLOCKSCREEN_FAIL);
+    ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, SCREEN_FAIL);
     bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
     EXPECT_EQ(result, true);

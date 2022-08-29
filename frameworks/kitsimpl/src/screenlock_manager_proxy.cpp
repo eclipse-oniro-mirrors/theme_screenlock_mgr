@@ -81,25 +81,31 @@ void ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInt
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock succeeded.");
 }
 
-void ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     MessageParcel data, reply;
     MessageOption option;
-    data.WriteInterfaceToken(GetDescriptor());
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        SCLOCK_HILOGE(" Failed to write parcelable ");
+        return -1;
+    }
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock started.");
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr");
-        return;
+        return -1;
     }
     if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
         SCLOCK_HILOGE("write parcel failed.");
-        return;
+        return -1;
     }
     int32_t ret = Remote()->SendRequest(REQUEST_LOCK, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
-        return;
+        return -1;
     }
+
+    int32_t status = reply.ReadInt32();
+    return status;
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock succeeded.");
 }
 

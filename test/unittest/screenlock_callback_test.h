@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef NAPI_SCREENLOCK_UNLOCK_CALL_BACK_TEST_H
-#define NAPI_SCREENLOCK_UNLOCK_CALL_BACK_TEST_H
+#ifndef NAPI_SCREENLOCK_CALL_BACK_TEST_H
+#define NAPI_SCREENLOCK_CALL_BACK_TEST_H
 
 #include "screenlock_common.h"
 #include "screenlock_event_list_test.h"
@@ -21,17 +21,17 @@
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenlockUnlockCallbackTest : public ScreenLockSystemAbilityStub {
+class ScreenlockCallbackTest : public ScreenLockSystemAbilityStub {
 public:
-    explicit ScreenlockUnlockCallbackTest(const EventListenerTest &eventListener);
-    virtual ~ScreenlockUnlockCallbackTest();
+    explicit ScreenlockCallbackTest(const EventListenerTest &eventListener);
+    virtual ~ScreenlockCallbackTest();
     void OnCallBack(const std::string &event, bool result) override;
     void OnCallBack(const std::string &event) override;
     void OnCallBack(const std::string &event, int result) override;
 
 private:
-    const EventListenerTest *unlockListener_;
+    EventListenerTest eventListener_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
-#endif //  NAPI_SCREENLOCK_UNLOCK_CALL_BACK_TEST_H
+#endif //  NAPI_SCREENLOCK_CALL_BACK_TEST_H
