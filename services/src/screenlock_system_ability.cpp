@@ -33,6 +33,7 @@
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "os_account_manager.h"
+#include "parameter.h"
 #include "sclock_log.h"
 #include "screenlock_bundlename.h"
 #include "screenlock_common.h"
@@ -54,6 +55,9 @@ const std::int64_t INTERVAL_ZERO = 0L;
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
+const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteApp";
+static constexpr int CONFIG_LEN = 40;
+constexpr int32_t HANDLE_OK = 0;
 
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
@@ -425,18 +429,7 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  Unfocused.");
         return -1;
     }
-
-    std::string bundleName;
-    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
-        return -1;
-    }
-    SCLOCK_HILOGD("ScreenLockSystemAbility::RequestLock bundleName=%{public}s", bundleName.c_str());
-    if (bundleName.empty()) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock calling app is null");
-        return -1;
-    }
-    if (bundleName != BUNDLE_NAME) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock calling app is not Screenlock APP");
+    if (!IsWhiteListApp()) {
         return -1;
     }
     if (IsScreenLocked()) {
@@ -446,7 +439,7 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     lock_.lock();
     lockVecListeners_.push_back(listener);
     lock_.unlock();
-    
+
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
     std::string type = LOCKSCREEN;
     auto iter = registeredListeners_.find(type);
@@ -785,6 +778,44 @@ void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     lock_.unlock();
+}
+
+std::string ScreenLockSystemAbility::GetLockScreenWhiteApp() const
+{
+    char value[CONFIG_LEN] = { 0 };
+    std::string enabledStatus;
+    auto errNo = GetParameter(THEME_SCREENLOCK_WHITEAPP, "", value, CONFIG_LEN);
+    if (errNo > HANDLE_OK) {
+        SCLOCK_HILOGD("GetParameter success, value = %{public}s.", value);
+        return value;
+    }
+    SCLOCK_HILOGD("GetParameter success, errNo = %{public}d.", errNo);
+    return "";
+}
+
+bool ScreenLockSystemAbility::IsWhiteListApp()
+{
+    std::string bundleName = GetLockScreenWhiteApp();
+    if (bundleName.empty()) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::GetLockScreenWhiteApp  is null");
+        return false;
+    }
+    std::string callingBundleName;
+    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), callingBundleName)) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock GetBundleNameByToken is failed");
+        return false;
+    }
+    if (callingBundleName.empty()) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock callingBundleName is null");
+        return false;
+    }
+    if (bundleName != callingBundleName) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock calling app is not Screenlock APP");
+        return false;
+    }
+    SCLOCK_HILOGD("ScreenLockSystemAbility::RequestLock callingBundleName=%{public}s, bundleName=%{public}s",
+        callingBundleName.c_str(), bundleName.c_str());
+    return true;
 }
 } // namespace ScreenLock
 } // namespace OHOS

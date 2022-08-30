@@ -174,6 +174,8 @@ private:
     void InitServiceHandler();
     static bool IsAppInForeground(int32_t tokenId);
     void LockScreentEvent(int stateResult);
+    std::string GetLockScreenWhiteApp() const;
+    bool IsWhiteListApp();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
