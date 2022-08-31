@@ -56,7 +56,7 @@ std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
 const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteApp";
-static constexpr int CONFIG_LEN = 40;
+static constexpr int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
 
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
