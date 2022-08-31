@@ -55,6 +55,8 @@ ohos_shared_library("screenlock_server") {
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
+    "init:libbeget_proxy",
+    "init:libbegetutil",
     "ipc:ipc_core",
     "multimedia_image_standard:image_native",
     "os_account:os_account_innerkits",

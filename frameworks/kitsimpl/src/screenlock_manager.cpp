@@ -112,8 +112,7 @@ int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterfa
         return -1;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestLock succeeded.");
-    int32_t status = screenlockManagerProxy_->RequestLock(listener);
-    return status;
+    return screenlockManagerProxy_->RequestLock(listener);
 }
 
 bool ScreenLockManager::Test_SetScreenLocked(bool isScreenlocked)
