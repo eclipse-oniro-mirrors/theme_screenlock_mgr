@@ -175,7 +175,7 @@ private:
     static bool IsAppInForeground(int32_t tokenId);
     void LockScreentEvent(int stateResult);
     std::string GetLockScreenWhiteApp() const;
-    bool IsWhiteListApp();
+    bool IsWhiteListApp(int32_t callingTokenId);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;

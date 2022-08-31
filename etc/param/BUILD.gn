@@ -15,7 +15,7 @@ import("//build/ohos.gni")
 
 #################################################################################
 
-group("screenlock_etc") {
+group("screenlock_param_group") {
   deps = [
     ":screenlock.para",
     ":screenlock.para.dac",
