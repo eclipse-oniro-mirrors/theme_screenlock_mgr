@@ -12,3 +12,4 @@
 # limitations under the License.
 
 const.theme.screenlockWhiteApp="com.ohos.systemui"
+const.theme.screenlockApp="com.ohos.systemui"
