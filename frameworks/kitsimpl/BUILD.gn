@@ -45,7 +45,6 @@ ohos_shared_library("screenlock_client") {
     ]
     deps = [ "//base/theme/screenlock_mgr/utils:screenlock_utils" ]
     external_deps = [
-      "ability_base:base",
       "c_utils:utils",
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",

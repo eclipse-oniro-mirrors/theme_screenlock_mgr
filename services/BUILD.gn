@@ -44,10 +44,7 @@ ohos_shared_library("screenlock_server") {
     "//third_party/json/include",
     "//base/theme/screenlock_mgr/utils/include",
   ]
-  deps = [
-    "//base/theme/screenlock_mgr/utils:screenlock_utils",
-    "//foundation/window/window_manager/utils:libwmutil",
-  ]
+  deps = [ "//base/theme/screenlock_mgr/utils:screenlock_utils" ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
@@ -55,13 +52,10 @@ ohos_shared_library("screenlock_server") {
     "eventhandler:libeventhandler",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
-    "init:libbeget_proxy",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "multimedia_image_standard:image_native",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
   ]
