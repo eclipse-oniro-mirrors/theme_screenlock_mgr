@@ -44,9 +44,7 @@ ohos_shared_library("screenlock_server") {
     "//third_party/json/include",
     "//base/theme/screenlock_mgr/utils/include",
   ]
-  deps = [
-    "//base/theme/screenlock_mgr/utils:screenlock_utils",
-  ]
+  deps = [ "//base/theme/screenlock_mgr/utils:screenlock_utils" ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
