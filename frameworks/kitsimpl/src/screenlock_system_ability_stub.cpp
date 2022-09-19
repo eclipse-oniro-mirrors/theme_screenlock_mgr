@@ -20,15 +20,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
-void ScreenLockSystemAbilityStub::OnCallBack(const std::string &event, bool result)
-{
-}
-
-void ScreenLockSystemAbilityStub::OnCallBack(const std::string &event)
-{
-}
-
-void ScreenLockSystemAbilityStub::OnCallBack(const std::string &event, int result)
+void ScreenLockSystemAbilityStub::OnCallBack(const SystemEvent &systemEvent)
 {
 }
 
@@ -42,24 +34,9 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(
     }
     SCLOCK_HILOGD("ScreenLockSystemAbilityStub  code----》%{public}u", code);
     switch (code) {
-        case ONCALLBACK_BOOL: {
-            std::string type = data.ReadString();
-            bool result = data.ReadBool();
-            SCLOCK_HILOGD("ONCALLBACK_BOOL type----》%{public}s, result----》%{public}d", type.c_str(), result);
-            OnCallBack(type, result);
-            break;
-        }
-        case ONCALLBACK_VOID: {
-            std::string type = data.ReadString();
-            SCLOCK_HILOGD("ScreenLockSystemAbilityStub  ONCALLBACK_VOID type----》%{public}s", type.c_str());
-            OnCallBack(type);
-            break;
-        }
-        case ONCALLBACK_INT: {
-            std::string type = data.ReadString();
-            int result = data.ReadInt32();
-            SCLOCK_HILOGD("ONCALLBACK_INT type----》%{public}s,result----》%{public}d", type.c_str(), result);
-            OnCallBack(type, result);
+        case ONCALLBACK: {
+            SystemEvent systemEvent(data.ReadString(), data.ReadString());
+            OnCallBack(systemEvent);
             break;
         }
         default: {

@@ -22,17 +22,27 @@
 namespace OHOS {
 namespace ScreenLock {
 enum CALLBACK_TYPE {
-    ONCALLBACK_BOOL,
-    ONCALLBACK_VOID,
-    ONCALLBACK_INT,
+    ONCALLBACK,
+};
+
+struct SystemEvent {
+    std::string eventType_;
+    std::string params_;
+    SystemEvent(std::string eventType, std::string params) : eventType_(eventType), params_(params)
+    {
+    }
+    SystemEvent(std::string eventType) : eventType_(eventType)
+    {
+    }
+    SystemEvent()
+    {
+    }
 };
 
 class ScreenLockSystemAbilityInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface");
-    virtual void OnCallBack(const std::string &event, bool result) = 0;
-    virtual void OnCallBack(const std::string &event) = 0;
-    virtual void OnCallBack(const std::string &event, int result) = 0;
+    virtual void OnCallBack(const SystemEvent &systemEvent) = 0;
 };
 } // namespace ScreenLock
 } // namespace OHOS

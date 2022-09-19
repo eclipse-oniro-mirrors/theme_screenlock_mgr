@@ -31,8 +31,7 @@ public:
     virtual bool GetSecure() = 0;
     virtual void RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
-    virtual bool On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type) = 0;
-    virtual bool Off(const std::string &type) = 0;
+    virtual bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual bool SendScreenLockEvent(const std::string &event, int param) = 0;
     virtual bool Test_SetScreenLocked(const bool isScreenlocked) = 0;
     virtual bool Test_RuntimeNotify(const std::string &event, int param) = 0;
@@ -41,15 +40,14 @@ public:
 
 enum {
     IS_SCREEN_LOCKED = 0,
-    IS_SECURE_MODE = 1,
-    REQUEST_UNLOCK = 2,
-    REQUEST_LOCK = 3,
-    ON = 4,
-    OFF = 5,
-    SEND_SCREENLOCK_EVENT = 6,
-    TEST_SET_SCREENLOCKED = 7,
-    TEST_RUNTIME_NOTIFY = 8,
-    TEST_GET_RUNTIME_STATE = 9,
+    IS_SECURE_MODE,
+    REQUEST_UNLOCK,
+    REQUEST_LOCK,
+    ONSYSTEMEVENT,
+    SEND_SCREENLOCK_EVENT,
+    TEST_SET_SCREENLOCKED,
+    TEST_RUNTIME_NOTIFY,
+    TEST_GET_RUNTIME_STATE,
 };
 } // namespace ScreenLock
 } // namespace OHOS

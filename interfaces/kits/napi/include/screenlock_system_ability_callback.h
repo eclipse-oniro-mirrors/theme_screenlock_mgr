@@ -26,17 +26,12 @@ namespace OHOS {
 namespace ScreenLock {
 class ScreenlockSystemAbilityCallback : public ScreenLockSystemAbilityStub {
 public:
-    ScreenlockSystemAbilityCallback(int32_t eventType, std::list<EventListener> &eventListener);
+    ScreenlockSystemAbilityCallback(EventListener &eventListener);
     virtual ~ScreenlockSystemAbilityCallback();
-    void OnCallBack(const std::string &event, bool result) override;
-    void OnCallBack(const std::string &event) override;
-    void OnCallBack(const std::string &event, int result) override;
-    static int32_t GetEventType(const std::string &type);
-    static bool MatchEventType(const std::string &type, const std::string &goalTypeStr);
+    void OnCallBack(const SystemEvent &systemEvent) override;
 
 private:
-    int32_t eventType_;
-    std::list<EventListener> *listenerList_;
+    EventListener eventListener_;
 };
 } // namespace ScreenLock
 } // namespace OHOS

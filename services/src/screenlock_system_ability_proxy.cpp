@@ -24,33 +24,7 @@ ScreenLockSystemAbilityProxy::ScreenLockSystemAbilityProxy(const sptr<IRemoteObj
 {
 }
 
-void ScreenLockSystemAbilityProxy::OnCallBack(const std::string &event, bool result)
-{
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack Start");
-    SCLOCK_HILOGD("event----》%{public}s,result----》%{public}d", event.c_str(), result);
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    if (!data.WriteInterfaceToken(ScreenLockSystemAbilityProxy::GetDescriptor())) {
-        SCLOCK_HILOGE("write descriptor failed");
-        return;
-    }
-    if (!data.WriteString(event)) {
-        SCLOCK_HILOGE("write string failed");
-        return;
-    }
-    if (!data.WriteBool(result)) {
-        SCLOCK_HILOGE("write bool failed");
-        return;
-    }
-    int error = Remote()->SendRequest(ONCALLBACK_BOOL, data, reply, option);
-    if (error != 0) {
-        SCLOCK_HILOGE("SendRequest failed, error %{public}d", error);
-    }
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack End");
-}
-
-void ScreenLockSystemAbilityProxy::OnCallBack(const std::string &event)
+void ScreenLockSystemAbilityProxy::OnCallBack(const SystemEvent &systemEvent)
 {
     SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack Start");
     MessageParcel data;
@@ -60,40 +34,15 @@ void ScreenLockSystemAbilityProxy::OnCallBack(const std::string &event)
         SCLOCK_HILOGE("write descriptor failed");
         return;
     }
-    if (!data.WriteString(event)) {
+    if (!data.WriteString(systemEvent.eventType_)) {
         SCLOCK_HILOGE("write string failed");
         return;
     }
-    int error = Remote()->SendRequest(ONCALLBACK_VOID, data, reply, option);
-    if (error != 0) {
-        SCLOCK_HILOGE("SendRequest failed, error %{public}d", error);
-    }
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack End");
-}
-
-void ScreenLockSystemAbilityProxy::OnCallBack(const std::string &event, int result)
-{
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack Start");
-    SCLOCK_HILOGD("event =%{public}s, result = %{public}d", event.c_str(), result);
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    if (!data.WriteInterfaceToken(ScreenLockSystemAbilityProxy::GetDescriptor())) {
-        SCLOCK_HILOGE("write descriptor failed");
-        return;
-    }
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack Start1");
-    if (!data.WriteString(event)) {
+    if (!data.WriteString(systemEvent.params_)) {
         SCLOCK_HILOGE("write string failed");
         return;
     }
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack Start2");
-    if (!data.WriteInt32(result)) {
-        SCLOCK_HILOGE("write bool failed");
-        return;
-    }
-    SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack Start3");
-    int error = Remote()->SendRequest(ONCALLBACK_INT, data, reply, option);
+    int error = Remote()->SendRequest(ONCALLBACK, data, reply, option);
     if (error != 0) {
         SCLOCK_HILOGE("SendRequest failed, error %{public}d", error);
     }

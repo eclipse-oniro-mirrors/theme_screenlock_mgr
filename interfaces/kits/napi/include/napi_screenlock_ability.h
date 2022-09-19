@@ -18,6 +18,7 @@
 #include "async_call.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
+#include "screenlock_system_ability_interface.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -71,8 +72,7 @@ struct ScreenlockOnCallBack {
     napi_env env;
     napi_ref callbackref;
     napi_value thisVar;
-    int intCallbackValue;
-    bool boolCallBackValue;
+    SystemEvent systemEvent;
     napi_deferred deferred = nullptr;
 };
 
@@ -84,8 +84,7 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info);
 napi_value NAPI_LockScreen(napi_env env, napi_callback_info info);
 napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info);
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
-napi_value NAPI_On(napi_env env, napi_callback_info info);
-napi_value NAPI_Off(napi_env env, napi_callback_info info);
+napi_value NAPI_OnsystemEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_TestSetScreenLocked(napi_env env, napi_callback_info info);
 napi_value NAPI_TestRuntimeNotify(napi_env env, napi_callback_info info);
 napi_value NAPI_TestGetRuntimeState(napi_env env, napi_callback_info info);
