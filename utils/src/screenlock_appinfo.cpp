@@ -20,7 +20,7 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace Security::AccessToken;
-bool ScreenLockBundleName::GetBundleNameByToken(std::int32_t tokenId, std::string &bundleName)
+bool ScreenLockAppInfo::GetAppInfoByToken(std::int32_t tokenId, AppInfo &appInfo)
 {
     int32_t tokenType = AccessTokenKit::GetTokenTypeFlag(tokenId);
     switch (tokenType) {
@@ -30,7 +30,8 @@ bool ScreenLockBundleName::GetBundleNameByToken(std::int32_t tokenId, std::strin
                 SCLOCK_HILOGE("get hap token info fail");
                 return false;
             }
-            bundleName = hapInfo.bundleName;
+            appInfo.bundleName = hapInfo.bundleName;
+            appInfo.appId = hapInfo.appID;
             return true;
         }
         case ATokenTypeEnum::TOKEN_NATIVE:
@@ -40,7 +41,7 @@ bool ScreenLockBundleName::GetBundleNameByToken(std::int32_t tokenId, std::strin
                 SCLOCK_HILOGE("get native token info fail");
                 return false;
             }
-            bundleName = tokenInfo.processName;
+            appInfo.bundleName = tokenInfo.processName;
             return true;
         }
         default: {

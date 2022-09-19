@@ -11,5 +11,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-const.theme.screenlockWhiteApp="com.ohos.systemui"
-const.theme.screenlockApp="com.ohos.systemui"
+const.theme.screenlockWhiteApp="com.ohos.systemui_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM="
+const.theme.screenlockApp="com.ohos.systemui_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM="

@@ -27,11 +27,6 @@ namespace ScreenLock {
 #define PARAM_ONE 1
 #define PARAM_TWO 2
 
-struct AppInfo {
-    std::string bundleName_;
-    int userId_;
-};
-
 const std::string BEGIN_WAKEUP = "beginWakeUp";
 const std::string END_WAKEUP = "endWakeUp";
 const std::string BEGIN_SCREEN_ON = "beginScreenOn";

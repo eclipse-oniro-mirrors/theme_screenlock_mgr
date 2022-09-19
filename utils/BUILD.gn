@@ -24,7 +24,7 @@ config("screenlock_utils_config") {
 }
 ohos_shared_library("screenlock_utils") {
   if (is_standard_system) {
-    sources = [ "src/screenlock_bundlename.cpp" ]
+    sources = [ "src/screenlock_appinfo.cpp" ]
 
     public_configs = [ ":screenlock_utils_config" ]
 
