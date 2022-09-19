@@ -767,8 +767,8 @@ std::string ScreenLockSystemAbility::GetScreenlockParameter(const char *key) con
 
 bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const char *key)
 {
-    std::string whileListAppId = GetScreenlockParameter(key);
-    if (whileListAppId.empty()) {
+    std::string whiteListAppId = GetScreenlockParameter(key);
+    if (whiteListAppId.empty()) {
         SCLOCK_HILOGE("ScreenLockSystemAbility::GetLockScreenWhiteApp  is null");
         return false;
     }
@@ -781,12 +781,12 @@ bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const char 
         SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp appInfo.appId is null");
         return false;
     }
-    if (whileListAppId != appInfo.appId) {
+    if (whiteListAppId != appInfo.appId) {
         SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp calling app is not Screenlock APP");
         return false;
     }
-    SCLOCK_HILOGI("ScreenLockSystemAbility::IsWhiteListApp callingAppid=%{public}s, whileListAppId=%{public}s",
-        appInfo.appId.c_str(), whileListAppId.c_str());
+    SCLOCK_HILOGI("ScreenLockSystemAbility::IsWhiteListApp callingAppid=%{public}s, whiteListAppId=%{public}s",
+        appInfo.appId.c_str(), whiteListAppId.c_str());
     return true;
 }
 } // namespace ScreenLock
