@@ -27,11 +27,6 @@ namespace ScreenLock {
 #define PARAM_ONE 1
 #define PARAM_TWO 2
 
-struct AppInfo {
-    std::string bundleName_;
-    int userId_;
-};
-
 const std::string BEGIN_WAKEUP = "beginWakeUp";
 const std::string END_WAKEUP = "endWakeUp";
 const std::string BEGIN_SCREEN_ON = "beginScreenOn";
@@ -49,7 +44,6 @@ const std::string LOCKSCREEN = "lockScreen";
 const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
 const std::string SCREEN_DRAWDONE = "screenDrawDone";
 const std::string SYSTEM_READY = "systemReady";
-const std::string BUNDLE_NAME = "com.ohos.systemui";
 const int USER_NULL = -10000;
 enum ScreenLockModule {
     SCREENLOCK_MODULE_SERVICE_ID = 0x04,
