@@ -13,20 +13,26 @@
  * limitations under the License.
  */
 
-#ifndef UTILS_INCLUDE_SCLOCK_BUNDLLE_NAME_H
-#define UTILS_INCLUDE_SCLOCK_BUNDLLE_NAME_H
+#ifndef UTILS_INCLUDE_SCLOCK_APPINFO_H
+#define UTILS_INCLUDE_SCLOCK_APPINFO_H
 
 #include <string>
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenLockBundleName {
+struct AppInfo
+{
+    std::string bundleName;
+    std::string appId;
+};
+
+class ScreenLockAppInfo {
 public:
-    ScreenLockBundleName() = default;
-    ~ScreenLockBundleName() = default;
-    static bool GetBundleNameByToken(std::int32_t tokenId, std::string &bundleName);
+    ScreenLockAppInfo() = default;
+    ~ScreenLockAppInfo() = default;
+    static bool GetAppInfoByToken(std::int32_t tokenId, AppInfo &appInfo);
 };
 } // namespace ScreenLock
 } // namespace OHOS
 
-#endif // UTILS_INCLUDE_SCLOCK_BUNDLLE_NAME_H
+#endif // UTILS_INCLUDE_SCLOCK_APPINFO_H

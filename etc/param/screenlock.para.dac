@@ -12,3 +12,4 @@
 # limitations under the License.
 
 const.theme.screenlockWhiteApp = root:root:0775
+const.theme.screenlockApp = root:root:0775
