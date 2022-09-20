@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "screenlock_bundlename.h"
+#include "screenlock_appinfo.h"
 
 #include "accesstoken_kit.h"
 #include "sclock_log.h"
