@@ -24,7 +24,7 @@
     "ram":"1024KB",
     "deps": {
       "components": [
-        "multimedia_image_standard",
+        "multimedia_image_framework",
         "safwk",
         "napi",
         "samgr",
