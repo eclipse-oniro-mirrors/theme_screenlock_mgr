@@ -458,19 +458,9 @@ bool ScreenLockSystemAbility::GetSecure()
 bool ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent started.");
-    int callingUid = IPCSkeleton::GetCallingUid();
-    SCLOCK_HILOGD("ScreenLockSystemAbility::OnSystemEvent callingUid=%{public}d", callingUid);
-    std::string bundleName;
-    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
-        return false;
-    }
-    SCLOCK_HILOGD("ScreenLockSystemAbility::OnSystemEvent bundleName=%{public}s", bundleName.c_str());
-    if (bundleName.empty()) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::OnSystemEvent calling app is null");
-        return false;
-    }
-    if (bundleName != BUNDLE_NAME) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::OnSystemEvent calling app is not Screenlock APP");
+    
+    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID())) {
+        SCLOCK_HILOGD("OnSystemEvent calling app is not whitelist app");
         return false;
     }
 
