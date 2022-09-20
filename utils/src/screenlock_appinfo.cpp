@@ -42,6 +42,7 @@ bool ScreenLockAppInfo::GetAppInfoByToken(std::int32_t tokenId, AppInfo &appInfo
                 return false;
             }
             appInfo.bundleName = tokenInfo.processName;
+            appInfo.appId = tokenInfo.processName;
             return true;
         }
         default: {
