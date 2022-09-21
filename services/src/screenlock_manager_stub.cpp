@@ -150,7 +150,7 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
         return -1;
     }
     SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn out");
-    return 0;
+    return ret;
 }
 
 bool ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
