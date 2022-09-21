@@ -26,6 +26,7 @@ std::mutex ScreenLockAppManager::instanceLock_;
 sptr<ScreenLockAppManager> ScreenLockAppManager::instance_;
 sptr<ScreenLockManagerInterface> ScreenLockAppManager::screenlockManagerProxy_;
 sptr<ScreenLockAppDeathRecipient> ScreenLockAppManager::deathRecipient_;
+sptr<ScreenLockSystemAbilityInterface> ScreenLockAppManager::systemEventListener_;
 
 ScreenLockAppManager::ScreenLockAppManager()
 {
@@ -64,39 +65,24 @@ bool ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int par
     return flag;
 }
 
-bool ScreenLockAppManager::On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type)
+bool ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    SCLOCK_HILOGD("ScreenLockAppManager::On in");
+    SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent in");
     if (screenlockManagerProxy_ == nullptr) {
         SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
         screenlockManagerProxy_ = GetScreenLockManagerProxy();
     }
     if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGE("ScreenLockAppManager::On quit because redoing GetScreenLockManagerProxy failed.");
+        SCLOCK_HILOGE("ScreenLockAppManager::OnSystemEvent quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr.");
         return false;
     }
-    bool status = screenlockManagerProxy_->On(listener, type);
-    SCLOCK_HILOGD("ScreenLockAppManager::On out, status=%{public}d", status);
-    return status;
-}
-
-bool ScreenLockAppManager::Off(const std::string &type)
-{
-    SCLOCK_HILOGD("ScreenLockAppManager::Off in");
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGE("ScreenLockAppManager::Off quit because redoing GetScreenLockManagerProxy failed.");
-        return false;
-    }
-    bool status = screenlockManagerProxy_->Off(type);
-    SCLOCK_HILOGD("ScreenLockAppManager::Off out");
+    systemEventListener_ = listener;
+    bool status = screenlockManagerProxy_->OnSystemEvent(listener);
+    SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent out, status=%{public}d", status);
     return status;
 }
 
@@ -127,6 +113,10 @@ sptr<ScreenLockManagerInterface> ScreenLockAppManager::GetScreenLockManagerProxy
 void ScreenLockAppManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
 {
     screenlockManagerProxy_ = GetScreenLockManagerProxy();
+    if (systemEventListener_ != nullptr) {
+        SystemEvent systemEvent(SERVICE_RESTART);
+        systemEventListener_->OnCallBack(systemEvent);
+    }
 }
 
 ScreenLockAppDeathRecipient::ScreenLockAppDeathRecipient()

@@ -27,17 +27,9 @@ ScreenlockCallbackTest::~ScreenlockCallbackTest()
 {
 }
 
-void ScreenlockCallbackTest::OnCallBack(const std::string &event, bool result)
+void ScreenlockCallbackTest::OnCallBack(const SystemEvent &systemEvent)
 {
-}
-
-void ScreenlockCallbackTest::OnCallBack(const std::string &event)
-{
-}
-
-void ScreenlockCallbackTest::OnCallBack(const std::string &event, int result)
-{
-    SCLOCK_HILOGD("event=%{public}s,result=%{public}d", event.c_str(), result);
+    SCLOCK_HILOGD("event=%{public}s,params=%{public}s", systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
 }
 } // namespace ScreenLock
 } // namespace OHOS

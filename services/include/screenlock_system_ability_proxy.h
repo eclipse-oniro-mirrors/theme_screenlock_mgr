@@ -28,9 +28,7 @@ class ScreenLockSystemAbilityProxy : public IRemoteProxy<ScreenLockSystemAbility
 public:
     explicit ScreenLockSystemAbilityProxy(const sptr<IRemoteObject> &impl);
     ~ScreenLockSystemAbilityProxy() = default;
-    void OnCallBack(const std::string &event, bool result)  override;
-    void OnCallBack(const std::string &event, int result)  override;
-    void OnCallBack(const std::string &event)  override;
+    void OnCallBack(const SystemEvent &systemEvent) override;
 
 private:
     static inline BrokerDelegator<ScreenLockSystemAbilityProxy> delegator_;
