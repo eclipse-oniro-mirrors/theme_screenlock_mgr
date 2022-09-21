@@ -35,7 +35,7 @@
 #include "os_account_manager.h"
 #include "parameter.h"
 #include "sclock_log.h"
-#include "screenlock_bundlename.h"
+#include "screenlock_appinfo.h"
 #include "screenlock_common.h"
 #include "screenlock_get_info_callback.h"
 #include "system_ability.h"
@@ -56,6 +56,7 @@ std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
 constexpr const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteApp";
+constexpr const char *THEME_SCREENLOCK_APP = "const.theme.screenlockApp";
 static constexpr const int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
 
@@ -384,7 +385,8 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  Unfocused.");
         return -1;
     }
-    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID())) {
+    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_WHITEAPP)) {
+        SCLOCK_HILOGD("RequestLock calling app is not whitelist app");
         return -1;
     }
     if (IsScreenLocked()) {
@@ -458,8 +460,7 @@ bool ScreenLockSystemAbility::GetSecure()
 bool ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent started.");
-    
-    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID())) {
+    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
         SCLOCK_HILOGD("OnSystemEvent calling app is not whitelist app");
         return false;
     }
@@ -473,16 +474,8 @@ bool ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilityIn
 bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SendScreenLockEvent started.");
-    std::string bundleName;
-    if (!ScreenLockBundleName::GetBundleNameByToken(IPCSkeleton::GetCallingTokenID(), bundleName)) {
-        return false;
-    }
-    if (bundleName.empty()) {
-        SCLOCK_HILOGE("SendScreenLockEvent calling app is null");
-        return false;
-    }
-    if (bundleName != BUNDLE_NAME) {
-        SCLOCK_HILOGE("SendScreenLockEvent calling app is not Screenlock APP");
+    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
+        SCLOCK_HILOGD("SendScreenLockEvent calling app is not whitelist app");
         return false;
     }
     SCLOCK_HILOGD("event=%{public}s ,param=%{public}d", event.c_str(), param);
@@ -647,16 +640,16 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
 bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
 {
     using namespace OHOS::AAFwk;
-    std::string bundleName;
-    auto ret = ScreenLockBundleName::GetBundleNameByToken(tokenId, bundleName);
-    if (!ret || bundleName.empty()) {
+    AppInfo appInfo;
+    auto ret = ScreenLockAppInfo::GetAppInfoByToken(tokenId, appInfo);
+    if (!ret || appInfo.bundleName.empty()) {
         SCLOCK_HILOGI("get bundle name by token failed");
         return false;
     }
     auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
     SCLOCK_HILOGD(" TopelementName:%{public}s, elementName.GetBundleName:%{public}s",
-        elementName.GetBundleName().c_str(), bundleName.c_str());
-    return elementName.GetBundleName() == bundleName;
+        elementName.GetBundleName().c_str(),  appInfo.bundleName.c_str());
+    return elementName.GetBundleName() ==  appInfo.bundleName;
 }
 
 void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
@@ -682,11 +675,11 @@ void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
     lock_.unlock();
 }
 
-std::string ScreenLockSystemAbility::GetLockScreenWhiteApp() const
+std::string ScreenLockSystemAbility::GetScreenlockParameter(const std::string &key) const
 {
     char value[CONFIG_LEN] = { 0 };
     std::string enabledStatus;
-    auto errNo = GetParameter(THEME_SCREENLOCK_WHITEAPP, "", value, CONFIG_LEN);
+    auto errNo = GetParameter(key.c_str(), "", value, CONFIG_LEN);
     if (errNo > HANDLE_OK) {
         SCLOCK_HILOGD("GetParameter success, value = %{public}s.", value);
         return value;
@@ -695,28 +688,28 @@ std::string ScreenLockSystemAbility::GetLockScreenWhiteApp() const
     return "";
 }
 
-bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId)
+bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::string &key)
 {
-    std::string bundleName = GetLockScreenWhiteApp();
-    if (bundleName.empty()) {
+    std::string whiteListAppId = GetScreenlockParameter(key);
+    if (whiteListAppId.empty()) {
         SCLOCK_HILOGE("ScreenLockSystemAbility::GetLockScreenWhiteApp  is null");
         return false;
     }
-    std::string callingBundleName;
-    if (!ScreenLockBundleName::GetBundleNameByToken(callingTokenId, callingBundleName)) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock GetBundleNameByToken is failed");
+    AppInfo appInfo;
+    if (!ScreenLockAppInfo::GetAppInfoByToken(callingTokenId, appInfo)) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp GetAppInfoByToken is failed");
         return false;
     }
-    if (callingBundleName.empty()) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock callingBundleName is null");
+    if (appInfo.appId.empty()) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp appInfo.appId is null");
         return false;
     }
-    if (bundleName != callingBundleName) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::RequestLock calling app is not Screenlock APP");
+    if (whiteListAppId != appInfo.appId) {
+        SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp calling app is not Screenlock APP");
         return false;
     }
-    SCLOCK_HILOGI("ScreenLockSystemAbility::RequestLock callingBundleName=%{public}s, bundleName=%{public}s",
-        callingBundleName.c_str(), bundleName.c_str());
+    SCLOCK_HILOGI("ScreenLockSystemAbility::IsWhiteListApp callingAppid=%{public}.5s, whiteListAppId=%{public}.5s",
+        appInfo.appId.c_str(), whiteListAppId.c_str());
     return true;
 }
 } // namespace ScreenLock
