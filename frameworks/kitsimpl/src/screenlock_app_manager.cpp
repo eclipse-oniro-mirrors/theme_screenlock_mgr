@@ -114,7 +114,7 @@ void ScreenLockAppManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
 {
     screenlockManagerProxy_ = GetScreenLockManagerProxy();
     if (systemEventListener_ != nullptr) {
-        SystemEvent systemEvent("serviceRestart");
+        SystemEvent systemEvent(SERVICE_RESTART);
         systemEventListener_->OnCallBack(systemEvent);
     }
 }

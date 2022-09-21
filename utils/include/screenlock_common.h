@@ -50,6 +50,7 @@ const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
 const std::string SCREEN_DRAWDONE = "screenDrawDone";
 const std::string SYSTEM_READY = "systemReady";
 const std::string BUNDLE_NAME = "com.ohos.systemui";
+const std::string SERVICE_RESTART = "serviceRestart";
 const int USER_NULL = -10000;
 enum ScreenLockModule {
     SCREENLOCK_MODULE_SERVICE_ID = 0x04,
