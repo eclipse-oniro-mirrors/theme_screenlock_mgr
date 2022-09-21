@@ -48,6 +48,7 @@ private:
     static sptr<ScreenLockAppManager> instance_;
     static sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
     static sptr<ScreenLockAppDeathRecipient> deathRecipient_;
+    static std::mutex listenerLock_;
     static sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
 };
 } // namespace ScreenLock
