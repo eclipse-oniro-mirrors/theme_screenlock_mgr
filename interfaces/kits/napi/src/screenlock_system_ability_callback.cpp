@@ -28,7 +28,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
-ScreenlockSystemAbilityCallback::ScreenlockSystemAbilityCallback(EventListener &eventListener)
+ScreenlockSystemAbilityCallback::ScreenlockSystemAbilityCallback(const EventListener &eventListener)
     : eventListener_(eventListener)
 {
 }

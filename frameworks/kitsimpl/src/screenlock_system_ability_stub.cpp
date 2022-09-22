@@ -34,11 +34,6 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(
     }
     SCLOCK_HILOGD("ScreenLockSystemAbilityStub  code----》%{public}u", code);
     switch (code) {
-        case ONCALLBACK_BOOL:
-        case ONCALLBACK_VOID:
-        case ONCALLBACK_INT: {
-            break;
-        }
         case ONCALLBACK: {
             SystemEvent systemEvent(data.ReadString(), data.ReadString());
             OnCallBack(systemEvent);

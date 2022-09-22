@@ -25,6 +25,7 @@
 #include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
+#include "string_ex.h"
 #include "uv_queue.h"
 
 namespace OHOS {
@@ -52,10 +53,13 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
         return;
     }
     napi_value isResult = 0;
-    int intCallbackValue = atoi(screenlockOnCallBackPtr->systemEvent.params_.c_str());
+    int32_t onCallbackResult = -1;
+    if (!StringUtil::StrToInt(screenlockOnCallBackPtr->systemEvent.params_, onCallbackResult)) {
+        return;
+    }
     if (screenlockOnCallBackPtr->deferred) {
         napi_get_undefined(screenlockOnCallBackPtr->env, &isResult);
-        if (intCallbackValue == SCREEN_SUCC) {
+        if (onCallbackResult == SCREEN_SUCC) {
             napi_resolve_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, isResult);
         } else {
             napi_reject_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, isResult);
@@ -66,9 +70,9 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
         napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackref, &callbackFunc);
         napi_value callbackResult = nullptr;
         napi_value callBackValue[ARGS_SIZE_TWO] = { 0 };
-        if (intCallbackValue == SCREEN_SUCC) {
+        if (onCallbackResult == SCREEN_SUCC) {
             napi_get_undefined(screenlockOnCallBackPtr->env, &callBackValue[0]);
-            napi_create_int32(screenlockOnCallBackPtr->env, static_cast<int32_t>(intCallbackValue), &callBackValue[1]);
+            napi_create_int32(screenlockOnCallBackPtr->env, static_cast<int32_t>(onCallbackResult), &callBackValue[1]);
         } else {
             const char *str = "ScreenlockCallback failed";
             napi_create_string_utf8(screenlockOnCallBackPtr->env, str, strlen(str), &callBackValue[0]);
