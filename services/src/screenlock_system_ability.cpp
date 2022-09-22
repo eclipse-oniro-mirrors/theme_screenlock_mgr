@@ -196,9 +196,9 @@ void ScreenLockSystemAbility::OnBeginScreenOff()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOff started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_OFF));
-    SystemEvent systemEvent(BEGIN_SCREEN_OFF);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOff started1.");
+        SystemEvent systemEvent(BEGIN_SCREEN_OFF);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -208,9 +208,9 @@ void ScreenLockSystemAbility::OnEndScreenOff()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOff started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_END_OFF));
-    SystemEvent systemEvent(END_SCREEN_OFF);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOff started1.");
+        SystemEvent systemEvent(END_SCREEN_OFF);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -220,9 +220,9 @@ void ScreenLockSystemAbility::OnBeginScreenOn()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOn started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON));
-    SystemEvent systemEvent(BEGIN_SCREEN_ON);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOn started1.");
+        SystemEvent systemEvent(BEGIN_SCREEN_ON);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -252,9 +252,9 @@ void ScreenLockSystemAbility::OnEndScreenOn()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOn started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_END_ON));
-    SystemEvent systemEvent(END_SCREEN_ON);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOn started1.");
+        SystemEvent systemEvent(END_SCREEN_ON);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -264,9 +264,9 @@ void ScreenLockSystemAbility::OnBeginWakeUp()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginWakeUp started.");
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP));
-    SystemEvent systemEvent(BEGIN_WAKEUP);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginWakeUp started1.");
+        SystemEvent systemEvent(BEGIN_WAKEUP);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -276,9 +276,9 @@ void ScreenLockSystemAbility::OnEndWakeUp()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndWakeUp started.");
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP));
-    SystemEvent systemEvent(END_WAKEUP);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndWakeUp started1.");
+        SystemEvent systemEvent(END_WAKEUP);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -289,9 +289,9 @@ void ScreenLockSystemAbility::OnBeginSleep(const int why)
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginSleep started.");
     stateValue_.SetOffReason(why);
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP));
-    SystemEvent systemEvent(BEGIN_SLEEP, std::to_string(why));
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginSleep started1.");
+        SystemEvent systemEvent(BEGIN_SLEEP, std::to_string(why));
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -301,9 +301,9 @@ void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started.");
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
-    SystemEvent systemEvent(END_SLEEP, std::to_string(why));
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started1.");
+        SystemEvent systemEvent(END_SLEEP, std::to_string(why));
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -311,7 +311,7 @@ void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
 
 void ScreenLockSystemAbility::OnChangeUser(const int newUserId)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser started. newUserId---->%{public}d", newUserId);
+    SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser started. newUserId %{public}d", newUserId);
     const int minUserId = 0;
     const int maxUserID = 999999999;
     if (newUserId < minUserId || newUserId >= maxUserID) {
@@ -319,9 +319,9 @@ void ScreenLockSystemAbility::OnChangeUser(const int newUserId)
         return;
     }
     stateValue_.SetCurrentUser(newUserId);
-    SystemEvent systemEvent(CHANGE_USER, std::to_string(newUserId));
     auto callback = [=]() {
-        SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser OnCallBack. newUserId---->%{public}d", newUserId);
+        SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser OnCallBack. newUserId %{public}d", newUserId);
+        SystemEvent systemEvent(CHANGE_USER, std::to_string(newUserId));
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -331,9 +331,9 @@ void ScreenLockSystemAbility::OnScreenlockEnabled(bool enabled)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnScreenlockEnabled started.");
     stateValue_.SetScreenlockEnabled(enabled);
-    SystemEvent systemEvent(SCREENLOCK_ENABLED, std::to_string(enabled));
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility iter exist.");
+        SystemEvent systemEvent(SCREENLOCK_ENABLED, std::to_string(enabled));
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -342,9 +342,9 @@ void ScreenLockSystemAbility::OnScreenlockEnabled(bool enabled)
 void ScreenLockSystemAbility::OnExitAnimation()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnExitAnimation started.");
-    SystemEvent systemEvent(EXIT_ANIMATION);
     auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnExitAnimation started1.");
+        SystemEvent systemEvent(EXIT_ANIMATION);
         systemEventListener_->OnCallBack(systemEvent);
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
@@ -368,10 +368,10 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     }
     unlockVecListeners_.push_back(listener);
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock listener= %{public}p", listener.GetRefPtr());
-    SystemEvent systemEvent(UNLOCKSCREEN);
     auto callback = [=]() {
         StartAsyncTrace(
             HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
+        SystemEvent systemEvent(UNLOCKSCREEN);
         systemEventListener_->OnCallBack(systemEvent);
         FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock end callback", HITRACE_UNLOCKSCREEN);
     };
@@ -398,9 +398,9 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     lock_.unlock();
 
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
-    SystemEvent systemEvent(LOCKSCREEN);
     auto callback = [=]() {
         StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock begin callback", HITRACE_LOCKSCREEN);
+        SystemEvent systemEvent(LOCKSCREEN);
         systemEventListener_->OnCallBack(systemEvent);
         FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock end callback", HITRACE_LOCKSCREEN);
     };

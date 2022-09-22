@@ -27,6 +27,7 @@ ohos_shared_library("screenlock") {
       "//base/theme/screenlock_mgr/interfaces/kits/napi/include",
       "//base/theme/screenlock_mgr/services/include",
       "//base/theme/screenlock_mgr/utils/include",
+      "//commonlibrary/c_utils/base/include",
     ]
     public_configs = [ ":screenlock_mgr_interfaces_kits_napi_config" ]
     sources = [

@@ -23,10 +23,10 @@
 namespace OHOS {
 namespace ScreenLock {
 std::mutex ScreenLockAppManager::instanceLock_;
-std::mutex ScreenLockAppManager::listenerLock_;
 sptr<ScreenLockAppManager> ScreenLockAppManager::instance_;
 sptr<ScreenLockManagerInterface> ScreenLockAppManager::screenlockManagerProxy_;
 sptr<ScreenLockAppDeathRecipient> ScreenLockAppManager::deathRecipient_;
+std::mutex ScreenLockAppManager::listenerLock_;
 sptr<ScreenLockSystemAbilityInterface> ScreenLockAppManager::systemEventListener_;
 
 ScreenLockAppManager::ScreenLockAppManager()
