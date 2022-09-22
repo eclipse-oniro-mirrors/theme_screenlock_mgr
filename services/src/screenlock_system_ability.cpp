@@ -196,62 +196,49 @@ void ScreenLockSystemAbility::OnBeginScreenOff()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOff started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_OFF));
-    std::string type = BEGIN_SCREEN_OFF;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOff started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOff started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(BEGIN_SCREEN_OFF);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnEndScreenOff()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOff started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_END_OFF));
-    std::string type = END_SCREEN_OFF;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOff started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOff started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(END_SCREEN_OFF);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnBeginScreenOn()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOn started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON));
-    std::string type = BEGIN_SCREEN_ON;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOn started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOn started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(BEGIN_SCREEN_ON);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnSystemReady()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady started.");
-    std::string type = SYSTEM_READY;
     bool isExitFlag = false;
     int tryTime = 20;
     int minTryTime = 0;
     while (!isExitFlag && (tryTime > minTryTime)) {
-        auto iter = registeredListeners_.find(type);
-        if (iter != registeredListeners_.end()) {
+        if (systemEventListener_ != nullptr) {
             SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady started1.");
-            iter->second->OnCallBack(type);
+            SystemEvent systemEvent(SYSTEM_READY);
+            systemEventListener_->OnCallBack(systemEvent);
             isExitFlag = true;
         } else {
             SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady type not found., flag_ = %{public}d", flag_);
@@ -265,48 +252,36 @@ void ScreenLockSystemAbility::OnEndScreenOn()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOn started.");
     stateValue_.SetScreenState(static_cast<int>(ScreenState::SCREEN_STATE_END_ON));
-    std::string type = END_SCREEN_ON;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOn started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOn started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(END_SCREEN_ON);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnBeginWakeUp()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginWakeUp started.");
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP));
-    std::string type = BEGIN_WAKEUP;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginWakeUp started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginWakeUp started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(BEGIN_WAKEUP);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnEndWakeUp()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndWakeUp started.");
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP));
-    std::string type = END_WAKEUP;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndWakeUp started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnEndWakeUp started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(END_WAKEUP);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnBeginSleep(const int why)
@@ -314,37 +289,29 @@ void ScreenLockSystemAbility::OnBeginSleep(const int why)
     SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginSleep started.");
     stateValue_.SetOffReason(why);
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP));
-    std::string type = BEGIN_SLEEP;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginSleep started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginSleep started2.");
-            iter->second->OnCallBack(type, why);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(BEGIN_SLEEP, std::to_string(why));
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started.");
     stateValue_.SetInteractiveState(static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
-    std::string type = END_SLEEP;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started1.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started2.");
-            iter->second->OnCallBack(type, why);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(END_SLEEP, std::to_string(why));
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnChangeUser(const int newUserId)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser started. newUserId---->%{public}d", newUserId);
+    SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser started. newUserId %{public}d", newUserId);
     const int minUserId = 0;
     const int maxUserID = 999999999;
     if (newUserId < minUserId || newUserId >= maxUserID) {
@@ -352,43 +319,35 @@ void ScreenLockSystemAbility::OnChangeUser(const int newUserId)
         return;
     }
     stateValue_.SetCurrentUser(newUserId);
-    std::string type = CHANGE_USER;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
-        auto callback = [=]() {
-            iter->second->OnCallBack(type, newUserId);
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser OnCallBack. newUserId---->%{public}d", newUserId);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+    auto callback = [=]() {
+        SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser OnCallBack. newUserId %{public}d", newUserId);
+        SystemEvent systemEvent(CHANGE_USER, std::to_string(newUserId));
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnScreenlockEnabled(bool enabled)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnScreenlockEnabled started.");
     stateValue_.SetScreenlockEnabled(enabled);
-    std::string type = SCREENLOCK_ENABLED;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
+    auto callback = [=]() {
         SCLOCK_HILOGI("ScreenLockSystemAbility iter exist.");
-        auto callback = [=]() { iter->second->OnCallBack(type, enabled); };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+        SystemEvent systemEvent(SCREENLOCK_ENABLED, std::to_string(enabled));
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::OnExitAnimation()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnExitAnimation started.");
-    std::string type = EXIT_ANIMATION;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility iter exist.");
-        auto callback = [=]() {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnExitAnimation started2.");
-            iter->second->OnCallBack(type);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+    auto callback = [=]() {
+        SCLOCK_HILOGI("ScreenLockSystemAbility OnExitAnimation started1.");
+        SystemEvent systemEvent(EXIT_ANIMATION);
+        systemEventListener_->OnCallBack(systemEvent);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -409,18 +368,14 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     }
     unlockVecListeners_.push_back(listener);
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock listener= %{public}p", listener.GetRefPtr());
-    std::string type = UNLOCKSCREEN;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
-        auto callback = [=]() {
-            StartAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
-            iter->second->OnCallBack(type);
-            FinishAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock end callback", HITRACE_UNLOCKSCREEN);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+    auto callback = [=]() {
+        StartAsyncTrace(
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin callback", HITRACE_UNLOCKSCREEN);
+        SystemEvent systemEvent(UNLOCKSCREEN);
+        systemEventListener_->OnCallBack(systemEvent);
+        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock end callback", HITRACE_UNLOCKSCREEN);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -443,22 +398,13 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     lock_.unlock();
 
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
-    std::string type = LOCKSCREEN;
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
-        auto second = iter->second;
-        auto callback = [second, type]() {
-            StartAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock begin callback", HITRACE_LOCKSCREEN);
-            second->OnCallBack(type);
-            FinishAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock end callback", HITRACE_LOCKSCREEN);
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    } else {
-        SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  iter == registeredListeners_.end().");
-        return -1;
-    }
+    auto callback = [=]() {
+        StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock begin callback", HITRACE_LOCKSCREEN);
+        SystemEvent systemEvent(LOCKSCREEN);
+        systemEventListener_->OnCallBack(systemEvent);
+        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestLock end callback", HITRACE_LOCKSCREEN);
+    };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     return ERR_NONE;
 }
 
@@ -511,44 +457,17 @@ bool ScreenLockSystemAbility::GetSecure()
     return false;
 }
 
-bool ScreenLockSystemAbility::On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type)
+bool ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility::On started. type=%{public}s", type.c_str());
-    int callingUid = IPCSkeleton::GetCallingUid();
-    SCLOCK_HILOGD("ScreenLockSystemAbility::On callingUid=%{public}d", callingUid);
+    SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent started.");
     if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
-        SCLOCK_HILOGD("On calling app is not whitelist app");
+        SCLOCK_HILOGD("OnSystemEvent calling app is not whitelist app");
         return false;
     }
-    auto iter = registeredListeners_.find(type);
-    if (iter == registeredListeners_.end()) {
-        std::lock_guard<std::mutex> lck(listenerMapMutex_);
-        const auto temp = registeredListeners_.insert({ type, listener });
-        if (!temp.second) {
-            SCLOCK_HILOGE("ScreenLockSystemAbility::On insert type=%{public}s object fail.", type.c_str());
-            return false;
-        }
-    }
-    SCLOCK_HILOGI("ScreenLockSystemAbility::On end.");
-    return true;
-}
 
-bool ScreenLockSystemAbility::Off(const std::string &type)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility::Off started. type=%{public}s", type.c_str());
-    int callingUid = IPCSkeleton::GetCallingUid();
-    SCLOCK_HILOGD("ScreenLockSystemAbility::Off callingUid=%{public}d", callingUid);
-    if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
-        SCLOCK_HILOGD("Off calling app is not whitelist app");
-        return false;
-    }
-    SCLOCK_HILOGI("ScreenLockSystemAbility::Off started.");
-    auto iter = registeredListeners_.find(type);
-    if (iter != registeredListeners_.end()) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::Off delete type=%{public}s object message.", type.c_str());
-        std::lock_guard<std::mutex> lck(listenerMapMutex_);
-        registeredListeners_.erase(iter);
-    }
+    std::lock_guard<std::mutex> lck(listenerMapMutex_);
+    systemEventListener_ = listener;
+    SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent end.");
     return true;
 }
 
@@ -572,8 +491,8 @@ bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int 
         if (unlockVecListeners_.size()) {
             auto callback = [=]() {
                 for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                    std::string type = "";
-                    unlockVecListeners_[i]->OnCallBack(type, stateResult);
+                    SystemEvent systemEvent("", std::to_string(stateResult));
+                    unlockVecListeners_[i]->OnCallBack(systemEvent);
                 }
                 unlockVecListeners_.clear();
             };
@@ -746,8 +665,8 @@ void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
     if (lockVecListeners_.size()) {
         auto callback = [=]() {
             for (size_t i = 0; i < lockVecListeners_.size(); i++) {
-                std::string type = "";
-                lockVecListeners_[i]->OnCallBack(type, stateResult);
+                SystemEvent systemEvent("", std::to_string(stateResult));
+                lockVecListeners_[i]->OnCallBack(systemEvent);
             }
             lockVecListeners_.clear();
         };

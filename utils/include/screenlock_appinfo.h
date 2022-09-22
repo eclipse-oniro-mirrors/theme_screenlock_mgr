@@ -20,8 +20,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
-struct AppInfo
-{
+struct AppInfo {
     std::string bundleName;
     std::string appId;
 };

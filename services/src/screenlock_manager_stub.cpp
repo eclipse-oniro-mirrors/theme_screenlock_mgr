@@ -50,11 +50,8 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(
         case SEND_SCREENLOCK_EVENT:
             result = OnSendScreenLockEvent(data, reply);
             break;
-        case ON:
+        case ONSYSTEMEVENT:
             result = OnScreenLockOn(data, reply);
-            break;
-        case OFF:
-            result = OnScreenLockOff(data, reply);
             break;
         case TEST_SET_SCREENLOCKED:
             result = OnTest_SetScreenLocked(data, reply);
@@ -133,12 +130,6 @@ void ScreenLockManagerStub::OnRequestLock(MessageParcel &data, MessageParcel &re
 
 int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel &reply)
 {
-    std::string type = data.ReadString();
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn  type=%{public}s ", type.c_str());
-    if (type.empty()) {
-        SCLOCK_HILOGE("ScreenLockManagerStub::OnScreenLockOn type is null.");
-        return false;
-    }
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn remote is nullptr");
@@ -152,28 +143,14 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
         SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn listener is null");
         return -1;
     }
-    bool status = On(listener, type);
+    bool status = OnSystemEvent(listener);
     int32_t ret = (status == true) ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn 4444");
         return -1;
     }
     SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn out");
-    return 0;
-}
-
-int32_t ScreenLockManagerStub::OnScreenLockOff(MessageParcel &data, MessageParcel &reply)
-{
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOff in");
-    std::string type = data.ReadString();
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOff  type=%{public}s ", type.c_str());
-    bool status = Off(type);
-    int32_t ret = (status == true) ? 0 : -1;
-    if (!reply.WriteInt32(ret)) {
-        return -1;
-    }
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOff out");
-    return 0;
+    return ret;
 }
 
 bool ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
