@@ -54,7 +54,7 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     }
     napi_value isResult = 0;
     int32_t onCallbackResult = -1;
-    if (!StringUtil::StrToInt(screenlockOnCallBackPtr->systemEvent.params_, onCallbackResult)) {
+    if (!StrToInt(screenlockOnCallBackPtr->systemEvent.params_, onCallbackResult)) {
         return;
     }
     if (screenlockOnCallBackPtr->deferred) {
