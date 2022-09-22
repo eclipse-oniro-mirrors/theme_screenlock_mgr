@@ -109,9 +109,9 @@ int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityIn
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock succeeded.");
 }
 
-bool ScreenLockManagerProxy::On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type)
+bool ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    SCLOCK_HILOGD("ScreenLockManagerProxy::On listener=%{public}p", listener.GetRefPtr());
+    SCLOCK_HILOGD("ScreenLockManagerProxy::OnSystemEvent listener=%{public}p", listener.GetRefPtr());
     MessageParcel data, reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -122,51 +122,18 @@ bool ScreenLockManagerProxy::On(const sptr<ScreenLockSystemAbilityInterface> &li
         SCLOCK_HILOGE("listener is nullptr");
         return false;
     }
-    SCLOCK_HILOGD("ScreenLockManagerProxy::On type=%{public}s", type.c_str());
-    if (type.empty()) {
-        SCLOCK_HILOGE("ScreenLockManagerProxy::On type is null.");
-        return false;
-    }
-    if (!data.WriteString(type)) {
-        SCLOCK_HILOGE("write type failed.");
-        return false;
-    }
     if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
         SCLOCK_HILOGE("write parcel failed.");
         return false;
     }
-    int32_t result = Remote()->SendRequest(ON, data, reply, option);
+    int32_t result = Remote()->SendRequest(ONSYSTEMEVENT, data, reply, option);
     if (result != ERR_NONE) {
-        SCLOCK_HILOGE(" ScreenLockManagerProxy::On fail, result = %{public}d ", result);
+        SCLOCK_HILOGE(" ScreenLockManagerProxy::OnSystemEvent fail, result = %{public}d ", result);
         return false;
     }
     int32_t status = reply.ReadInt32();
     bool ret = (status == 0) ? true : false;
-    SCLOCK_HILOGD("ScreenLockManagerProxy::On out");
-    return ret;
-}
-
-bool ScreenLockManagerProxy::Off(const std::string &type)
-{
-    SCLOCK_HILOGD("ScreenLockManagerProxy::Off in");
-    MessageParcel data, reply;
-    MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        SCLOCK_HILOGE(" Failed to write parcelable ");
-        return false;
-    }
-    if (!data.WriteString(type)) {
-        SCLOCK_HILOGE("write type=%{public}s fail", type.c_str());
-        return false;
-    }
-    int32_t result = Remote()->SendRequest(OFF, data, reply, option);
-    if (result != ERR_NONE) {
-        SCLOCK_HILOGE(" ScreenLockManagerProxy::Off fail, result = %{public}d ", result);
-        return false;
-    }
-    int32_t status = reply.ReadInt32();
-    bool ret = (status == 0) ? true : false;
-    SCLOCK_HILOGD("ScreenLockManagerProxy::Off out");
+    SCLOCK_HILOGD("ScreenLockManagerProxy::OnSystemEvent out");
     return ret;
 }
 

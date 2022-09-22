@@ -38,8 +38,7 @@ public:
     ScreenLockAppManager();
     ~ScreenLockAppManager();
     static sptr<ScreenLockAppManager> GetInstance();
-    bool On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type);
-    bool Off(const std::string &type);
+    bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
     bool SendScreenLockEvent(const std::string &event, int param);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
 
@@ -49,6 +48,8 @@ private:
     static sptr<ScreenLockAppManager> instance_;
     static sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
     static sptr<ScreenLockAppDeathRecipient> deathRecipient_;
+    static std::mutex listenerLock_;
+    static sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
 };
 } // namespace ScreenLock
 } // namespace OHOS

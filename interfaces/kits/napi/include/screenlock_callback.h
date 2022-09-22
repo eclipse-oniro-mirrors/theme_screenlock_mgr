@@ -26,9 +26,7 @@ class ScreenlockCallback : public ScreenLockSystemAbilityStub {
 public:
     explicit ScreenlockCallback(const EventListener &eventListener);
     virtual ~ScreenlockCallback();
-    void OnCallBack(const std::string &event, bool result) override;
-    void OnCallBack(const std::string &event) override;
-    void OnCallBack(const std::string &event, int result) override;
+    void OnCallBack(const SystemEvent &systemEvent) override;
 
 private:
     EventListener eventListener_;

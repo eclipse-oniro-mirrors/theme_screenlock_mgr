@@ -35,24 +35,9 @@ using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 namespace ScreenLock {
-static thread_local uint32_t g_eventMasks = 0;
-static thread_local std::list<EventListener> g_eventListenerList;
+static thread_local EventListener g_systemEventListener;
 static thread_local EventListener g_unlockListener;
 static thread_local EventListener g_lockListener;
-
-static bool AddEventListener(uint32_t eventType, const std::string &event)
-{
-    if ((eventType & g_eventMasks) == 0) {
-        g_eventMasks += eventType;
-        sptr<ScreenLockSystemAbilityInterface> listener =
-            new ScreenlockSystemAbilityCallback(eventType, g_eventListenerList);
-        if (listener != nullptr) {
-            SCLOCK_HILOGD("Exec AddEventListener  observer--------》%{public}p", listener.GetRefPtr());
-            return ScreenLockAppManager::GetInstance()->On(listener, event);
-        }
-    }
-    return true;
-}
 
 napi_status Init(napi_env env, napi_value exports)
 {
@@ -61,8 +46,7 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("lockScreen", OHOS::ScreenLock::NAPI_LockScreen),
         DECLARE_NAPI_FUNCTION("unlockScreen", OHOS::ScreenLock::NAPI_UnlockScreen),
         DECLARE_NAPI_FUNCTION("isSecureMode", OHOS::ScreenLock::NAPI_IsSecureMode),
-        DECLARE_NAPI_FUNCTION("on", NAPI_On),
-        DECLARE_NAPI_FUNCTION("off", NAPI_Off),
+        DECLARE_NAPI_FUNCTION("onSystemEvent", NAPI_OnSystemEvent),
         DECLARE_NAPI_FUNCTION("sendScreenLockEvent", OHOS::ScreenLock::NAPI_ScreenLockSendEvent),
         DECLARE_NAPI_FUNCTION("test_setScreenLocked", OHOS::ScreenLock::NAPI_TestSetScreenLocked),
         DECLARE_NAPI_FUNCTION("test_runtimeNotify", OHOS::ScreenLock::NAPI_TestRuntimeNotify),
@@ -134,8 +118,8 @@ void AsyncCallLockScreen(napi_env env)
         }
         int32_t status = ScreenLockManager::GetInstance()->RequestLock(listener);
         if (status != ERR_NONE) {
-            std::string type = "";
-            listener->OnCallBack(type, status);
+            SystemEvent systemEvent("", std::to_string(status));
+            listener->OnCallBack(systemEvent);
         }
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
@@ -164,14 +148,14 @@ napi_value NAPI_LockScreen(napi_env env, napi_callback_info info)
         if (valueType == napi_function) {
             SCLOCK_HILOGD("NAPI_LockScreen create callback");
             napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-            g_lockListener = {env, RESULT_ZERO, thisVar, callbackRef};
+            g_lockListener = { env, thisVar, callbackRef };
         }
     }
     if (callbackRef == nullptr) {
         SCLOCK_HILOGD("NAPI_LockScreen create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        g_lockListener = {env, RESULT_ZERO, thisVar, nullptr, deferred};
+        g_lockListener = { env, thisVar, nullptr, deferred };
     } else {
         SCLOCK_HILOGD("NAPI_LockScreen create callback");
         napi_get_undefined(env, &ret);
@@ -201,14 +185,14 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         if (valueType == napi_function) {
             SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
             napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-            g_unlockListener = {env, RESULT_ZERO, thisVar, callbackRef};
+            g_unlockListener = { env, thisVar, callbackRef };
         }
     }
     if (callbackRef == nullptr) {
         SCLOCK_HILOGD("NAPI_UnlockScreen create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        g_unlockListener = {env, RESULT_ZERO, thisVar, nullptr, deferred};
+        g_unlockListener = { env, thisVar, nullptr, deferred };
     } else {
         SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
         napi_get_undefined(env, &ret);
@@ -248,80 +232,33 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
     return asyncCall.Call(env, exec);
 }
 
-napi_value NAPI_On(napi_env env, napi_callback_info info)
+napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
 {
-    SCLOCK_HILOGD("NAPI_On in");
+    SCLOCK_HILOGD("NAPI_OnSystemEvent in");
     napi_value result = nullptr;
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGV_TWO] = {nullptr};
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv = { nullptr };
     napi_value thisVar = nullptr;
     void *data = nullptr;
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
-    NAPI_ASSERT(env, argc == ARGS_SIZE_TWO, "Wrong number of arguments, requires 2");
-    napi_valuetype valuetype;
-    NAPI_CALL(env, napi_typeof(env, argv[ARGV_ZERO], &valuetype));
-    NAPI_ASSERT(env, valuetype == napi_string, "type is not a string");
-    char event[MAX_VALUE_LEN] = {0};
-    size_t len = 0;
-    napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
-    std::string type = event;
-    SCLOCK_HILOGD("NAPI_On type : %{public}s", type.c_str());
-    if (!IsCheckedTypeRegisterMessage(type)) {
-        SCLOCK_HILOGD("NAPI_On type : %{public}s not support", type.c_str());
-        return result;
-    }
-    valuetype = napi_undefined;
-    napi_typeof(env, argv[ARGV_ONE], &valuetype);
-    NAPI_ASSERT(env, valuetype == napi_function, "callback is not a function");
-    napi_ref callbackRef = nullptr;
-    napi_create_reference(env, argv[ARGV_ONE], 1, &callbackRef);
-    SCLOCK_HILOGD("NAPI_On callbackRef = %{public}p", callbackRef);
-    int32_t eventType = ScreenlockSystemAbilityCallback::GetEventType(type);
-    if (eventType != NONE_EVENT_TYPE) {
-        EventListener listener = {env, eventType, thisVar, callbackRef};
-        SCLOCK_HILOGD("env 5555 = %{public}p", (void*)(env));
-        SCLOCK_HILOGD("NAPI_On  type=%{public}s,callbackRef=%{public}p", type.c_str(), callbackRef);
-        g_eventListenerList.push_back(listener);
-    }
-    bool status = AddEventListener(eventType, type);
-    SCLOCK_HILOGD("NAPI_On  status=%{public}d", status);
-    return result;
-}
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, &argv, &thisVar, &data));
+    NAPI_ASSERT(env, argc == ARGS_SIZE_ONE, "Wrong number of arguments, requires 1");
 
-napi_value NAPI_Off(napi_env env, napi_callback_info info)
-{
-    SCLOCK_HILOGD("NAPI_Off in");
-    napi_value result = nullptr;
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGV_TWO] = {nullptr};
-    napi_value thisVar = nullptr;
-    void *data = nullptr;
-    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    NAPI_ASSERT(env, argc == ARGS_SIZE_TWO, "Wrong number of arguments, requires 1 or 2");
-    napi_valuetype valuetype;
-    NAPI_CALL(env, napi_typeof(env, argv[ARGV_ZERO], &valuetype));
-    NAPI_ASSERT(env, valuetype == napi_string, "type is not a string");
-    char event[MAX_VALUE_LEN] = {0};
-    size_t len;
-    napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
-    std::string type = event;
-    SCLOCK_HILOGD("type : %{public}s", type.c_str());
-    if (!IsCheckedTypeRegisterMessage(type)) {
-        SCLOCK_HILOGD("type : %{public}s not support", type.c_str());
-        return result;
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, argv, &valueType);
+    NAPI_ASSERT(env, valueType == napi_function, "callback is not a function");
+    napi_ref callbackRef = nullptr;
+    napi_create_reference(env, argv, ARGS_SIZE_ONE, &callbackRef);
+
+    g_systemEventListener = { env, thisVar, callbackRef };
+    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow)
+        ScreenlockSystemAbilityCallback(g_systemEventListener);
+    bool status = false;
+    if (listener != nullptr) {
+        SCLOCK_HILOGD("on system event,listener %{public}p", listener.GetRefPtr());
+        status = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
     }
-    int32_t eventType = ScreenlockSystemAbilityCallback::GetEventType(type);
-    if (eventType == NONE_EVENT_TYPE) {
-        return result;
-    }
-    for (std::list<EventListener>::iterator it = g_eventListenerList.begin(); it != g_eventListenerList.end(); ++it) {
-        if (it->eventType == eventType) {
-            ScreenLockAppManager::GetInstance()->Off(type);
-            SCLOCK_HILOGD("Exec ObserverOff after RemoveStateObserver eventType = %{public}d", it->eventType);
-        }
-    }
-    g_eventListenerList.remove_if(
-        [eventType](EventListener listener) -> bool { return listener.eventType == eventType; });
+    SCLOCK_HILOGD("on system event  status=%{public}d", status);
+    napi_get_boolean(env, status, &result);
     return result;
 }
 

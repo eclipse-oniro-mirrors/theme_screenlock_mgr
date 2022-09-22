@@ -24,7 +24,6 @@ namespace OHOS {
 namespace ScreenLock {
 struct EventListener {
     napi_env env;
-    int32_t eventType;
     napi_value thisVar;
     napi_ref callbackRef;
     napi_deferred deferred = nullptr;

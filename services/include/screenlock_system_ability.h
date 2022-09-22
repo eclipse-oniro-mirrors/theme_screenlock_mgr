@@ -133,8 +133,7 @@ public:
     bool GetSecure() override;
     void RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    bool On(const sptr<ScreenLockSystemAbilityInterface> &listener, const std::string &type) override;
-    bool Off(const std::string &type) override;
+    bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     bool SendScreenLockEvent(const std::string &event, int param) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
@@ -182,7 +181,7 @@ private:
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
-    std::map<std::string, sptr<ScreenLockSystemAbilityInterface>> registeredListeners_;
+    sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> lockVecListeners_;
     StateValue stateValue_;
