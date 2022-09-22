@@ -22,19 +22,16 @@
 namespace OHOS {
 namespace ScreenLock {
 enum CALLBACK_TYPE {
+    ONCALLBACK_BOOL,
+    ONCALLBACK_VOID,
+    ONCALLBACK_INT,
     ONCALLBACK,
 };
 
 struct SystemEvent {
     std::string eventType_;
     std::string params_;
-    SystemEvent(std::string eventType, std::string params) : eventType_(eventType), params_(params)
-    {
-    }
-    SystemEvent(std::string eventType) : eventType_(eventType)
-    {
-    }
-    SystemEvent()
+    SystemEvent(std::string eventType = "", std::string params = "") : eventType_(eventType), params_(params)
     {
     }
 };

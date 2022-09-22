@@ -23,6 +23,7 @@
 namespace OHOS {
 namespace ScreenLock {
 std::mutex ScreenLockAppManager::instanceLock_;
+std::mutex ScreenLockAppManager::listenerLock_;
 sptr<ScreenLockAppManager> ScreenLockAppManager::instance_;
 sptr<ScreenLockManagerInterface> ScreenLockAppManager::screenlockManagerProxy_;
 sptr<ScreenLockAppDeathRecipient> ScreenLockAppManager::deathRecipient_;
@@ -80,7 +81,9 @@ bool ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInter
         SCLOCK_HILOGE("listener is nullptr.");
         return false;
     }
+    listenerLock_.lock();
     systemEventListener_ = listener;
+    listenerLock_.unlock();
     bool status = screenlockManagerProxy_->OnSystemEvent(listener);
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent out, status=%{public}d", status);
     return status;

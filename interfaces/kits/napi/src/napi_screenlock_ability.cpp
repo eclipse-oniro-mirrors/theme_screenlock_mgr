@@ -237,21 +237,22 @@ napi_value NAPI_OnsystemEvent(napi_env env, napi_callback_info info)
     SCLOCK_HILOGD("NAPI_OnsystemEvent in");
     napi_value result = nullptr;
     size_t argc = ARGS_SIZE_ONE;
-    napi_value argv[ARGV_ONE] = { nullptr };
+    napi_value argv = { nullptr };
     napi_value thisVar = nullptr;
     void *data = nullptr;
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, &argv, &thisVar, &data));
     NAPI_ASSERT(env, argc == ARGS_SIZE_ONE, "Wrong number of arguments, requires 1");
 
     napi_valuetype valuetype = napi_undefined;
-    napi_typeof(env, argv[ARGV_ZERO], &valuetype);
+    napi_typeof(env, argv, &valuetype);
     NAPI_ASSERT(env, valuetype == napi_function, "callback is not a function");
     napi_ref callbackRef = nullptr;
-    napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
+    napi_create_reference(env, argv, ARGS_SIZE_ONE, &callbackRef);
     SCLOCK_HILOGD("NAPI_OnsystemEvent callbackRef = %{public}p", callbackRef);
 
     g_systemEventListener = { env, thisVar, callbackRef };
-    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockSystemAbilityCallback(g_systemEventListener);
+    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow)
+        ScreenlockSystemAbilityCallback(g_systemEventListener);
     bool status = false;
     if (listener != nullptr) {
         SCLOCK_HILOGD("Exec AddEventListener  observer--------》%{public}p", listener.GetRefPtr());
