@@ -248,7 +248,6 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     NAPI_ASSERT(env, valueType == napi_function, "callback is not a function");
     napi_ref callbackRef = nullptr;
     napi_create_reference(env, argv, ARGS_SIZE_ONE, &callbackRef);
-    SCLOCK_HILOGD("on system event callbackRef = %{public}p", callbackRef);
 
     g_systemEventListener = { env, thisVar, callbackRef };
     sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow)
