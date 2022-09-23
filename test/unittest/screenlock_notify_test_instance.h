@@ -24,7 +24,7 @@ namespace OHOS {
 namespace ScreenLock {
 class ScreenlockNotifyTestInstance : public ScreenLockSystemAbilityStub {
 public:
-    ScreenlockNotifyTestInstance(const EventListenerTest &eventListener);
+    explicit ScreenlockNotifyTestInstance(const EventListenerTest &eventListener);
     virtual ~ScreenlockNotifyTestInstance();
     void OnCallBack(const SystemEvent &systemEvent) override;
 
