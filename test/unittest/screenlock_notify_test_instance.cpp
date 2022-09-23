@@ -31,7 +31,6 @@ void ScreenlockNotifyTestInstance::OnCallBack(const SystemEvent &systemEvent)
 {
     SCLOCK_HILOGD("ScreenlockNotifyTestInstance  ONCALLBACK event is%{public}s", systemEvent.eventType_.c_str());
     SCLOCK_HILOGD("system event is %{public}d", systemEventlistener_.eventType);
-    
 }
 } // namespace ScreenLock
 } // namespace OHOS
