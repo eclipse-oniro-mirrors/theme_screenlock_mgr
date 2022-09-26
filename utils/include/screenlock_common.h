@@ -67,6 +67,7 @@ enum ScreenLockError {
 };
 
 enum TraceTaskId {
+    INVALID_TAG,
     HITRACE_UNLOCKSCREEN,
     HITRACE_LOCKSCREEN,
 };

@@ -175,7 +175,7 @@ private:
     void LockScreentEvent(int stateResult);
     std::string GetScreenlockParameter(const std::string &key) const;
     bool IsWhiteListApp(int32_t callingTokenId, const std::string &key);
-    void SystemEventCallBack(const SystemEvent &systemEvent, bool isNeedTrace = false);
+    void SystemEventCallBack(const SystemEvent &systemEvent, uint32_t traceTag = INVALID_TAG);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
