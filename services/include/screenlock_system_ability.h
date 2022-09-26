@@ -175,12 +175,14 @@ private:
     void LockScreentEvent(int stateResult);
     std::string GetScreenlockParameter(const std::string &key) const;
     bool IsWhiteListApp(int32_t callingTokenId, const std::string &key);
+    void SystemEventCallBack(const SystemEvent &systemEvent, bool isNeedTrace = false);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
+    std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> lockVecListeners_;
