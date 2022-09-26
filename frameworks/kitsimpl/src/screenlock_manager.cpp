@@ -93,7 +93,7 @@ void ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterfac
         return;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestUnlock succeeded.");
-    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_UNLOCKSCREEN);
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_SCREENLOCK);
     screenlockManagerProxy_->RequestUnlock(listener);
 }
 
