@@ -675,7 +675,7 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         systemEventListener_->OnCallBack(systemEvent);
         if (traceTaskId != HITRACE_BUTT) {
             FinishAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback", traceTaskId);
+                HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback", traceTaskId);
         }
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
