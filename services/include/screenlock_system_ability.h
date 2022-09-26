@@ -187,7 +187,6 @@ private:
     std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> lockVecListeners_;
     StateValue stateValue_;
-    std::mutex listenerMapMutex_;
     std::mutex lock_;
     const int32_t startTime_ = 1900;
     const int32_t extraMonth_ = 1;
