@@ -67,7 +67,8 @@ enum ScreenLockError {
 };
 
 enum TraceTaskId {
-    HITRACE_SCREENLOCK,
+    HITRACE_UNLOCKSCREEN,
+    HITRACE_LOCKSCREEN,
 };
 
 enum ScreenChange {

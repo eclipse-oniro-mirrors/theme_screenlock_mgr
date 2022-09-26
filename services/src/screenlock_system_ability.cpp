@@ -309,7 +309,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
 
 void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_SCREENLOCK);
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
@@ -319,7 +319,7 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     std::lock_guard<std::mutex> guard(lock_);
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
         FinishAsyncTrace(
-            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_SCREENLOCK);
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return;
     }
@@ -660,9 +660,8 @@ bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::
 
 void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, bool isNeedTrace)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility SystemEventCallBack OnCallBack systemEvent.eventType is %{public}s, "
-                  "systemEvent.params is %{public}s",
-        systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
+    SCLOCK_HILOGI("OnCallBack eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
+        systemEvent.params_.c_str());
     if (systemEventListener_ == nullptr) {
         SCLOCK_HILOGE("systemEventListener_ is nullptr.");
         return;
@@ -670,13 +669,13 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
     auto callback = [=]() {
         if (isNeedTrace) {
             StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback",
-                HITRACE_SCREENLOCK);
+                systemEvent.eventType_ == UNLOCKSCREEN ? HITRACE_UNLOCKSCREEN : HITRACE_LOCKSCREEN);
         }
         std::lock_guard<std::mutex> lck(listenerMutex_);
         systemEventListener_->OnCallBack(systemEvent);
         if (isNeedTrace) {
             FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback",
-                HITRACE_SCREENLOCK);
+                systemEvent.eventType_ == UNLOCKSCREEN ? HITRACE_UNLOCKSCREEN : HITRACE_LOCKSCREEN);
         }
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);
