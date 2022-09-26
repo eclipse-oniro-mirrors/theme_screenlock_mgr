@@ -326,7 +326,7 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
     unlockVecListeners_.push_back(listener);
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock listener= %{public}p", listener.GetRefPtr());
     SystemEvent systemEvent(UNLOCKSCREEN);
-    SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
+    SystemEventCallBack(systemEvent, static_cast<uint32_t>(HITRACE_UNLOCKSCREEN));
 }
 
 int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -349,7 +349,7 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
 
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
     SystemEvent systemEvent(LOCKSCREEN);
-    SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
+    SystemEventCallBack(systemEvent, static_cast<uint32_t>(HITRACE_LOCKSCREEN));
     return ERR_NONE;
 }
 
