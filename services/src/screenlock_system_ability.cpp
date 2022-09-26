@@ -658,7 +658,7 @@ bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::
     return true;
 }
 
-void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, int32_t traceTag)
+void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId)
 {
     SCLOCK_HILOGI("OnCallBack eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
         systemEvent.params_.c_str());
@@ -667,14 +667,14 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         return;
     }
     auto callback = [=]() {
-        if (traceTag != INVALID_TAG) {
+        if (traceTaskId != HITRACE_BUTT) {
             StartAsyncTrace(
                 HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback", traceTag);
         }
         std::lock_guard<std::mutex> lck(listenerMutex_);
         systemEventListener_->OnCallBack(systemEvent);
-        if (traceTag != INVALID_TAG) {
-            StartAsyncTrace(
+        if (traceTaskId != HITRACE_BUTT) {
+            FinishAsyncTrace(
                 HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback", traceTag);
         }
     };
