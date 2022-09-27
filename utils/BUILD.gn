@@ -20,7 +20,7 @@ config("screenlock_utils_config") {
     "//commonlibrary/c_utils/base/include",
   ]
 
-  cflags_cc = [ "-fexceptions" ]
+  cflags_cc = []
 }
 ohos_shared_library("screenlock_utils") {
   if (is_standard_system) {
