@@ -66,9 +66,10 @@ enum ScreenLockError {
     E_SCREENLOCK_NO_PERMISSION,
 };
 
-enum TraceTaskId {
+enum TraceTaskId : int32_t {
     HITRACE_UNLOCKSCREEN,
     HITRACE_LOCKSCREEN,
+    HITRACE_BUTT,
 };
 
 enum ScreenChange {
