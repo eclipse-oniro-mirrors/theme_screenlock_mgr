@@ -46,11 +46,12 @@ public:
     bool Test_RuntimeNotify(const std::string &event, int param);
     int Test_GetRuntimeState(const std::string &event);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
-
+    static sptr<ScreenLockManagerInterface> GetProxy();
 private:
     static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
     static std::mutex instanceLock_;
     static sptr<ScreenLockManager> instance_;
+    static std::mutex managerProxyLock_;
     static sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
     static sptr<ScreenLockSaDeathRecipient> deathRecipient_;
 };
