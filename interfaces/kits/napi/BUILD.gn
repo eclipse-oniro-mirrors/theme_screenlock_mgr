@@ -14,8 +14,7 @@ import("//build/ohos.gni")
 config("screenlock_mgr_interfaces_kits_napi_config") {
   visibility = [ ":*" ]
   include_dirs = [ "include" ]
-
-  cflags_cc = [ "-fexceptions" ]
+  cflags_cc = []
 }
 ohos_shared_library("screenlock") {
   if (is_standard_system) {
