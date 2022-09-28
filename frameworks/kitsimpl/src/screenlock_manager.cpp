@@ -27,7 +27,6 @@ namespace OHOS {
 namespace ScreenLock {
 std::mutex ScreenLockManager::instanceLock_;
 sptr<ScreenLockManager> ScreenLockManager::instance_;
-sptr<ScreenLockManagerInterface> ScreenLockManager::screenlockManagerProxy_;
 sptr<ScreenLockSaDeathRecipient> ScreenLockManager::deathRecipient_;
 
 ScreenLockManager::ScreenLockManager()
@@ -44,7 +43,8 @@ sptr<ScreenLockManager> ScreenLockManager::GetInstance()
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
             instance_ = new ScreenLockManager;
-            screenlockManagerProxy_ = GetScreenLockManagerProxy();
+            std::lock_guard<std::mutex> autoLock(instance_->managerProxyLock_);
+            instance_->screenlockManagerProxy_ = GetScreenLockManagerProxy();
         }
     }
     return instance_;
@@ -52,39 +52,30 @@ sptr<ScreenLockManager> ScreenLockManager::GetInstance()
 
 bool ScreenLockManager::IsScreenLocked()
 {
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("IsScreenLocked quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
     SCLOCK_HILOGD("ScreenLockManager IsScreenLocked succeeded.");
-    return screenlockManagerProxy_->IsScreenLocked();
+    return proxy->IsScreenLocked();
 }
 
 bool ScreenLockManager::GetSecure()
 {
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("GetSecure quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
     SCLOCK_HILOGD("ScreenLockManager GetSecure succeeded.");
-    return screenlockManagerProxy_->GetSecure();
+    return proxy->GetSecure();
 }
 
 void ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("RequestUnlock quit because redoing GetScreenLockManagerProxy failed.");
         return;
     }
@@ -94,16 +85,13 @@ void ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterfac
     }
     SCLOCK_HILOGD("ScreenLockManager RequestUnlock succeeded.");
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_UNLOCKSCREEN);
-    screenlockManagerProxy_->RequestUnlock(listener);
+    proxy->RequestUnlock(listener);
 }
 
 int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("RequestLock quit because redoing GetScreenLockManagerProxy failed.");
         return -1;
     }
@@ -112,55 +100,46 @@ int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterfa
         return -1;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestLock succeeded.");
-    return screenlockManagerProxy_->RequestLock(listener);
+    return proxy->RequestLock(listener);
 }
 
 bool ScreenLockManager::Test_SetScreenLocked(bool isScreenlocked)
 {
     bool flag = false;
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::Test_SetScreenLocked quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
     SCLOCK_HILOGD("ScreenLockManager::Test_SetScreenLocked succeeded.");
-    flag = screenlockManagerProxy_->Test_SetScreenLocked(isScreenlocked);
+    flag = proxy->Test_SetScreenLocked(isScreenlocked);
     return flag;
 }
 
 bool ScreenLockManager::Test_RuntimeNotify(const std::string &event, int param)
 {
     bool flag = false;
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::Test_RuntimeNotify quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
     SCLOCK_HILOGD("ScreenLockManager::Test_RuntimeNotify succeeded.  event=%{public}s", event.c_str());
     SCLOCK_HILOGD("ScreenLockManager::Test_RuntimeNotify succeeded.  param=%{public}d", param);
-    flag = screenlockManagerProxy_->Test_RuntimeNotify(event, param);
+    flag = proxy->Test_RuntimeNotify(event, param);
     return flag;
 }
 
 int ScreenLockManager::Test_GetRuntimeState(const std::string &event)
 {
     int flag = -100;
-    if (screenlockManagerProxy_ == nullptr) {
-        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
-        screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    }
-    if (screenlockManagerProxy_ == nullptr) {
+    auto proxy = GetProxy();
+    if (proxy  == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::Test_GetRuntimeState quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
     SCLOCK_HILOGD("ScreenLockManager::Test_GetRuntimeState succeeded.  event=%{public}s", event.c_str());
-    flag = screenlockManagerProxy_->Test_GetRuntimeState(event);
+    flag = proxy->Test_GetRuntimeState(event);
     return flag;
 }
 
@@ -190,7 +169,21 @@ sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()
 
 void ScreenLockManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
 {
+    std::lock_guard<std::mutex> autoLock(managerProxyLock_);
     screenlockManagerProxy_ = GetScreenLockManagerProxy();
+}
+
+sptr<ScreenLockManagerInterface> ScreenLockManager::GetProxy()
+{
+    if (screenlockManagerProxy_ != nullptr) {
+        return screenlockManagerProxy_;
+    }
+    std::lock_guard<std::mutex> autoLock(managerProxyLock_);
+    if (screenlockManagerProxy_ == nullptr) {
+        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
+        screenlockManagerProxy_ = GetScreenLockManagerProxy();
+    }
+    return screenlockManagerProxy_;
 }
 
 ScreenLockSaDeathRecipient::ScreenLockSaDeathRecipient()
