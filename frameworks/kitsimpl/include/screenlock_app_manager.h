@@ -37,21 +37,21 @@ class ScreenLockAppManager : public RefBase {
 public:
     ScreenLockAppManager();
     ~ScreenLockAppManager();
-    sptr<ScreenLockAppManager> GetInstance();
+    static sptr<ScreenLockAppManager> GetInstance();
     bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
     bool SendScreenLockEvent(const std::string &event, int param);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
-    sptr<ScreenLockManagerInterface> GetProxy();
+    static sptr<ScreenLockManagerInterface> GetProxy();
 
 private:
     static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
-    std::mutex instanceLock_;
-    sptr<ScreenLockAppManager> instance_;
-    sptr<ScreenLockAppDeathRecipient> deathRecipient_;
-    std::mutex listenerLock_;
-    sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
-    std::mutex managerProxyLock_;
-    sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
+    static std::mutex instanceLock_;
+    static sptr<ScreenLockAppManager> instance_;
+    static std::mutex managerProxyLock_;
+    static sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
+    static sptr<ScreenLockAppDeathRecipient> deathRecipient_;
+    static std::mutex listenerLock_;
+    static sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
