@@ -27,8 +27,6 @@ namespace OHOS {
 namespace ScreenLock {
 std::mutex ScreenLockManager::instanceLock_;
 sptr<ScreenLockManager> ScreenLockManager::instance_;
-std::mutex ScreenLockManager::managerProxyLock_;
-sptr<ScreenLockManagerInterface> ScreenLockManager::screenlockManagerProxy_;
 sptr<ScreenLockSaDeathRecipient> ScreenLockManager::deathRecipient_;
 
 ScreenLockManager::ScreenLockManager()
@@ -45,8 +43,8 @@ sptr<ScreenLockManager> ScreenLockManager::GetInstance()
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
             instance_ = new ScreenLockManager;
-            std::lock_guard<std::mutex> autoLock(managerProxyLock_);
-            screenlockManagerProxy_ = GetScreenLockManagerProxy();
+            std::lock_guard<std::mutex> autoLock(instance_->managerProxyLock_);
+            instance_->screenlockManagerProxy_ = GetScreenLockManagerProxy();
         }
     }
     return instance_;
