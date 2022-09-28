@@ -37,7 +37,7 @@ class ScreenLockManager : public RefBase {
 public:
     ScreenLockManager();
     ~ScreenLockManager();
-    static sptr<ScreenLockManager> GetInstance();
+    sptr<ScreenLockManager> GetInstance();
     bool IsScreenLocked();
     bool GetSecure();
     void RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener);
@@ -50,9 +50,9 @@ public:
 
 private:
     static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
-    static std::mutex instanceLock_;
-    static sptr<ScreenLockManager> instance_;
-    static sptr<ScreenLockSaDeathRecipient> deathRecipient_;
+    std::mutex instanceLock_;
+    sptr<ScreenLockManager> instance_;
+    sptr<ScreenLockSaDeathRecipient> deathRecipient_;
     std::mutex managerProxyLock_;
     sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
 };
