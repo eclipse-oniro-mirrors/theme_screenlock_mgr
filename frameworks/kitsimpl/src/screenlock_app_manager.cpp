@@ -116,10 +116,12 @@ void ScreenLockAppManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
         systemEventListener_->OnCallBack(systemEvent);
     }
 }
+
 sptr<ScreenLockManagerInterface> ScreenLockAppManager::GetProxy()
 {
     std::lock_guard<std::mutex> autoLock(managerProxyLock_);
     if (screenlockManagerProxy_ == nullptr) {
+        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
         screenlockManagerProxy_ = GetScreenLockManagerProxy();
     }
     return screenlockManagerProxy_;

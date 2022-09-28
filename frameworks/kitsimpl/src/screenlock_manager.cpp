@@ -167,14 +167,17 @@ void ScreenLockManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
     std::lock_guard<std::mutex> autoLock(managerProxyLock_);
     screenlockManagerProxy_ = GetScreenLockManagerProxy();
 }
+
 sptr<ScreenLockManagerInterface> ScreenLockManager::GetProxy()
 {
     std::lock_guard<std::mutex> autoLock(managerProxyLock_);
     if (screenlockManagerProxy_ == nullptr) {
+        SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
         screenlockManagerProxy_ = GetScreenLockManagerProxy();
     }
     return screenlockManagerProxy_;
 }
+
 ScreenLockSaDeathRecipient::ScreenLockSaDeathRecipient()
 {
 }
