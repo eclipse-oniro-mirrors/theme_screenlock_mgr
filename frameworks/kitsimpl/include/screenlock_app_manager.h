@@ -39,7 +39,7 @@ public:
     ~ScreenLockAppManager();
     static sptr<ScreenLockAppManager> GetInstance();
     bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
-    bool SendScreenLockEvent(const std::string &event, int param);
+    int32_t SendScreenLockEvent(const std::string &event, int param);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     sptr<ScreenLockManagerInterface> GetProxy();
 

@@ -36,10 +36,19 @@ struct SystemEvent {
     }
 };
 
+struct ErrorInfo {
+    int32_t errorCode_;
+    std::string message_;
+    ErrorInfo(int32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
+    {
+    }
+};
+
 class ScreenLockSystemAbilityInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface");
     virtual void OnCallBack(const SystemEvent &systemEvent) = 0;
+    virtual void SetErrorInfo(const ErrorInfo &errorInfo) = 0;
 };
 } // namespace ScreenLock
 } // namespace OHOS

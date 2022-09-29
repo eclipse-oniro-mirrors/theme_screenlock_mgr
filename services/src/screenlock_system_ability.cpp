@@ -307,7 +307,7 @@ void ScreenLockSystemAbility::OnExitAnimation()
     SystemEventCallBack(systemEvent);
 }
 
-void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
     if (state_ != ServiceRunningState::STATE_RUNNING) {
@@ -321,12 +321,12 @@ void ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityIn
         FinishAsyncTrace(
             HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
-        return;
+        return BussinessErrorCode::ERR_NO_PERMISSION;
     }
     unlockVecListeners_.push_back(listener);
-    SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock listener= %{public}p", listener.GetRefPtr());
     SystemEvent systemEvent(UNLOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
+    return ERR_NONE;
 }
 
 int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -334,14 +334,14 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock started.");
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  Unfocused.");
-        return -1;
+        return BussinessErrorCode::ERR_NO_PERMISSION;
     }
     if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_WHITEAPP)) {
         SCLOCK_HILOGD("RequestLock calling app is not whitelist app");
-        return -1;
+        return BussinessErrorCode::ERR_NO_PERMISSION;
     }
     if (IsScreenLocked()) {
-        return -1;
+        return BussinessErrorCode::ERR_NO_PERMISSION;
     }
     lock_.lock();
     lockVecListeners_.push_back(listener);
@@ -416,12 +416,12 @@ bool ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilityIn
     return true;
 }
 
-bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
+int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SendScreenLockEvent started.");
     if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
         SCLOCK_HILOGD("SendScreenLockEvent calling app is not whitelist app");
-        return false;
+        return BussinessErrorCode::ERR_NO_PERMISSION;
     }
     SCLOCK_HILOGD("event=%{public}s ,param=%{public}d", event.c_str(), param);
     int stateResult = param;
@@ -437,6 +437,12 @@ bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int 
             auto callback = [=]() {
                 for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
                     SystemEvent systemEvent("", std::to_string(stateResult));
+                    ErrorInfo errorInfo;
+                    if (stateResult == SCREEN_CANCEL) {
+                        errorInfo.errorCode_ = BussinessErrorCode::ERR_CANCEL_UNLOCK;
+                        errorInfo.message_ = CANCEL_UNLOCK_OPENATION;
+                        unlockVecListeners_[i]->SetErrorInfo(errorInfo);
+                    }
                     unlockVecListeners_[i]->OnCallBack(systemEvent);
                 }
                 unlockVecListeners_.clear();
@@ -450,7 +456,7 @@ bool ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int 
     } else if (event == LOCK_SCREEN_RESULT) {
         LockScreentEvent(stateResult);
     }
-    return true;
+    return ERR_NONE;
 }
 
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)

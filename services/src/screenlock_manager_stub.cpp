@@ -95,19 +95,18 @@ void ScreenLockManagerStub::OnRequestUnlock(MessageParcel &data, MessageParcel &
     SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock  addr=%{public}p", remote.GetRefPtr());
     if (remote == nullptr) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock remote is nullptr");
-        if (!reply.WriteInt32(ERR_NONE)) {
-            return;
-        }
+        reply.WriteInt32(BussinessErrorCode::ERR_SERVICE_ABNORMAL);
         return;
     }
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
     SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock addr=%{public}p", listener.GetRefPtr());
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock listener is null");
+        reply.WriteInt32(BussinessErrorCode::ERR_SERVICE_ABNORMAL);
         return;
     }
-    RequestUnlock(listener);
-    return;
+    int32_t status = RequestUnlock(listener);
+    reply.WriteInt32(status);
 }
 
 void ScreenLockManagerStub::OnRequestLock(MessageParcel &data, MessageParcel &reply)
@@ -115,13 +114,13 @@ void ScreenLockManagerStub::OnRequestLock(MessageParcel &data, MessageParcel &re
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
         SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestLock remote is nullptr");
-        reply.WriteInt32(-1);
+        reply.WriteInt32(BussinessErrorCode::ERR_SERVICE_ABNORMAL);
         return;
     }
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGE("ScreenLockManagerStub::OnRequestLock listener is null");
-        reply.WriteInt32(-1);
+        reply.WriteInt32(BussinessErrorCode::ERR_SERVICE_ABNORMAL);
         return;
     }
     int32_t status = RequestLock(listener);
@@ -153,15 +152,15 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
     return ret;
 }
 
-bool ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
+int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
 {
     std::string event = data.ReadString();
     int param = data.ReadInt32();
     SCLOCK_HILOGD("event=%{public}s ", event.c_str());
     SCLOCK_HILOGD("param=%{public}d ", param);
-    bool flag = SendScreenLockEvent(event, param);
-    reply.WriteBool(flag);
-    return flag;
+    int32_t retCode = SendScreenLockEvent(event, param);
+    reply.WriteInt32(retCode);
+    return retCode;
 }
 
 bool ScreenLockManagerStub::OnTest_SetScreenLocked(MessageParcel &data, MessageParcel &reply)

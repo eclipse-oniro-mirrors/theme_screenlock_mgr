@@ -31,7 +31,7 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
     napi_value self = nullptr;
     napi_value argv[6] = {nullptr};
     NAPI_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, argv, &self, nullptr));
-    NAPI_ASSERT_BASE(env, pos <= argc, " Invalid Args!", NAPI_RETVAL_NOTHING);
+    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     pos = ((pos == ASYNC_DEFAULT_POS) ? (argc - 1) : pos);
     if (pos >= 0 && pos < argc) {
         napi_valuetype valueType = napi_undefined;
@@ -41,7 +41,6 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
             argc = pos;
         }
     }
-    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     if (context == nullptr) {
         SCLOCK_HILOGD("context is null");
     }
@@ -130,10 +129,8 @@ void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
             napi_get_undefined(env, &result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
         }
     } else {
-        napi_value message = nullptr;
-        napi_create_string_utf8(env, "async call failed", NAPI_AUTO_LENGTH, &message);
-        napi_create_error(env, nullptr, message, &result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
         napi_get_undefined(env, &result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
+        GenerateBusinessError(env, context->ctx->errorInfo_, &result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
     }
     SCLOCK_HILOGD("run the js callback function:(context->defer != nullptr)?[%{public}d]", context->defer != nullptr);
     if (context->defer != nullptr) {
@@ -163,5 +160,15 @@ void AsyncCall::DeleteContext(const napi_env env, const AsyncContext *context)
         napi_delete_async_work(env, context->work);
     }
     delete context;
+}
+void AsyncCall::GenerateBusinessError(napi_env env, const ErrorInfo& errorInfo, napi_value* result)
+{
+    napi_value message = nullptr;
+    napi_value code = nullptr;
+    napi_create_int32(env, errorInfo.errorCode_, &code);
+    napi_create_string_utf8(env, errorInfo.message_.c_str(), NAPI_AUTO_LENGTH, &message);
+    napi_create_object(env, result);
+    napi_set_named_property(env, *result, "code", code);
+    napi_set_named_property(env, *result, "message", message);
 }
 } // namespace OHOS::ScreenLock

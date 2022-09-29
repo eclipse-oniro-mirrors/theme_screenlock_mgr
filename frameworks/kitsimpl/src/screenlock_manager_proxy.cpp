@@ -59,7 +59,7 @@ bool ScreenLockManagerProxy::GetSecure()
     return result;
 }
 
-void ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     MessageParcel data, reply;
     MessageOption option;
@@ -67,18 +67,20 @@ void ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInt
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock started.");
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr");
-        return;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
         SCLOCK_HILOGE("write parcel failed.");
-        return;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     int32_t ret = Remote()->SendRequest(REQUEST_UNLOCK, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestUnlock, ret = %{public}d", ret);
-        return;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
-    SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock succeeded.");
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock end retCode is %{public}d.", retCode);
+    return retCode;
 }
 
 int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -87,26 +89,26 @@ int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityIn
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         SCLOCK_HILOGE(" Failed to write parcelable ");
-        return -1;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock started.");
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr");
-        return -1;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
         SCLOCK_HILOGE("write parcel failed.");
-        return -1;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     int32_t ret = Remote()->SendRequest(REQUEST_LOCK, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
-        return -1;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
 
-    int32_t status = reply.ReadInt32();
-    return status;
-    SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock succeeded.");
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock end .retCode is %{public}d", retCode);
+    return retCode;
 }
 
 bool ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -137,11 +139,10 @@ bool ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInt
     return ret;
 }
 
-bool ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, int param)
+int32_t ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, int param)
 {
     MessageParcel data, reply;
     MessageOption option;
-    bool bFlag = false;
     data.WriteInterfaceToken(GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent started.");
     data.WriteString(event);
@@ -149,11 +150,11 @@ bool ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, int p
     int32_t ret = Remote()->SendRequest(SEND_SCREENLOCK_EVENT, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("ScreenLockManagerProxy SendScreenLockEvent, ret = %{public}d", ret);
-        return false;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;;
     }
-    bFlag = reply.ReadBool();
-    SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent succeeded.");
-    return bFlag;
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent end retCode is %{public}d.", retCode);
+    return retCode;
 }
 
 bool ScreenLockManagerProxy::Test_SetScreenLocked(const bool isScreenlocked)

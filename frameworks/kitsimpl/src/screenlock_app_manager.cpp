@@ -18,6 +18,7 @@
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "sclock_log.h"
+#include "screenlock_common.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -49,18 +50,16 @@ sptr<ScreenLockAppManager> ScreenLockAppManager::GetInstance()
     return instance_;
 }
 
-bool ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int param)
+int32_t ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int param)
 {
-    bool flag = false;
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE(
             "ScreenLockAppManager::SendScreenLockEvent quit because redoing GetScreenLockManagerProxy failed.");
-        return false;
+        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
-    flag = proxy->SendScreenLockEvent(event, param);
     SCLOCK_HILOGD("ScreenLockAppManager::SendScreenLockEvent succeeded.");
-    return flag;
+    return proxy->SendScreenLockEvent(event, param);
 }
 
 bool ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)

@@ -48,5 +48,8 @@ void ScreenLockSystemAbilityProxy::OnCallBack(const SystemEvent &systemEvent)
     }
     SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack End");
 }
+void ScreenLockSystemAbilityProxy::SetErrorInfo(const ErrorInfo &errorInfo)
+{
+}
 } // namespace ScreenLock
 } // namespace OHOS

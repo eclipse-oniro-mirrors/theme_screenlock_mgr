@@ -27,9 +27,10 @@ public:
     explicit ScreenlockCallback(const EventListener &eventListener);
     virtual ~ScreenlockCallback();
     void OnCallBack(const SystemEvent &systemEvent) override;
-
+    void SetErrorInfo(const ErrorInfo &errorInfo) override;
 private:
     EventListener eventListener_;
+    ErrorInfo errorInfo_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
