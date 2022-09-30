@@ -172,7 +172,7 @@ void AsyncCallLockScreen(napi_env env)
             return;
         }
         int32_t status = ScreenLockManager::GetInstance()->RequestLock(listener);
-        if (status != ERR_NONE) {
+        if (status != BussinessErrorCode::NO_ERROR) {
             ErrorInfo errInfo(status, GetErrMessage(status));
             SCLOCK_HILOGD("ScreenLockManager errInfo %{public}s", GetErrMessage(status).c_str());
             listener->SetErrorInfo(errInfo);
@@ -239,7 +239,7 @@ void AsyncCallUnlockScreen(napi_env env)
             return;
         }
         int32_t status = ScreenLockManager::GetInstance()->RequestUnlock(listener);
-        if (status != ERR_NONE) {
+        if (status != BussinessErrorCode::NO_ERROR) {
             ErrorInfo errInfo(status, GetErrMessage(status));
             listener->SetErrorInfo(errInfo);
             SystemEvent systemEvent("", std::to_string(status));
@@ -433,7 +433,7 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         int32_t retCode = ScreenLockAppManager::GetInstance()->SendScreenLockEvent(context->eventInfo, context->param);
-        if (retCode != ERR_NONE) {
+        if (retCode != BussinessErrorCode::NO_ERROR) {
             ErrorInfo errInfo(retCode, GetErrMessage(retCode));
             context->SetErrorInfo(errInfo);
         } else {

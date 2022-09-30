@@ -34,7 +34,7 @@ bool ScreenLockManagerProxy::IsScreenLocked()
     data.WriteInterfaceToken(GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLocked started.");
     bool ret = Remote()->SendRequest(IS_SCREEN_LOCKED, data, reply, option);
-    if (ret != ERR_NONE) {
+    if (ret != BussinessErrorCode::NO_ERROR) {
         SCLOCK_HILOGE("IsScreenLocked, ret = %{public}d", ret);
         return false;
     }
@@ -50,7 +50,7 @@ bool ScreenLockManagerProxy::GetSecure()
     data.WriteInterfaceToken(ScreenLockManagerProxy::GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy GetSecure started.");
     bool ret = Remote()->SendRequest(IS_SECURE_MODE, data, reply, option);
-    if (ret != ERR_NONE) {
+    if (ret != BussinessErrorCode::NO_ERROR) {
         SCLOCK_HILOGE("GetSecure, ret = %{public}d", ret);
         return false;
     }
@@ -74,7 +74,7 @@ int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbility
         return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     int32_t ret = Remote()->SendRequest(REQUEST_UNLOCK, data, reply, option);
-    if (ret != ERR_NONE) {
+    if (ret != BussinessErrorCode::NO_ERROR) {
         SCLOCK_HILOGE("RequestUnlock, ret = %{public}d", ret);
         return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
@@ -101,7 +101,7 @@ int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityIn
         return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
     int32_t ret = Remote()->SendRequest(REQUEST_LOCK, data, reply, option);
-    if (ret != ERR_NONE) {
+    if (ret != BussinessErrorCode::NO_ERROR) {
         SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
         return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
     }
@@ -129,7 +129,7 @@ bool ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInt
         return false;
     }
     int32_t result = Remote()->SendRequest(ONSYSTEMEVENT, data, reply, option);
-    if (result != ERR_NONE) {
+    if (result != BussinessErrorCode::NO_ERROR) {
         SCLOCK_HILOGE(" ScreenLockManagerProxy::OnSystemEvent fail, result = %{public}d ", result);
         return false;
     }
@@ -148,7 +148,7 @@ int32_t ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, in
     data.WriteString(event);
     data.WriteInt32(param);
     int32_t ret = Remote()->SendRequest(SEND_SCREENLOCK_EVENT, data, reply, option);
-    if (ret != ERR_NONE) {
+    if (ret != BussinessErrorCode::NO_ERROR) {
         SCLOCK_HILOGE("ScreenLockManagerProxy SendScreenLockEvent, ret = %{public}d", ret);
         return BussinessErrorCode::ERR_SERVICE_ABNORMAL;;
     }

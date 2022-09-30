@@ -326,7 +326,7 @@ int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilit
     unlockVecListeners_.push_back(listener);
     SystemEvent systemEvent(UNLOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
-    return ERR_NONE;
+    return BussinessErrorCode::NO_ERROR;
 }
 
 int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -350,7 +350,7 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
     SystemEvent systemEvent(LOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
-    return ERR_NONE;
+    return BussinessErrorCode::NO_ERROR;
 }
 
 bool ScreenLockSystemAbility::IsScreenLocked()
@@ -456,7 +456,7 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
     } else if (event == LOCK_SCREEN_RESULT) {
         LockScreentEvent(stateResult);
     }
-    return ERR_NONE;
+    return BussinessErrorCode::NO_ERROR;
 }
 
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
