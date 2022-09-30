@@ -28,6 +28,7 @@ public:
     virtual ~ScreenlockCallback();
     void OnCallBack(const SystemEvent &systemEvent) override;
     void SetErrorInfo(const ErrorInfo &errorInfo) override;
+
 private:
     EventListener eventListener_;
     ErrorInfo errorInfo_;

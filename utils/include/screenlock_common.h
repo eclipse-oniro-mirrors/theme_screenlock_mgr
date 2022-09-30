@@ -86,7 +86,7 @@ enum ScreenChange {
     SCREEN_CANCEL,
 };
 
-enum BussinessErrorCode {
+enum BussinessErrorCode : int32_t {
     ERR_NO_PERMISSION = 201,
     ERR_INVALID_PARAMS = 401,
     ERR_CANCEL_UNLOCK = 13200001,

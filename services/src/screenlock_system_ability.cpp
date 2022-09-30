@@ -436,13 +436,13 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
         if (unlockVecListeners_.size()) {
             auto callback = [=]() {
                 for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                    SystemEvent systemEvent("", std::to_string(stateResult));
-                    ErrorInfo errorInfo;
                     if (stateResult == SCREEN_CANCEL) {
+                        ErrorInfo errorInfo;
                         errorInfo.errorCode_ = BussinessErrorCode::ERR_CANCEL_UNLOCK;
                         errorInfo.message_ = CANCEL_UNLOCK_OPENATION;
                         unlockVecListeners_[i]->SetErrorInfo(errorInfo);
                     }
+                    SystemEvent systemEvent("", std::to_string(stateResult));
                     unlockVecListeners_[i]->OnCallBack(systemEvent);
                 }
                 unlockVecListeners_.clear();

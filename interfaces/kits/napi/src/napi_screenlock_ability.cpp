@@ -38,6 +38,7 @@ namespace ScreenLock {
 static thread_local EventListener g_systemEventListener;
 static thread_local EventListener g_unlockListener;
 static thread_local EventListener g_lockListener;
+
 napi_status Init(napi_env env, napi_value exports)
 {
     napi_property_descriptor exportFuncs[] = {
@@ -57,6 +58,12 @@ napi_status Init(napi_env env, napi_value exports)
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
 }
+const std::map<int32_t, std::string> errorInfoMap = {
+    {BussinessErrorCode::ERR_NO_PERMISSION, PERMISSION_VALIDATION_FAILED},
+    {BussinessErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED},
+    {BussinessErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION},
+    {BussinessErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL}
+};
 
 bool IsCheckedTypeRegisterMessage(const std::string &type)
 {
@@ -69,15 +76,15 @@ bool IsCheckedTypeRegisterMessage(const std::string &type)
     return false;
 }
 
-bool IsCheckedTypeSendEventMessage(napi_env env, const std::string &type)
+bool IsCheckedTypeSendEventMessage(napi_env env, bool isNoException, const std::string &type)
 {
-    if (type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE || type == LOCK_SCREEN_RESULT) {
-        return true;
+    if (!isNoException) {
+        std::string errMsg = EVENT_TYPE_NOT_SUPPORT;
+        napi_throw_error(env, std::to_string(BussinessErrorCode::ERR_INVALID_PARAMS).c_str(), errMsg.c_str());
+        SCLOCK_HILOGE("IsCheckedTypeSendEventMessage : %{public}s not support", type.c_str());
+        return false;
     }
-    std::string errMsg = EVENT_TYPE_NOT_SUPPORT;
-    napi_throw_error(env, std::to_string(BussinessErrorCode::ERR_INVALID_PARAMS).c_str(), errMsg.c_str());
-    SCLOCK_HILOGE("IsCheckedTypeSendEventMessage : %{public}s not support", type.c_str());
-    return false;
+    return true;
 }
 
 bool CheckArgsType(napi_env env, bool isNoException, const std::string &type)
@@ -105,23 +112,11 @@ bool CheckArgsCount(napi_env env, bool isNoException, const std::string &argsCou
 std::string GetErrMessage(int32_t errorCode)
 {
     std::string message;
-    switch (errorCode) {
-        case BussinessErrorCode::ERR_NO_PERMISSION:
-            message = PERMISSION_VALIDATION_FAILED;
-            break;
-        case BussinessErrorCode::ERR_INVALID_PARAMS:
-            message = PARAMETER_VALIDATION_FAILED;
-            break;
-        case BussinessErrorCode::ERR_CANCEL_UNLOCK:
-            message = CANCEL_UNLOCK_OPENATION;
-            break;
-        case BussinessErrorCode::ERR_SERVICE_ABNORMAL:
-            message = SERVICE_IS_ABNORMAL;
-            break;
-        default:
-            break;
+    std::map<int32_t, std::string>::const_iterator  iter = errorInfoMap.find(errorCode);
+    if (iter != errorInfoMap.end()) {
+        message = iter->second;
     }
-    SCLOCK_HILOGE("GetErrMessage: message is %{public}s", message.c_str());
+    SCLOCK_HILOGD("GetErrMessage: message is %{public}s", message.c_str());
     return message;
 }
 
@@ -419,7 +414,8 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
         napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
         context->eventInfo = event;
         std::string type = event;
-        if (!IsCheckedTypeSendEventMessage(env, type)) {
+        if (!IsCheckedTypeSendEventMessage(
+                env, type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE || type == LOCK_SCREEN_RESULT, type)) {
             return napi_invalid_arg;
         }
         valueType = napi_undefined;

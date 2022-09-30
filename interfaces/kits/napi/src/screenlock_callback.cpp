@@ -62,18 +62,18 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     }
     napi_value result[ARGS_SIZE_TWO] = { 0 };
     if (onCallbackResult == SCREEN_SUCC) {
-        napi_get_undefined(screenlockOnCallBackPtr->env, &result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
-        napi_get_boolean(screenlockOnCallBackPtr->env, true, &result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
+        napi_get_undefined(screenlockOnCallBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+        napi_get_boolean(screenlockOnCallBackPtr->env, true, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     } else {
-        AsyncCall::GenerateBusinessError(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->errorInfo, &result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
-        napi_get_boolean(screenlockOnCallBackPtr->env, false, &result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
+        AsyncCall::GenerateBusinessError(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->errorInfo, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+        napi_get_boolean(screenlockOnCallBackPtr->env, false, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     }
     if (screenlockOnCallBackPtr->deferred) {
         SCLOCK_HILOGD("Promise style");
         if (onCallbackResult == SCREEN_SUCC) {
-            napi_resolve_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
+            napi_resolve_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         } else {
-            napi_reject_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
+            napi_reject_deferred(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
         }
     } else {
         SCLOCK_HILOGD("Callback style");

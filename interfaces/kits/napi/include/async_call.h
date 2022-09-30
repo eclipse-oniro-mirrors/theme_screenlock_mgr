@@ -83,7 +83,8 @@ public:
     ~AsyncCall();
     napi_value Call(const napi_env env, Context::ExecAction exec = nullptr);
     napi_value SyncCall(const napi_env env, Context::ExecAction exec = nullptr);
-    static void GenerateBusinessError(napi_env env, const ErrorInfo& errorInfo, napi_value* result);
+    static void GenerateBusinessError(napi_env env, const ErrorInfo &errorInfo, napi_value *result);
+
 private:
     enum class ARG_INFO { ARG_ERROR, ARG_DATA, ARG_BUTT };
     static void OnExecute(const napi_env env, void *data);
