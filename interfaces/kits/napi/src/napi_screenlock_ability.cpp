@@ -200,9 +200,10 @@ void AsyncCallLockScreen(napi_env env)
         }
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
-    NAPI_CALL(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
-    NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work));
-    NAPI_CALL(env, napi_queue_async_work(env, work));
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work));
+    NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, work));
 }
 
 napi_value NAPI_Lock(napi_env env, napi_callback_info info)
@@ -265,9 +266,10 @@ void AsyncCallUnlockScreen(napi_env env)
         }
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
-    NAPI_CALL(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
-    NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_unlockListener, &work));
-    NAPI_CALL(env, napi_queue_async_work(env, work));
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_unlockListener, &work));
+    NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, work));
 }
 
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
