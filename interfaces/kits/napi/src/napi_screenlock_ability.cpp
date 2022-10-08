@@ -15,6 +15,7 @@
 #include "napi_screenlock_ability.h"
 
 #include <hitrace_meter.h>
+#include <map>
 #include <napi/native_api.h>
 #include <pthread.h>
 #include <unistd.h>
