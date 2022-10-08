@@ -77,11 +77,11 @@ int32_t ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInter
     auto proxy = GetProxy();
     if (proxy  == nullptr) {
         SCLOCK_HILOGE("RequestUnlock quit because redoing GetScreenLockManagerProxy failed.");
-        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
+        return E_SCREENLOCK_NULLPTR;
     }
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr.");
-        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
+        return E_SCREENLOCK_NULLPTR;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestUnlock succeeded.");
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_UNLOCKSCREEN);
@@ -93,11 +93,11 @@ int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterfa
     auto proxy = GetProxy();
     if (proxy  == nullptr) {
         SCLOCK_HILOGE("RequestLock quit because redoing GetScreenLockManagerProxy failed.");
-        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
+        return E_SCREENLOCK_NULLPTR;
     }
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr.");
-        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
+        return E_SCREENLOCK_NULLPTR;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestLock succeeded.");
     return proxy->RequestLock(listener);

@@ -31,7 +31,6 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
     napi_value self = nullptr;
     napi_value argv[6] = {nullptr};
     NAPI_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, argv, &self, nullptr));
-    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     pos = ((pos == ASYNC_DEFAULT_POS) ? (argc - 1) : pos);
     if (pos >= 0 && pos < argc) {
         napi_valuetype valueType = napi_undefined;
@@ -41,6 +40,7 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
             argc = pos;
         }
     }
+    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     if (context == nullptr) {
         SCLOCK_HILOGD("context is null");
     }
@@ -117,29 +117,29 @@ void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
     AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
     napi_value output = nullptr;
     napi_status runStatus = (*context->ctx)(env, &output);
-    napi_value result[static_cast<unsigned long long>(ARG_INFO::ARG_BUTT)] = {0};
+    napi_value result[static_cast<uint32_t>(ARG_INFO::ARG_BUTT)] = {0};
     SCLOCK_HILOGD("run the js callback function:status[%{public}d]runStatus[%{public}d]", status, runStatus);
     if (status == napi_ok && runStatus == napi_ok) {
-        napi_get_undefined(env, &result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
+        napi_get_undefined(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
         if (output != nullptr) {
             SCLOCK_HILOGD("AsyncCall::OnComplete output != nullptr");
-            result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)] = output;
+            result[static_cast<uint32_t>(ARG_INFO::ARG_DATA)] = output;
         } else {
             SCLOCK_HILOGD("AsyncCall::OnComplete output == nullptr");
-            napi_get_undefined(env, &result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
+            napi_get_undefined(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_DATA)]);
         }
     } else {
-        napi_get_undefined(env, &result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
-        GenerateBusinessError(env, context->ctx->errorInfo_, &result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
+        napi_get_undefined(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_DATA)]);
+        GenerateBusinessError(env, context->ctx->errorInfo_, &result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
     }
     SCLOCK_HILOGD("run the js callback function:(context->defer != nullptr)?[%{public}d]", context->defer != nullptr);
     if (context->defer != nullptr) {
         // promise
         SCLOCK_HILOGD("Promise to do!");
         if (status == napi_ok && runStatus == napi_ok) {
-            napi_resolve_deferred(env, context->defer, result[static_cast<unsigned long long>(ARG_INFO::ARG_DATA)]);
+            napi_resolve_deferred(env, context->defer, result[static_cast<uint32_t>(ARG_INFO::ARG_DATA)]);
         } else {
-            napi_reject_deferred(env, context->defer, result[static_cast<unsigned long long>(ARG_INFO::ARG_ERROR)]);
+            napi_reject_deferred(env, context->defer, result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
         }
     } else {
         // callback

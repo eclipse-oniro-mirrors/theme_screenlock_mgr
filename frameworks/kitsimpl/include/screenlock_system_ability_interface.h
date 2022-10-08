@@ -37,9 +37,9 @@ struct SystemEvent {
 };
 
 struct ErrorInfo {
-    int32_t errorCode_;
+    uint32_t errorCode_;
     std::string message_;
-    ErrorInfo(int32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
+    ErrorInfo(uint32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
     {
     }
 };

@@ -75,13 +75,15 @@ struct ScreenlockOnCallBack {
     SystemEvent systemEvent;
     ErrorInfo errorInfo;
     napi_deferred deferred = nullptr;
+    bool callBackResult = false;
 };
 
-bool IsCheckedTypeRegisterMessage(const std::string &type);
-bool IsCheckedTypeSendEventMessage(const std::string &type);
-bool CheckArgsCount(napi_env env, bool isNoException, const std::string &argsCount);
-bool CheckArgsType(napi_env env, bool isNoException, const std::string &type);
-std::string GetErrMessage(int32_t errorCode);
+napi_status IsVaildEvent(const std::string &type);
+napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
+napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);
+void ThrowError(napi_env env, const uint32_t &code, const std::string &msg);
+void GetErrorInfo(int32_t errorCode,ErrorInfo &errorInfo);
+std::string GetErrorMessage(const uint32_t &code);
 napi_status Init(napi_env env, napi_value exports);
 napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info);
 napi_value NAPI_IsLocked(napi_env env, napi_callback_info info);

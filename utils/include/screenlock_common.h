@@ -45,14 +45,6 @@ const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
 const std::string SCREEN_DRAWDONE = "screenDrawDone";
 const std::string SYSTEM_READY = "systemReady";
 const std::string SERVICE_RESTART = "serviceRestart";
-const std::string PERMISSION_VALIDATION_FAILED = "Permission verification failed.";
-const std::string PARAMETER_VALIDATION_FAILED = "Parameter validation failed.";
-const std::string CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
-const std::string SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
-const std::string PARAMETER_TYPE_VALIDATION_FAILED = "Parameter validation failed. The Parameter type is ";
-const std::string PARAMETER_COUNT_VALIDATION_FAILED = "Parameter validation failed. The number of parameters "
-                                                      "requires ";
-const std::string EVENT_TYPE_NOT_SUPPORT = "Event type is not support";
 const int USER_NULL = -10000;
 enum ScreenLockModule {
     SCREENLOCK_MODULE_SERVICE_ID = 0x04,
@@ -72,6 +64,8 @@ enum ScreenLockError {
     E_SCREENLOCK_SET_RTC_FAILED,
     E_SCREENLOCK_NOT_FOUND,
     E_SCREENLOCK_NO_PERMISSION,
+    E_SCREENLOCK_NULLPTR,
+    E_SCREENLOCK_SENDREQUEST_FAILED,
 };
 
 enum TraceTaskId : int32_t {
@@ -86,8 +80,7 @@ enum ScreenChange {
     SCREEN_CANCEL,
 };
 
-enum BussinessErrorCode : int32_t {
-    NO_ERROR = 0,
+enum JsErrorCode : uint32_t {
     ERR_NO_PERMISSION = 201,
     ERR_INVALID_PARAMS = 401,
     ERR_CANCEL_UNLOCK = 13200001,

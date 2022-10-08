@@ -31,7 +31,7 @@ public:
     virtual bool GetSecure() = 0;
     virtual int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
-    virtual bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
+    virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
     virtual bool Test_SetScreenLocked(const bool isScreenlocked) = 0;
     virtual bool Test_RuntimeNotify(const std::string &event, int param) = 0;

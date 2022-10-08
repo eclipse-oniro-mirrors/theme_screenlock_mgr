@@ -35,6 +35,25 @@ using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 namespace ScreenLock {
+constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission verification failed.";
+constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter validation failed.";
+constexpr const char *CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
+constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
+const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
+    { E_SCREENLOCK_NO_PERMISSION, JsErrorCode::ERR_NO_PERMISSION },
+    { E_SCREENLOCK_PARAMETERS_INVALID, JsErrorCode::ERR_INVALID_PARAMS },
+    { E_SCREENLOCK_WRITE_PARCEL_ERROR, JsErrorCode::ERR_SERVICE_ABNORMAL },
+    { E_SCREENLOCK_NULLPTR, JsErrorCode::ERR_SERVICE_ABNORMAL },
+    { E_SCREENLOCK_SENDREQUEST_FAILED, JsErrorCode::ERR_SERVICE_ABNORMAL },
+
+};
+const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
+    { JsErrorCode::ERR_NO_PERMISSION, PERMISSION_VALIDATION_FAILED },
+    { JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED },
+    { JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION },
+    { JsErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL },
+};
+
 static thread_local EventListener g_systemEventListener;
 static thread_local EventListener g_unlockListener;
 static thread_local EventListener g_lockListener;
@@ -58,65 +77,64 @@ napi_status Init(napi_env env, napi_value exports)
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
 }
-const std::map<int32_t, std::string> errorInfoMap = {
-    {BussinessErrorCode::ERR_NO_PERMISSION, PERMISSION_VALIDATION_FAILED},
-    {BussinessErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED},
-    {BussinessErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION},
-    {BussinessErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL}
-};
 
-bool IsCheckedTypeRegisterMessage(const std::string &type)
+napi_status IsVaildEvent(const std::string &type)
 {
-    if (type == BEGIN_WAKEUP || type == END_WAKEUP || type == BEGIN_SCREEN_ON || type == END_SCREEN_ON ||
-        type == BEGIN_SLEEP || type == END_SLEEP || type == BEGIN_SCREEN_OFF || type == END_SCREEN_OFF ||
-        type == CHANGE_USER || type == SCREENLOCK_ENABLED || type == EXIT_ANIMATION || type == UNLOCKSCREEN ||
-        type == SYSTEM_READY || type == LOCKSCREEN) {
-        return true;
+    if (type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE || type == LOCK_SCREEN_RESULT) {
+        return napi_ok;
     }
-    return false;
+    return napi_invalid_arg;
 }
 
-bool IsCheckedTypeSendEventMessage(napi_env env, bool isNoException, const std::string &type)
+napi_status CheckParamType(napi_env env, napi_value param, napi_valuetype jsType)
 {
-    if (!isNoException) {
-        std::string errMsg = EVENT_TYPE_NOT_SUPPORT;
-        napi_throw_error(env, std::to_string(BussinessErrorCode::ERR_INVALID_PARAMS).c_str(), errMsg.c_str());
-        SCLOCK_HILOGE("IsCheckedTypeSendEventMessage : %{public}s not support", type.c_str());
-        return false;
+    napi_valuetype valueType = napi_undefined;
+    napi_status status = napi_typeof(env, param, &valueType);
+    if (status != napi_ok || valueType != jsType) {
+        return napi_invalid_arg;
     }
-    return true;
+    return napi_ok;
 }
 
-bool CheckArgsType(napi_env env, bool isNoException, const std::string &type)
+napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber)
 {
-    if (!isNoException) {
-        std::string errMsg = PARAMETER_TYPE_VALIDATION_FAILED + type;
-        napi_throw_error(env, std::to_string(BussinessErrorCode::ERR_INVALID_PARAMS).c_str(), errMsg.c_str());
-        SCLOCK_HILOGE("CheckArgsType:  %{public}s", errMsg.c_str());
-        return false;
+    if (argc < paramNumber) {
+        return napi_invalid_arg;
     }
-    return true;
+    return napi_ok;
 }
 
-bool CheckArgsCount(napi_env env, bool isNoException, const std::string &argsCount)
+void ThrowError(napi_env env, const uint32_t &code, const std::string &msg)
 {
-    if (!isNoException) {
-        std::string errMsg = PARAMETER_COUNT_VALIDATION_FAILED + argsCount;
-        napi_throw_error(env, std::to_string(BussinessErrorCode::ERR_INVALID_PARAMS).c_str(), errMsg.c_str());
-        SCLOCK_HILOGE("CheckArgsCount:  %{public}s", errMsg.c_str());
-        return false;
+    SCLOCK_HILOGD("ThrowError start");
+    std::string errorCode = std::to_string(code);
+    napi_status status = napi_throw_error(env, errorCode.c_str(), msg.c_str());
+    if (status != napi_ok) {
+        SCLOCK_HILOGD("Failed to napi_throw_error");
     }
-    return true;
+    SCLOCK_HILOGD("ThrowError end");
+}
+void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo)
+{
+    std::map<int, uint32_t>::const_iterator iter = ERROR_CODE_CONVERSION.find(errorCode);
+    if (iter != ERROR_CODE_CONVERSION.end()) {
+        errorInfo.errorCode_ = iter->second;
+        errorInfo.message_ = GetErrorMessage(errorInfo.errorCode_);
+        SCLOCK_HILOGD("GetErrorInfo errorInfo.code: %{public}d, errorInfo.message: %{public}s", errorInfo.errorCode_,
+            errorInfo.message_.c_str());
+    } else {
+        SCLOCK_HILOGD("GetErrorInfo errCode: %{public}d", errorCode);
+    }
 }
 
-std::string GetErrMessage(int32_t errorCode)
+std::string GetErrorMessage(const uint32_t &code)
 {
     std::string message;
-    std::map<int32_t, std::string>::const_iterator  iter = errorInfoMap.find(errorCode);
-    if (iter != errorInfoMap.end()) {
+    std::map<uint32_t, std::string>::const_iterator  iter = ERROR_INFO_MAP.find(code);
+    if (iter != ERROR_INFO_MAP.end()) {
         message = iter->second;
     }
-    SCLOCK_HILOGD("GetErrMessage: message is %{public}s", message.c_str());
+    SCLOCK_HILOGD("GetErrorMessage: message is %{public}s", message.c_str());
     return message;
 }
 
@@ -149,9 +167,9 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
 napi_value NAPI_IsLocked(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_IsScreenLocked begin");
-    napi_value result = nullptr;
     bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("isScreenlocked  status=%{public}d", status);
+    napi_value result = nullptr;
     napi_get_boolean(env, status, &result);
     return result;
 }
@@ -172,9 +190,9 @@ void AsyncCallLockScreen(napi_env env)
             return;
         }
         int32_t status = ScreenLockManager::GetInstance()->RequestLock(listener);
-        if (status != BussinessErrorCode::NO_ERROR) {
-            ErrorInfo errInfo(status, GetErrMessage(status));
-            SCLOCK_HILOGD("ScreenLockManager errInfo %{public}s", GetErrMessage(status).c_str());
+        if (status != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo(static_cast<uint32_t>(status));
+            GetErrorInfo(status, errInfo);
             listener->SetErrorInfo(errInfo);
             SystemEvent systemEvent("", std::to_string(status));
             listener->OnCallBack(systemEvent);
@@ -197,18 +215,16 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
     napi_ref callbackRef = nullptr;
 
-    napi_valuetype valueType = napi_undefined;
     if (argc == ARGS_SIZE_ONE) {
-        napi_typeof(env, argv[ARGV_ZERO], &valueType);
         SCLOCK_HILOGD("NAPI_Lock callback");
-        if (!CheckArgsType(env, valueType == napi_function, "function")) {
+        if (CheckParamType(env, argv[ARGV_ZERO], napi_function) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return ret;
         }
-        if (valueType == napi_function) {
-            SCLOCK_HILOGD("NAPI_Lock create callback");
-            napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-            g_lockListener = { env, thisVar, callbackRef };
-        }
+
+        SCLOCK_HILOGD("NAPI_Lock create callback");
+        napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
+        g_lockListener = { env, thisVar, callbackRef };
     }
     if (callbackRef == nullptr) {
         SCLOCK_HILOGD("NAPI_Lock create promise");
@@ -239,8 +255,9 @@ void AsyncCallUnlockScreen(napi_env env)
             return;
         }
         int32_t status = ScreenLockManager::GetInstance()->RequestUnlock(listener);
-        if (status != BussinessErrorCode::NO_ERROR) {
-            ErrorInfo errInfo(status, GetErrMessage(status));
+        if (status != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo(static_cast<uint32_t>(status));
+            GetErrorInfo(status, errInfo);
             listener->SetErrorInfo(errInfo);
             SystemEvent systemEvent("", std::to_string(status));
             listener->OnCallBack(systemEvent);
@@ -300,24 +317,22 @@ napi_value NAPI_Unlock(napi_env env, napi_callback_info info)
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
     napi_ref callbackRef = nullptr;
 
-    napi_valuetype valueType = napi_undefined;
     if (argc == ARGS_SIZE_ONE) {
-        napi_typeof(env, argv[ARGV_ZERO], &valueType);
         SCLOCK_HILOGD("NAPI_Unlock callback");
-        if (!CheckArgsType(env, valueType == napi_function, "function")) {
+        if (CheckParamType(env, argv[ARGV_ZERO], napi_function) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return nullptr;
         }
-        if (valueType == napi_function) {
-            SCLOCK_HILOGD("NAPI_Unlock create callback");
-            napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-            g_unlockListener = { env, thisVar, callbackRef };
-        }
+
+        SCLOCK_HILOGD("NAPI_Unlock create callback");
+        napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
+        g_unlockListener = { env, thisVar, callbackRef, nullptr, true };
     }
     if (callbackRef == nullptr) {
         SCLOCK_HILOGD("NAPI_Unlock create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        g_unlockListener = { env, thisVar, nullptr, deferred };
+        g_unlockListener = { env, thisVar, nullptr, deferred, true };
     } else {
         SCLOCK_HILOGD("NAPI_Unlock create callback");
         napi_get_undefined(env, &ret);
@@ -371,24 +386,29 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, &argv, &thisVar, &data));
-    if (!CheckArgsCount(env, argc >= ARGS_SIZE_ONE, "one.")) {
+    if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
         return result;
     }
-
-    napi_valuetype valueType = napi_undefined;
-    napi_typeof(env, argv, &valueType);
-    if (!CheckArgsType(env, valueType == napi_function, "function")) {
+    if (CheckParamType(env, argv, napi_function) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
         return result;
     }
     napi_ref callbackRef = nullptr;
     napi_create_reference(env, argv, ARGS_SIZE_ONE, &callbackRef);
-
     g_systemEventListener = { env, thisVar, callbackRef };
     sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow)
         ScreenlockSystemAbilityCallback(g_systemEventListener);
     if (listener != nullptr) {
-        SCLOCK_HILOGD("on system event,listener %{public}p", listener.GetRefPtr());
-        status = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
+        int32_t retCode = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
+        if (retCode != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo(static_cast<uint32_t>(retCode));
+            GetErrorInfo(retCode, errInfo);
+            ThrowError(env, errInfo.errorCode_, errInfo.message_);
+            status = false;
+        } else {
+            status = true;
+        }
     }
     SCLOCK_HILOGD("on system event  status=%{public}d", status);
     napi_get_boolean(env, status, &result);
@@ -401,12 +421,12 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     auto context = std::make_shared<SendEventInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
-        if (!CheckArgsCount(env, argc >= ARGS_SIZE_TWO, "two or three.")) {
+        if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[ARGV_ZERO], &valueType);
-        if (!CheckArgsType(env, valueType == napi_string, "string")) {
+        if (CheckParamType(env, argv[ARGV_ZERO], napi_string) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
         char event[MAX_VALUE_LEN] = { 0 };
@@ -414,13 +434,12 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
         napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
         context->eventInfo = event;
         std::string type = event;
-        if (!IsCheckedTypeSendEventMessage(
-                env, type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE || type == LOCK_SCREEN_RESULT, type)) {
+        if (IsVaildEvent(type) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
-        valueType = napi_undefined;
-        napi_typeof(env, argv[ARGV_ONE], &valueType);
-        if (!CheckArgsType(env, valueType == napi_number, "number")) {
+        if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
         napi_get_value_int32(env, argv[ARGV_ONE], &context->param);
@@ -433,14 +452,15 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         int32_t retCode = ScreenLockAppManager::GetInstance()->SendScreenLockEvent(context->eventInfo, context->param);
-        if (retCode != BussinessErrorCode::NO_ERROR) {
-            ErrorInfo errInfo(retCode, GetErrMessage(retCode));
+        if (retCode != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo(static_cast<uint32_t>(retCode));
+            GetErrorInfo(retCode, errInfo);
             context->SetErrorInfo(errInfo);
+            context->allowed = false;
         } else {
             context->status = napi_ok;
+            context->allowed = true;
         }
-        context->allowed = retCode != 0 ? false : true;
-        SCLOCK_HILOGD("NAPI_ScreenLockSendEvent exec allowed = %{public}d ", retCode);
     };
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGV_TWO);

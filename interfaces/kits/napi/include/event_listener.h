@@ -27,6 +27,7 @@ struct EventListener {
     napi_value thisVar;
     napi_ref callbackRef;
     napi_deferred deferred = nullptr;
+    bool callBackResult = false;
 };
 } // namespace ScreenLock
 } // namespace OHOS

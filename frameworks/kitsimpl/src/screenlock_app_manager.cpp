@@ -56,28 +56,28 @@ int32_t ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int 
     if (proxy == nullptr) {
         SCLOCK_HILOGE(
             "ScreenLockAppManager::SendScreenLockEvent quit because redoing GetScreenLockManagerProxy failed.");
-        return BussinessErrorCode::ERR_SERVICE_ABNORMAL;
+        return E_SCREENLOCK_NULLPTR;
     }
     SCLOCK_HILOGD("ScreenLockAppManager::SendScreenLockEvent succeeded.");
     return proxy->SendScreenLockEvent(event, param);
 }
 
-bool ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockAppManager::OnSystemEvent quit because redoing GetScreenLockManagerProxy failed.");
-        return false;
+        return E_SCREENLOCK_NULLPTR;
     }
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr.");
-        return false;
+        return E_SCREENLOCK_NULLPTR;
     }
     listenerLock_.lock();
     systemEventListener_ = listener;
     listenerLock_.unlock();
-    bool status = proxy->OnSystemEvent(listener);
+    int32_t status = proxy->OnSystemEvent(listener);
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent out, status=%{public}d", status);
     return status;
 }
