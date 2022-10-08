@@ -199,9 +199,9 @@ void AsyncCallLockScreen(napi_env env)
         }
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
-    napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work);
-    napi_queue_async_work(env, work);
+    NAPI_CALL(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work));
+    NAPI_CALL(env, napi_queue_async_work(env, work));
 }
 
 napi_value NAPI_Lock(napi_env env, napi_callback_info info)
@@ -264,9 +264,9 @@ void AsyncCallUnlockScreen(napi_env env)
         }
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
-    napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(env, nullptr, resource, execute, complete, &g_unlockListener, &work);
-    napi_queue_async_work(env, work);
+    NAPI_CALL(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_unlockListener, &work));
+    NAPI_CALL(env, napi_queue_async_work(env, work));
 }
 
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
@@ -368,9 +368,9 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
 napi_value NAPI_IsSecure(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_IsSecure begin");
-    napi_value result = nullptr;
     bool status = ScreenLockManager::GetInstance()->GetSecure();
     SCLOCK_HILOGD("isSecureMode  status=%{public}d", status);
+    napi_value result = nullptr;
     napi_get_boolean(env, status, &result);
     return result;
 }
