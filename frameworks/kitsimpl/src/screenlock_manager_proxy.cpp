@@ -113,7 +113,7 @@ int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityIn
 
 int32_t ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    SCLOCK_HILOGD("ScreenLockManagerProxy::OnSystemEvent listener=%{public}p", listener.GetRefPtr());
+    SCLOCK_HILOGD("ScreenLockManagerProxy::OnSystemEvent");
     MessageParcel data, reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {

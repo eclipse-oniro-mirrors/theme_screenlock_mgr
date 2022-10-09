@@ -14,7 +14,6 @@
  */
 #include "screenlock_system_ability_callback.h"
 
-
 #include <memory>
 #include <new>
 

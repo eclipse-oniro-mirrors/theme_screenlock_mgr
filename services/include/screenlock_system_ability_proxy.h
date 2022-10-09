@@ -30,6 +30,7 @@ public:
     ~ScreenLockSystemAbilityProxy() = default;
     void OnCallBack(const SystemEvent &systemEvent) override;
     void SetErrorInfo(const ErrorInfo &errorInfo) override;
+
 private:
     static inline BrokerDelegator<ScreenLockSystemAbilityProxy> delegator_;
 };

@@ -39,10 +39,12 @@ ScreenlockCallback::ScreenlockCallback(const EventListener &eventListener)
 ScreenlockCallback::~ScreenlockCallback()
 {
 }
+
 void ScreenlockCallback::SetErrorInfo(const ErrorInfo &errorInfo)
 {
     errorInfo_ = errorInfo;
 }
+
 void UvWorkOnCallBackInt(uv_work_t *work, int status)
 {
     if (work == nullptr) {

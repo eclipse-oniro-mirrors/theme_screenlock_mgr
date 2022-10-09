@@ -54,8 +54,8 @@ int32_t ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int 
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        SCLOCK_HILOGE(
-            "ScreenLockAppManager::SendScreenLockEvent quit because redoing GetScreenLockManagerProxy failed.");
+        SCLOCK_HILOGE("ScreenLockAppManager::SendScreenLockEvent quit because redoing GetScreenLockManagerProxy "
+                      "failed.");
         return E_SCREENLOCK_NULLPTR;
     }
     SCLOCK_HILOGD("ScreenLockAppManager::SendScreenLockEvent succeeded.");

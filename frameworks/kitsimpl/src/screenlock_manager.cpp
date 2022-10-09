@@ -75,7 +75,7 @@ bool ScreenLockManager::GetSecure()
 int32_t ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     auto proxy = GetProxy();
-    if (proxy  == nullptr) {
+    if (proxy == nullptr) {
         SCLOCK_HILOGE("RequestUnlock quit because redoing GetScreenLockManagerProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
@@ -91,7 +91,7 @@ int32_t ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInter
 int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     auto proxy = GetProxy();
-    if (proxy  == nullptr) {
+    if (proxy == nullptr) {
         SCLOCK_HILOGE("RequestLock quit because redoing GetScreenLockManagerProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }

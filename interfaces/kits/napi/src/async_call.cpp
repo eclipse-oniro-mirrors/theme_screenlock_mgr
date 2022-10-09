@@ -117,7 +117,7 @@ void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
     AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
     napi_value output = nullptr;
     napi_status runStatus = (*context->ctx)(env, &output);
-    napi_value result[static_cast<uint32_t>(ARG_INFO::ARG_BUTT)] = {0};
+    napi_value result[static_cast<uint32_t>(ARG_INFO::ARG_BUTT)] = { 0 };
     SCLOCK_HILOGD("run the js callback function:status[%{public}d]runStatus[%{public}d]", status, runStatus);
     if (status == napi_ok && runStatus == napi_ok) {
         napi_get_undefined(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
@@ -161,7 +161,8 @@ void AsyncCall::DeleteContext(const napi_env env, const AsyncContext *context)
     }
     delete context;
 }
-void AsyncCall::GenerateBusinessError(napi_env env, const ErrorInfo& errorInfo, napi_value* result)
+
+void AsyncCall::GenerateBusinessError(napi_env env, const ErrorInfo &errorInfo, napi_value *result)
 {
     napi_value message = nullptr;
     napi_value code = nullptr;

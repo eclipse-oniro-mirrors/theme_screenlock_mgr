@@ -82,7 +82,7 @@ napi_status IsVaildEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
 napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);
 void ThrowError(napi_env env, const uint32_t &code, const std::string &msg);
-void GetErrorInfo(int32_t errorCode,ErrorInfo &errorInfo);
+void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo);
 std::string GetErrorMessage(const uint32_t &code);
 napi_status Init(napi_env env, napi_value exports);
 napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info);

@@ -15,28 +15,29 @@
 #include "napi_screenlock_ability.h"
 
 #include <hitrace_meter.h>
-#include <map>
 #include <napi/native_api.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <uv.h>
 
+#include <map>
+
 #include "event_listener.h"
 #include "ipc_skeleton.h"
 #include "sclock_log.h"
 #include "screenlock_app_manager.h"
+#include "screenlock_callback.h"
 #include "screenlock_common.h"
 #include "screenlock_js_util.h"
 #include "screenlock_manager.h"
 #include "screenlock_system_ability_callback.h"
-#include "screenlock_callback.h"
 
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 namespace ScreenLock {
-constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission verification failed.";
+constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission validation failed.";
 constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter validation failed.";
 constexpr const char *CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
 constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
@@ -115,6 +116,7 @@ void ThrowError(napi_env env, const uint32_t &code, const std::string &msg)
     }
     SCLOCK_HILOGD("ThrowError end");
 }
+
 void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo)
 {
     std::map<int, uint32_t>::const_iterator iter = ERROR_CODE_CONVERSION.find(errorCode);
@@ -131,7 +133,7 @@ void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo)
 std::string GetErrorMessage(const uint32_t &code)
 {
     std::string message;
-    std::map<uint32_t, std::string>::const_iterator  iter = ERROR_INFO_MAP.find(code);
+    std::map<uint32_t, std::string>::const_iterator iter = ERROR_INFO_MAP.find(code);
     if (iter != ERROR_INFO_MAP.end()) {
         message = iter->second;
     }
