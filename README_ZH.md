@@ -29,52 +29,60 @@
 ├── test                     # 接口的单元测试
 └── utils                    # 组件包含日志打印和有序公共事件定义的常量
 ```
-## JS 接口说明
+
+## 说明
+
+### 接口说明
+
+**表 1**   锁屏管理服务的主要方法说明
 
 | 接口名                      | 描述                       |
 | -------------------------- | -------------------------- |
 | isScreenLocked(callback: AsyncCallback<boolean>): void; | 判断屏幕是否锁屏，callback方式 |
 | isScreenLocked(): Promise<boolean>; | 判断屏幕是否锁屏，Promise方式 |
+| isLocked(): boolean; | 判断屏幕是否锁屏。如果屏幕当前已锁定，则返回true，否则返回false，同步方式 |
 | isSecureMode(callback: AsyncCallback<boolean>): void; | 判断当前设备的屏幕锁定是否安全(安全屏幕锁定意味着解锁屏幕需要密码、图案或其他用户身份识别)，callback方式 |
 | isSecureMode(): Promise<boolean>; | 判断当前设备的屏幕锁定是否安全(安全屏幕锁定意味着解锁屏幕需要密码、图案或其他用户身份识别)，Promise方式 |
+| isSecure(): boolean; | 判断当前设备的屏幕锁定是否安全(安全屏幕锁定意味着解锁屏幕需要密码、图案或其他用户身份识别)。如果当前设备的屏幕锁定安全，则返回true，否则返回false，同步方式 |
 | unlockScreen(callback: AsyncCallback<void>): void; | 三方应用解锁屏幕，callback方式 |
 | unlockScreen(): Promise<void>; | 三方应用解锁屏幕，Promise方式 |
-| on(type: 'beginWakeUp' , callback: Callback<void>): void; | 锁屏应用注册开始唤醒监听事件 |
-| on(type: 'endWakeUp' , callback: Callback<void>): void; | 锁屏应用注册结束唤醒监听事件 |
-| on(type: 'beginScreenOn' , callback: Callback<void>): void; | 锁屏应用注册开始亮屏监听事件 |
-| on(type: 'endScreenOn' , callback: Callback<void>): void; | 锁屏应用注册结束亮屏监听事件 |
-| on(type: 'beginScreenOff' , callback: Callback<void>): void; | 锁屏应用注册开始灭屏监听事件 |
-| on(type: 'endScreenOff' , callback: Callback<void>): void; | 锁屏应用注册结束灭屏监听事件 |
-| on(type: 'unlockScreen' , callback: Callback<void>): void; | 锁屏应用注册请求解锁监听事件 |
-| on(type: 'beginExitAnimation' , callback: Callback<void>): void; | 锁屏应用注册开始退场监听事件 |
-| on(type: 'systemReady' , callback: Callback<void>): void; | 锁屏应用注册锁屏管理服务系统准备完成监听事件 |
-| on(type: 'beginSleep' , callback: Callback<number>): void; | 锁屏应用注册开始休眠监听事件 |
-| on(type: 'endSleep' , callback: Callback<number>): void; | 锁屏应用注册结束休眠监听事件 |
-| on(type: 'changeUser', callback: Callback<number>): void; | 锁屏应用注册切换用户监听事件 |
-| on(type: 'screenlockEnabled', callback: Callback<boolean>): void; | 锁屏应用注册锁屏是否启用监听事件 |
-| off(type: 'beginWakeUp' , callback: Callback<void>): void; | 锁屏应用取消开始唤醒监听事件 |
-| off(type: 'endWakeUp' , callback: Callback<void>): void; | 锁屏应用取消结束唤醒监听事件 |
-| off(type: 'beginScreenOn' , callback: Callback<void>): void; | 锁屏应用取消开始亮屏监听事件 |
-| off(type: 'endScreenOn' , callback: Callback<void>): void; | 锁屏应用取消结束亮屏监听事件 |
-| off(type: 'beginScreenOff' , callback: Callback<void>): void; | 锁屏应用取消开始灭屏监听事件 |
-| off(type: 'endScreenOff' , callback: Callback<void>): void; | 锁屏应用取消结束灭屏监听事件 |
-| off(type:  'unlockScreen' , callback: Callback<void>): void; | 锁屏应用取消请求解锁监听事件 |
-| off(type:  'beginExitAnimation' , callback: Callback<void>): void; | 锁屏应用取消开始退场监听事件 |
-| off(type: 'systemReady', callback: Callback<void>): void; | 锁屏应用取消锁屏管理服务系统准备完成监听事件 |
-| off(type: 'beginSleep' , callback: Callback<number>): void;<boolean>): void; | 锁屏应用取消开始休眠监听事件 |
-| off(type: 'endSleep' , callback: Callback<number>): void;<boolean>): void; | 锁屏应用取消结束休眠监听事件 |
-| off(type: 'changeUser', callback: Callback<number>): void;<boolean>): void; | 锁屏应用取消切换用户监听事件 |
-| off(type: 'screenlockEnabled', callback: Callback<boolean>): void; | 锁屏应用取消锁屏是否启用监听事件 |
-| sendScreenLockEvent(event: String, parameter: number, callback: AsyncCallback<boolean>): void; | 锁屏应用给锁屏管理服务发送事件,callback方式 |
-| sendScreenLockEvent(event: String, parameter: number): Promise<boolean>; | 锁屏应用给锁屏管理服务发送事件,promise方式 |
+| unlock(callback: AsyncCallback<boolean>): void; | 三方应用解锁屏幕，如果屏幕解锁成功。则返回true，否则返回false，callback方式 |
+| unlock():Promise<boolean>; | 三方应用解锁屏幕，如果屏幕解锁成功。则返回true，否则返回false，Promise方式 |
+| lock(callback: AsyncCallback<boolean>): void; | 系统API，锁定屏幕。如果屏幕锁定成功，则返回true，否则返回false，callback方式 |
+| lock():Promise<boolean>; | 系统API，锁定屏幕。如果屏幕锁定成功，则返回true，否则返回false，Promise方式 |
+| SystemEvent { eventType: EventType, params: string } | 定义了系统事件回调参数结构，包含事件类型以及string类型的参数 |
+| onSystemEvent(callback: Callback<SystemEvent>): boolean; | 系统API，注册与系统屏幕锁定相关的系统事件。如果注册系统事件成功，则返回true，否则返回false，callback方式 |
+| sendScreenLockEvent(event: String, parameter: number, callback: AsyncCallback<boolean>): void; | 系统API，锁屏应用给锁屏管理服务发送事件,callback方式 |
+| sendScreenLockEvent(event: String, parameter: number): Promise<boolean>; | 系统API，锁屏应用给锁屏管理服务发送事件,promise方式 |
 
-## JS 接口使用示例
+
+**表 2**   EventType-事件类型说明
+
+| 事件类型                     | 描述                       |
+| -------------------------- | -------------------------- |
+| beginWakeUp | 表示开始唤醒监听事件 |
+| endWakeUp | 表示结束唤醒监听事件 |
+| beginScreenOn | 表示开始亮屏监听事件 |
+| endScreenOn | 表示结束亮屏监听事件 |
+| beginScreenOff | 表示开始灭屏监听事件 |
+| endScreenOff | 表示结束灭屏监听事件 |
+| unlockScreen | 表示请求解锁监听事件 |
+| lockScreen | 表示请求锁定监听事件 |
+| beginExitAnimation | 表示开始退场监听事件 |
+| beginSleep | 表示开始休眠监听事件 |
+| endSleep | 表示结束休眠监听事件 |
+| changeUser | 表示切换用户监听事件 |
+| screenlockEnabled | 表示锁屏是否启用监听事件 |
+| serviceRestart | 表示服务重新启动监听事件 |
+
+### JS 接口使用示例
+
+三方应用向锁屏管理服务进行查询屏幕锁屏状态
 
 ```js
 导入模块
 import screenLock from '@ohos.screenlock';
 
-查询屏幕状态接口说明: 三方应用向锁屏管理服务进行查询屏幕锁屏状态
 //Promise方式，在异步回调里面获取锁屏状态结果
 screenLock.isScreenLocked()
     .then((value) => {
@@ -84,10 +92,8 @@ screenLock.isScreenLocked()
         //打印错误信息
         console.error(`failed to screenLock.isScreenLocked because ${err.message}`)
 });
-```
 
- ```js
- //callback方式，在异步回调里面获取锁屏状态结果
+//callback方式，在异步回调里面获取锁屏状态结果
 screenLock.isScreenLocked((err, value) => {
     if (err) {
         //打印错误信息
@@ -97,45 +103,110 @@ screenLock.isScreenLocked((err, value) => {
     //打印查询锁屏状态的结果
     console.log(`success to screenLock.isScreenLocked: ${value}`);
 });
+
+ //同步方式里面获取锁屏状态结果，如果屏幕当前已锁定，则返回true，否则返回false
+ screenLock.isLocked();
+
+```
+
+判断当前设备的屏幕锁定是否安全
+
+```js
+
+//Promise方式，在异步回调里面获取是否安全结果
+screenlock.isSecureMode().then((data) => {
+    console.log('isSecureMode success: data->${JSON.stringify(data)}');
+}).catch((err) => {
+    console.error('isSecureMode fail, promise: err->${JSON.stringify(err)}');
+});
+
+//callback方式，在异步回调里面获取是否安全结果
+screenlock.isSecureMode((err, data)=>{      
+    if (err) {
+        console.error('isSecureMode callback error -> ${JSON.stringify(err)}');
+        return;    
+    }
+    console.info('isSecureMode callback success data -> ${JSON.stringify(err)}');
+});
+
+ //同步方式里面获取是否安全结果，如果当前设备的屏幕锁定安全，则返回true，否则返回false
+screenlock.isSecure();
+
+```
+
+锁定屏幕
+
+```js
+
+//Promise方式，在异步回调里面获取是否安全结果
+screenlock.lock().then(() => {
+    console.log('lock success');
+}).catch((err) => {
+    console.error('lock fail, promise: err->${JSON.stringify(err)}');
+});
+
+//callback方式，在异步回调里面获取是否安全结果
+screenlock.lock((err) => {      
+    if (err) {
+        console.error('lock callback error -> ${JSON.stringify(err)}');
+        return;    
+    }
+    console.info('lock callback success');
+});
+
 ```
 
 锁屏应用注册事件说明:锁屏应用向锁屏管理服务注册相关监听事件
 
-事件类型beginWakeUp示例代码如下
  ```js
-var eventType = "beginWakeUp";
-screenLock.on(eventType, (err, value) => {
+let isSuccess = screenlock.onSystemEvent((err, event)=>{
+    console.log(`onSystemEvent:callback:${event.eventType}`)
     if (err) {
-        // 接口调用失败，打印错误信息
-        console.error(`screenlockOn_unlockScreen_callback failed, because ${err.message}`);
-        return;
+        console.log(`onSystemEvent callback error -> ${JSON.stringify(err)}`);
     }
-    // 接口调用成功，打印返回信息
-    console.log(`screenlockOn_unlockScreen_callback success to ${value} `);
 });
+if (!isSuccess) {
+    console.log(`onSystemEvent result is false`)
+}
  ```
 
 三方应用向锁屏管理服务发起解锁屏幕请求
+
  ```js
+
 //三方应用callback方式调用请求解锁
+
 screenLock.unlockScreen((err, data) => {
     console.log("Screenlock_Test_2300: send unlockScreen issue begin");
     if (err) {
-    // 接口调用失败，打印错误信息
     console.log("Screenlock_Test_2300: unlockScreen fail-->"+err);
     return;
     }
-    // 接口调用成功，打印返回信息
     console.log("Screenlock_Test_2300: unlockScreen success-->"+data);
 });
 
+screenlock.unlock((err,data) => {      
+    if (err) {
+        console.error('unlock  error -> ${JSON.stringify(err)}');
+        return;    
+    }
+    console.info('unlock  success data -> ${JSON.stringify(data)}');
+});
+
+//三方应用Promise方式调用请求解锁
+
 screenLock.unlockScreen().then((data) => {
-    // 接口调用成功，打印返回信息
     console.log("ScreenLock_Test_Promise_0500: unlockScreen success-->"+data);
 }).catch((error) => {
-    // 接口调用失败，打印错误信息
     console.error("ScreenLock_Test_Promise_0500: unlockScreen fail--> " + error);
 });
+
+screenlock.unlock().then((data) => {
+    console.log('unlock success');
+}).catch((err) => {
+    console.error('unlock fail, : err->${JSON.stringify(err)}');
+});
+
 ```
 
 ## 相关仓
