@@ -427,33 +427,12 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
     SCLOCK_HILOGD("event=%{public}s ,param=%{public}d", event.c_str(), param);
     int stateResult = param;
     if (event == UNLOCK_SCREEN_RESULT) {
-        if (stateResult == SCREEN_SUCC) {
-            SetScreenlocked(false);
-            DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::UNLOCK);
-        } else if (stateResult == SCREEN_FAIL || stateResult == SCREEN_CANCEL) {
-            SetScreenlocked(true);
-        }
-        lock_.lock();
-        if (unlockVecListeners_.size()) {
-            auto callback = [=]() {
-                for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                    if (stateResult == SCREEN_CANCEL) {
-                        ErrorInfo errorInfo(JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION);
-                        unlockVecListeners_[i]->SetErrorInfo(errorInfo);
-                    }
-                    SystemEvent systemEvent("", std::to_string(stateResult));
-                    unlockVecListeners_[i]->OnCallBack(systemEvent);
-                }
-                unlockVecListeners_.clear();
-            };
-            serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-        }
-        lock_.unlock();
+        UnlockScreenEvent(stateResult);
     } else if (event == SCREEN_DRAWDONE) {
         SetScreenlocked(true);
         DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     } else if (event == LOCK_SCREEN_RESULT) {
-        LockScreentEvent(stateResult);
+        LockScreenEvent(stateResult);
     }
     return E_SCREENLOCK_OK;
 }
@@ -602,9 +581,9 @@ bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
     return elementName.GetBundleName() ==  appInfo.bundleName;
 }
 
-void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
+void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility LockScreentEvent stateResult:%{public}d", stateResult);
+    SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(true);
         DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
@@ -623,6 +602,32 @@ void ScreenLockSystemAbility::LockScreentEvent(int stateResult)
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     lock_.unlock();
+}
+
+void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
+{
+    SCLOCK_HILOGD("ScreenLockSystemAbility UnlockScreenEvent stateResult:%{public}d", stateResult);
+    if (stateResult == SCREEN_SUCC) {
+        SetScreenlocked(false);
+        DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::UNLOCK);
+    } else if (stateResult == SCREEN_FAIL || stateResult == SCREEN_CANCEL) {
+        SetScreenlocked(true);
+    }
+    std::lock_guard<std::mutex> autoLock(lock_);
+    if (unlockVecListeners_.size()) {
+        auto callback = [=]() {
+            for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
+                if (stateResult == SCREEN_CANCEL) {
+                    ErrorInfo errorInfo(JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION);
+                    unlockVecListeners_[i]->SetErrorInfo(errorInfo);
+                }
+                SystemEvent systemEvent("", std::to_string(stateResult));
+                unlockVecListeners_[i]->OnCallBack(systemEvent);
+            }
+            unlockVecListeners_.clear();
+        };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    }
 }
 
 std::string ScreenLockSystemAbility::GetScreenlockParameter(const std::string &key) const

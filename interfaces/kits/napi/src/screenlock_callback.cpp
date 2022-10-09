@@ -89,13 +89,8 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
         napi_get_reference_value(callBackPtr->env, callBackPtr->callbackref, &callbackFunc);
         napi_call_function(callBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, result, &callbackResult);
     }
-    if (callBackPtr != nullptr) {
-        delete callBackPtr;
-        callBackPtr = nullptr;
-    }
-    if (work != nullptr) {
-        delete work;
-    }
+    SAFE_DELETE(callBackPtr);
+    SAFE_DELETE(work);
 }
 
 void ScreenlockCallback::OnCallBack(const SystemEvent &systemEvent)

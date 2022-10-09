@@ -33,6 +33,13 @@ private:
     EventListener eventListener_;
     ErrorInfo errorInfo_;
 };
+#define SAFE_DELETE(P)      \
+    do {                    \
+        if (p != nullptr) { \
+            delete p;       \
+            p = nullptr;    \
+        }                   \
+    } while (0)
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_CALL_BACK_H

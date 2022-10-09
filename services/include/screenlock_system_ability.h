@@ -172,7 +172,8 @@ private:
     int32_t Init();
     void InitServiceHandler();
     static bool IsAppInForeground(int32_t tokenId);
-    void LockScreentEvent(int stateResult);
+    void LockScreenEvent(int stateResult);
+    void UnlockScreenEvent(int stateResult);
     std::string GetScreenlockParameter(const std::string &key) const;
     bool IsWhiteListApp(int32_t callingTokenId, const std::string &key);
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
