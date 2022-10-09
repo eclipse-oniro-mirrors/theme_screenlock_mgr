@@ -33,12 +33,12 @@ private:
     EventListener eventListener_;
     ErrorInfo errorInfo_;
 };
-#define SAFE_DELETE(p)      \
-    do {                    \
-        if (p != nullptr) { \
-            delete p;       \
-            p = nullptr;    \
-        }                   \
+#define SAFE_DELETE(p)        \
+    do {                      \
+        if ((p) != nullptr) { \
+            delete (p);       \
+            (p) = nullptr;    \
+        }                     \
     } while (0)
 } // namespace ScreenLock
 } // namespace OHOS
