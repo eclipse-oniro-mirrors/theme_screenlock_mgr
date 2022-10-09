@@ -33,7 +33,7 @@ private:
     EventListener eventListener_;
     ErrorInfo errorInfo_;
 };
-#define SAFE_DELETE(P)      \
+#define SAFE_DELETE(p)      \
     do {                    \
         if (p != nullptr) { \
             delete p;       \
