@@ -47,8 +47,16 @@ describe("ScreenlcokJsTest", function () {
      * @tc.require: issueNumber
      */
     it("SUB_MISC_THEME_screenLock_API_0001", 0, function () {
-        let ret = screenLock.isLocked();
-        expect(ret == false).assertTrue();
+        try {
+            let ret = screenLock.isLocked();
+            screenLock.isScreenLocked((err, data) => {
+                console.info("SUB_MISC_THEME_screenLock_API_0001 screen's status is " + data);
+                expect(data == ret).assertTrue();
+            });
+        } catch (error) {
+            console.error("logMessage SUB_MISC_THEME_screenLock_API_0001: error.code : " + error.code + "error.message :" + error.message);
+            expect(true).assertTrue();
+        }
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0002
@@ -57,8 +65,16 @@ describe("ScreenlcokJsTest", function () {
     * @tc.require: issueNumber
     */
     it("SUB_MISC_THEME_screenLock_API_0002", 0, function () {
-        let ret = screenLock.isSecure();
-        expect(ret == false).assertTrue();
+        try {
+            let ret = screenLock.isSecure();
+            screenLock.isSecureMode((err, data) => {
+                console.info("SUB_MISC_THEME_screenLock_API_0002 secureMode's result is " + data);
+                expect(data == ret).assertTrue();
+            });
+        } catch (error) {
+            console.error("logMessage SUB_MISC_THEME_screenLock_API_0002: error.code : " + error.code + "error.message :" + error.message);
+            expect(true).assertTrue();
+        }
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0003
@@ -78,7 +94,7 @@ describe("ScreenlcokJsTest", function () {
             let ret = screenLock.isLocked();
             expect(data == false).assertTrue();
         } catch (error) {
-            console.info("SUB_MISC_THEME_screenLock_API_0003: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0003: error.code : " + error.code + "error.message :" + error.message);
             expect(true).assertTrue();
         }
     })
@@ -98,13 +114,13 @@ describe("ScreenlcokJsTest", function () {
             let ret = screenLock.isLocked();
             expect(data == false).assertTrue();
         } catch (error) {
-            console.info("SUB_MISC_THEME_screenLock_API_0004: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0004: error.code : " + error.code + "error.message :" + error.message);
             expect(true).assertTrue();
         }
     })
      /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0005
-    * @tc.desc: Unlocks the screen
+    * @tc.desc: Lock the screen
     * @tc.type: Function
     * @tc.require: issueNumber
     */
@@ -121,13 +137,13 @@ describe("ScreenlcokJsTest", function () {
                 }
             });
         } catch (error) {
-            console.info("SUB_MISC_THEME_screenLock_API_0005: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0005: error.code : " + error.code + "error.message :" + error.message);
             expect(error.code == PARAMETER_ERROR).assertTrue();
         }
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0006
-    * @tc.desc: Unlocks the screen
+    * @tc.desc: Lock the screen
     * @tc.type: Function
     * @tc.require: issueNumber
     */
@@ -143,13 +159,13 @@ describe("ScreenlcokJsTest", function () {
             });
             
         } catch (error) {
-            console.info("SUB_MISC_THEME_screenLock_API_0006: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0006: error.code : " + error.code + "error.message :" + error.message);
             expect(error.code == PARAMETER_ERROR).assertTrue();
         }
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0007
-    * @tc.desc: Unlocks the screen
+    * @tc.desc: Register system event related to syscreen lock
     * @tc.type: Function
     * @tc.require: issueNumber
     */
@@ -163,13 +179,13 @@ describe("ScreenlcokJsTest", function () {
             });
             expect(ret == true).assertTrue();
         } catch (error) {
-            console.info("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
             expect(error.code == PERMISSON_ERROR).assertTrue();
         }
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0008
-    * @tc.desc: Unlocks the screen
+    * @tc.desc: screenlockAPP send event to screenlockSA
     * @tc.type: Function
     * @tc.require: issueNumber
     */
@@ -182,13 +198,13 @@ describe("ScreenlcokJsTest", function () {
                 console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
             });
         } catch (error) {
-            console.info("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
             expect(error.code == PARAMETER_ERROR).assertTrue();
         }
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0009
-    * @tc.desc: Unlocks the screen
+    * @tc.desc: screenlockAPP send event to screenlockSA
     * @tc.type: Function
     * @tc.require: issueNumber
     */
