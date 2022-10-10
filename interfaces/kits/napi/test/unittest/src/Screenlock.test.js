@@ -44,7 +44,7 @@ describe("ScreenlcokJsTest", function () {
      * @tc.name:SUB_MISC_THEME_screenLock_API_0001
      * @tc.desc: Checks whether the screen lock of the current device is secure.
      * @tc.type: Function
-     * @tc.require: issueNumber
+     * @tc.require: SR000HHEJQ
      */
     it("SUB_MISC_THEME_screenLock_API_0001", 0, function () {
         try {
@@ -62,7 +62,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0002
     * @tc.desc: Checks whether the screen is currently locked. 
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
     it("SUB_MISC_THEME_screenLock_API_0002", 0, function () {
         try {
@@ -80,7 +80,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0003
     * @tc.desc: Unlocks the screen
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
     it("SUB_MISC_THEME_screenLock_API_0003", 0, function () {
         try {
@@ -103,7 +103,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0004
     * @tc.desc: Unlocks the screen
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
     it("SUB_MISC_THEME_screenLock_API_0004", 0, function () {
         try {
@@ -124,7 +124,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0005
     * @tc.desc: Lock the screen
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
      it("SUB_MISC_THEME_screenLock_API_0005", 0, function () {
         try {
@@ -147,7 +147,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0006
     * @tc.desc: Lock the screen
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
      it("SUB_MISC_THEME_screenLock_API_0006", 0, function () {
         try {
@@ -169,7 +169,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0007
     * @tc.desc: Register system event related to syscreen lock
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
     it("SUB_MISC_THEME_screenLock_API_0007", 0, function () {
         try {
@@ -189,7 +189,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0008
     * @tc.desc: screenlockAPP send event to screenlockSA
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
     it("SUB_MISC_THEME_screenLock_API_0008", 0, function () {
         try {
@@ -208,7 +208,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.name:SUB_MISC_THEME_screenLock_API_0009
     * @tc.desc: screenlockAPP send event to screenlockSA
     * @tc.type: Function
-    * @tc.require: issueNumber
+    * @tc.require: SR000HHEJQ
     */
     it("SUB_MISC_THEME_screenLock_API_0009", 0, function () {
         screenLock.sendScreenLockEvent('unlockScreenResult', 0).then((data) => {
