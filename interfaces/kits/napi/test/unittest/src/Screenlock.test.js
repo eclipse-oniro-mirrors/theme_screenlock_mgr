@@ -87,12 +87,13 @@ describe("ScreenlcokJsTest", function () {
             screenLock.unlock((err, data) => {
                 if(err) {
                     console.info("unlock filed: error.code : " + err.code + "error.message :" + err.message);
+                    expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0003: send unlock issue success retCode:" + data);
+                    let ret = screenLock.isLocked();
+                    expect(ret == false).assertTrue();
                 }
             });
-            let ret = screenLock.isLocked();
-            expect(data == false).assertTrue();
         } catch (error) {
             console.error("SUB_MISC_THEME_screenLock_API_0003: error.code : " + error.code + "error.message :" + error.message);
             expect(true).assertTrue();
@@ -108,11 +109,12 @@ describe("ScreenlcokJsTest", function () {
         try {
             screenLock.unlock().then((data) => {
                 console.info("SUB_MISC_THEME_screenLock_API_0004: send unlock issue success retCode:" + data);
+                let ret = screenLock.isLocked();
+                expect(ret == false).assertTrue();
             }).catch((err) => {
                 console.error("SUB_MISC_THEME_screenLock_API_0004: send unlock issue failed error.code : " + error.code + "error.message :" + error.message);
+                expect(err.code == PERMISSON_ERROR).assertTrue();
             });
-            let ret = screenLock.isLocked();
-            expect(data == false).assertTrue();
         } catch (error) {
             console.error("SUB_MISC_THEME_screenLock_API_0004: error.code : " + error.code + "error.message :" + error.message);
             expect(true).assertTrue();
