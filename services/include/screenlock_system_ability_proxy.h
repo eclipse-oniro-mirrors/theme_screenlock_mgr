@@ -29,6 +29,7 @@ public:
     explicit ScreenLockSystemAbilityProxy(const sptr<IRemoteObject> &impl);
     ~ScreenLockSystemAbilityProxy() = default;
     void OnCallBack(const SystemEvent &systemEvent) override;
+    void SetErrorInfo(const ErrorInfo &errorInfo) override;
 
 private:
     static inline BrokerDelegator<ScreenLockSystemAbilityProxy> delegator_;

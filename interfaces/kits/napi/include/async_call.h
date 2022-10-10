@@ -21,6 +21,7 @@
 #include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
+#include "screenlock_system_ability_interface.h"
 
 namespace OHOS::ScreenLock {
 class AsyncCall final {
@@ -40,6 +41,10 @@ public:
         void SetAction(OutputAction output)
         {
             SetAction(nullptr, std::move(output));
+        }
+        void SetErrorInfo(const ErrorInfo &errorInfo)
+        {
+            errorInfo_ = errorInfo;
         }
         virtual napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self)
         {
@@ -69,6 +74,7 @@ public:
         InputAction input_ = nullptr;
         OutputAction output_ = nullptr;
         ExecAction exec_ = nullptr;
+        ErrorInfo errorInfo_;
     };
 
     // The default AsyncCallback in the parameters is at the end position.
@@ -77,6 +83,7 @@ public:
     ~AsyncCall();
     napi_value Call(const napi_env env, Context::ExecAction exec = nullptr);
     napi_value SyncCall(const napi_env env, Context::ExecAction exec = nullptr);
+    static void GenerateBusinessError(napi_env env, const ErrorInfo &errorInfo, napi_value *result);
 
 private:
     enum class ARG_INFO { ARG_ERROR, ARG_DATA, ARG_BUTT };

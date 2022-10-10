@@ -32,10 +32,10 @@ public:
     DISALLOW_COPY_AND_MOVE(ScreenLockManagerProxy);
     bool IsScreenLocked() override;
     bool GetSecure() override;
-    void RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    bool OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    bool SendScreenLockEvent(const std::string &event, int param) override;
+    int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t SendScreenLockEvent(const std::string &event, int param) override;
     bool Test_SetScreenLocked(const bool isScreenlocked) override;
     bool Test_RuntimeNotify(const std::string &event, int param) override;
     int Test_GetRuntimeState(const std::string &event) override;

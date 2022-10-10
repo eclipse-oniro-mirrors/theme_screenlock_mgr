@@ -73,16 +73,25 @@ struct ScreenlockOnCallBack {
     napi_ref callbackref;
     napi_value thisVar;
     SystemEvent systemEvent;
+    ErrorInfo errorInfo;
     napi_deferred deferred = nullptr;
+    bool callBackResult = false;
 };
 
-bool IsCheckedTypeRegisterMessage(const std::string &type);
-bool IsCheckedTypeSendEventMessage(const std::string &type);
+napi_status IsVaildEvent(const std::string &type);
+napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
+napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);
+void ThrowError(napi_env env, const uint32_t &code, const std::string &msg);
+void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo);
+std::string GetErrorMessage(const uint32_t &code);
 napi_status Init(napi_env env, napi_value exports);
 napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info);
+napi_value NAPI_IsLocked(napi_env env, napi_callback_info info);
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info);
-napi_value NAPI_LockScreen(napi_env env, napi_callback_info info);
+napi_value NAPI_Unlock(napi_env env, napi_callback_info info);
+napi_value NAPI_Lock(napi_env env, napi_callback_info info);
 napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info);
+napi_value NAPI_IsSecure(napi_env env, napi_callback_info info);
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_TestSetScreenLocked(napi_env env, napi_callback_info info);

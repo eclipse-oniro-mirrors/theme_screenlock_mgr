@@ -18,6 +18,7 @@
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "sclock_log.h"
+#include "screenlock_common.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -49,36 +50,34 @@ sptr<ScreenLockAppManager> ScreenLockAppManager::GetInstance()
     return instance_;
 }
 
-bool ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int param)
+int32_t ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int param)
 {
-    bool flag = false;
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        SCLOCK_HILOGE(
-            "ScreenLockAppManager::SendScreenLockEvent quit because redoing GetScreenLockManagerProxy failed.");
-        return false;
+        SCLOCK_HILOGE("ScreenLockAppManager::SendScreenLockEvent quit because redoing GetScreenLockManagerProxy "
+                      "failed.");
+        return E_SCREENLOCK_NULLPTR;
     }
-    flag = proxy->SendScreenLockEvent(event, param);
     SCLOCK_HILOGD("ScreenLockAppManager::SendScreenLockEvent succeeded.");
-    return flag;
+    return proxy->SendScreenLockEvent(event, param);
 }
 
-bool ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockAppManager::OnSystemEvent quit because redoing GetScreenLockManagerProxy failed.");
-        return false;
+        return E_SCREENLOCK_NULLPTR;
     }
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr.");
-        return false;
+        return E_SCREENLOCK_NULLPTR;
     }
     listenerLock_.lock();
     systemEventListener_ = listener;
     listenerLock_.unlock();
-    bool status = proxy->OnSystemEvent(listener);
+    int32_t status = proxy->OnSystemEvent(listener);
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent out, status=%{public}d", status);
     return status;
 }

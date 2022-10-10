@@ -14,8 +14,6 @@
  */
 #include "screenlock_system_ability_callback.h"
 
-#include <uv.h>
-
 #include <memory>
 #include <new>
 
@@ -25,6 +23,7 @@
 #include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
+#include "uv_queue.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -83,33 +82,18 @@ auto OnUvWorkCallback = [](uv_work_t *work, int status) {
 void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 {
     SCLOCK_HILOGD("ScreenlockSystemAbilityCallback  ONCALLBACK");
-    uv_loop_s *loop = nullptr;
-    napi_get_uv_event_loop(eventListener_.env, &loop);
-    if (loop == nullptr) {
-        return;
-    }
-    uv_work_t *work = new (std::nothrow) uv_work_t;
-    if (work == nullptr) {
-        return;
-    }
     ScreenlockOnCallBack *screenlockOnCallBack = new (std::nothrow) ScreenlockOnCallBack;
     if (screenlockOnCallBack == nullptr) {
-        delete work;
-        work = nullptr;
         return;
     }
     screenlockOnCallBack->env = eventListener_.env;
     screenlockOnCallBack->callbackref = eventListener_.callbackRef;
     screenlockOnCallBack->thisVar = eventListener_.thisVar;
     screenlockOnCallBack->systemEvent = systemEvent;
-    work->data = (void *)screenlockOnCallBack;
-    int ret = uv_queue_work(
-        loop, work, [](uv_work_t *work) {}, OnUvWorkCallback);
-    if (ret != 0) {
-        delete screenlockOnCallBack;
-        screenlockOnCallBack = nullptr;
-        delete work;
-        work = nullptr;
+    bool bRet = UvQueue::Call(eventListener_.env, static_cast<void *>(screenlockOnCallBack), OnUvWorkCallback);
+    if (!bRet) {
+        SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
+            systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
     }
 }
 } // namespace ScreenLock

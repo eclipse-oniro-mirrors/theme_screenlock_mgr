@@ -32,7 +32,7 @@ private:
     bool OnGetSecure(Parcel &data, Parcel &reply);
     void OnRequestUnlock(MessageParcel &data, MessageParcel &reply);
     void OnRequestLock(MessageParcel &data, MessageParcel &reply);
-    bool OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply);
+    int32_t OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply);
     int32_t OnScreenLockOn(MessageParcel &data, MessageParcel &reply);
     bool OnTest_SetScreenLocked(MessageParcel &data, MessageParcel &reply);
     bool OnTest_RuntimeNotify(MessageParcel &data, MessageParcel &reply);
