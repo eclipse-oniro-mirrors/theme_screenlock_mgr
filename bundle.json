@@ -58,8 +58,9 @@
       "inner_kits": [
       ],
       "test": [
+        "//base/theme/screenlock_mgr/interfaces/kits/napi/test:unittest",
         "//base/theme/screenlock_mgr/test:unittest",
-       "//base/theme/screenlock_mgr/test/fuzztest:fuzztest"
+        "//base/theme/screenlock_mgr/test/fuzztest:fuzztest"
       ]
     }
   }
