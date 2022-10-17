@@ -137,7 +137,7 @@ public:
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
-    void RegisterDisplayPowerEventListener(int times);
+    void RegisterDisplayPowerEventListener(int32_t times);
     StateValue &GetState()
     {
         return stateValue_;

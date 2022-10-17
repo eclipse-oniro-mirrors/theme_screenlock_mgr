@@ -61,7 +61,7 @@ constexpr const char *THEME_SCREENLOCK_APP = "const.theme.screenlockApp";
 constexpr const char *CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
 static constexpr const int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
-constexpr int MAX_RETRY_TIMES = 20;
+constexpr int32_t MAX_RETRY_TIMES = 20;
 
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
@@ -115,9 +115,7 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
         return;
     }
-    SCLOCK_HILOGE("wdq 1ScreenLockSystemAbility Init failed. Try again 5s later");
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
-    SCLOCK_HILOGE("wdq2 1ScreenLockSystemAbility Init failed. Try again 5s later");
     RegisterDumpCommand();
     return;
 }
@@ -126,7 +124,6 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
 {
     SCLOCK_HILOGI("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
     if (systemAbilityId == DISPLAY_MANAGER_SERVICE_SA_ID) {
-        SCLOCK_HILOGE("wdq3 1ScreenLockSystemAbility Init failed. Try again 5s later");
         int times = 0;
         if (displayPowerEventListener_ == nullptr) {
             displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
@@ -140,7 +137,7 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     }
 }
 
-void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int times)
+void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
 {
     times++;
     flag_ = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
@@ -149,7 +146,8 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int times)
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
         serviceHandler_->PostTask(callback, DELAY_TIME);
     }
-    SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener end, flag_:%{public}d, times:%{public}d", flag_, times);
+    SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener end, flag_:%{public}d, times:%{public}d",
+        flag_, times);
 }
 
 void ScreenLockSystemAbility::InitServiceHandler()
