@@ -115,8 +115,9 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
         return;
     }
-    SCLOCK_HILOGE("wdq ScreenLockSystemAbility Init failed. Try again 5s later");
-    AddSystemAbilityListener(WINDOW_MANAGER_SERVICE_ID);
+    SCLOCK_HILOGE("wdq 1ScreenLockSystemAbility Init failed. Try again 5s later");
+    AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
+    SCLOCK_HILOGE("wdq2 1ScreenLockSystemAbility Init failed. Try again 5s later");
     RegisterDumpCommand();
     return;
 }
@@ -124,7 +125,8 @@ void ScreenLockSystemAbility::OnStart()
 void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId)
 {
     SCLOCK_HILOGI("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
-    if (systemAbilityId == WINDOW_MANAGER_SERVICE_ID) {
+    if (systemAbilityId == DISPLAY_MANAGER_SERVICE_SA_ID) {
+        SCLOCK_HILOGE("wdq3 1ScreenLockSystemAbility Init failed. Try again 5s later");
         int times = 0;
         if (displayPowerEventListener_ == nullptr) {
             displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
