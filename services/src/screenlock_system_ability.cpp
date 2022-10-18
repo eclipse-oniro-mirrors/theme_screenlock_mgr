@@ -51,6 +51,7 @@ using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Telephony;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t INIT_INTERVAL = 5000L;
+const std::int64_t DELAY_TIME = 1000L;
 const std::int64_t INTERVAL_ZERO = 0L;
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
@@ -59,6 +60,7 @@ constexpr const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteAp
 constexpr const char *THEME_SCREENLOCK_APP = "const.theme.screenlockApp";
 static constexpr const int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
+constexpr int32_t MAX_RETRY_TIMES = 20;
 
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
@@ -112,29 +114,39 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
         return;
     }
-    if (displayPowerEventListener_ == nullptr) {
-        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
-    }
-    int trytime = 3;
-    int minTimeValue = 0;
-    while (trytime > minTimeValue) {
-        flag_ = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
-        if (flag_) {
-            SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener success.");
-            break;
-        } else {
-            SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener fail.");
-        }
-        --trytime;
-        sleep(1);
-    }
-    if (flag_) {
-        state_ = ServiceRunningState::STATE_RUNNING;
-        auto callback = [=]() { OnSystemReady(); };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+    AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
     RegisterDumpCommand();
     return;
+}
+
+void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId)
+{
+    SCLOCK_HILOGI("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
+    if (systemAbilityId == DISPLAY_MANAGER_SERVICE_SA_ID) {
+        int times = 0;
+        if (displayPowerEventListener_ == nullptr) {
+            displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+        }
+        RegisterDisplayPowerEventListener(times);
+        if (flag_) {
+            state_ = ServiceRunningState::STATE_RUNNING;
+            auto callback = [=]() { OnSystemReady(); };
+            serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        }
+    }
+}
+
+void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
+{
+    times++;
+    flag_ = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
+    if (flag_ == false && times <= MAX_RETRY_TIMES) {
+        SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
+        auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
+        serviceHandler_->PostTask(callback, DELAY_TIME);
+    }
+    SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener end, flag_:%{public}d, times:%{public}d",
+        flag_, times);
 }
 
 void ScreenLockSystemAbility::InitServiceHandler()
