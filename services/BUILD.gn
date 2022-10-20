@@ -50,6 +50,7 @@ ohos_shared_library("screenlock_server") {
     "ability_runtime:ability_manager",
     "c_utils:utils",
     "eventhandler:libeventhandler",
+    "hicollie_native:libhicollie",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
