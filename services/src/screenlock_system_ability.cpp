@@ -41,6 +41,7 @@
 #include "system_ability.h"
 #include "system_ability_definition.h"
 #include "user_idm_client.h"
+#include "xcollie/watchdog.h"
 
 namespace OHOS {
 namespace ScreenLock {
