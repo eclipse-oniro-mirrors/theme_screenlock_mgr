@@ -94,7 +94,7 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest002, TestSize.Level0)
         SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
         EXPECT_EQ(result, true);
     } else {
-        EXPECT_EQ(result, true);
+        EXPECT_EQ(status, true);
     }
 }
 
@@ -214,6 +214,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest007, TestSize.Level0)
     }
 }
 #endif
+
 /**
 * @tc.name: ScreenLockTest008
 * @tc.desc: test beginScreenOn.
