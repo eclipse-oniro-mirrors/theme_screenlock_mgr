@@ -142,10 +142,10 @@ public:
     {
         return stateValue_;
     }
-    bool Test_SetScreenLocked(const bool isScreenlocked) override;
-    bool Test_RuntimeNotify(const std::string &event, int param) override;
-    int Test_GetRuntimeState(const std::string &event) override;
-
+#ifdef OHOS_DEBUG
+    bool RuntimeNotify(const std::string &event, int param);
+    int GetRuntimeState(const std::string &event);
+#endif
     class ScreenLockDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
     public:
         void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;

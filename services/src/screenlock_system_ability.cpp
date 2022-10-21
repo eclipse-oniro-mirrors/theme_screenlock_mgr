@@ -463,16 +463,10 @@ void StateValue::Reset()
     currentUser_ = USER_NULL;
 }
 
-bool ScreenLockSystemAbility::Test_SetScreenLocked(bool isScreenlocked)
+#ifdef OHOS_DEBUG
+bool ScreenLockSystemAbility::RuntimeNotify(const std::string &event, int param)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility Test_SetScreenLocked started.");
-    stateValue_.SetScreenlocked(isScreenlocked);
-    return true;
-}
-
-bool ScreenLockSystemAbility::Test_RuntimeNotify(const std::string &event, int param)
-{
-    SCLOCK_HILOGI("Test_RuntimeNotify event=%{public}s,param=%{public}d", event.c_str(), param);
+    SCLOCK_HILOGI("ScreenLockSystemAbility RuntimeNotify event=%{public}s,param=%{public}d", event.c_str(), param);
     if (event == BEGIN_WAKEUP) {
         OnBeginWakeUp();
     } else if (event == END_WAKEUP) {
@@ -504,9 +498,9 @@ bool ScreenLockSystemAbility::Test_RuntimeNotify(const std::string &event, int p
     return true;
 }
 
-int ScreenLockSystemAbility::Test_GetRuntimeState(const std::string &event)
+int ScreenLockSystemAbility::GetRuntimeState(const std::string &event)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility Test_GetRuntimeState started.");
+    SCLOCK_HILOGI("ScreenLockSystemAbility GetRuntimeState started.");
     if (event == BEGIN_WAKEUP || event == END_WAKEUP || event == BEGIN_SLEEP || event == END_SLEEP) {
         return stateValue_.GetInteractiveState();
     } else if (event == BEGIN_SCREEN_ON || event == END_SCREEN_ON || event == BEGIN_SCREEN_OFF ||
@@ -519,6 +513,7 @@ int ScreenLockSystemAbility::Test_GetRuntimeState(const std::string &event)
     }
     return ARGV_NORMAL;
 }
+#endif
 
 void ScreenLockSystemAbility::OnDump()
 {

@@ -26,7 +26,7 @@ using namespace OHOS::ScreenLock;
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr int32_t OFFSET = 4;
-const std::u16string SCREENLOCKUCB_INTERFACE_TOKEN = u"ohos.miscseervice.request";
+const std::u16string SCREENLOCKUCB_INTERFACE_TOKEN = u"ohos.screenlock.ScreenLockManagerInterface";
 
 uint32_t ConvertToUint32(const uint8_t* ptr)
 {

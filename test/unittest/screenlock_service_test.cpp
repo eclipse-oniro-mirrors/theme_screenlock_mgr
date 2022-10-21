@@ -55,51 +55,57 @@ void ScreenLockServiceTest::TearDown()
 }
 
 /**
-* @tc.name: SetScreenLockTest002
+* @tc.name: SetScreenLockTest001
 * @tc.desc: get unlockstate, IsScreenLocked state.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, SetScreenLockTest001, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test  IsScreenLocked state ,get unlockstate");
+    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
+    if (status) {
+        ScreenLockSystemAbility::GetInstance()->SetScreenlocked(false);
+        bool result = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+        SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
+        EXPECT_EQ(result, false);
+    } else {
+        EXPECT_EQ(status, false);
+    }
+}
+
+/**
+* @tc.name: SetScreenLockTest002
+* @tc.desc: get lockstate, IsScreenLocked state.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
 HWTEST_F(ScreenLockServiceTest, SetScreenLockTest002, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test  IsScreenLocked state ,get unlockstate");
-    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
-    bool isScreenLocked = false;
-    ScreenLockManager::GetInstance()->Test_SetScreenLocked(isScreenLocked);
-    bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
-    EXPECT_EQ(result, false);
-}
-
-/**
-* @tc.name: SetScreenLockTest003
-* @tc.desc: get lockstate, IsScreenLocked state.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest003, TestSize.Level0)
-{
     SCLOCK_HILOGD("Test  IsScreenLocked state ,get lockstate");
     bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
-    bool isScreenLocked = true;
-    ScreenLockManager::GetInstance()->Test_SetScreenLocked(isScreenLocked);
-    bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
-    EXPECT_EQ(result, true);
+    if (!status) {
+        ScreenLockSystemAbility::GetInstance()->SetScreenlocked(true);
+        bool result = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+        SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
+        EXPECT_EQ(result, true);
+    } else {
+        EXPECT_EQ(result, true);
+    }
 }
 
 /**
-* @tc.name: SetScreenLockTest004
+* @tc.name: GetSecureTest003
 * @tc.desc: get secure.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest004, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, GetSecureTest003, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test  secure");
     bool result = ScreenLockManager::GetInstance()->GetSecure();
@@ -108,16 +114,16 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest004, TestSize.Level0)
 }
 
 /**
-* @tc.name: SetScreenLockTest005
+* @tc.name: RequestLockTest004
 * @tc.desc: can not get foucs, lock fail.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest005, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, RequestLockTest004, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test can not get foucs,expect lock fail");
-    ScreenLockManager::GetInstance()->Test_SetScreenLocked(false);
+    bool ret = ScreenLockManager::GetInstance()->IsScreenLocked();
     sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallbackTest(g_unlockTestListener);
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
@@ -129,20 +135,20 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest005, TestSize.Level0)
     ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, SCREEN_FAIL);
     bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("get not foucs IsScreenLocked  result is-------->%{public}d", result);
-    EXPECT_EQ(result, false);
+    EXPECT_EQ(result, ret);
 }
 
 /**
-* @tc.name: SetScreenLockTest006
+* @tc.name: RequestUnlockTest005
 * @tc.desc: can not get foucs, unlock fail.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest006, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, RequestUnlockTest005, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test can not get foucs,expect unlock fail");
-    ScreenLockManager::GetInstance()->Test_SetScreenLocked(true);
+    bool ret = ScreenLockManager::GetInstance()->IsScreenLocked();
     sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallbackTest(g_unlockTestListener);
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
@@ -154,198 +160,240 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest006, TestSize.Level0)
     ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, SCREEN_FAIL);
     bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("get not foucs IsScreenLocked  result is-------->%{public}d", result);
-    EXPECT_EQ(result, true);
+    EXPECT_EQ(result, ret);
 }
 
 /**
-* @tc.name: SetScreenLockTest007
-* @tc.desc: screnlockapp notice unlock fail.
+* @tc.name: ScreenLockTest006
+* @tc.desc: test beginWakeUp.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest007, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest006, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test screnlockapp notice unlock fail");
-    ScreenLockManager::GetInstance()->Test_SetScreenLocked(true);
-    sptr<ScreenLockSystemAbilityInterface> listener = new ScreenlockCallbackTest(g_unlockTestListener);
-    if (listener == nullptr) {
-        SCLOCK_HILOGE("listener object is nullptr");
-        EXPECT_EQ(false, true);
-        return ;
+    SCLOCK_HILOGD("Test event of beginWakeUp");
+    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
+    if (status) {
+        std::string message = BEGIN_WAKEUP;
+        int param = 0;
+        bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        SCLOCK_HILOGD("RuntimeNotify beginWakeUp  result is-------->%{public}d", result);
+        int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP), true);
+    } else {
+        EXPECT_EQ(status, false);
     }
-    ScreenLockManager::GetInstance()->RequestUnlock(listener);
-    std::string event = UNLOCK_SCREEN_RESULT;
-    ScreenLockAppManager::GetInstance()->SendScreenLockEvent(event, SCREEN_FAIL);
-    bool result = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", result);
-    EXPECT_EQ(result, true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest008
-* @tc.desc: power off screen.
+* @tc.name: ScreenLockTest007
+* @tc.desc: test endWakeUp.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest008, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest007, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test power off screen");
-    std::string message = BEGIN_SLEEP;
-    int param = BEGIN_SLEEP_DEVICE_ADMIN_REASON;
-    bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP), true);
-    message = END_SLEEP;
-    param = END_SLEEP_USER_REASON;
-    result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP), true);
-    message = BEGIN_SCREEN_OFF;
-    param = 0;
-    result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
+    SCLOCK_HILOGD("Test event of endWakeUp");
+    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
+    if (status) {
+        std::string message = END_WAKEUP;
+        int param = 0;
+        result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+        retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP), true);
+    } else {
+        EXPECT_EQ(status, false);
+    }
+}
+#endif
+/**
+* @tc.name: ScreenLockTest008
+* @tc.desc: test beginScreenOn.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest008, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of beginScreenOn");
+    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
+    if (status) {
+        std::string message = BEGIN_SCREEN_ON;
+        int param = 0;
+        result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+        retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON), true);
+    } else {
+        EXPECT_EQ(status, false);
+    }
+}
+#endif
+
+/**
+* @tc.name: ScreenLockTest009
+* @tc.desc: test endScreenOn.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of endScreenOn");
+    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
+    if (status) {
+        std::string message = END_SCREEN_ON;
+        int param = 0;
+        result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+        retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_ON), true);
+    } else {
+        EXPECT_EQ(status, false);
+    }
+}
+#endif
+
+/**
+* @tc.name: ScreenLockTest010
+* @tc.desc: test beginScreenOff.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest010, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of beginScreenOff");
+    std::string message = BEGIN_SCREEN_OFF;
+    int param = 0;
+    result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_OFF), true);
-    message = END_SCREEN_OFF;
-    param = 0;
-    result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
+}
+#endif
+
+/**
+* @tc.name: ScreenLockTest011
+* @tc.desc: test endScreenOff.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest011, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of endScreenOff");
+    std::string message = END_SCREEN_OFF;
+    int param = 0;
+    result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_OFF), true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest009
-* @tc.desc: context event.
+* @tc.name: ScreenLockTest012
+* @tc.desc: test beginSleep.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest009, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test context event");
-    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
-    if (status) {
-        std::string message = BEGIN_WAKEUP;
-        int param = 0;
-        bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify beginWakeUp  result is-------->%{public}d", result);
-        int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP), true);
-        message = END_WAKEUP;
-        param = 0;
-        result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP), true);
-        message = BEGIN_SCREEN_ON;
-        param = 0;
-        result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON), true);
-        message = END_SCREEN_ON;
-        param = 0;
-        result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_ON), true);
-    } else {
-        EXPECT_EQ(status, false);
-    }
+    SCLOCK_HILOGD("Test event of beginSleep");
+    std::string message = BEGIN_SLEEP;
+    int param = BEGIN_SLEEP_DEVICE_ADMIN_REASON;
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP), true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest010
-* @tc.desc: screnlockapp call event.
+* @tc.name: ScreenLockTest013
+* @tc.desc: test endSleep.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest010, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest013, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test app call event");
-    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
-    if (status) {
-        std::string message = BEGIN_WAKEUP;
-        int param = 0;
-        bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify beginWakeUp  result is-------->%{public}d", result);
-        int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP), true);
-        message = END_WAKEUP;
-        param = 0;
-        result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP), true);
-        message = BEGIN_SCREEN_ON;
-        param = 0;
-        result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON), true);
-        message = END_SCREEN_ON;
-        param = 0;
-        result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-        SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
-        EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_ON), true);
-    } else {
-        EXPECT_EQ(status, false);
-    }
+    SCLOCK_HILOGD("Test event of endSleep");
+    std::string message = END_SLEEP;
+    int param = END_SLEEP_USER_REASON;
+    result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP), true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest011
+* @tc.name: ScreenLockTest014
 * @tc.desc: test user ID is 10.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest011, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest014, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test userid 10");
     std::string message = CHANGE_USER;
     int param = 10;
-    bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest012
+* @tc.name: ScreenLockTest015
 * @tc.desc: test user ID is 0.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest012, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest015, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test  userid is 0");
     std::string message = CHANGE_USER;
     int param = 0;
-    bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest013
+* @tc.name: ScreenLockTest016
 * @tc.desc: test negative value.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest013, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test  userid -2");
     const int MINUSERID = 0;
@@ -354,13 +402,13 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest013, TestSize.Level0)
 }
 
 /**
-* @tc.name: SetScreenLockTest014
+* @tc.name: ScreenLockTest017
 * @tc.desc: test large values.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest014, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test  userid 999999999");
     const int MAXUSERID = 999999999;
@@ -369,53 +417,59 @@ HWTEST_F(ScreenLockServiceTest, SetScreenLockTest014, TestSize.Level0)
 }
 
 /**
-* @tc.name: SetScreenLockTest015
+* @tc.name: ScreenLockTest018
 * @tc.desc: whether the lock screen application is available.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest015, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
 {
     std::string message = SCREENLOCK_ENABLED;
     int param = SCREENLOCK_APP_CAN_USE;
-    bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest016
+* @tc.name: ScreenLockTest019
 * @tc.desc: whether the lock screen application is available.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest016, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
 {
     std::string message = SCREENLOCK_ENABLED;
     int param = SCREENLOCK_APP_CAN_NOT_USE;
-    bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    int retVal = ScreenLockManager::GetInstance()->Test_GetRuntimeState(message);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
+#endif
 
 /**
-* @tc.name: SetScreenLockTest017
+* @tc.name: ScreenLockTest020
 * @tc.desc: test exit animation.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, SetScreenLockTest017, TestSize.Level0)
+#ifdef OHOS_DEBUG
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
 {
     std::string message = EXIT_ANIMATION;
     int param = 0;
-    bool result = ScreenLockManager::GetInstance()->Test_RuntimeNotify(message, param);
-    SCLOCK_HILOGD("Test_RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
     EXPECT_EQ(result, true);
 }
+#endif
 } // namespace ScreenLock
 } // namespace OHOS
