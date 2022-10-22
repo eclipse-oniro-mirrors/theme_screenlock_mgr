@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define OHOS_DEBUG
 #include "screenlock_service_test.h"
 
 #include <cstdint>
