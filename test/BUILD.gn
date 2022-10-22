@@ -22,9 +22,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
   ]
 
-  defines = []
-  defines += [ "OHOS_DEBUG" ]
-
   sources = [
     "unittest/screenlock_callback_test.cpp",
     "unittest/screenlock_notify_test_instance.cpp",
