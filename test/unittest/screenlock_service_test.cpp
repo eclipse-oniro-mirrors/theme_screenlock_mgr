@@ -170,7 +170,6 @@ HWTEST_F(ScreenLockServiceTest, RequestUnlockTest005, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest006, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of beginWakeUp");
@@ -187,7 +186,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest006, TestSize.Level0)
         EXPECT_EQ(status, false);
     }
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest007
@@ -196,7 +194,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest006, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest007, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of endWakeUp");
@@ -205,15 +202,14 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest007, TestSize.Level0)
     if (status) {
         std::string message = END_WAKEUP;
         int param = 0;
-        result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
         SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
         EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP), true);
     } else {
         EXPECT_EQ(status, false);
     }
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest008
@@ -222,7 +218,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest007, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest008, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of beginScreenOn");
@@ -231,15 +226,14 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest008, TestSize.Level0)
     if (status) {
         std::string message = BEGIN_SCREEN_ON;
         int param = 0;
-        result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
         SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
         EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON), true);
     } else {
         EXPECT_EQ(status, false);
     }
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest009
@@ -248,7 +242,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest008, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of endScreenOn");
@@ -257,15 +250,14 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
     if (status) {
         std::string message = END_SCREEN_ON;
         int param = 0;
-        result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+        bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
         SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-        retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+        int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
         EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_ON), true);
     } else {
         EXPECT_EQ(status, false);
     }
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest010
@@ -274,18 +266,16 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest010, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of beginScreenOff");
     std::string message = BEGIN_SCREEN_OFF;
     int param = 0;
-    result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
     SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_OFF), true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest011
@@ -294,18 +284,16 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest010, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest011, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of endScreenOff");
     std::string message = END_SCREEN_OFF;
     int param = 0;
-    result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
     SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_OFF), true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest012
@@ -314,7 +302,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest011, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of beginSleep");
@@ -325,7 +312,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
     int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP), true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest013
@@ -334,18 +320,16 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest013, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test event of endSleep");
     std::string message = END_SLEEP;
     int param = END_SLEEP_USER_REASON;
-    result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
+    bool result = ScreenLockSystemAbility::GetInstance()->RuntimeNotify(message, param);
     SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
-    retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP), true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest014
@@ -354,7 +338,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest013, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest014, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test userid 10");
@@ -365,7 +348,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest014, TestSize.Level0)
     int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest015
@@ -374,7 +356,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest014, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest015, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test  userid is 0");
@@ -385,7 +366,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest015, TestSize.Level0)
     int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest016
@@ -424,7 +404,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
 {
     std::string message = SCREENLOCK_ENABLED;
@@ -434,7 +413,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
     int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest019
@@ -443,7 +421,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
 {
     std::string message = SCREENLOCK_ENABLED;
@@ -453,7 +430,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
     int retVal = ScreenLockSystemAbility::GetInstance()->GetRuntimeState(message);
     EXPECT_EQ(retVal == param, true);
 }
-#endif
 
 /**
 * @tc.name: ScreenLockTest020
@@ -462,7 +438,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-#ifdef OHOS_DEBUG
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
 {
     std::string message = EXIT_ANIMATION;
@@ -471,6 +446,5 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
     SCLOCK_HILOGD("RuntimeNotify message=%{public}s,result =%{public}d", message.c_str(), result);
     EXPECT_EQ(result, true);
 }
-#endif
 } // namespace ScreenLock
 } // namespace OHOS
