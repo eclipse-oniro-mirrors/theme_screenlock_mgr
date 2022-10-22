@@ -23,9 +23,7 @@ ohos_unittest("ScreenLockServiceTest") {
   ]
 
   defines = []
-  if (target_cpu == "arm") {
-    defines += [ "OHOS_DEBUG" ]
-  }
+  defines += [ "OHOS_DEBUG" ]
 
   sources = [
     "unittest/screenlock_callback_test.cpp",
