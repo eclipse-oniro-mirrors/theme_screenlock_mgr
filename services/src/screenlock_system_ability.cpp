@@ -51,7 +51,7 @@ using namespace OHOS::Rosen;
 using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Telephony;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
-const std::int64_t TIME_OUT_SECONDS = 10000L;
+const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000L;
 const std::int64_t DELAY_TIME = 1000L;
 const std::int64_t INTERVAL_ZERO = 0L;
@@ -161,7 +161,7 @@ void ScreenLockSystemAbility::InitServiceHandler()
     }
     std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("ScreenLockSystemAbility");
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
-    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_, TIME_OUT_SECONDS)
+    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_, TIME_OUT_MILLISECONDS)
         != 0) {
         SCLOCK_HILOGI("HiviewDFX::Watchdog::GetInstance AddThread Fail");
     }
