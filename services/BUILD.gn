@@ -29,7 +29,7 @@ ohos_shared_library("screenlock_server") {
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
   ]
-  
+
   public_configs = [
     "//commonlibrary/c_utils/base:utils_config",
     ":screenlock_mgr_service_config",
