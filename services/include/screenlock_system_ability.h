@@ -142,10 +142,6 @@ public:
     {
         return stateValue_;
     }
-#ifdef OHOS_DEBUG
-    bool RuntimeNotify(const std::string &event, int param);
-    int GetRuntimeState(const std::string &event);
-#endif
     class ScreenLockDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
     public:
         void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
