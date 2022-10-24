@@ -161,7 +161,8 @@ void ScreenLockSystemAbility::InitServiceHandler()
     }
     std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("ScreenLockSystemAbility");
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
-    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_, TIME_OUT_SECONDS) != 0) {
+    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_, TIME_OUT_SECONDS)
+        != 0) {
         SCLOCK_HILOGI("HiviewDFX::Watchdog::GetInstance AddThread Fail");
     }
     SCLOCK_HILOGI("InitServiceHandler succeeded.");
