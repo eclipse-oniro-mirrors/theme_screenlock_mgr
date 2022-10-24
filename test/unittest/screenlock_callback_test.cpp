@@ -18,9 +18,8 @@
 
 namespace OHOS {
 namespace ScreenLock {
-ScreenlockCallbackTest::ScreenlockCallbackTest(const EventListenerTest &eventListener)
+ScreenlockCallbackTest::ScreenlockCallbackTest(const EventListenerTest &eventListener) : eventListener_(eventListener)
 {
-    eventListener_ = eventListener;
 }
 
 ScreenlockCallbackTest::~ScreenlockCallbackTest()

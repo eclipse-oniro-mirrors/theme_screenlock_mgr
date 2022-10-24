@@ -651,7 +651,6 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 std::string ScreenLockSystemAbility::GetScreenlockParameter(const std::string &key) const
 {
     char value[CONFIG_LEN] = { 0 };
-    std::string enabledStatus;
     auto errNo = GetParameter(key.c_str(), "", value, CONFIG_LEN);
     if (errNo > HANDLE_OK) {
         SCLOCK_HILOGD("GetParameter success, value = %{public}.5s.", value);
