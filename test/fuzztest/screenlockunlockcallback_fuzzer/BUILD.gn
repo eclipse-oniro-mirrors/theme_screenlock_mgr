@@ -43,6 +43,7 @@ ohos_fuzztest("ScreenlockUnlockCallbackFuzzTest") {
     "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
     "//base/theme/screenlock_mgr/interfaces/kits/napi:screenlock",
     "//base/theme/screenlock_mgr/utils:screenlock_utils",
+    "//base/theme/screenlock_mgr/services:screenlock_server",
     "//foundation/arkui/napi:ace_napi",
   ]
 
@@ -50,6 +51,7 @@ ohos_fuzztest("ScreenlockUnlockCallbackFuzzTest") {
     "c_utils:utils",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "window_manager:libdm",
   ]
 
   sources = [ "screenlockunlockcallback_fuzzer.cpp" ]
