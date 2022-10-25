@@ -26,9 +26,6 @@ public:
     explicit ScreenlockCallbackTest(const EventListenerTest &eventListener);
     virtual ~ScreenlockCallbackTest();
     void OnCallBack(const SystemEvent &systemEvent) override;
-
-private:
-    EventListenerTest eventListener_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
