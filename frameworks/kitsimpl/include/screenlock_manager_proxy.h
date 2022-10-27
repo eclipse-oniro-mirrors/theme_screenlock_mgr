@@ -36,9 +36,6 @@ public:
     int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
-    bool Test_SetScreenLocked(const bool isScreenlocked) override;
-    bool Test_RuntimeNotify(const std::string &event, int param) override;
-    int Test_GetRuntimeState(const std::string &event) override;
 
 private:
     static inline BrokerDelegator<ScreenLockManagerProxy> delegator_;
