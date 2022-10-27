@@ -469,63 +469,6 @@ void StateValue::Reset()
     currentUser_ = USER_NULL;
 }
 
-bool ScreenLockSystemAbility::Test_SetScreenLocked(bool isScreenlocked)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility Test_SetScreenLocked started.");
-    stateValue_.SetScreenlocked(isScreenlocked);
-    return true;
-}
-
-bool ScreenLockSystemAbility::Test_RuntimeNotify(const std::string &event, int param)
-{
-    SCLOCK_HILOGI("Test_RuntimeNotify event=%{public}s,param=%{public}d", event.c_str(), param);
-    if (event == BEGIN_WAKEUP) {
-        OnBeginWakeUp();
-    } else if (event == END_WAKEUP) {
-        OnEndWakeUp();
-    } else if (event == BEGIN_SCREEN_ON) {
-        OnBeginScreenOn();
-    } else if (event == END_SCREEN_ON) {
-        OnEndScreenOn();
-    } else if (event == BEGIN_SLEEP) {
-        OnBeginSleep(param);
-    } else if (event == END_SLEEP) {
-        OnEndSleep(param, false);
-    } else if (event == BEGIN_SCREEN_OFF) {
-        OnBeginScreenOff();
-    } else if (event == END_SCREEN_OFF) {
-        OnEndScreenOff();
-    } else if (event == CHANGE_USER) {
-        if (param < 0) {
-            return false;
-        }
-        OnChangeUser(param);
-    } else if (event == SCREENLOCK_ENABLED) {
-        OnScreenlockEnabled((param == 0) ? (false) : (true));
-    } else if (event == EXIT_ANIMATION) {
-        OnExitAnimation();
-    } else {
-        return false;
-    }
-    return true;
-}
-
-int ScreenLockSystemAbility::Test_GetRuntimeState(const std::string &event)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility Test_GetRuntimeState started.");
-    if (event == BEGIN_WAKEUP || event == END_WAKEUP || event == BEGIN_SLEEP || event == END_SLEEP) {
-        return stateValue_.GetInteractiveState();
-    } else if (event == BEGIN_SCREEN_ON || event == END_SCREEN_ON || event == BEGIN_SCREEN_OFF ||
-               event == END_SCREEN_OFF) {
-        return stateValue_.GetScreenState();
-    } else if (event == CHANGE_USER) {
-        return stateValue_.GetCurrentUser();
-    } else if (event == SCREENLOCK_ENABLED) {
-        return stateValue_.GetScreenlockEnabled() ? 1 : 0;
-    }
-    return ARGV_NORMAL;
-}
-
 void ScreenLockSystemAbility::OnDump()
 {
     std::lock_guard<std::mutex> guard(lock_);

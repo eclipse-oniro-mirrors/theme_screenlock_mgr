@@ -34,9 +34,6 @@ private:
     void OnRequestLock(MessageParcel &data, MessageParcel &reply);
     int32_t OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply);
     int32_t OnScreenLockOn(MessageParcel &data, MessageParcel &reply);
-    bool OnTest_SetScreenLocked(MessageParcel &data, MessageParcel &reply);
-    bool OnTest_RuntimeNotify(MessageParcel &data, MessageParcel &reply);
-    int32_t OnTest_GetRuntimeState(MessageParcel &data, MessageParcel &reply);
 };
 } // namespace ScreenLock
 } // namespace OHOS

@@ -42,9 +42,6 @@ public:
     bool GetSecure();
     int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener);
     int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener);
-    bool Test_SetScreenLocked(bool isScreenlocked);
-    bool Test_RuntimeNotify(const std::string &event, int param);
-    int Test_GetRuntimeState(const std::string &event);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     sptr<ScreenLockManagerInterface> GetProxy();
 

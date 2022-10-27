@@ -33,9 +33,6 @@ public:
     virtual int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
-    virtual bool Test_SetScreenLocked(const bool isScreenlocked) = 0;
-    virtual bool Test_RuntimeNotify(const std::string &event, int param) = 0;
-    virtual int Test_GetRuntimeState(const std::string &event) = 0;
 };
 
 enum {
@@ -45,9 +42,6 @@ enum {
     REQUEST_LOCK,
     ONSYSTEMEVENT,
     SEND_SCREENLOCK_EVENT,
-    TEST_SET_SCREENLOCKED,
-    TEST_RUNTIME_NOTIFY,
-    TEST_GET_RUNTIME_STATE,
 };
 } // namespace ScreenLock
 } // namespace OHOS

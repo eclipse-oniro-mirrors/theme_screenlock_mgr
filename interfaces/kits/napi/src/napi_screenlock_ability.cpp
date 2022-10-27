@@ -72,9 +72,6 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("isSecure", OHOS::ScreenLock::NAPI_IsSecure),
         DECLARE_NAPI_FUNCTION("onSystemEvent", NAPI_OnSystemEvent),
         DECLARE_NAPI_FUNCTION("sendScreenLockEvent", OHOS::ScreenLock::NAPI_ScreenLockSendEvent),
-        DECLARE_NAPI_FUNCTION("test_setScreenLocked", OHOS::ScreenLock::NAPI_TestSetScreenLocked),
-        DECLARE_NAPI_FUNCTION("test_runtimeNotify", OHOS::ScreenLock::NAPI_TestRuntimeNotify),
-        DECLARE_NAPI_FUNCTION("test_getRuntimeState", OHOS::ScreenLock::NAPI_TestGetRuntimeState),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
@@ -469,100 +466,6 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     };
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGV_TWO);
-    return asyncCall.Call(env, exec);
-}
-
-napi_value NAPI_TestSetScreenLocked(napi_env env, napi_callback_info info)
-{
-    auto context = std::make_shared<SendEventInfo>();
-    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
-        NAPI_ASSERT_BASE(
-            env, argc == ARGS_SIZE_ONE || argc == ARGS_SIZE_TWO, " should 1 or 2 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[ARGV_ZERO], &valueType);
-        NAPI_ASSERT_BASE(env, valueType == napi_boolean, "type is not a boolean type", napi_invalid_arg);
-        napi_get_value_bool(env, argv[ARGV_ZERO], &context->flag);
-        return napi_ok;
-    };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_status status = napi_get_boolean(env, context->allowed, result);
-        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
-        return napi_ok;
-    };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        context->allowed = ScreenLockManager::GetInstance()->Test_SetScreenLocked(context->flag);
-        SCLOCK_HILOGD("NAPI_TestSetScreenLocked exec allowed = %{public}d ", context->allowed);
-        context->status = napi_ok;
-    };
-    context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGS_SIZE_ONE);
-    return asyncCall.Call(env, exec);
-}
-
-napi_value NAPI_TestRuntimeNotify(napi_env env, napi_callback_info info)
-{
-    auto context = std::make_shared<SendEventInfo>();
-    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
-        NAPI_ASSERT_BASE(
-            env, argc == ARGS_SIZE_TWO || argc == ARGS_SIZE_THREE, " should 2 or 3 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[ARGV_ZERO], &valueType);
-        NAPI_ASSERT_BASE(env, valueType == napi_string, "type is not a string type", napi_invalid_arg);
-        char event[MAX_VALUE_LEN] = {0};
-        size_t len;
-        napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
-        context->eventInfo = event;
-        valueType = napi_undefined;
-        napi_typeof(env, argv[ARGV_ONE], &valueType);
-        NAPI_ASSERT_BASE(env, valueType == napi_number, "type is not a int type", napi_invalid_arg);
-        napi_get_value_int32(env, argv[ARGV_ONE], &context->param);
-        return napi_ok;
-    };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_status status = napi_get_boolean(env, context->allowed, result);
-        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
-        return napi_ok;
-    };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        context->allowed = ScreenLockManager::GetInstance()->Test_RuntimeNotify(context->eventInfo, context->param);
-        SCLOCK_HILOGD("NAPI_TestRuntimeNotify exec allowed = %{public}d ", context->allowed);
-        context->status = napi_ok;
-    };
-    context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGS_SIZE_TWO);
-    return asyncCall.Call(env, exec);
-}
-
-napi_value NAPI_TestGetRuntimeState(napi_env env, napi_callback_info info)
-{
-    auto context = std::make_shared<SendEventInfo>();
-    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
-        NAPI_ASSERT_BASE(
-            env, argc == ARGS_SIZE_ONE || argc == ARGS_SIZE_TWO, " should 1 or 2 parameters!", napi_invalid_arg);
-        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[ARGV_ZERO], &valueType);
-        NAPI_ASSERT_BASE(env, valueType == napi_string, "type is not a string type", napi_invalid_arg);
-        char event[MAX_VALUE_LEN] = {0};
-        size_t len;
-        napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
-        context->eventInfo = event;
-        return napi_ok;
-    };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_status status = napi_get_boolean(env, context->allowed, result);
-        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
-        return napi_ok;
-    };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        context->allowed = ScreenLockManager::GetInstance()->Test_GetRuntimeState(context->eventInfo);
-        SCLOCK_HILOGD("NAPI_TestGetRuntimeState exec allowed = %{public}d ", context->allowed);
-        context->status = napi_ok;
-    };
-    context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGS_SIZE_ONE);
     return asyncCall.Call(env, exec);
 }
 

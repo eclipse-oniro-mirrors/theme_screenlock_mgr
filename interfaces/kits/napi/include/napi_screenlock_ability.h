@@ -94,9 +94,6 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info);
 napi_value NAPI_IsSecure(napi_env env, napi_callback_info info);
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info);
-napi_value NAPI_TestSetScreenLocked(napi_env env, napi_callback_info info);
-napi_value NAPI_TestRuntimeNotify(napi_env env, napi_callback_info info);
-napi_value NAPI_TestGetRuntimeState(napi_env env, napi_callback_info info);
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_ABILITY_H
