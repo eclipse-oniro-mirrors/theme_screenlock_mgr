@@ -43,7 +43,7 @@ sptr<ScreenLockAppManager> ScreenLockAppManager::GetInstance()
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
             instance_ = new ScreenLockAppManager;
-            std::lock_guard<std::mutex> autoLock(instance_->managerProxyLock_);
+            std::lock_guard<std::mutex> guard(instance_->managerProxyLock_);
             instance_->screenlockManagerProxy_ = GetScreenLockManagerProxy();
         }
     }
