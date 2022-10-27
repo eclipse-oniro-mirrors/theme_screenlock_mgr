@@ -106,7 +106,7 @@ void ScreenlockCallback::OnCallBack(const SystemEvent &systemEvent)
     screenlockOnCallBack->deferred = eventListener_.deferred;
     screenlockOnCallBack->errorInfo = errorInfo_;
     screenlockOnCallBack->callBackResult = eventListener_.callBackResult;
-    bool bRet = UvQueue::Call(eventListener_.env, (void *)screenlockOnCallBack, UvWorkOnCallBackInt);
+    bool bRet = UvQueue::Call(eventListener_.env, static_cast<void *>(screenlockOnCallBack), UvWorkOnCallBackInt);
     if (!bRet) {
         SCLOCK_HILOGE("ScreenlockCallback::OnCallBack faild, event=%{public}s,result=%{public}s",
             systemEvent.eventType_.c_str(), systemEvent.params_.c_str());

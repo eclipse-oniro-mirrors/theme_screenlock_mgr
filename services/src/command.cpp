@@ -44,7 +44,7 @@ std::string Command::GetOption()
 std::string Command::GetFormat()
 {
     std::string formatStr;
-    for (auto &seg : format) {
+    for (const auto &seg : format) {
         formatStr += seg;
         formatStr += " ";
     }

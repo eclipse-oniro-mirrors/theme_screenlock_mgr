@@ -40,10 +40,10 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
             argc = pos;
         }
     }
-    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     if (context == nullptr) {
         SCLOCK_HILOGD("context is null");
     }
+    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     context_->ctx = std::move(context);
     napi_create_reference(env, self, 1, &context_->self);
     SCLOCK_HILOGD("AsyncCall end");

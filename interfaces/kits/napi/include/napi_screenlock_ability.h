@@ -49,9 +49,12 @@ struct SendEventInfo : public AsyncCall::Context {
     bool flag;
     napi_status status;
     bool allowed;
-    SendEventInfo() : Context(nullptr, nullptr), flag(false), status(napi_generic_failure), allowed(false) {};
+    SendEventInfo()
+        : Context(nullptr, nullptr), param(0), eventInfo(""), flag(false), status(napi_generic_failure),
+          allowed(false){};
     SendEventInfo(InputAction input, OutputAction output)
-        : Context(std::move(input), std::move(output)), flag(false), status(napi_generic_failure), allowed(false) {};
+        : Context(std::move(input), std::move(output)), param(0), eventInfo(""), flag(false),
+          status(napi_generic_failure), allowed(false){};
     virtual ~SendEventInfo() override {};
     napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self) override
     {
