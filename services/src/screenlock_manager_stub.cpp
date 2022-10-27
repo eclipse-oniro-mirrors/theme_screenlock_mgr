@@ -53,15 +53,6 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(
         case ONSYSTEMEVENT:
             result = OnScreenLockOn(data, reply);
             break;
-        case TEST_SET_SCREENLOCKED:
-            result = OnTest_SetScreenLocked(data, reply);
-            break;
-        case TEST_RUNTIME_NOTIFY:
-            result = OnTest_RuntimeNotify(data, reply);
-            break;
-        case TEST_GET_RUNTIME_STATE:
-            result = OnTest_GetRuntimeState(data, reply);
-            break;
         default:
             SCLOCK_HILOGE("Default value received, check needed.");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -163,32 +154,6 @@ int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, Messag
     int32_t retCode = SendScreenLockEvent(event, param);
     reply.WriteInt32(retCode);
     return retCode;
-}
-
-bool ScreenLockManagerStub::OnTest_SetScreenLocked(MessageParcel &data, MessageParcel &reply)
-{
-    SCLOCK_HILOGD("ScreenLockManagerStub Test_SetScreenLocked started.");
-    bool isScreenlocked = data.ReadBool();
-    bool flag = Test_SetScreenLocked(isScreenlocked);
-    reply.WriteBool(flag);
-    return flag;
-}
-bool ScreenLockManagerStub::OnTest_RuntimeNotify(MessageParcel &data, MessageParcel &reply)
-{
-    std::string event = data.ReadString();
-    int param = data.ReadInt32();
-    SCLOCK_HILOGD("ScreenLockManagerStub OnTest_RuntimeNotify started.  event=%{public}s", event.c_str());
-    SCLOCK_HILOGD("ScreenLockManagerStub OnTest_RuntimeNotify started.  param=%{public}d", param);
-    bool flag = Test_RuntimeNotify(event, param);
-    reply.WriteBool(flag);
-    return flag;
-}
-int32_t ScreenLockManagerStub::OnTest_GetRuntimeState(MessageParcel &data, MessageParcel &reply)
-{
-    std::string event = data.ReadString();
-    int flag = Test_GetRuntimeState(event);
-    reply.WriteInt32(flag);
-    return flag;
 }
 } // namespace ScreenLock
 } // namespace OHOS
