@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "uv_queue.h"
+
 #include "sclock_log.h"
 
 namespace OHOS::ScreenLock {

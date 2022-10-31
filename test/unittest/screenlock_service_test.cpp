@@ -14,21 +14,22 @@
  */
 #include "screenlock_service_test.h"
 
-#include <cstdint>
 #include <gtest/gtest.h>
-#include <list>
-#include <string>
 #include <sys/time.h>
 
+#include <cstdint>
+#include <list>
+#include <string>
+
 #include "sclock_log.h"
+#include "screenlock_app_manager.h"
+#include "screenlock_callback_test.h"
 #include "screenlock_common.h"
 #include "screenlock_event_list_test.h"
 #include "screenlock_manager.h"
 #include "screenlock_notify_test_instance.h"
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
-#include "screenlock_app_manager.h"
-#include "screenlock_callback_test.h"
 
 namespace OHOS {
 namespace ScreenLock {

@@ -14,7 +14,6 @@
  */
 #include "screenlock_callback.h"
 
-
 #include <cstdint>
 #include <new>
 #include <string>

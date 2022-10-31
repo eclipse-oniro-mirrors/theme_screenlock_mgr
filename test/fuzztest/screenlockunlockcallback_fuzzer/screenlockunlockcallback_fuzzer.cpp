@@ -18,8 +18,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "screenlock_callback.h"
 #include "message_parcel.h"
+#include "screenlock_callback.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability.h"
 
