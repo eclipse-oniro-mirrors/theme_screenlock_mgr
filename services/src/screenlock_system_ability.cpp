@@ -477,8 +477,8 @@ void ScreenLockSystemAbility::OnDump()
     if (second > 0) {
         timeNow = localtime(&second);
         if (timeNow != nullptr) {
-            SCLOCK_HILOGI(
-                "ScreenLockSystemAbility dump time:%{public}d-%{public}d-%{public}d %{public}d:%{public}d:%{public}d",
+            SCLOCK_HILOGI("ScreenLockSystemAbility dump time:%{public}d-%{public}d-%{public}d "
+                          "%{public}d:%{public}d:%{public}d",
                 timeNow->tm_year + startTime_, timeNow->tm_mon + extraMonth_, timeNow->tm_mday, timeNow->tm_hour,
                 timeNow->tm_min, timeNow->tm_sec);
         }
@@ -520,8 +520,8 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
                 .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
                 .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
-                .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
-                        "\t\tscreen interaction status\n");
+                .append(
+                    " * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
@@ -538,8 +538,8 @@ bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
     }
     auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
     SCLOCK_HILOGD(" TopelementName:%{public}s, elementName.GetBundleName:%{public}s",
-        elementName.GetBundleName().c_str(),  appInfo.bundleName.c_str());
-    return elementName.GetBundleName() ==  appInfo.bundleName;
+        elementName.GetBundleName().c_str(), appInfo.bundleName.c_str());
+    return elementName.GetBundleName() == appInfo.bundleName;
 }
 
 void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
@@ -638,8 +638,8 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
     }
     auto callback = [=]() {
         if (traceTaskId != HITRACE_BUTT) {
-            StartAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback", traceTaskId);
+            StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback",
+                traceTaskId);
         }
         std::lock_guard<std::mutex> lck(listenerMutex_);
         systemEventListener_->OnCallBack(systemEvent);

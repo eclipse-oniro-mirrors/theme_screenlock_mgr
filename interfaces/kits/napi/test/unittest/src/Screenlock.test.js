@@ -20,22 +20,22 @@ const SLEEP_TIME = 1000;
 const PERMISSON_ERROR = 201;
 const PARAMETER_ERROR = 401;
 describe("ScreenlcokJsTest", function () {
-    beforeAll(function() {
+    beforeAll(function () {
         // input testsuit setup step，setup invoked before all testcases
-         console.info('beforeAll caled')
+        console.info('beforeAll caled')
     })
-    
-    afterAll(function() {
-         // input testsuit teardown step，teardown invoked after all testcases
-         console.info('afterAll caled')
+
+    afterAll(function () {
+        // input testsuit teardown step，teardown invoked after all testcases
+        console.info('afterAll caled')
     })
-    
-    beforeEach(function() {
+
+    beforeEach(function () {
         // input testcase setup step，setup invoked before each testcases
-         console.info('beforeEach caled')
+        console.info('beforeEach caled')
     })
-    
-    afterEach(function() {
+
+    afterEach(function () {
         // input testcase teardown step，teardown invoked after each testcases
         console.info('afterEach caled')
     })
@@ -85,7 +85,7 @@ describe("ScreenlcokJsTest", function () {
     it("SUB_MISC_THEME_screenLock_API_0003", 0, function () {
         try {
             screenLock.unlock((err, data) => {
-                if(err) {
+                if (err) {
                     console.info("unlock filed: error.code : " + err.code + "error.message :" + err.message);
                     expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
@@ -120,16 +120,16 @@ describe("ScreenlcokJsTest", function () {
             expect(true).assertTrue();
         }
     })
-     /*
-    * @tc.name:SUB_MISC_THEME_screenLock_API_0005
-    * @tc.desc: Lock the screen
-    * @tc.type: Function
-    * @tc.require: SR000HHEJQ
-    */
-     it("SUB_MISC_THEME_screenLock_API_0005", 0, function () {
+    /*
+   * @tc.name:SUB_MISC_THEME_screenLock_API_0005
+   * @tc.desc: Lock the screen
+   * @tc.type: Function
+   * @tc.require: SR000HHEJQ
+   */
+    it("SUB_MISC_THEME_screenLock_API_0005", 0, function () {
         try {
             screenLock.lock((err, data) => {
-                if(err) {
+                if (err) {
                     console.info("lock filed: error.code : " + err.code + "error.message :" + err.message);
                     expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
@@ -149,7 +149,7 @@ describe("ScreenlcokJsTest", function () {
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
     */
-     it("SUB_MISC_THEME_screenLock_API_0006", 0, function () {
+    it("SUB_MISC_THEME_screenLock_API_0006", 0, function () {
         try {
             screenLock.lock().then((data) => {
                 console.info("SUB_MISC_THEME_screenLock_API_0006: send lock issue success retCode:" + data);
@@ -159,7 +159,7 @@ describe("ScreenlcokJsTest", function () {
                 console.error("SUB_MISC_THEME_screenLock_API_0006: send lock issue failed error.code : " + error.code + "error.message :" + error.message);
                 expect(error.code == PERMISSON_ERROR).assertTrue();
             });
-            
+
         } catch (error) {
             console.error("SUB_MISC_THEME_screenLock_API_0006: error.code : " + error.code + "error.message :" + error.message);
             expect(error.code == PARAMETER_ERROR).assertTrue();
@@ -174,9 +174,9 @@ describe("ScreenlcokJsTest", function () {
     it("SUB_MISC_THEME_screenLock_API_0007", 0, function () {
         try {
             let ret = screenLock.onSystemEvent((err, data) => {
-                if(err) {
+                if (err) {
                     console.info("onSystemEvent filed: error.code : " + err.code + "error.message :" + err.message);
-                } 
+                }
                 console.info("SUB_MISC_THEME_screenLock_API_0007: onSystemEvent success ");
             });
             expect(ret == true).assertTrue();
@@ -194,9 +194,9 @@ describe("ScreenlcokJsTest", function () {
     it("SUB_MISC_THEME_screenLock_API_0008", 0, function () {
         try {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
-                if(err) {
+                if (err) {
                     console.info("sendScreenLockEvent filed: error.code : " + err.code + "error.message :" + err.message);
-                } 
+                }
                 console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
             });
         } catch (error) {

@@ -129,7 +129,7 @@ HWTEST_F(ScreenLockServiceTest, RequestLockTest004, TestSize.Level0)
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
         EXPECT_EQ(false, true);
-        return ;
+        return;
     }
     ScreenLockManager::GetInstance()->RequestLock(listener);
     std::string event = LOCK_SCREEN_RESULT;
@@ -154,7 +154,7 @@ HWTEST_F(ScreenLockServiceTest, RequestUnlockTest005, TestSize.Level0)
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
         EXPECT_EQ(false, true);
-        return ;
+        return;
     }
     ScreenLockManager::GetInstance()->RequestUnlock(listener);
     std::string event = UNLOCK_SCREEN_RESULT;

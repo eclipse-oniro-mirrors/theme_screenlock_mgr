@@ -32,8 +32,8 @@ namespace ScreenLock {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
 class StateValue {
 public:
-    StateValue() {};
-    ~StateValue() {};
+    StateValue(){};
+    ~StateValue(){};
 
     void Reset();
 
@@ -120,7 +120,9 @@ enum class InteractiveState {
     INTERACTIVE_STATE_BEGIN_SLEEP = 3,
 };
 
-class ScreenLockSystemAbility : public SystemAbility, public ScreenLockManagerStub {
+class ScreenLockSystemAbility
+    : public SystemAbility
+    , public ScreenLockManagerStub {
     DECLARE_SYSTEM_ABILITY(ScreenLockSystemAbility);
 
 public:

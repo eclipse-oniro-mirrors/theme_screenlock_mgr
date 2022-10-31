@@ -25,8 +25,8 @@ namespace ScreenLock {
 using namespace std;
 class SystemEvent {
 public:
-    SystemEvent() {};
-    ~SystemEvent() {};
+    SystemEvent(){};
+    ~SystemEvent(){};
 
     int eventCode_ = 0;
     std::string eventName_;
@@ -36,8 +36,8 @@ public:
 };
 class SystemEventHandler {
 public:
-    SystemEventHandler() {};
-    ~SystemEventHandler() {};
+    SystemEventHandler(){};
+    ~SystemEventHandler(){};
     bool SendSystemEvent(const SystemEvent event)
     {
         switch (event.eventCode_) {

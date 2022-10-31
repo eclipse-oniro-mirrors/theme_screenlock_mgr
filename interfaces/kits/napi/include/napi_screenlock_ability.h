@@ -25,10 +25,10 @@ namespace ScreenLock {
 struct AsyncScreenLockInfo : public AsyncCall::Context {
     napi_status status;
     bool allowed;
-    AsyncScreenLockInfo() : Context(nullptr, nullptr), allowed(false) {};
+    AsyncScreenLockInfo() : Context(nullptr, nullptr), allowed(false){};
     AsyncScreenLockInfo(InputAction input, OutputAction output)
-        : Context(std::move(input), std::move(output)), allowed(false) {};
-    virtual ~AsyncScreenLockInfo() override {};
+        : Context(std::move(input), std::move(output)), allowed(false){};
+    virtual ~AsyncScreenLockInfo() override{};
     napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self) override
     {
         NAPI_ASSERT_BASE(env, self != nullptr, "self is nullptr", napi_invalid_arg);
@@ -55,7 +55,7 @@ struct SendEventInfo : public AsyncCall::Context {
     SendEventInfo(InputAction input, OutputAction output)
         : Context(std::move(input), std::move(output)), param(0), eventInfo(""), flag(false),
           status(napi_generic_failure), allowed(false){};
-    virtual ~SendEventInfo() override {};
+    virtual ~SendEventInfo() override{};
     napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self) override
     {
         NAPI_ASSERT_BASE(env, self != nullptr, "self is nullptr", napi_invalid_arg);

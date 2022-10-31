@@ -42,28 +42,24 @@
 #undef SCLOCK_HILOGD
 #endif
 
-static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {
-    LOG_CORE,
-    0xD001C00,
-    "SclockKit"
-};
+static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, 0xD001C00, "SclockKit" };
 
 #define FILENAME_PREFIX (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#define SCLOCK_HILOGF(fmt, ...)            \
-    (void)OHOS::HiviewDFX::HiLog::Fatal(            \
+#define SCLOCK_HILOGF(fmt, ...)          \
+    (void)OHOS::HiviewDFX::HiLog::Fatal( \
         LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define SCLOCK_HILOGE(fmt, ...)            \
-    (void)OHOS::HiviewDFX::HiLog::Error(            \
+#define SCLOCK_HILOGE(fmt, ...)          \
+    (void)OHOS::HiviewDFX::HiLog::Error( \
         LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define SCLOCK_HILOGW(fmt, ...)            \
-    (void)OHOS::HiviewDFX::HiLog::Warn(            \
+#define SCLOCK_HILOGW(fmt, ...)         \
+    (void)OHOS::HiviewDFX::HiLog::Warn( \
         LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define SCLOCK_HILOGI(fmt, ...)            \
-    (void)OHOS::HiviewDFX::HiLog::Info(            \
+#define SCLOCK_HILOGI(fmt, ...)         \
+    (void)OHOS::HiviewDFX::HiLog::Info( \
         LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define SCLOCK_HILOGD(fmt, ...)            \
-    (void)OHOS::HiviewDFX::HiLog::Debug(            \
+#define SCLOCK_HILOGD(fmt, ...)          \
+    (void)OHOS::HiviewDFX::HiLog::Debug( \
         LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #else
 
