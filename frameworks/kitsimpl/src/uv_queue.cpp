@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "uv_queue.h"
+
 #include "sclock_log.h"
 
 namespace OHOS::ScreenLock {
@@ -34,4 +35,4 @@ bool UvQueue::Call(napi_env env, void *data, uv_after_work_cb afterCallback)
         loop, work, [](uv_work_t *work) {}, afterCallback);
     return true;
 }
-} // namespace OHOS::MiscServices
+} // namespace OHOS::ScreenLock

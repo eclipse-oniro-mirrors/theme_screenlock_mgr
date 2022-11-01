@@ -53,7 +53,7 @@ sptr<ScreenLockManager> ScreenLockManager::GetInstance()
 bool ScreenLockManager::IsScreenLocked()
 {
     auto proxy = GetProxy();
-    if (proxy  == nullptr) {
+    if (proxy == nullptr) {
         SCLOCK_HILOGE("IsScreenLocked quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
@@ -64,7 +64,7 @@ bool ScreenLockManager::IsScreenLocked()
 bool ScreenLockManager::GetSecure()
 {
     auto proxy = GetProxy();
-    if (proxy  == nullptr) {
+    if (proxy == nullptr) {
         SCLOCK_HILOGE("GetSecure quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }

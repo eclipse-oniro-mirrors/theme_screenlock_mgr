@@ -32,8 +32,8 @@ namespace ScreenLock {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
 class StateValue {
 public:
-    StateValue() {};
-    ~StateValue() {};
+    StateValue(){};
+    ~StateValue(){};
 
     void Reset();
 

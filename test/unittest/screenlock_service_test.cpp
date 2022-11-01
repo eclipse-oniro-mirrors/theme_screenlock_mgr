@@ -21,14 +21,14 @@
 #include <sys/time.h>
 
 #include "sclock_log.h"
+#include "screenlock_app_manager.h"
+#include "screenlock_callback_test.h"
 #include "screenlock_common.h"
 #include "screenlock_event_list_test.h"
 #include "screenlock_manager.h"
 #include "screenlock_notify_test_instance.h"
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
-#include "screenlock_app_manager.h"
-#include "screenlock_callback_test.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -128,7 +128,7 @@ HWTEST_F(ScreenLockServiceTest, RequestLockTest004, TestSize.Level0)
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
         EXPECT_EQ(false, true);
-        return ;
+        return;
     }
     ScreenLockManager::GetInstance()->RequestLock(listener);
     std::string event = LOCK_SCREEN_RESULT;
@@ -153,7 +153,7 @@ HWTEST_F(ScreenLockServiceTest, RequestUnlockTest005, TestSize.Level0)
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener object is nullptr");
         EXPECT_EQ(false, true);
-        return ;
+        return;
     }
     ScreenLockManager::GetInstance()->RequestUnlock(listener);
     std::string event = UNLOCK_SCREEN_RESULT;

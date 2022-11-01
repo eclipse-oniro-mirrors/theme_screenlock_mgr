@@ -15,12 +15,11 @@
 #include "napi_screenlock_ability.h"
 
 #include <hitrace_meter.h>
+#include <map>
 #include <napi/native_api.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <uv.h>
-
-#include <map>
 
 #include "event_listener.h"
 #include "ipc_skeleton.h"
@@ -143,8 +142,8 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
     SCLOCK_HILOGD("NAPI_IsScreenLocked begin");
     auto context = std::make_shared<AsyncScreenLockInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
-        NAPI_ASSERT_BASE(
-            env, argc == ARGS_SIZE_ZERO || argc == ARGS_SIZE_ONE, " should 0 or 1 parameters!", napi_invalid_arg);
+        NAPI_ASSERT_BASE(env, argc == ARGS_SIZE_ZERO || argc == ARGS_SIZE_ONE, " should 0 or 1 parameters!",
+            napi_invalid_arg);
         SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         return napi_ok;
     };
@@ -200,8 +199,8 @@ void AsyncCallLockScreen(napi_env env)
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_async_work(env, nullptr, resource, execute, complete, &g_lockListener, &work));
     NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, work));
 }
 
@@ -266,8 +265,8 @@ void AsyncCallUnlockScreen(napi_env env)
     };
     auto complete = [](napi_env env, napi_status status, void *data) {};
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_async_work(env, nullptr, resource, execute, complete, &g_unlockListener, &work));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_async_work(env, nullptr, resource, execute, complete, &g_unlockListener, &work));
     NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, work));
 }
 
@@ -480,13 +479,13 @@ static napi_value ScreenlockInit(napi_env env, napi_value exports)
 
 extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
-    napi_module module = {.nm_version = 1, // NAPI v1
-        .nm_flags = 0,                     // normal
+    napi_module module = { .nm_version = 1, // NAPI v1
+        .nm_flags = 0,                      // normal
         .nm_filename = nullptr,
         .nm_register_func = ScreenlockInit,
         .nm_modname = "screenLock",
         .nm_priv = nullptr,
-        .reserved = {}};
+        .reserved = {} };
     napi_module_register(&module);
 }
 } // namespace ScreenLock

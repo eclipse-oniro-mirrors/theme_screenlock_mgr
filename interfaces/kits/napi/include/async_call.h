@@ -31,8 +31,8 @@ public:
         using InputAction = std::function<napi_status(napi_env, size_t, napi_value[], napi_value)>;
         using OutputAction = std::function<napi_status(napi_env, napi_value *)>;
         using ExecAction = std::function<void(Context *)>;
-        Context(InputAction input, OutputAction output) : input_(std::move(input)), output_(std::move(output)) {};
-        virtual ~Context() {};
+        Context(InputAction input, OutputAction output) : input_(std::move(input)), output_(std::move(output)){};
+        virtual ~Context(){};
         void SetAction(const InputAction input, const OutputAction output = nullptr)
         {
             input_ = input;

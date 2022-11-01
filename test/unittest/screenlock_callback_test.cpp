@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "screenlock_callback_test.h"
+
 #include "sclock_log.h"
 #include "screenlock_common.h"
 

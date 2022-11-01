@@ -27,8 +27,8 @@ void ScreenLockSystemAbilityStub::SetErrorInfo(const ErrorInfo &errorInfo)
 {
 }
 
-int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(
-    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
 {
     auto descriptorToken = data.ReadInterfaceToken();
     if (descriptorToken != GetDescriptor()) {
