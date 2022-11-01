@@ -26,8 +26,8 @@ namespace OHOS {
 namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
 
-int32_t ScreenLockManagerStub::OnRemoteRequest(
-    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
 {
     SCLOCK_HILOGD("OnRemoteRequest started, code = %{public}d", code);
     int32_t result = -1;

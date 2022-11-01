@@ -14,15 +14,14 @@
  */
 #include "screenlock_system_ability.h"
 
-#include <fcntl.h>
-#include <sys/time.h>
-#include <unistd.h>
-
 #include <cerrno>
 #include <ctime>
+#include <fcntl.h>
 #include <functional>
 #include <iostream>
 #include <string>
+#include <sys/time.h>
+#include <unistd.h>
 
 #include "ability_manager_client.h"
 #include "command.h"
@@ -161,8 +160,8 @@ void ScreenLockSystemAbility::InitServiceHandler()
     }
     std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("ScreenLockSystemAbility");
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
-    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_, TIME_OUT_MILLISECONDS)
-        != 0) {
+    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_,
+            TIME_OUT_MILLISECONDS) != 0) {
         SCLOCK_HILOGI("HiviewDFX::Watchdog::GetInstance AddThread Fail");
     }
     SCLOCK_HILOGI("InitServiceHandler succeeded.");
@@ -181,8 +180,8 @@ void ScreenLockSystemAbility::OnStop()
     SCLOCK_HILOGI("OnStop end.");
 }
 
-void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(
-    DisplayPowerEvent event, EventStatus status)
+void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
+    EventStatus status)
 {
     SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d", static_cast<int>(event));
     SCLOCK_HILOGI("OnDisplayPowerEvent status= %{public}d", static_cast<int>(status));
@@ -337,8 +336,8 @@ int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilit
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
-        FinishAsyncTrace(
-            HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus", HITRACE_UNLOCKSCREEN);
+        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus",
+            HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return E_SCREENLOCK_NO_PERMISSION;
     }
@@ -521,7 +520,7 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
                 .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
                 .append(
-                    " * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
+                " * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
@@ -644,8 +643,8 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         std::lock_guard<std::mutex> lck(listenerMutex_);
         systemEventListener_->OnCallBack(systemEvent);
         if (traceTaskId != HITRACE_BUTT) {
-            FinishAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback", traceTaskId);
+            FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback",
+                traceTaskId);
         }
     };
     serviceHandler_->PostTask(callback, INTERVAL_ZERO);

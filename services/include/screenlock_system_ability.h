@@ -120,9 +120,7 @@ enum class InteractiveState {
     INTERACTIVE_STATE_BEGIN_SLEEP = 3,
 };
 
-class ScreenLockSystemAbility
-    : public SystemAbility
-    , public ScreenLockManagerStub {
+class ScreenLockSystemAbility : public SystemAbility, public ScreenLockManagerStub {
     DECLARE_SYSTEM_ABILITY(ScreenLockSystemAbility);
 
 public:

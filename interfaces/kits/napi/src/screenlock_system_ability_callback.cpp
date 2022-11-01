@@ -61,14 +61,14 @@ auto OnUvWorkCallback = [](uv_work_t *work, int status) {
     napi_value params = nullptr;
     napi_create_string_utf8(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->systemEvent.eventType_.c_str(),
         NAPI_AUTO_LENGTH, &eventType);
-    napi_create_string_utf8(
-        screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->systemEvent.params_.c_str(), NAPI_AUTO_LENGTH, &params);
+    napi_create_string_utf8(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->systemEvent.params_.c_str(),
+        NAPI_AUTO_LENGTH, &params);
     napi_set_named_property(screenlockOnCallBackPtr->env, result, "eventType", eventType);
     napi_set_named_property(screenlockOnCallBackPtr->env, result, "params", params);
     callbackValues[1] = result;
 
-    napi_call_function(
-        screenlockOnCallBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, callbackValues, &callbackResult);
+    napi_call_function(screenlockOnCallBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, callbackValues,
+        &callbackResult);
     if (screenlockOnCallBackPtr != nullptr) {
         delete screenlockOnCallBackPtr;
         screenlockOnCallBackPtr = nullptr;

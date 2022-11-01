@@ -68,19 +68,19 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
             napi_get_boolean(callBackPtr->env, true, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         }
     } else {
-        AsyncCall::GenerateBusinessError(
-            callBackPtr->env, callBackPtr->errorInfo, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+        AsyncCall::GenerateBusinessError(callBackPtr->env, callBackPtr->errorInfo,
+            &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
         if (callBackPtr->callBackResult) {
             napi_get_boolean(callBackPtr->env, false, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         }
     }
     if (callBackPtr->deferred) {
         if (onCallbackResult == SCREEN_SUCC) {
-            napi_resolve_deferred(
-                callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
+            napi_resolve_deferred(callBackPtr->env, callBackPtr->deferred,
+                result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         } else {
-            napi_reject_deferred(
-                callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+            napi_reject_deferred(callBackPtr->env, callBackPtr->deferred,
+                result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
         }
     } else {
         napi_value callbackFunc = nullptr;

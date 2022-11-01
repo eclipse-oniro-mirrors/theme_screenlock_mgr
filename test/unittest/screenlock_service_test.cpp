@@ -14,12 +14,11 @@
  */
 #include "screenlock_service_test.h"
 
-#include <gtest/gtest.h>
-#include <sys/time.h>
-
 #include <cstdint>
+#include <gtest/gtest.h>
 #include <list>
 #include <string>
+#include <sys/time.h>
 
 #include "sclock_log.h"
 #include "screenlock_app_manager.h"
