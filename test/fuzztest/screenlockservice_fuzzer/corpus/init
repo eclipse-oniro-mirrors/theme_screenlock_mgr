@@ -11,13 +11,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/theme/screenlock_mgr/screenlock.gni")
-
-group("fuzztest") {
-  testonly = true
-
-  deps = [
-    "screenlockmanager_fuzzer:fuzztest",
-    "screenlockservice_fuzzer:fuzztest",
-  ]
-}
+FUZZ

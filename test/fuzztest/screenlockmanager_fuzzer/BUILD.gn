@@ -1,0 +1,70 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#####################hydra-fuzz###################
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+##############################fuzztest##########################################
+ohos_fuzztest("ScreenlockManagerFuzzTest") {
+  module_out_path = "theme/screenlock_mgr"
+
+  fuzz_config_file =
+      "//base/theme/screenlock_mgr/test/fuzztest/screenlockmanager_fuzzer"
+
+  include_dirs = [
+    "//foundation/arkui/napi/interfaces/kits",
+    "//third_party/node/src",
+    "//foundation/ability/ability_runtime/services/common/include",
+    "//utils/system/safwk/native/include",
+    "//base/theme/screenlock_mgr/interfaces/kits/napi/include",
+    "//base/theme/screenlock_mgr/services/include",
+    "//base/theme/screenlock_mgr/utils/include",
+  ]
+
+  cflags = [
+    "-g",
+    "-O0",
+    "-Wno-unused-variable",
+    "-fno-omit-frame-pointer",
+  ]
+
+  deps = [
+    "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
+    "//base/theme/screenlock_mgr/interfaces/kits/napi:screenlock",
+    "//base/theme/screenlock_mgr/services:screenlock_server",
+    "//base/theme/screenlock_mgr/utils:screenlock_utils",
+    "//foundation/arkui/napi:ace_napi",
+  ]
+
+  external_deps = [
+    "c_utils:utils",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "window_manager:libdm",
+  ]
+
+  sources = [ "screenlockmanager_fuzzer.cpp" ]
+}
+
+###############################################################################
+group("fuzztest") {
+  testonly = true
+  deps = []
+  deps += [
+    # deps file
+    ":ScreenlockManagerFuzzTest",
+  ]
+}
+###############################################################################
