@@ -16,7 +16,8 @@
       "package": "ohos.acts.theme.screenlock",
       "name": ".MyApplication",
       "deviceType": [
-        "phone"
+        "default",
+        "tablet"
       ],
       "distro": {
         "deliveryWithInstall": true,
