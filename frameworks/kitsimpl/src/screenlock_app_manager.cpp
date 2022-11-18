@@ -135,6 +135,10 @@ ScreenLockAppDeathRecipient::ScreenLockAppDeathRecipient()
 {
 }
 
+ScreenLockAppDeathRecipient::~ScreenLockAppDeathRecipient()
+{
+}
+
 void ScreenLockAppDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &object)
 {
     SCLOCK_HILOGE("ScreenLockAppDeathRecipient on remote systemAbility died.");

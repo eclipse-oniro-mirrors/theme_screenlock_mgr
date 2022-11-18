@@ -31,7 +31,7 @@ enum CALLBACK_TYPE {
 struct SystemEvent {
     std::string eventType_;
     std::string params_;
-    SystemEvent(std::string eventType = "", std::string params = "") : eventType_(eventType), params_(params)
+    explicit SystemEvent(std::string eventType = "", std::string params = "") : eventType_(eventType), params_(params)
     {
     }
 };
@@ -39,7 +39,7 @@ struct SystemEvent {
 struct ErrorInfo {
     uint32_t errorCode_;
     std::string message_;
-    ErrorInfo(uint32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
+    explicit ErrorInfo(uint32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
     {
     }
 };

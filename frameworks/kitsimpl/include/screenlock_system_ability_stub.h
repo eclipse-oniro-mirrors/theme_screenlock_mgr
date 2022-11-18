@@ -30,8 +30,8 @@ public:
     virtual ~ScreenLockSystemAbilityStub()
     {
     }
-    virtual void OnCallBack(const SystemEvent &systemEvent) override;
-    virtual void SetErrorInfo(const ErrorInfo &errorInfo) override;
+    void OnCallBack(const SystemEvent &systemEvent) override;
+    void SetErrorInfo(const ErrorInfo &errorInfo) override;
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 };
 } // namespace ScreenLock

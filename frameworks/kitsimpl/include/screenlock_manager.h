@@ -29,14 +29,14 @@ namespace ScreenLock {
 class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {
 public:
     explicit ScreenLockSaDeathRecipient();
-    ~ScreenLockSaDeathRecipient() = default;
+    ~ScreenLockSaDeathRecipient() override;
     void OnRemoteDied(const wptr<IRemoteObject> &object) override;
 };
 
 class ScreenLockManager : public RefBase {
 public:
     ScreenLockManager();
-    ~ScreenLockManager();
+    ~ScreenLockManager() override;
     static sptr<ScreenLockManager> GetInstance();
     bool IsScreenLocked();
     bool GetSecure();
