@@ -35,6 +35,7 @@ namespace ScreenLock {
 using namespace testing::ext;
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
+using namespace OHOS::Rosen;
 
 static EventListenerTest g_unlockTestListener;
 
@@ -164,7 +165,7 @@ HWTEST_F(ScreenLockServiceTest, RequestUnlockTest005, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest016
+* @tc.name: ScreenLockTest006
 * @tc.desc: test negative value.
 * @tc.type: FUNC
 * @tc.require:
@@ -179,7 +180,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest006, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest017
+* @tc.name: ScreenLockTest007
 * @tc.desc: test large values.
 * @tc.type: FUNC
 * @tc.require:
@@ -191,6 +192,182 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest007, TestSize.Level0)
     const int MAXUSERID = 999999999;
     int param = 999999999;
     EXPECT_EQ(param < MAXUSERID, false);
+}
+
+/**
+* @tc.name: ScreenLockTest008
+* @tc.desc: beginWakeUp event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest008, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of beginWakeUp");
+    DisplayPowerEvent event = DisplayPowerEvent::WAKE_UP;
+    EventStatus status = EventStatus::BEGIN;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetInteractiveState();
+    SCLOCK_HILOGD("Test_BeginWakeUp retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP), true);
+}
+
+/**
+* @tc.name: ScreenLockTest009
+* @tc.desc: beginSleep event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of beginsleep");
+    DisplayPowerEvent event = DisplayPowerEvent::SLEEP;
+    EventStatus status = EventStatus::BEGIN;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetInteractiveState();
+    SCLOCK_HILOGD("Test_BeginSleep retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP), true);
+}
+
+/**
+* @tc.name: ScreenLockTest010
+* @tc.desc: beginScreenOn event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest010, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of beginscreenon");
+    DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_ON;
+    EventStatus status = EventStatus::BEGIN;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenState();
+    SCLOCK_HILOGD("Test_BeginScreenOn retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_ON), true);
+}
+
+/**
+* @tc.name: ScreenLockTest011
+* @tc.desc: beginScreenOff event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest011, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of beginscreenoff");
+    DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_OFF;
+    EventStatus status = EventStatus::BEGIN;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenState();
+    SCLOCK_HILOGD("Test_BeginScreenOff retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_BEGIN_OFF), true);
+}
+
+/**
+* @tc.name: ScreenLockTest012
+* @tc.desc: endWakeUp event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of endwakeup");
+    DisplayPowerEvent event = DisplayPowerEvent::WAKE_UP;
+    EventStatus status = EventStatus::END;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetInteractiveState();
+    SCLOCK_HILOGD("Test_EndWakeUp retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP), true);
+}
+
+/**
+* @tc.name: ScreenLockTest013
+* @tc.desc: endSleep event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest013, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of endsleep");
+    DisplayPowerEvent event = DisplayPowerEvent::SLEEP;
+    EventStatus status = EventStatus::END;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetInteractiveState();
+    SCLOCK_HILOGD("Test_EndSleep retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(InteractiveState::INTERACTIVE_STATE_END_SLEEP), true);
+}
+
+/**
+* @tc.name: ScreenLockTest014
+* @tc.desc: endScreenOn event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest014, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of endscreenon");
+    DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_ON;
+    EventStatus status = EventStatus::END;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenState();
+    SCLOCK_HILOGD("Test_EndScreenOn retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_ON), true);
+}
+
+/**
+* @tc.name: ScreenLockTest015
+* @tc.desc: endScreenOff event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest015, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of endscreenoff");
+    DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_OFF;
+    EventStatus status = EventStatus::END;
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
+    if (displayPowerEventListener_ == nullptr) {
+        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    }
+    displayPowerEventListener_->OnDisplayPowerEvent(event, status);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenState();
+    SCLOCK_HILOGD("Test_EndScreenOff retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == static_cast<int>(ScreenState::SCREEN_STATE_END_OFF), true);
 }
 } // namespace ScreenLock
 } // namespace OHOS
