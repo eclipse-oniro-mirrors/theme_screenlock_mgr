@@ -85,7 +85,6 @@ bool FuzzScreenlockDisplayPowerEvent(const uint8_t *rawData, size_t size)
 {
     uint32_t event = ConvertToUint32(rawData);
     rawData = rawData + OFFSET;
-    size = size - OFFSET;
     uint32_t status = ConvertToUint32(rawData);
 
     sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
