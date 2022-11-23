@@ -35,6 +35,7 @@ namespace ScreenLock {
 using namespace testing::ext;
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
+using namespace OHOS::Rosen;
 
 static EventListenerTest g_unlockTestListener;
 
@@ -205,7 +206,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest008, TestSize.Level0)
     SCLOCK_HILOGD("Test event of beginWakeUp");
     DisplayPowerEvent event = DisplayPowerEvent::WAKE_UP;
     EventStatus status = EventStatus::BEGIN;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -227,7 +228,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
     SCLOCK_HILOGD("Test event of beginsleep");
     DisplayPowerEvent event = DisplayPowerEvent::SLEEP;
     EventStatus status = EventStatus::BEGIN;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -249,7 +250,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest010, TestSize.Level0)
     SCLOCK_HILOGD("Test event of beginscreenon");
     DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_ON;
     EventStatus status = EventStatus::BEGIN;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -271,7 +272,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest011, TestSize.Level0)
     SCLOCK_HILOGD("Test event of beginscreenoff");
     DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_OFF;
     EventStatus status = EventStatus::BEGIN;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -293,7 +294,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
     SCLOCK_HILOGD("Test event of endwakeup");
     DisplayPowerEvent event = DisplayPowerEvent::WAKE_UP;
     EventStatus status = EventStatus::END;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -315,7 +316,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest013, TestSize.Level0)
     SCLOCK_HILOGD("Test event of endsleep");
     DisplayPowerEvent event = DisplayPowerEvent::SLEEP;
     EventStatus status = EventStatus::END;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -337,7 +338,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest014, TestSize.Level0)
     SCLOCK_HILOGD("Test event of endscreenon");
     DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_ON;
     EventStatus status = EventStatus::END;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
@@ -359,7 +360,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest015, TestSize.Level0)
     SCLOCK_HILOGD("Test event of endscreenoff");
     DisplayPowerEvent event = DisplayPowerEvent::DISPLAY_OFF;
     EventStatus status = EventStatus::END;
-    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;  
+    sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     if (displayPowerEventListener_ == nullptr) {
         displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
     }
