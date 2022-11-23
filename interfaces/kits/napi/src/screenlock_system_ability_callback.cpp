@@ -47,7 +47,7 @@ auto OnUvWorkCallback = [](uv_work_t *work, int status) {
         work = nullptr;
         return;
     }
-    napi_value undefined = 0;
+    napi_value undefined = nullptr;
     napi_get_undefined(screenlockOnCallBackPtr->env, &undefined);
     napi_value callbackFunc = nullptr;
     napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackref, &callbackFunc);

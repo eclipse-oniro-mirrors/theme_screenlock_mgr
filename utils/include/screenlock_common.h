@@ -115,20 +115,6 @@ constexpr std::int32_t ARGS_SIZE_TWO = 2;
 constexpr std::int32_t ARGS_SIZE_THREE = 3;
 constexpr std::int32_t ARGS_SIZE_FOUR = 4;
 constexpr std::int32_t RESULT_ZERO = 0;
-static const uint32_t SCREENLOCK_BEGIN_WAKEUP = 0x00000001;
-static const uint32_t SCREENLOCK_END_WAKEUP = 0x00000004;
-static const uint32_t SCREENLOCK_BEGIN_SCREEN_ON = 0x00000008;
-static const uint32_t SCREENLOCK_END_SCREEN_ON = 0x00000010;
-static const uint32_t SCREENLOCK_BEGIN_SCREEN_OFF = 0x00000020;
-static const uint32_t SCREENLOCK_END_SCREEN_OFF = 0x00000040;
-static const uint32_t SCREENLOCK_UNLOCK_SCREEN = 0x00000080;
-static const uint32_t SCREENLOCK_BEGIN_SLEEP = 0x00000100;
-static const uint32_t SCREENLOCK_END_SLEEP = 0x00000200;
-static const uint32_t SCREENLOCK_CHANGE_USER = 0x00000400;
-static const uint32_t SCREENLOCK_SCREENLOCK_ENABLED = 0x00000800;
-static const uint32_t SCREENLOCK_EXIT_ANIMATION = 0x00001000;
-static const uint32_t SCREENLOCK_SYSTEM_READY = 0x00002000;
-static const uint32_t SCREENLOCK_LOCK_SCREEN = 0x00004000;
 } // namespace ScreenLock
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_SCREENLOCK_COMMON_H

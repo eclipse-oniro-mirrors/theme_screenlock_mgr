@@ -127,7 +127,7 @@ public:
     DISALLOW_COPY_AND_MOVE(ScreenLockSystemAbility);
     ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate);
     ScreenLockSystemAbility();
-    ~ScreenLockSystemAbility();
+    ~ScreenLockSystemAbility() override;
     static sptr<ScreenLockSystemAbility> GetInstance();
     bool IsScreenLocked() override;
     bool GetSecure() override;
@@ -163,7 +163,7 @@ private:
     void OnBeginSleep(const int why);
     void OnEndSleep(const int why, const int isTriggered);
     void OnChangeUser(const int newUserId);
-    void OnScreenlockEnabled(bool enable);
+    void OnScreenlockEnabled(bool enabled);
     void OnExitAnimation();
     void OnSystemReady();
     void RegisterDumpCommand();

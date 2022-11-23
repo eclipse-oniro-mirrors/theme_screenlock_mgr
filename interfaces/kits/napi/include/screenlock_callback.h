@@ -25,7 +25,7 @@ namespace ScreenLock {
 class ScreenlockCallback : public ScreenLockSystemAbilityStub {
 public:
     explicit ScreenlockCallback(const EventListener &eventListener);
-    virtual ~ScreenlockCallback();
+    ~ScreenlockCallback() override;
     void OnCallBack(const SystemEvent &systemEvent) override;
     void SetErrorInfo(const ErrorInfo &errorInfo) override;
 

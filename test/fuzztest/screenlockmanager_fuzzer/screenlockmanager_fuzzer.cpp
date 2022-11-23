@@ -48,8 +48,6 @@ uint32_t ConvertToUint32(const uint8_t *ptr)
 bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
 {
     uint32_t code = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
-    size = size - OFFSET;
     if (code == RANDNUM_ZERO) {
         return ScreenLockManager::GetInstance()->IsScreenLocked();
     }
