@@ -21,7 +21,6 @@
 #include <sys/time.h>
 
 #include "sclock_log.h"
-#include "securec.h"
 #include "screenlock_app_manager.h"
 #include "screenlock_callback_test.h"
 #include "screenlock_common.h"
@@ -30,6 +29,7 @@
 #include "screenlock_notify_test_instance.h"
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
+#include "securec.h"
 
 namespace OHOS {
 namespace ScreenLock {
