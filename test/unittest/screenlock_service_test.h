@@ -23,6 +23,7 @@ class ScreenLockServiceTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
+    static bool ExecuteCmd(const std::string &cmd, std::string &result);
     void SetUp();
     void TearDown();
 };
