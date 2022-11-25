@@ -12,6 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define private public
+#include "screenlock_system_ability.h"
+#undef private
+
 #include "screenlock_service_test.h"
 
 #include <cstdint>
@@ -392,13 +396,64 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest015, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockDumperTest016
+* @tc.name: ScreenLockTest016
+* @tc.desc: changeUser event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of changeuser");
+    int param = 10;
+    ScreenLockSystemAbility::GetInstance()->OnChangeUser(param);
+    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetCurrentUser();
+    SCLOCK_HILOGD("Test_ChangeUser retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == param, true);
+}
+
+/**
+* @tc.name: ScreenLockTest017
+* @tc.desc: screenLockEnabled event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of screenlockenabled");
+    bool enabled = SCREENLOCK_APP_CAN_USE;
+    ScreenLockSystemAbility::GetInstance()->OnScreenlockEnabled(enabled);
+    bool retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenlockEnabled();
+    SCLOCK_HILOGD("Test_ScreenLockEnabled retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == enabled, true);
+}
+
+/**
+* @tc.name: ScreenLockTest018
+* @tc.desc: screenLockEnabled event.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test event of screenlockenabled");
+    bool enabled = SCREENLOCK_APP_CAN_NOT_USE;
+    ScreenLockSystemAbility::GetInstance()->OnScreenlockEnabled(enabled);
+    bool retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenlockEnabled();
+    SCLOCK_HILOGD("Test_ScreenLockEnabled retVal=%{public}d", retVal);
+    EXPECT_EQ(retVal == enabled, true);
+}
+
+/**
+* @tc.name: ScreenLockDumperTest019
 * @tc.desc: dump showhelp.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest016, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest019, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of showhelp");
     std::string result;
@@ -409,13 +464,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest016, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockDumperTest017
+* @tc.name: ScreenLockDumperTest020
 * @tc.desc: dump showhelp.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest017, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest020, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of -h");
     std::string result;
@@ -426,13 +481,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest017, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockDumperTest018
+* @tc.name: ScreenLockDumperTest021
 * @tc.desc: dump screenlock information.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest018, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest021, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of -all");
     std::string result;
@@ -445,18 +500,86 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest018, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest019
+* @tc.name: ScreenLockTest022
 * @tc.desc: screenlock services died.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest022, TestSize.Level0)
 {
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD4, result);
     EXPECT_TRUE(ret);
     EXPECT_NE(result.find(""), std::string::npos);
+}
+
+/**
+* @tc.name: ScreenLockTest023
+* @tc.desc: lock screen fail.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test lock screen fail");
+    int stateResult = SCREEN_FAIL;
+    ScreenLockSystemAbility::GetInstance()->LockScreenEvent(stateResult);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("Test_Lock Screen ret=%{public}d", ret);
+    EXPECT_EQ(ret, false);
+}
+
+/**
+* @tc.name: ScreenLockTest024
+* @tc.desc: unlock screen fail.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test unlock screen fail");
+    int stateResult = SCREEN_CANCEL;
+    ScreenLockSystemAbility::GetInstance()->UnlockScreenEvent(stateResult);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("Test_Unlock Screen ret=%{public}d", ret);
+    EXPECT_EQ(ret, true);
+}
+
+/**
+* @tc.name: ScreenLockTest025
+* @tc.desc: lock screen.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test lock screen");
+    SystemEvent systemEvent(LOCKSCREEN);
+    ScreenLockSystemAbility::GetInstance()->SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("Test_Lock Screen ret=%{public}d", ret);
+    EXPECT_EQ(ret, true);
+}
+
+/**
+* @tc.name: ScreenLockTest026
+* @tc.desc: SendScreenLockEvent of screenDrawDone.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest026, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test sendScreenLockEvent of screendrawdone");
+    std::string event = SCREEN_DRAWDONE;
+    ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(event, SCREEN_CANCEL);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("Test_SendScreenLockEvent of screendrawdone ret=%{public}d", ret);
+    EXPECT_EQ(ret, true);
 }
 } // namespace ScreenLock
 } // namespace OHOS
