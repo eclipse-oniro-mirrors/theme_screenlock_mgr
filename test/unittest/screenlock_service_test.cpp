@@ -521,7 +521,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest022, TestSize.Level0)
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest,ScreenLockTest023, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test lock screen fail");
     int stateResult = SCREEN_FAIL;
