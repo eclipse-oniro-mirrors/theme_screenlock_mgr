@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 #define private public
+#define protected public
+#include "screenlock_app_manager.h"
 #include "screenlock_system_ability.h"
 #undef private
-
-#include "screenlock_service_test.h"
+#undef protected
 
 #include <cstdint>
 #include <gtest/gtest.h>
@@ -25,12 +26,12 @@
 #include <sys/time.h>
 
 #include "sclock_log.h"
-#include "screenlock_app_manager.h"
 #include "screenlock_callback_test.h"
 #include "screenlock_common.h"
 #include "screenlock_event_list_test.h"
 #include "screenlock_manager.h"
 #include "screenlock_notify_test_instance.h"
+#include "screenlock_service_test.h"
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
 #include "securec.h"
@@ -501,27 +502,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest021, TestSize.Level0)
 
 /**
 * @tc.name: ScreenLockTest022
-* @tc.desc: screenlock services died.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest022, TestSize.Level0)
-{
-    std::string result;
-    auto ret = ScreenLockServiceTest::ExecuteCmd(CMD4, result);
-    EXPECT_TRUE(ret);
-    EXPECT_NE(result.find(""), std::string::npos);
-}
-
-/**
-* @tc.name: ScreenLockTest023
 * @tc.desc: lock screen fail.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest022, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test lock screen fail");
     int stateResult = SCREEN_FAIL;
@@ -532,13 +518,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest024
+* @tc.name: ScreenLockTest023
 * @tc.desc: unlock screen fail.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test unlock screen fail");
     int stateResult = SCREEN_CANCEL;
@@ -549,13 +535,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest025
+* @tc.name: ScreenLockTest024
 * @tc.desc: lock screen.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test lock screen");
     SystemEvent systemEvent(LOCKSCREEN);
@@ -566,13 +552,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest026
+* @tc.name: ScreenLockTest025
 * @tc.desc: SendScreenLockEvent of screenDrawDone.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest026, TestSize.Level0)
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test sendScreenLockEvent of screendrawdone");
     std::string event = SCREEN_DRAWDONE;
@@ -580,6 +566,57 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest026, TestSize.Level0)
     bool ret = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("Test_SendScreenLockEvent of screendrawdone ret=%{public}d", ret);
     EXPECT_EQ(ret, true);
+}
+
+/**
+* @tc.name: ScreenLockTest026
+* @tc.desc: Test OnSystemEvent.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest026, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test OnSystemEvent");
+    EventListenerTest eventTest;
+    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockCallbackTest(eventTest);
+    ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
+    EXPECT_EQ(listener, ScreenLockAppManager::GetInstance()->systemEventListener_);
+}
+
+/**
+* @tc.name: ScreenLockTest027
+* @tc.desc: Test Onstop and RegisterDisplayPowerEventListener.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test Onstop");
+    ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_RUNNING;
+    ScreenLockSystemAbility::GetInstance()->OnStop();
+    ScreenLockSystemAbility::GetInstance()->InitServiceHandler();
+    int times = 0;
+    ScreenLockSystemAbility::GetInstance()->RegisterDisplayPowerEventListener(times);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
+    SCLOCK_HILOGD("Test_SendScreenLockEvent of screendrawdone ret=%{public}d", ret);
+    EXPECT_EQ(ret, false);
+}
+
+/**
+* @tc.name: ScreenLockTest028
+* @tc.desc: screenlock services died.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest028, TestSize.Level0)
+{
+    std::string result;
+    auto ret = ScreenLockServiceTest::ExecuteCmd(CMD4, result);
+    EXPECT_TRUE(ret);
+    EXPECT_NE(result.find(""), std::string::npos);
 }
 } // namespace ScreenLock
 } // namespace OHOS
