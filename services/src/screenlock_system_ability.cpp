@@ -521,6 +521,12 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
     DumpHelper::GetInstance().RegisterCommand(cmd);
 }
 
+#ifdef OHOS_TEST_FLAG
+bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
+{
+    return true;
+}
+#else
 bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
 {
     using namespace OHOS::AAFwk;
@@ -535,6 +541,7 @@ bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
         elementName.GetBundleName().c_str(),  appInfo.bundleName.c_str());
     return elementName.GetBundleName() ==  appInfo.bundleName;
 }
+#endif
 
 void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
 {
@@ -597,6 +604,12 @@ std::string ScreenLockSystemAbility::GetScreenlockParameter(const std::string &k
     return "";
 }
 
+#ifdef OHOS_TEST_FLAG
+bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::string &key)
+{
+    return true;
+}
+#else
 bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::string &key)
 {
     std::string whiteListAppId = GetScreenlockParameter(key);
@@ -621,6 +634,7 @@ bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::
         appInfo.appId.c_str(), whiteListAppId.c_str());
     return true;
 }
+#endif
 
 void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId)
 {
@@ -642,7 +656,9 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
                 HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback", traceTaskId);
         }
     };
-    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    if (serviceHandler_ != nullptr) {
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    }
 }
 } // namespace ScreenLock
 } // namespace OHOS

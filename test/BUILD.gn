@@ -20,10 +20,25 @@ ohos_unittest("ScreenLockServiceTest") {
   include_dirs = [
     "unittest",
     "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
+    "//base/theme/screenlock_mgr/services/include",
+    "//commonlibrary/c_utils/base/include",
+    "//utils/system/safwk/native/include",
+    "//base/telephony/core_service/utils/log/include",
+    "//base/telephony/core_service/interfaces/innerkits/include",
+    "//base/user_idm/interfaces/innerkits/include",
+    "//third_party/json/include",
+    "//base/theme/screenlock_mgr/utils/include",
   ]
 
   sources = [
+    "//base/theme/screenlock_mgr/services/src/command.cpp",
+    "//base/theme/screenlock_mgr/services/src/dump_helper.cpp",
+    "//base/theme/screenlock_mgr/services/src/screenlock_get_info_callback.cpp",
+    "//base/theme/screenlock_mgr/services/src/screenlock_manager_stub.cpp",
+    "//base/theme/screenlock_mgr/services/src/screenlock_system_ability.cpp",
+    "//base/theme/screenlock_mgr/services/src/screenlock_system_ability_proxy.cpp",
     "unittest/screenlock_callback_test.cpp",
+    "unittest/screenlock_client_test.cpp",
     "unittest/screenlock_notify_test_instance.cpp",
     "unittest/screenlock_service_test.cpp",
   ]
@@ -31,23 +46,33 @@ ohos_unittest("ScreenLockServiceTest") {
   external_deps = [
     "ability_base:base",
     "ability_base:want",
+    "ability_runtime:ability_manager",
     "ability_runtime:app_manager",
     "c_utils:utils",
     "eventhandler:libeventhandler",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_core",
     "multimedia_image_framework:image_native",
+    "os_account:os_account_innerkits",
+    "safwk:system_ability_fwk",
+    "user_auth_framework:userauth_client",
     "window_manager:libdm",
   ]
 
   deps = [
     "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
-    "//base/theme/screenlock_mgr/services:screenlock_server",
     "//base/theme/screenlock_mgr/utils:screenlock_utils",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
   ]
+
+  defines = []
+  defines += [ "OHOS_TEST_FLAG" ]
+
+  configs = [ "//commonlibrary/c_utils/base:utils_config" ]
 }
 
 group("unittest") {
