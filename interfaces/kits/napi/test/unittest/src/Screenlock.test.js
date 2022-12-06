@@ -206,7 +206,7 @@ describe("ScreenlcokJsTest", function () {
         try {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
                 if (err) {
-                    console.info("SUB_MISC_THEME_screenLock_API_0007 : error.code : " + err.code + "error.message :" + err.message);
+                    console.info("SUB_MISC_THEME_screenLock_API_0008 : error.code : " + err.code + "error.message :" + err.message);
                     expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
@@ -214,7 +214,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
+            console.error("SUB_MISC_THEME_screenLock_API_0008: error.code : " + error.code + "error.message :" + error.message);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
