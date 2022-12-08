@@ -105,11 +105,14 @@ napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber)
 void ThrowError(napi_env env, const uint32_t &code, const std::string &msg)
 {
     SCLOCK_HILOGD("ThrowError start");
-    std::string errorCode = std::to_string(code);
-    napi_status status = napi_throw_error(env, errorCode.c_str(), msg.c_str());
-    if (status != napi_ok) {
-        SCLOCK_HILOGD("Failed to napi_throw_error");
-    }
+    napi_value message;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &message));
+    napi_value error;
+    NAPI_CALL_RETURN_VOID(env, napi_create_error(env, nullptr, message, &error));
+    napi_value errorCode;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, code, &errorCode));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, error, "code", errorCode));
+    NAPI_CALL_RETURN_VOID(env, napi_throw(env, error));
     SCLOCK_HILOGD("ThrowError end");
 }
 

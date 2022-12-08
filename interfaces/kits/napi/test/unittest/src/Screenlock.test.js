@@ -55,7 +55,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("logMessage SUB_MISC_THEME_screenLock_API_0001: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0001: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -75,7 +75,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("logMessage SUB_MISC_THEME_screenLock_API_0002: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0002: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -100,7 +100,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0003: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0003: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -119,12 +119,12 @@ describe("ScreenlcokJsTest", function () {
                 expect(ret == false).assertTrue();
                 done();
             }).catch((err) => {
-                console.error("SUB_MISC_THEME_screenLock_API_0004: error.code : " + err.code + "error.message :" + err.message);
+                console.error(`SUB_MISC_THEME_screenLock_API_0004: ${err.code}, ${err.message}`);
                 expect(err.code == PERMISSON_ERROR).assertTrue();
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0004: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0004: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -139,7 +139,7 @@ describe("ScreenlcokJsTest", function () {
         try {
             screenLock.lock((err, data) => {
                 if (err) {
-                    console.info("lock filed: error.code : " + err.code + "error.message :" + err.message);
+                    console.error(`SUB_MISC_THEME_screenLock_API_0005: ${err.code}, ${err.message}`);
                     expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0005 lock screen success.");
@@ -149,7 +149,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0005: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0005: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -168,13 +168,13 @@ describe("ScreenlcokJsTest", function () {
                 expect(ret == true).assertTrue();
                 done();
             }).catch((err) => {
-                console.error("SUB_MISC_THEME_screenLock_API_0006: error.code : " + err.code + "error.message :" + err.message);
+                console.error(`SUB_MISC_THEME_screenLock_API_0006: ${err.code}, ${err.message}`);
                 expect(err.code == PERMISSON_ERROR).assertTrue();
                 done();
             });
 
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0006: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0006: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -191,7 +191,7 @@ describe("ScreenlcokJsTest", function () {
                 expect(err == undefined).assertTrue();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0007: ${error.code}, ${error.message}`);
             expect(error.code == PERMISSON_ERROR).assertTrue();
             done();
         }
@@ -206,7 +206,7 @@ describe("ScreenlcokJsTest", function () {
         try {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
                 if (err) {
-                    console.info("SUB_MISC_THEME_screenLock_API_0007 : error.code : " + err.code + "error.message :" + err.message);
+                    console.error(`SUB_MISC_THEME_screenLock_API_0008: ${err.code}, ${err.message}`);
                     expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
@@ -214,7 +214,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0008: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -230,7 +230,7 @@ describe("ScreenlcokJsTest", function () {
             console.info("SUB_MISC_THEME_screenLock_API_0009: sendScreenLockEvent success ");
             done();
         }).catch((err) => {
-            console.error("SUB_MISC_THEME_screenLock_API_0009: error.code : " + err.code + "error.message :" + err.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0009: ${err.code}, ${err.message}`);
             expect(err.code == PERMISSON_ERROR).assertTrue();
             done();
         });
@@ -248,12 +248,12 @@ describe("ScreenlcokJsTest", function () {
                 expect(ret === result).assertTrue();
                 done();
             }).catch((error) => {
-                console.error("SUB_MISC_THEME_screenLock_API_0010: error.code : " + error.code + "error.message :" + error.message);
+                console.error(`SUB_MISC_THEME_screenLock_API_0010: ${error.code}, ${error.message}`);
                 expect(true === false).assertTrue();
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0010: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0010: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -271,12 +271,12 @@ describe("ScreenlcokJsTest", function () {
                 expect(ret == result).assertTrue();
                 done();
             }).catch((error) => {
-                console.error("SUB_MISC_THEME_screenLock_API_0011: error.code : " + error.code + "error.message :" + error.message);
+                console.error(`SUB_MISC_THEME_screenLock_API_0011: ${error.code}, ${error.message}`);
                 expect(true === false).assertTrue();
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0011: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0011: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -291,7 +291,7 @@ describe("ScreenlcokJsTest", function () {
         try {
             screenLock.unlockScreen((err, data) => {
                 if (err) {
-                    console.info("SUB_MISC_THEME_screenLock_API_0012: error.code : " + err.code + "error.message :" + err.message);
+                    console.error(`SUB_MISC_THEME_screenLock_API_0012: ${err.code}, ${err.message}`);
                     expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0012: unlock screen success.");
@@ -301,7 +301,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0012: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0012: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
@@ -320,12 +320,12 @@ describe("ScreenlcokJsTest", function () {
                 expect(ret == false).assertTrue();
                 done();
             }).catch((err) => {
-                console.error("SUB_MISC_THEME_screenLock_API_0013: error.code : " + err.code + "error.message :" + err.message);
+                console.error(`SUB_MISC_THEME_screenLock_API_0013: ${err.code}, ${err.message}`);
                 expect(err.code == PERMISSON_ERROR).assertTrue();
                 done();
             });
         } catch (error) {
-            console.error("SUB_MISC_THEME_screenLock_API_0013: error.code : " + error.code + "error.message :" + error.message);
+            console.error(`SUB_MISC_THEME_screenLock_API_0013: ${error.code}, ${error.message}`);
             expect(error.code == PARAMETER_ERROR).assertTrue();
             done();
         }
