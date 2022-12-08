@@ -38,7 +38,7 @@ namespace OHOS {
 namespace ScreenLock {
 constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission validation failed.";
 constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter validation failed.";
-constexpr const char *CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
+constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
 constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
 const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
     { E_SCREENLOCK_NO_PERMISSION, JsErrorCode::ERR_NO_PERMISSION },
@@ -51,7 +51,7 @@ const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
 const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
     { JsErrorCode::ERR_NO_PERMISSION, PERMISSION_VALIDATION_FAILED },
     { JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED },
-    { JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION },
+    { JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPERATION },
     { JsErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL },
 };
 
@@ -76,7 +76,7 @@ napi_status Init(napi_env env, napi_value exports)
     return napi_ok;
 }
 
-napi_status IsVaildEvent(const std::string &type)
+napi_status IsValidEvent(const std::string &type)
 {
     if (type == UNLOCK_SCREEN_RESULT || type == SCREEN_DRAWDONE || type == LOCK_SCREEN_RESULT) {
         return napi_ok;
@@ -438,7 +438,7 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
         napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
         context->eventInfo = event;
         std::string type = event;
-        if (IsVaildEvent(type) != napi_ok) {
+        if (IsValidEvent(type) != napi_ok) {
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }

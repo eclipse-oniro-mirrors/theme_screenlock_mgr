@@ -59,7 +59,7 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
 constexpr const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteApp";
 constexpr const char *THEME_SCREENLOCK_APP = "const.theme.screenlockApp";
-constexpr const char *CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
+constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
 static constexpr const int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
 constexpr int32_t MAX_RETRY_TIMES = 20;
@@ -336,7 +336,7 @@ int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilit
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
-        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by foucus",
+        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
             HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return E_SCREENLOCK_NO_PERMISSION;
@@ -379,9 +379,9 @@ bool ScreenLockSystemAbility::IsScreenLocked()
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility IsScreenLocked started.");
     std::lock_guard<std::mutex> guard(lock_);
-    bool screnLockState = stateValue_.GetScreenlockedState();
-    SCLOCK_HILOGI("IsScreenLocked screnLockState = %{public}d", screnLockState);
-    return screnLockState;
+    bool screenLockState = stateValue_.GetScreenlockedState();
+    SCLOCK_HILOGI("IsScreenLocked screenLockState = %{public}d", screenLockState);
+    return screenLockState;
 }
 
 bool ScreenLockSystemAbility::GetSecure()
@@ -585,7 +585,7 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
         auto callback = [=]() {
             for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
                 if (stateResult == SCREEN_CANCEL) {
-                    ErrorInfo errorInfo(JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION);
+                    ErrorInfo errorInfo(JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPERATION);
                     unlockVecListeners_[i]->SetErrorInfo(errorInfo);
                 }
                 SystemEvent systemEvent("", std::to_string(stateResult));

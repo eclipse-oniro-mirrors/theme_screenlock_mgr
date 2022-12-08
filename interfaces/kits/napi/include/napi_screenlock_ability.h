@@ -81,7 +81,7 @@ struct ScreenlockOnCallBack {
     bool callBackResult = false;
 };
 
-napi_status IsVaildEvent(const std::string &type);
+napi_status IsValidEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
 napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);
 void ThrowError(napi_env env, const uint32_t &code, const std::string &msg);

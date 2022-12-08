@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef SCREENLOK_ASYNC_CALL_H
-#define SCREENLOK_ASYNC_CALL_H
+#ifndef SCREENLOCK_ASYNC_CALL_H
+#define SCREENLOCK_ASYNC_CALL_H
 
 #include <functional>
 #include <memory>
@@ -102,4 +102,4 @@ private:
 };
 } // namespace OHOS::ScreenLock
 
-#endif // SCREENLOK_ASYNC_CALL_H
+#endif // SCREENLOCK_ASYNC_CALL_H

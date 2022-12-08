@@ -13,9 +13,9 @@
 
 import("//build/test.gni")
 
-module_output_path = "theme/screenlcokJsTest"
+module_output_path = "theme/screenlockJsTest"
 
-ohos_js_unittest("ScreenlcokJsTest") {
+ohos_js_unittest("ScreenlockJsTest") {
   module_out_path = module_output_path
 
   hap_profile = "./config.json"
@@ -25,5 +25,5 @@ ohos_js_unittest("ScreenlcokJsTest") {
 
 group("unittest") {
   testonly = true
-  deps = [ ":ScreenlcokJsTest" ]
+  deps = [ ":ScreenlockJsTest" ]
 }
