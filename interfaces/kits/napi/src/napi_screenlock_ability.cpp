@@ -36,23 +36,25 @@ using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 namespace ScreenLock {
-constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission validation failed.";
-constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter validation failed.";
+constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission verification failed.";
+constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter verification failed.";
 constexpr const char *CANCEL_UNLOCK_OPENATION = "The user canceled the unlock openation.";
 constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
+constexpr const char *NON_SYSTEM_APP = "Permission verification failed, application which is not a system application uses system API.";
 const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
     { E_SCREENLOCK_NO_PERMISSION, JsErrorCode::ERR_NO_PERMISSION },
     { E_SCREENLOCK_PARAMETERS_INVALID, JsErrorCode::ERR_INVALID_PARAMS },
     { E_SCREENLOCK_WRITE_PARCEL_ERROR, JsErrorCode::ERR_SERVICE_ABNORMAL },
     { E_SCREENLOCK_NULLPTR, JsErrorCode::ERR_SERVICE_ABNORMAL },
     { E_SCREENLOCK_SENDREQUEST_FAILED, JsErrorCode::ERR_SERVICE_ABNORMAL },
-
+    { E_SCREENLOCK_NOT_SYSTEM_APP, JsErrorCode::ERR_NOT_SYSTEM_APP },
 };
 const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
     { JsErrorCode::ERR_NO_PERMISSION, PERMISSION_VALIDATION_FAILED },
     { JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED },
     { JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPENATION },
     { JsErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL },
+    { JsErrorCode::ERR_NOT_SYSTEM_APP, NON_SYSTEM_APP },
 };
 
 static thread_local EventListener g_systemEventListener;

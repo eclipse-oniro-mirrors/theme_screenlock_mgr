@@ -111,7 +111,7 @@ HWTEST_F(ScreenLockClientTest, RequestLockTest003, TestSize.Level0)
         return;
     }
     result = ScreenLockManager::GetInstance()->RequestLock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     result = ScreenLockManager::GetInstance()->RequestUnlock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
@@ -128,7 +128,7 @@ HWTEST_F(ScreenLockClientTest, OnSystemEventTest004, TestSize.Level0)
     SCLOCK_HILOGD("Test OnSystemEvent");
     sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     int32_t result = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
 }
 
 /**
@@ -143,7 +143,7 @@ HWTEST_F(ScreenLockClientTest, SendScreenLockEventTest005, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     int testNum = 0;
     int32_t result = ScreenLockAppManager::GetInstance()->SendScreenLockEvent("test", testNum);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
 }
 
 /**

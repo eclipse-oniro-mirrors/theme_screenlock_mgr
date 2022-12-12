@@ -48,6 +48,7 @@ ohos_shared_library("screenlock_server") {
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
+    "access_token:libtokenid_sdk",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "hicollie_native:libhicollie",
