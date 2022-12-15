@@ -20,7 +20,7 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace Security::AccessToken;
-bool ScreenLockAppInfo::GetAppInfoByToken(std::int32_t tokenId, AppInfo &appInfo)
+bool ScreenLockAppInfo::GetAppInfoByToken(std::uint32_t tokenId, AppInfo &appInfo)
 {
     int32_t tokenType = AccessTokenKit::GetTokenTypeFlag(tokenId);
     switch (tokenType) {
