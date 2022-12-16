@@ -13,11 +13,21 @@
  * limitations under the License.
  */
 #include "screenlock_get_info_callback.h"
+#include "sclock_log.h"
 
 namespace OHOS {
 namespace ScreenLock {
 void ScreenLockGetInfoCallback::OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList)
 {
+    SCLOCK_HILOGI("Start.");
+    if (infoList.size() > 0) {
+        SCLOCK_HILOGD("infoList.size() = %{public}zu", infoList.size());
+        isSecure_ = true;
+    }
+}
+bool ScreenLockGetInfoCallback::IsSecure() const
+{
+    return isSecure_;
 }
 } // namespace ScreenLock
 } // namespace OHOS
