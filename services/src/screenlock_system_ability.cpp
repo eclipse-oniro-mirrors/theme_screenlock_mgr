@@ -405,23 +405,13 @@ bool ScreenLockSystemAbility::GetSecure()
     auto getInfoCallback = std::make_shared<ScreenLockGetInfoCallback>();
     int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
     SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
-    if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
-        std::vector<CredentialInfo> pinInfo;
-        getInfoCallback->OnCredentialInfo(pinInfo);
-        if (pinInfo.size()) {
-            SCLOCK_HILOGI("pinInfo.size() = %{public}zu", pinInfo.size());
-            return true;
-        }
+    if (result == static_cast<int32_t>(ResultCode::SUCCESS) && getInfoCallback->IsSecure()) {
+        return true;
     }
     result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::FACE, getInfoCallback);
     SCLOCK_HILOGI("GetCredentialInfo AuthType::FACE result = %{public}d", result);
-    if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
-        std::vector<CredentialInfo> faceInfo;
-        getInfoCallback->OnCredentialInfo(faceInfo);
-        if (faceInfo.size()) {
-            SCLOCK_HILOGI("faceInfo.size() = %{public}zu", faceInfo.size());
-            return true;
-        }
+    if (result == static_cast<int32_t>(ResultCode::SUCCESS) && getInfoCallback->IsSecure()) {
+        return true;
     }
     return false;
 }
