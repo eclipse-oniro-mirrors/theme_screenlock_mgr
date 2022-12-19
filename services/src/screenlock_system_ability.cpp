@@ -522,12 +522,12 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
 }
 
 #ifdef OHOS_TEST_FLAG
-bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
+bool ScreenLockSystemAbility::IsAppInForeground(uint32_t tokenId)
 {
     return true;
 }
 #else
-bool ScreenLockSystemAbility::IsAppInForeground(int32_t tokenId)
+bool ScreenLockSystemAbility::IsAppInForeground(uint32_t tokenId)
 {
     using namespace OHOS::AAFwk;
     AppInfo appInfo;
@@ -605,12 +605,12 @@ std::string ScreenLockSystemAbility::GetScreenlockParameter(const std::string &k
 }
 
 #ifdef OHOS_TEST_FLAG
-bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::string &key)
+bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std::string &key)
 {
     return true;
 }
 #else
-bool ScreenLockSystemAbility::IsWhiteListApp(int32_t callingTokenId, const std::string &key)
+bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std::string &key)
 {
     std::string whiteListAppId = GetScreenlockParameter(key);
     if (whiteListAppId.empty()) {
