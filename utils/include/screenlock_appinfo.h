@@ -29,7 +29,7 @@ class ScreenLockAppInfo {
 public:
     ScreenLockAppInfo() = default;
     ~ScreenLockAppInfo() = default;
-    static bool GetAppInfoByToken(std::int32_t tokenId, AppInfo &appInfo);
+    static bool GetAppInfoByToken(std::uint32_t tokenId, AppInfo &appInfo);
 };
 } // namespace ScreenLock
 } // namespace OHOS
