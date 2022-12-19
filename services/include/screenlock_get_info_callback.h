@@ -31,6 +31,9 @@ public:
      * @return void.
      */
     void OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList) override;
+    bool IsSecure() const;
+private:
+    bool isSecure = false;
 };
 } // namespace ScreenLock
 } // namespace OHOS
