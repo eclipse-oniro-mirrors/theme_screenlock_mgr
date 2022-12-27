@@ -208,7 +208,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
                 if (err) {
                     console.error(`SUB_MISC_THEME_screenLock_API_0008: ${err.code}, ${err.message}`);
-                    expect(err.code == PERMISSION_ERROR).assertTrue();
+                    expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
                 }
