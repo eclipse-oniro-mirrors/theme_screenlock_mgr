@@ -52,7 +52,6 @@ ohos_shared_library("screenlock_client") {
       "napi:ace_napi",
       "samgr:samgr_proxy",
     ]
-    relative_install_dir = "module"
     subsystem_name = "theme"
     part_name = "screenlock_mgr"
   }
