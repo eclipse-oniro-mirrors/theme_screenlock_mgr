@@ -18,6 +18,7 @@ import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from '
 
 const SLEEP_TIME = 1000;
 const PERMISSION_ERROR = 201;
+const SYSTEMAPI_PERMISSION_ERROR = 202;
 const PARAMETER_ERROR = 401;
 describe("ScreenlockJsTest", function () {
     beforeAll(function () {
@@ -140,7 +141,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.lock((err, data) => {
                 if (err) {
                     console.error(`SUB_MISC_THEME_screenLock_API_0005: ${err.code}, ${err.message}`);
-                    expect(err.code == PERMISSION_ERROR).assertTrue();
+                    expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0005 lock screen success.");
                     let ret = screenLock.isLocked();
@@ -169,7 +170,7 @@ describe("ScreenlockJsTest", function () {
                 done();
             }).catch((err) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0006: ${err.code}, ${err.message}`);
-                expect(err.code == PERMISSION_ERROR).assertTrue();
+                expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 done();
             });
 
@@ -192,7 +193,7 @@ describe("ScreenlockJsTest", function () {
             });
         } catch (error) {
             console.error(`SUB_MISC_THEME_screenLock_API_0007: ${error.code}, ${error.message}`);
-            expect(error.code == PERMISSION_ERROR).assertTrue();
+            expect(error.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
             done();
         }
     })
@@ -207,7 +208,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
                 if (err) {
                     console.error(`SUB_MISC_THEME_screenLock_API_0008: ${err.code}, ${err.message}`);
-                    expect(err.code == PERMISSION_ERROR).assertTrue();
+                    expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
                 }
@@ -231,7 +232,7 @@ describe("ScreenlockJsTest", function () {
             done();
         }).catch((err) => {
             console.error(`SUB_MISC_THEME_screenLock_API_0009: ${err.code}, ${err.message}`);
-            expect(err.code == PERMISSION_ERROR).assertTrue();
+            expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
             done();
         });
     })
