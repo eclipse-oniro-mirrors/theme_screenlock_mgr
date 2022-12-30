@@ -140,7 +140,7 @@ describe("ScreenlcokJsTest", function () {
             screenLock.lock((err, data) => {
                 if (err) {
                     console.info("lock filed: error.code : " + err.code + "error.message :" + err.message);
-                    expect(err.code == PERMISSION_ERROR).assertTrue();
+                    expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0005 lock screen success.");
                     let ret = screenLock.isLocked();
@@ -169,7 +169,7 @@ describe("ScreenlcokJsTest", function () {
                 done();
             }).catch((err) => {
                 console.error("SUB_MISC_THEME_screenLock_API_0006: error.code : " + err.code + "error.message :" + err.message);
-                expect(err.code == PERMISSION_ERROR).assertTrue();
+                expect(err.code == PERMISSON_ERROR).assertTrue();
                 done();
             });
 
@@ -192,7 +192,7 @@ describe("ScreenlcokJsTest", function () {
             });
         } catch (error) {
             console.error("SUB_MISC_THEME_screenLock_API_0007: error.code : " + error.code + "error.message :" + error.message);
-            expect(error.code == PERMISSION_ERROR).assertTrue();
+            expect(error.code == PERMISSON_ERROR).assertTrue();
             done();
         }
     })
@@ -207,7 +207,7 @@ describe("ScreenlcokJsTest", function () {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
                 if (err) {
                     console.info("SUB_MISC_THEME_screenLock_API_0007 : error.code : " + err.code + "error.message :" + err.message);
-                    expect(err.code == PERMISSION_ERROR).assertTrue();
+                    expect(err.code == PERMISSON_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
                 }
@@ -231,7 +231,7 @@ describe("ScreenlcokJsTest", function () {
             done();
         }).catch((err) => {
             console.error("SUB_MISC_THEME_screenLock_API_0009: error.code : " + err.code + "error.message :" + err.message);
-            expect(err.code == PERMISSION_ERROR).assertTrue();
+            expect(err.code == PERMISSON_ERROR).assertTrue();
             done();
         });
     })
