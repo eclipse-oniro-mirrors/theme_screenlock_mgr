@@ -53,13 +53,17 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     ScreenlockOnCallBack *callBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
     if (callBackPtr == nullptr) {
         SCLOCK_HILOGE("UvWorkOnCallBackInt, callBackPtr is null");
-        delete work;
+        SAFE_DELETE(work);
         return;
     }
     int32_t onCallbackResult = -1;
     if (!StrToInt(callBackPtr->systemEvent.params_, onCallbackResult)) {
+        SAFE_DELETE(callBackPtr);
+        SAFE_DELETE(work);
         return;
     }
+    napi_handle_scope scope = nullptr;
+    napi_open_handle_scope(callBackPtr->env, &scope);
     napi_value result[ARGS_SIZE_TWO] = { 0 };
     napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     if (onCallbackResult == SCREEN_SUCC) {
@@ -68,26 +72,28 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
             napi_get_boolean(callBackPtr->env, true, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         }
     } else {
-        AsyncCall::GenerateBusinessError(callBackPtr->env, callBackPtr->errorInfo,
-            &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+        AsyncCall::GenerateBusinessError(
+            callBackPtr->env, callBackPtr->errorInfo, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
         if (callBackPtr->callBackResult) {
             napi_get_boolean(callBackPtr->env, false, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         }
     }
     if (callBackPtr->deferred) {
         if (onCallbackResult == SCREEN_SUCC) {
-            napi_resolve_deferred(callBackPtr->env, callBackPtr->deferred,
-                result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
+            napi_resolve_deferred(
+                callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         } else {
-            napi_reject_deferred(callBackPtr->env, callBackPtr->deferred,
-                result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+            napi_reject_deferred(
+                callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
         }
     } else {
         napi_value callbackFunc = nullptr;
         napi_value callbackResult = nullptr;
         napi_get_reference_value(callBackPtr->env, callBackPtr->callbackref, &callbackFunc);
         napi_call_function(callBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, result, &callbackResult);
+        napi_delete_reference(callBackPtr->env, callBackPtr->callbackref);
     }
+    napi_close_handle_scope(callBackPtr->env, scope);
     SAFE_DELETE(callBackPtr);
     SAFE_DELETE(work);
 }
