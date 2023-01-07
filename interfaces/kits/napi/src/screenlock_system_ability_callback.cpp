@@ -47,7 +47,9 @@ auto OnUvWorkCallback = [](uv_work_t *work, int status) {
         work = nullptr;
         return;
     }
-    napi_value undefined = 0;
+    napi_handle_scope scope = nullptr;
+    napi_open_handle_scope(screenlockOnCallBackPtr->env, &scope);
+    napi_value undefined = nullptr;
     napi_get_undefined(screenlockOnCallBackPtr->env, &undefined);
     napi_value callbackFunc = nullptr;
     napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackref, &callbackFunc);
@@ -66,9 +68,9 @@ auto OnUvWorkCallback = [](uv_work_t *work, int status) {
     napi_set_named_property(screenlockOnCallBackPtr->env, result, "eventType", eventType);
     napi_set_named_property(screenlockOnCallBackPtr->env, result, "params", params);
     callbackValues[1] = result;
-
     napi_call_function(
         screenlockOnCallBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, callbackValues, &callbackResult);
+    napi_close_handle_scope(screenlockOnCallBackPtr->env, scope);
     if (screenlockOnCallBackPtr != nullptr) {
         delete screenlockOnCallBackPtr;
         screenlockOnCallBackPtr = nullptr;

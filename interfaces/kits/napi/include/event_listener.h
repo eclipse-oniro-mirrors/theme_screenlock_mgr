@@ -24,9 +24,10 @@ namespace OHOS {
 namespace ScreenLock {
 struct EventListener {
     napi_env env;
-    napi_value thisVar;
-    napi_ref callbackRef;
+    napi_value thisVar = nullptr;
+    napi_ref callbackRef = nullptr;
     napi_deferred deferred = nullptr;
+    napi_async_work work = nullptr;
     bool callBackResult = false;
 };
 } // namespace ScreenLock

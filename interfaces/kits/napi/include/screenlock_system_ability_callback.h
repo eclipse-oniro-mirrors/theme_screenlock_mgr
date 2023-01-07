@@ -26,8 +26,8 @@ namespace OHOS {
 namespace ScreenLock {
 class ScreenlockSystemAbilityCallback : public ScreenLockSystemAbilityStub {
 public:
-    ScreenlockSystemAbilityCallback(const EventListener &eventListener);
-    virtual ~ScreenlockSystemAbilityCallback();
+    explicit ScreenlockSystemAbilityCallback(const EventListener &eventListener);
+    ~ScreenlockSystemAbilityCallback() override;
     void OnCallBack(const SystemEvent &systemEvent) override;
 
 private:

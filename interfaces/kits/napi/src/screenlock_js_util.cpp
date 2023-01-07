@@ -24,7 +24,7 @@ namespace OHOS::ScreenLock {
 std::string ScreenLockJsUtil::Convert2String(const napi_env env, napi_value jsString)
 {
     size_t maxLen = ScreenLockJsUtil::MAX_LEN;
-    napi_status status = napi_get_value_string_utf8(env, jsString, NULL, 0, &maxLen);
+    napi_status status = napi_get_value_string_utf8(env, jsString, nullptr, 0, &maxLen);
     if (status != napi_ok) {
         GET_AND_THROW_LAST_ERROR((env));
         maxLen = ScreenLockJsUtil::MAX_LEN;
@@ -32,7 +32,7 @@ std::string ScreenLockJsUtil::Convert2String(const napi_env env, napi_value jsSt
     if (maxLen == 0) {
         return std::string();
     }
-    char *buf = new(std::nothrow) char[maxLen + 1];
+    char *buf = new (std::nothrow) char[maxLen + 1];
     if (buf == nullptr) {
         return std::string();
     }
