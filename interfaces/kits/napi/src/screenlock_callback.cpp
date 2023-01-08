@@ -14,7 +14,6 @@
  */
 #include "screenlock_callback.h"
 
-
 #include <cstdint>
 #include <new>
 #include <string>
@@ -54,13 +53,17 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     ScreenlockOnCallBack *callBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
     if (callBackPtr == nullptr) {
         SCLOCK_HILOGE("UvWorkOnCallBackInt, callBackPtr is null");
-        delete work;
+        SAFE_DELETE(work);
         return;
     }
     int32_t onCallbackResult = -1;
     if (!StrToInt(callBackPtr->systemEvent.params_, onCallbackResult)) {
+        SAFE_DELETE(callBackPtr);
+        SAFE_DELETE(work);
         return;
     }
+    napi_handle_scope scope = nullptr;
+    napi_open_handle_scope(callBackPtr->env, &scope);
     napi_value result[ARGS_SIZE_TWO] = { 0 };
     napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     if (onCallbackResult == SCREEN_SUCC) {
@@ -88,7 +91,9 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
         napi_value callbackResult = nullptr;
         napi_get_reference_value(callBackPtr->env, callBackPtr->callbackref, &callbackFunc);
         napi_call_function(callBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, result, &callbackResult);
+        napi_delete_reference(callBackPtr->env, callBackPtr->callbackref);
     }
+    napi_close_handle_scope(callBackPtr->env, scope);
     SAFE_DELETE(callBackPtr);
     SAFE_DELETE(work);
 }
@@ -108,7 +113,7 @@ void ScreenlockCallback::OnCallBack(const SystemEvent &systemEvent)
     screenlockOnCallBack->callBackResult = eventListener_.callBackResult;
     bool bRet = UvQueue::Call(eventListener_.env, static_cast<void *>(screenlockOnCallBack), UvWorkOnCallBackInt);
     if (!bRet) {
-        SCLOCK_HILOGE("ScreenlockCallback::OnCallBack faild, event=%{public}s,result=%{public}s",
+        SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
             systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
     }
 }
