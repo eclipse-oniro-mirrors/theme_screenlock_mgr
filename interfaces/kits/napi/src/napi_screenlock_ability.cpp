@@ -210,7 +210,7 @@ void AsyncCallLockScreen(napi_env env, EventListener *lockListener)
     };
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resource, execute, CompleteAsyncWork,
-                                   (void *)lockListener, &(lockListener->work)));
+                                   static_cast<void *>(lockListener), &(lockListener->work)));
     NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, lockListener->work));
 }
 
@@ -285,7 +285,7 @@ void AsyncCallUnlockScreen(napi_env env, EventListener *unlockListener)
     };
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resource, execute, CompleteAsyncWork,
-                                   (void *)unlockListener, &(unlockListener->work)));
+                                   static_cast<void *>(unlockListener), &(unlockListener->work)));
     NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, unlockListener->work));
 }
 
