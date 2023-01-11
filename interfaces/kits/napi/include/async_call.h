@@ -46,18 +46,24 @@ public:
         {
             errorInfo_ = errorInfo;
         }
-        virtual napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self)
+        napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self)
         {
             if (input_ == nullptr) {
                 return napi_ok;
             }
+            if (self == nullptr) {
+                NAPI_ASSERT_BASE(env, self != nullptr, "self is nullptr", napi_invalid_arg);
+            }
             return input_(env, argc, argv, self);
         }
-        virtual napi_status operator()(const napi_env env, napi_value *result)
+        napi_status operator()(const napi_env env, napi_value *result)
         {
             if (output_ == nullptr) {
                 *result = nullptr;
                 return napi_ok;
+            }
+            if (status_ != napi_ok) {
+                return status_;
             }
             return output_(env, result);
         }
@@ -68,6 +74,10 @@ public:
             }
             exec_(this);
         };
+        void SetStatus(napi_status status)
+        {
+            status_ = status;
+        }
 
     protected:
         friend class AsyncCall;
@@ -75,11 +85,12 @@ public:
         OutputAction output_ = nullptr;
         ExecAction exec_ = nullptr;
         ErrorInfo errorInfo_;
+        napi_status status_ = napi_generic_failure;
     };
 
     // The default AsyncCallback in the parameters is at the end position.
     static constexpr size_t ASYNC_DEFAULT_POS = -1;
-    AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS);
+    AsyncCall(napi_env env, napi_callback_info info, Context *context, size_t pos = ASYNC_DEFAULT_POS);
     ~AsyncCall();
     napi_value Call(const napi_env env, Context::ExecAction exec = nullptr);
     napi_value SyncCall(const napi_env env, Context::ExecAction exec = nullptr);
@@ -90,15 +101,15 @@ private:
     static void OnExecute(const napi_env env, void *data);
     static void OnComplete(const napi_env env, napi_status status, void *data);
     struct AsyncContext {
-        std::shared_ptr<Context> ctx = nullptr;
+        ~AsyncContext();
+        Context *ctx = nullptr;
+        napi_env env = nullptr;
         napi_ref callback = nullptr;
         napi_ref self = nullptr;
         napi_deferred defer = nullptr;
         napi_async_work work = nullptr;
     };
-    static void DeleteContext(const napi_env env, const AsyncContext *context);
     AsyncContext *context_ = nullptr;
-    napi_env env_ = nullptr;
 };
 } // namespace OHOS::ScreenLock
 
