@@ -29,18 +29,6 @@ struct AsyncScreenLockInfo : public AsyncCall::Context {
     AsyncScreenLockInfo(InputAction input, OutputAction output)
         : Context(std::move(input), std::move(output)), allowed(false){};
     ~AsyncScreenLockInfo() override{};
-    napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self) override
-    {
-        NAPI_ASSERT_BASE(env, self != nullptr, "self is nullptr", napi_invalid_arg);
-        return Context::operator()(env, argc, argv, self);
-    }
-    napi_status operator()(const napi_env env, napi_value *result) override
-    {
-        if (status != napi_ok) {
-            return status;
-        }
-        return Context::operator()(env, result);
-    }
 };
 
 struct SendEventInfo : public AsyncCall::Context {
@@ -56,19 +44,6 @@ struct SendEventInfo : public AsyncCall::Context {
         : Context(std::move(input), std::move(output)), param(0), eventInfo(""), flag(false),
           status(napi_generic_failure), allowed(false){};
     ~SendEventInfo() override{};
-    napi_status operator()(const napi_env env, size_t argc, napi_value argv[], napi_value self) override
-    {
-        NAPI_ASSERT_BASE(env, self != nullptr, "self is nullptr", napi_invalid_arg);
-        return Context::operator()(env, argc, argv, self);
-    }
-
-    napi_status operator()(const napi_env env, napi_value *result) override
-    {
-        if (status != napi_ok) {
-            return status;
-        }
-        return Context::operator()(env, result);
-    }
 };
 
 struct ScreenlockOnCallBack {

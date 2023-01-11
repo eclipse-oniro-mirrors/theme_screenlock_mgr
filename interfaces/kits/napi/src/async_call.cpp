@@ -19,10 +19,11 @@
 #include "sclock_log.h"
 
 namespace OHOS::ScreenLock {
-AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos) : env_(env)
+AsyncCall::AsyncCall(napi_env env, napi_callback_info info, Context *context, size_t pos)
 {
     SCLOCK_HILOGD("AsyncCall begin");
     context_ = new AsyncContext();
+    context_->env = env;
     if (context_ == nullptr) {
         SCLOCK_HILOGD("context_ is null");
         return;
@@ -44,7 +45,7 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
         SCLOCK_HILOGD("context is null");
     }
     NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
-    context_->ctx = std::move(context);
+    context_->ctx = context;
     napi_create_reference(env, self, 1, &context_->self);
     SCLOCK_HILOGD("AsyncCall end");
 }
@@ -54,7 +55,7 @@ AsyncCall::~AsyncCall()
     if (context_ == nullptr) {
         return;
     }
-    DeleteContext(env_, context_);
+    delete context_;
 }
 
 napi_value AsyncCall::Call(const napi_env env, Context::ExecAction exec)
@@ -101,6 +102,7 @@ napi_value AsyncCall::SyncCall(const napi_env env, AsyncCall::Context::ExecActio
     }
     AsyncCall::OnExecute(env, context_);
     AsyncCall::OnComplete(env, napi_ok, context_);
+    context_ = nullptr;
     return promise;
 }
 
@@ -149,17 +151,17 @@ void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
         napi_value returnValue;
         napi_call_function(env, nullptr, callback, static_cast<size_t>(ARG_INFO::ARG_BUTT), result, &returnValue);
     }
-    DeleteContext(env, context);
+    delete context;
 }
 
-void AsyncCall::DeleteContext(const napi_env env, const AsyncContext *context)
+AsyncCall::AsyncContext::~AsyncContext()
 {
     if (env != nullptr) {
-        napi_delete_reference(env, context->callback);
-        napi_delete_reference(env, context->self);
-        napi_delete_async_work(env, context->work);
+        napi_delete_reference(env, callback);
+        napi_delete_reference(env, self);
+        napi_delete_async_work(env, work);
     }
-    delete context;
+    delete ctx;
 }
 
 void AsyncCall::GenerateBusinessError(napi_env env, const ErrorInfo &errorInfo, napi_value *result)
