@@ -141,7 +141,7 @@ std::string GetErrorMessage(const uint32_t &code)
 napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_IsScreenLocked begin");
-    auto context = std::make_shared<AsyncScreenLockInfo>();
+    AsyncScreenLockInfo *context = new AsyncScreenLockInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(
             env, argc == ARGS_SIZE_ZERO || argc == ARGS_SIZE_ONE, " should 0 or 1 parameters!", napi_invalid_arg);
@@ -157,10 +157,10 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("exec ---- NAPI_IsScreenLocked begin");
         context->allowed = ScreenLockManager::GetInstance()->IsScreenLocked();
         SCLOCK_HILOGD("NAPI_IsScreenLocked exec allowed = %{public}d ", context->allowed);
-        context->status = napi_ok;
+        context->SetStatus(napi_ok);
     };
     context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGS_SIZE_ZERO);
+    AsyncCall asyncCall(env, info, context, ARGS_SIZE_ZERO);
     return asyncCall.Call(env, exec);
 }
 
@@ -384,7 +384,7 @@ napi_value NAPI_Unlock(napi_env env, napi_callback_info info)
 napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_IsSecureMode begin");
-    auto context = std::make_shared<AsyncScreenLockInfo>();
+    AsyncScreenLockInfo *context = new AsyncScreenLockInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         return napi_ok;
@@ -398,10 +398,10 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("exec ---- NAPI_IsSecureMode begin");
         context->allowed = ScreenLockManager::GetInstance()->GetSecure();
         SCLOCK_HILOGD("NAPI_IsSecureMode exec allowed = %{public}d ", context->allowed);
-        context->status = napi_ok;
+        context->SetStatus(napi_ok);
     };
     context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGS_SIZE_ZERO);
+    AsyncCall asyncCall(env, info, context, ARGS_SIZE_ZERO);
     return asyncCall.Call(env, exec);
 }
 
@@ -457,7 +457,7 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
 {
     SCLOCK_HILOGD("NAPI_ScreenLockSendEvent begin");
-    auto context = std::make_shared<SendEventInfo>();
+    SendEventInfo *context = new SendEventInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
@@ -497,12 +497,12 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
             context->SetErrorInfo(errInfo);
             context->allowed = false;
         } else {
-            context->status = napi_ok;
+            context->SetStatus(napi_ok);
             context->allowed = true;
         }
     };
     context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ARGV_TWO);
+    AsyncCall asyncCall(env, info, context, ARGV_TWO);
     return asyncCall.Call(env, exec);
 }
 
