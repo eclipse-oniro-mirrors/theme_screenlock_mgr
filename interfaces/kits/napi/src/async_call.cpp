@@ -43,6 +43,7 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, Context *context, si
     }
     if (context == nullptr) {
         SCLOCK_HILOGD("context is null");
+        return; 
     }
     NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     context_->ctx = context;
