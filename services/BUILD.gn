@@ -59,7 +59,6 @@ ohos_shared_library("screenlock_server") {
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
   ]
-  relative_install_dir = "module"
   subsystem_name = "theme"
   part_name = "screenlock_mgr"
 }

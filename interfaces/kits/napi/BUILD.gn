@@ -51,3 +51,37 @@ ohos_shared_library("screenlock") {
     part_name = "screenlock_mgr"
   }
 }
+
+ohos_static_library("screenlock_static") {
+  if (is_standard_system) {
+    include_dirs = [
+      "//foundation/arkui/napi/interfaces/kits",
+      "//third_party/node/src",
+      "//foundation/ability/ability_runtime/services/common/include",
+      "//utils/system/safwk/native/include",
+      "//base/theme/screenlock_mgr/interfaces/kits/napi/include",
+      "//base/theme/screenlock_mgr/services/include",
+      "//base/theme/screenlock_mgr/utils/include",
+      "//commonlibrary/c_utils/base/include",
+    ]
+    public_configs = [ ":screenlock_mgr_interfaces_kits_napi_config" ]
+    sources = [
+      "src/async_call.cpp",
+      "src/napi_screenlock_ability.cpp",
+      "src/screenlock_callback.cpp",
+      "src/screenlock_js_util.cpp",
+      "src/screenlock_system_ability_callback.cpp",
+    ]
+    deps =
+        [ "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client" ]
+    external_deps = [
+      "c_utils:utils",
+      "hitrace_native:hitrace_meter",
+      "hiviewdfx_hilog_native:libhilog",
+      "ipc:ipc_core",
+      "napi:ace_napi",
+    ]
+    subsystem_name = "theme"
+    part_name = "screenlock_mgr"
+  }
+}
