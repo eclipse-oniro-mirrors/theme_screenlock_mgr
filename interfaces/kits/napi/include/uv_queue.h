@@ -12,27 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "uv_queue.h"
+#ifndef FRAMEWORKS_UV_QUEUE_H
+#define FRAMEWORKS_UV_QUEUE_H
 
-#include "sclock_log.h"
+#include <iostream>
+
+#include "napi/native_api.h"
+#include "screenlock_system_ability_interface.h"
+#include "uv.h"
 
 namespace OHOS::ScreenLock {
-bool UvQueue::Call(napi_env env, void *data, uv_after_work_cb afterCallback)
-{
-    uv_loop_s *loop = nullptr;
-    napi_get_uv_event_loop(env, &loop);
-    if (loop == nullptr) {
-        SCLOCK_HILOGE("loop == nullptr.");
-        return false;
-    }
-    uv_work_t *work = new (std::nothrow) uv_work_t;
-    if (work == nullptr) {
-        SCLOCK_HILOGE("work == nullptr.");
-        return false;
-    }
-    work->data = data;
-    uv_queue_work(
-        loop, work, [](uv_work_t *work) {}, afterCallback);
-    return true;
-}
+struct ScreenlockOnCallBack {
+    napi_env env;
+    napi_ref callbackRef;
+    napi_value thisVar;
+    SystemEvent systemEvent;
+    ErrorInfo errorInfo;
+    napi_deferred deferred = nullptr;
+    bool callbackResult = false;
+};
+
+class UvQueue {
+public:
+    static bool Call(napi_env env, ScreenlockOnCallBack *data, uv_after_work_cb afterCallback);
+};
 } // namespace OHOS::ScreenLock
+#endif // FRAMEWORKS_UV_QUEUE_H

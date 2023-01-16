@@ -16,6 +16,7 @@
 #ifndef SERVICES_INCLUDE_SCLOCK_SERVICES_H
 #define SERVICES_INCLUDE_SCLOCK_SERVICES_H
 
+#include <atomic>
 #include <mutex>
 #include <string>
 #include <vector>
@@ -47,22 +48,22 @@ public:
         screenlockEnabled_ = screenlockEnabled;
     };
 
-    void SetScreenState(int screenState)
+    void SetScreenState(int32_t screenState)
     {
         screenState_ = screenState;
     };
 
-    void SetOffReason(int offReason)
+    void SetOffReason(int32_t offReason)
     {
         offReason_ = offReason;
     };
 
-    void SetCurrentUser(int currentUser)
+    void SetCurrentUser(int32_t currentUser)
     {
         currentUser_ = currentUser;
     };
 
-    void SetInteractiveState(int interactiveState)
+    void SetInteractiveState(int32_t interactiveState)
     {
         interactiveState_ = interactiveState;
     };
@@ -77,43 +78,43 @@ public:
         return screenlockEnabled_;
     };
 
-    int GetScreenState()
+    int32_t GetScreenState()
     {
         return screenState_;
     };
 
-    int GetOffReason()
+    int32_t GetOffReason()
     {
         return offReason_;
     };
 
-    int GetCurrentUser()
+    int32_t GetCurrentUser()
     {
         return currentUser_;
     };
 
-    int GetInteractiveState()
+    int32_t GetInteractiveState()
     {
         return interactiveState_;
     };
 
 private:
-    bool isScreenlocked_ = false;
-    bool screenlockEnabled_ = false;
-    int offReason_ = 0;
-    int currentUser_ = 0;
-    int screenState_ = 0;
-    int interactiveState_ = 0;
+    std::atomic<bool> isScreenlocked_ = false;
+    std::atomic<bool> screenlockEnabled_ = false;
+    std::atomic<int32_t> offReason_ = 0;
+    std::atomic<int32_t> currentUser_ = 0;
+    std::atomic<int32_t> screenState_ = 0;
+    std::atomic<int32_t> interactiveState_ = 0;
 };
 
-enum class ScreenState {
+enum class ScreenState : int32_t {
     SCREEN_STATE_BEGIN_OFF = 0,
     SCREEN_STATE_END_OFF = 1,
     SCREEN_STATE_BEGIN_ON = 2,
     SCREEN_STATE_END_ON = 3,
 };
 
-enum class InteractiveState {
+enum class InteractiveState : int32_t {
     INTERACTIVE_STATE_END_SLEEP = 0,
     INTERACTIVE_STATE_BEGIN_WAKEUP = 1,
     INTERACTIVE_STATE_END_WAKEUP = 2,
@@ -148,7 +149,6 @@ public:
     };
 
 protected:
-    void OnDump() override;
     void OnStart() override;
     void OnStop() override;
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
@@ -176,6 +176,7 @@ private:
     bool IsWhiteListApp(uint32_t callingTokenId, const std::string &key);
     bool IsSystemApp();
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
+    void PublishEvent(const std::string &eventAction);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
@@ -184,10 +185,11 @@ private:
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
+    std::mutex unlockListenerMutex_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
+    std::mutex lockListenerMutex_;
     std::vector<sptr<ScreenLockSystemAbilityInterface>> lockVecListeners_;
     StateValue stateValue_;
-    std::mutex lock_;
     const int32_t startTime_ = 1900;
     const int32_t extraMonth_ = 1;
     bool flag_ = false;

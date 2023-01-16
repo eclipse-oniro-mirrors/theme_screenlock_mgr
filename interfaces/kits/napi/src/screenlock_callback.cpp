@@ -18,9 +18,9 @@
 #include <new>
 #include <string>
 
+#include "async_call.h"
 #include "js_native_api.h"
 #include "js_native_api_types.h"
-#include "napi_screenlock_ability.h"
 #include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
@@ -68,13 +68,13 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     if (onCallbackResult == SCREEN_SUCC) {
         napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
-        if (callBackPtr->callBackResult) {
+        if (callBackPtr->callbackResult) {
             napi_get_boolean(callBackPtr->env, true, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         }
     } else {
         AsyncCall::GenerateBusinessError(
             callBackPtr->env, callBackPtr->errorInfo, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
-        if (callBackPtr->callBackResult) {
+        if (callBackPtr->callbackResult) {
             napi_get_boolean(callBackPtr->env, false, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         }
     }
@@ -89,9 +89,9 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     } else {
         napi_value callbackFunc = nullptr;
         napi_value callbackResult = nullptr;
-        napi_get_reference_value(callBackPtr->env, callBackPtr->callbackref, &callbackFunc);
+        napi_get_reference_value(callBackPtr->env, callBackPtr->callbackRef, &callbackFunc);
         napi_call_function(callBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, result, &callbackResult);
-        napi_delete_reference(callBackPtr->env, callBackPtr->callbackref);
+        napi_delete_reference(callBackPtr->env, callBackPtr->callbackRef);
     }
     napi_close_handle_scope(callBackPtr->env, scope);
     SAFE_DELETE(callBackPtr);
@@ -106,12 +106,12 @@ void ScreenlockCallback::OnCallBack(const SystemEvent &systemEvent)
         return;
     }
     screenlockOnCallBack->env = eventListener_.env;
-    screenlockOnCallBack->callbackref = eventListener_.callbackRef;
+    screenlockOnCallBack->callbackRef = eventListener_.callbackRef;
     screenlockOnCallBack->systemEvent = systemEvent;
     screenlockOnCallBack->deferred = eventListener_.deferred;
     screenlockOnCallBack->errorInfo = errorInfo_;
-    screenlockOnCallBack->callBackResult = eventListener_.callBackResult;
-    bool bRet = UvQueue::Call(eventListener_.env, static_cast<void *>(screenlockOnCallBack), UvWorkOnCallBackInt);
+    screenlockOnCallBack->callbackResult = eventListener_.callbackResult;
+    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, UvWorkOnCallBackInt);
     if (!bRet) {
         SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
             systemEvent.eventType_.c_str(), systemEvent.params_.c_str());

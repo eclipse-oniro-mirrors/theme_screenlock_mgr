@@ -19,7 +19,6 @@
 
 #include "js_native_api.h"
 #include "js_native_api_types.h"
-#include "napi_screenlock_ability.h"
 #include "node_api.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
@@ -52,7 +51,7 @@ auto OnUvWorkCallback = [](uv_work_t *work, int status) {
     napi_value undefined = nullptr;
     napi_get_undefined(screenlockOnCallBackPtr->env, &undefined);
     napi_value callbackFunc = nullptr;
-    napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackref, &callbackFunc);
+    napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackRef, &callbackFunc);
     napi_value callbackResult = nullptr;
     napi_value callbackValues[ARGS_SIZE_TWO] = { 0 };
     napi_get_undefined(screenlockOnCallBackPtr->env, &callbackValues[0]);
@@ -89,10 +88,10 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         return;
     }
     screenlockOnCallBack->env = eventListener_.env;
-    screenlockOnCallBack->callbackref = eventListener_.callbackRef;
+    screenlockOnCallBack->callbackRef = eventListener_.callbackRef;
     screenlockOnCallBack->thisVar = eventListener_.thisVar;
     screenlockOnCallBack->systemEvent = systemEvent;
-    bool bRet = UvQueue::Call(eventListener_.env, static_cast<void *>(screenlockOnCallBack), OnUvWorkCallback);
+    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, OnUvWorkCallback);
     if (!bRet) {
         SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
             systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
