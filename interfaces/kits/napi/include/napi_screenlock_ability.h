@@ -46,16 +46,6 @@ struct SendEventInfo : public AsyncCall::Context {
     ~SendEventInfo() override{};
 };
 
-struct ScreenlockOnCallBack {
-    napi_env env;
-    napi_ref callbackref;
-    napi_value thisVar;
-    SystemEvent systemEvent;
-    ErrorInfo errorInfo;
-    napi_deferred deferred = nullptr;
-    bool callBackResult = false;
-};
-
 napi_status IsValidEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
 napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);

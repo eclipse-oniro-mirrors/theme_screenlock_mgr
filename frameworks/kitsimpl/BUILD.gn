@@ -27,7 +27,6 @@ ohos_shared_library("screenlock_client") {
       "src/screenlock_manager.cpp",
       "src/screenlock_manager_proxy.cpp",
       "src/screenlock_system_ability_stub.cpp",
-      "src/uv_queue.cpp",
     ]
 
     public_configs = [

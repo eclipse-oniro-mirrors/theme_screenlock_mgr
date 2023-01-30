@@ -36,6 +36,7 @@ ohos_shared_library("screenlock") {
       "src/screenlock_callback.cpp",
       "src/screenlock_js_util.cpp",
       "src/screenlock_system_ability_callback.cpp",
+      "src/uv_queue.cpp",
     ]
     deps =
         [ "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client" ]
@@ -71,6 +72,7 @@ ohos_static_library("screenlock_static") {
       "src/screenlock_callback.cpp",
       "src/screenlock_js_util.cpp",
       "src/screenlock_system_ability_callback.cpp",
+      "src/uv_queue.cpp",
     ]
     deps =
         [ "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client" ]
