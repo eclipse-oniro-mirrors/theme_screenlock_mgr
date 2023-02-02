@@ -29,7 +29,8 @@ ScreenLockManagerProxy::ScreenLockManagerProxy(const sptr<IRemoteObject> &object
 
 bool ScreenLockManagerProxy::IsScreenLocked()
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLocked started.");
@@ -45,7 +46,8 @@ bool ScreenLockManagerProxy::IsScreenLocked()
 
 bool ScreenLockManagerProxy::GetSecure()
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(ScreenLockManagerProxy::GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy GetSecure started.");
@@ -61,7 +63,8 @@ bool ScreenLockManagerProxy::GetSecure()
 
 int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock started.");
@@ -85,7 +88,8 @@ int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbility
 
 int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         SCLOCK_HILOGE(" Failed to write parcelable ");
@@ -114,7 +118,8 @@ int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityIn
 int32_t ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockManagerProxy::OnSystemEvent");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         SCLOCK_HILOGE(" Failed to write parcelable ");
@@ -140,7 +145,8 @@ int32_t ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbility
 
 int32_t ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, int param)
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent started.");
