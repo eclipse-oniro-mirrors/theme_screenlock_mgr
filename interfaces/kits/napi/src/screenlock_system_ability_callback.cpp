@@ -35,8 +35,8 @@ ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()
 {
 }
 
-auto onUvWorkCallback = [](uv_work_t *work, int status) {
-    SCLOCK_HILOGD("onUvWorkCallback status = %{public}d", status);
+auto g_onUvWorkCallback = [](uv_work_t *work, int status) {
+    SCLOCK_HILOGD("g_onUvWorkCallback status = %{public}d", status);
     if (work == nullptr) {
         return;
     }
@@ -91,7 +91,7 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
     screenlockOnCallBack->callbackRef = eventListener_.callbackRef;
     screenlockOnCallBack->thisVar = eventListener_.thisVar;
     screenlockOnCallBack->systemEvent = systemEvent;
-    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, onUvWorkCallback);
+    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, g_onUvWorkCallback);
     if (!bRet) {
         SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
             systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
