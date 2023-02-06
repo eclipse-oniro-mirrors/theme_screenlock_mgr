@@ -145,7 +145,8 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
 {
     times++;
-    flag_ = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
+    flag_ = (DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_) ==
+             DMError::DM_OK);
     if (flag_ == false && times <= MAX_RETRY_TIMES) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
