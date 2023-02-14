@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//base/theme/screenlock_mgr/screenlock.gni")
 import("//build/test.gni")
 
 module_output_path = "screenlock/screenlock_service"
@@ -19,24 +20,18 @@ ohos_unittest("ScreenLockServiceTest") {
   module_out_path = module_output_path
   include_dirs = [
     "unittest",
-    "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
-    "//base/theme/screenlock_mgr/services/include",
-    "//commonlibrary/c_utils/base/include",
-    "//utils/system/safwk/native/include",
-    "//base/telephony/core_service/utils/log/include",
-    "//base/telephony/core_service/interfaces/innerkits/include",
-    "//base/user_idm/interfaces/innerkits/include",
-    "//third_party/json/include",
-    "//base/theme/screenlock_mgr/utils/include",
+    "${screenlock_mgr_path}/frameworks/native/include",
+    "${screenlock_mgr_path}/services/include",
+    "${screenlock_mgr_path}/utils/include",
   ]
 
   sources = [
-    "//base/theme/screenlock_mgr/services/src/command.cpp",
-    "//base/theme/screenlock_mgr/services/src/dump_helper.cpp",
-    "//base/theme/screenlock_mgr/services/src/screenlock_get_info_callback.cpp",
-    "//base/theme/screenlock_mgr/services/src/screenlock_manager_stub.cpp",
-    "//base/theme/screenlock_mgr/services/src/screenlock_system_ability.cpp",
-    "//base/theme/screenlock_mgr/services/src/screenlock_system_ability_proxy.cpp",
+    "${screenlock_mgr_path}/services/src/command.cpp",
+    "${screenlock_mgr_path}/services/src/dump_helper.cpp",
+    "${screenlock_mgr_path}/services/src/screenlock_get_info_callback.cpp",
+    "${screenlock_mgr_path}/services/src/screenlock_manager_stub.cpp",
+    "${screenlock_mgr_path}/services/src/screenlock_system_ability.cpp",
+    "${screenlock_mgr_path}/services/src/screenlock_system_ability_proxy.cpp",
     "unittest/screenlock_callback_test.cpp",
     "unittest/screenlock_client_test.cpp",
     "unittest/screenlock_notify_test_instance.cpp",
@@ -56,19 +51,19 @@ ohos_unittest("ScreenLockServiceTest") {
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
-    "ipc:ipc_core",
+    "ipc:ipc_single",
     "multimedia_image_framework:image_native",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
   ]
 
   deps = [
-    "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
-    "//base/theme/screenlock_mgr/utils:screenlock_utils",
-    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/systemabilitymgr/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "${screenlock_mgr_path}/frameworks/native:screenlock_client",
+    "${screenlock_mgr_path}/utils:screenlock_utils",
     "//third_party/googletest:gtest_main",
   ]
 

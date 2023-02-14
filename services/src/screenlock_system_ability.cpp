@@ -26,7 +26,6 @@
 #include "ability_manager_client.h"
 #include "command.h"
 #include "common_event_manager.h"
-#include "core_service_client.h"
 #include "display_manager.h"
 #include "dump_helper.h"
 #include "hitrace_meter.h"
@@ -51,7 +50,6 @@ using namespace std;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
 using namespace OHOS::UserIam::UserAuth;
-using namespace OHOS::Telephony;
 using namespace OHOS::Security::AccessToken;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;

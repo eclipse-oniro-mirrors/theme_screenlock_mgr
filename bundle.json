@@ -34,11 +34,16 @@
         "os_account",
         "bundle_framework",
         "ability_base",
+        "ability_runtime",
+        "hitrace_native",
+        "access_token",
+        "hicollie_native",
+        "init",
+        "os_account:os_account_innerkits",
+        "window_manager",
         "hiviewdfx_hilog_native",
-        "ril_device_driver_interface",
         "user_auth_framework",
-        "core_service",
-        "utils_base"
+        "c_utils"
       ],
       "third_party": []
     },
@@ -47,8 +52,8 @@
         "base_group": [
         ],
         "fwk_group": [
-          "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
-          "//base/theme/screenlock_mgr/interfaces/kits/napi:screenlock",
+          "//base/theme/screenlock_mgr/frameworks/native:screenlock_client",
+          "//base/theme/screenlock_mgr/frameworks/js/napi:screenlock",
           "//base/theme/screenlock_mgr/utils:screenlock_utils"
         ],
         "service_group": [
@@ -58,7 +63,7 @@
       "inner_kits": [
       ],
       "test": [
-        "//base/theme/screenlock_mgr/interfaces/kits/napi/test:unittest",
+        "//base/theme/screenlock_mgr/frameworks/js/napi/test:unittest",
         "//base/theme/screenlock_mgr/test:unittest",
         "//base/theme/screenlock_mgr/test/fuzztest:fuzztest"
       ]

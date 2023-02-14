@@ -12,6 +12,7 @@
 # limitations under the License.
 
 #####################hydra-fuzz###################
+import("//base/theme/screenlock_mgr/screenlock.gni")
 import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
@@ -21,16 +22,15 @@ ohos_fuzztest("ScreenlockServiceFuzzTest") {
   module_out_path = "theme/screenlock_mgr"
 
   fuzz_config_file =
-      "//base/theme/screenlock_mgr/test/fuzztest/screenlockservice_fuzzer"
+      "${screenlock_mgr_path}/test/fuzztest/screenlockservice_fuzzer"
 
   include_dirs = [
     "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
     "//foundation/ability/ability_runtime/services/common/include",
-    "//utils/system/safwk/native/include",
-    "//base/theme/screenlock_mgr/interfaces/kits/napi/include",
-    "//base/theme/screenlock_mgr/services/include",
-    "//base/theme/screenlock_mgr/utils/include",
+    "${screenlock_mgr_path}/frameworks/js/napi/include",
+    "${screenlock_mgr_path}/services/include",
+    "${screenlock_mgr_path}/utils/include",
   ]
 
   cflags = [
@@ -41,17 +41,16 @@ ohos_fuzztest("ScreenlockServiceFuzzTest") {
   ]
 
   deps = [
-    "//base/theme/screenlock_mgr/frameworks/kitsimpl:screenlock_client",
-    "//base/theme/screenlock_mgr/interfaces/kits/napi:screenlock_static",
-    "//base/theme/screenlock_mgr/services:screenlock_server",
-    "//base/theme/screenlock_mgr/utils:screenlock_utils",
-    "//foundation/arkui/napi:ace_napi",
+    "${screenlock_mgr_path}/frameworks/js/napi:screenlock_static",
+    "${screenlock_mgr_path}/frameworks/native:screenlock_client",
+    "${screenlock_mgr_path}/services:screenlock_server_static",
+    "${screenlock_mgr_path}/utils:screenlock_utils",
   ]
 
   external_deps = [
     "c_utils:utils",
     "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
+    "ipc:ipc_single",
     "window_manager:libdm",
   ]
 
