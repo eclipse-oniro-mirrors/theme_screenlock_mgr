@@ -13,10 +13,9 @@ Provide screenOn callback, screenOff callback, screenSaver in and out callback, 
 #### Introduction to framework code
 /base/theme/screenlock_mgr
 ├── figures                  # architecture diagram
-├── frameworks/innerkitsimpl # interface provided for app 
-├── interfaces               # interface code provided by module
-│   ├── innerkits            # inter service interface
-│   └── kits                 # napi interface
+├── frameworks
+│   ├── js/napi              # the js interface resolves to the napi interface
+│   └── native               # interface provided for app
 ├── sa_profile               # module contains the config files of system services and processes
 ├── services                 # implementation of screenlock manager service
 ├── test                     # unit test of interface

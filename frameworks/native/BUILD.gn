@@ -11,9 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//base/theme/screenlock_mgr/screenlock.gni")
 import("//build/ohos.gni")
 
-config("screenlock_mgr_frameworks_innerkitsimpl_config") {
+config("screenlock_mgr_frameworks_native_config") {
   visibility = [ ":*" ]
   include_dirs = [ "include" ]
 
@@ -29,26 +30,23 @@ ohos_shared_library("screenlock_client") {
       "src/screenlock_system_ability_stub.cpp",
     ]
 
-    public_configs = [
-      "//commonlibrary/c_utils/base:utils_config",
-      ":screenlock_mgr_frameworks_innerkitsimpl_config",
-    ]
+    version_script = "screenlock_client.versionscript"
+
+    public_configs = [ ":screenlock_mgr_frameworks_native_config" ]
+
     include_dirs = [
       "include",
-      "//base/theme/screenlock_mgr/services/include",
-      "//base/theme/screenlock_mgr/interfaces/innerkits/notify/native/include",
-      "//base/theme/screenlock_mgr/frameworks/kitsimpl/include",
-      "//commonlibrary/c_utils/base/include",
-      "//third_party/libuv/include",
-      "//utils/system/safwk/native/include",
+      "${screenlock_mgr_path}/services/include",
+      "${screenlock_mgr_path}/frameworks/native/include",
     ]
-    deps = [ "//base/theme/screenlock_mgr/utils:screenlock_utils" ]
+
+    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
+
     external_deps = [
       "c_utils:utils",
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
-      "ipc:ipc_core",
-      "napi:ace_napi",
+      "ipc:ipc_single",
       "samgr:samgr_proxy",
     ]
     subsystem_name = "theme"

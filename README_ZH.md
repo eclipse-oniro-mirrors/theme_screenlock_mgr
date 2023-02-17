@@ -20,10 +20,9 @@
 ```
 /base/theme/screenlock_mgr
 ├── figures                  # 构架图
-├── frameworks/kitsimpl      # 对应用提供的接口
-├── interfaces/kits          # 组件对外提供的接口代码
-│   ├── jskits               # 服务间接口
-│   └── napi                 # js接口解析成napi接口
+├── frameworks
+│   ├── js/napi              # js接口解析成napi接口
+│   └── native               # 对客户端提供的接口
 ├── sa_profile               # 组件包含的系统服务的配置文件和进程的配置文件
 ├── services                 # 锁屏管理服务实现
 ├── test                     # 接口的单元测试

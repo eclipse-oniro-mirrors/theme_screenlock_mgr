@@ -15,10 +15,7 @@ import("//build/ohos.gni")
 
 config("screenlock_utils_config") {
   visibility = [ ":*" ]
-  include_dirs = [
-    "include",
-    "//commonlibrary/c_utils/base/include",
-  ]
+  include_dirs = [ "include" ]
 
   cflags_cc = []
 }
@@ -26,9 +23,9 @@ ohos_shared_library("screenlock_utils") {
   if (is_standard_system) {
     sources = [ "src/screenlock_appinfo.cpp" ]
 
-    public_configs = [ ":screenlock_utils_config" ]
+    version_script = "screenlock_utils.versionscript"
 
-    include_dirs = [ "//commonlibrary/c_utils/base/include" ]
+    public_configs = [ ":screenlock_utils_config" ]
 
     external_deps = [
       "access_token:libaccesstoken_sdk",
