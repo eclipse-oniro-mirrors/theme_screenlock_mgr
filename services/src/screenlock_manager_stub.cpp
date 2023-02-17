@@ -83,16 +83,14 @@ bool ScreenLockManagerStub::OnGetSecure(Parcel &data, Parcel &reply)
 void ScreenLockManagerStub::OnRequestUnlock(MessageParcel &data, MessageParcel &reply)
 {
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock  addr=%{public}p", remote.GetRefPtr());
     if (remote == nullptr) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock remote is nullptr");
+        SCLOCK_HILOGE("ScreenLockManagerStub remote is nullptr");
         reply.WriteInt32(E_SCREENLOCK_NULLPTR);
         return;
     }
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock addr=%{public}p", listener.GetRefPtr());
     if (listener.GetRefPtr() == nullptr) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestUnlock listener is null");
+        SCLOCK_HILOGE("ScreenLockManagerStub listener is null");
         reply.WriteInt32(E_SCREENLOCK_NULLPTR);
         return;
     }
@@ -104,13 +102,13 @@ void ScreenLockManagerStub::OnRequestLock(MessageParcel &data, MessageParcel &re
 {
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnRequestLock remote is nullptr");
+        SCLOCK_HILOGE("ScreenLockManagerStub remote is nullptr");
         reply.WriteInt32(E_SCREENLOCK_NULLPTR);
         return;
     }
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
     if (listener.GetRefPtr() == nullptr) {
-        SCLOCK_HILOGE("ScreenLockManagerStub::OnRequestLock listener is null");
+        SCLOCK_HILOGE("ScreenLockManagerStub listener is null");
         reply.WriteInt32(E_SCREENLOCK_NULLPTR);
         return;
     }
@@ -122,7 +120,7 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
 {
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn remote is nullptr");
+        SCLOCK_HILOGE("ScreenLockManagerStub remote is nullptr");
         if (!reply.WriteInt32(E_SCREENLOCK_NULLPTR)) {
             return -1;
         }
@@ -130,7 +128,7 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
     }
     sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
     if (listener.GetRefPtr() == nullptr) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn listener is null");
+        SCLOCK_HILOGE("ScreenLockManagerStub listener is null");
         if (!reply.WriteInt32(E_SCREENLOCK_NULLPTR)) {
             return -1;
         }
@@ -138,10 +136,9 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
     }
     int32_t ret = OnSystemEvent(listener);
     if (!reply.WriteInt32(ret)) {
-        SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn 4444");
+        SCLOCK_HILOGE("ScreenLockManagerStub write int32 failed.");
         return -1;
     }
-    SCLOCK_HILOGD("ScreenLockManagerStub::OnScreenLockOn out");
     return ret;
 }
 
