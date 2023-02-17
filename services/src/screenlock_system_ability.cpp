@@ -75,7 +75,7 @@ ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool r
 
 ScreenLockSystemAbility::~ScreenLockSystemAbility()
 {
-    SCLOCK_HILOGD("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
+    SCLOCK_HILOGI("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
 }
 
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
@@ -84,7 +84,7 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
             instance_ = new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true);
-            SCLOCK_HILOGE("ScreenLockSystemAbility instance_ create,addr=%{public}p", instance_.GetRefPtr());
+            SCLOCK_HILOGE("ScreenLockSystemAbility create instance.");
         }
     }
     return instance_;
@@ -94,10 +94,10 @@ int32_t ScreenLockSystemAbility::Init()
 {
     bool ret = Publish(ScreenLockSystemAbility::GetInstance());
     if (!ret) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility Publish failed.");
+        SCLOCK_HILOGE("Publish ScreenLockSystemAbility failed.");
         return E_SCREENLOCK_PUBLISH_FAIL;
     }
-    SCLOCK_HILOGD("state_  is %{public}d.", static_cast<int>(state_));
+    SCLOCK_HILOGD("state_ is %{public}d.", static_cast<int>(state_));
     stateValue_.Reset();
     SCLOCK_HILOGI("Init ScreenLockSystemAbility success.");
     return ERR_OK;
@@ -148,7 +148,7 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
     flag_ = (DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_) ==
              DMError::DM_OK);
     if (flag_ == false && times <= MAX_RETRY_TIMES) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
+        SCLOCK_HILOGE("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
         serviceHandler_->PostTask(callback, DELAY_TIME);
     }
@@ -167,7 +167,7 @@ void ScreenLockSystemAbility::InitServiceHandler()
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
     if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_,
         TIME_OUT_MILLISECONDS) != 0) {
-        SCLOCK_HILOGI("HiviewDFX::Watchdog::GetInstance AddThread Fail");
+        SCLOCK_HILOGE("HiviewDFX::Watchdog::GetInstance AddThread Fail");
     }
     SCLOCK_HILOGI("InitServiceHandler succeeded.");
 }
@@ -253,7 +253,7 @@ void ScreenLockSystemAbility::OnSystemReady()
             systemEventListener_->OnCallBack(systemEvent);
             isExitFlag = true;
         } else {
-            SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady type not found., flag_ = %{public}d", flag_);
+            SCLOCK_HILOGE("ScreenLockSystemAbility OnSystemReady type not found., flag_ = %{public}d", flag_);
             sleep(1);
         }
         --tryTime;
@@ -342,7 +342,7 @@ int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilit
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
             HITRACE_UNLOCKSCREEN);
-        SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock  Unfocused.");
+        SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
         return E_SCREENLOCK_NO_PERMISSION;
     }
     unlockListenerMutex_.lock();
@@ -357,15 +357,15 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock started.");
     if (!IsSystemApp()) {
-        SCLOCK_HILOGD("Calling app is not system app");
+        SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock  Unfocused.");
+        SCLOCK_HILOGE("Calling app is not Unfocused.");
         return E_SCREENLOCK_NO_PERMISSION;
     }
     if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_WHITEAPP)) {
-        SCLOCK_HILOGD("RequestLock calling app is not whitelist app");
+        SCLOCK_HILOGE("Calling app is not whitelist app");
         return E_SCREENLOCK_NO_PERMISSION;
     }
     if (IsScreenLocked()) {
@@ -375,7 +375,6 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     lockVecListeners_.push_back(listener);
     lockListenerMutex_.unlock();
 
-    SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock listener= %{public}p", listener.GetRefPtr());
     SystemEvent systemEvent(LOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
     return E_SCREENLOCK_OK;
@@ -423,11 +422,11 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent started.");
     if (!IsSystemApp()) {
-        SCLOCK_HILOGD("Calling app is not system app");
+        SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
     if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
-        SCLOCK_HILOGD("OnSystemEvent calling app is not whitelist app");
+        SCLOCK_HILOGE("Calling app is not whitelist app");
         return E_SCREENLOCK_NO_PERMISSION;
     }
 
@@ -441,11 +440,11 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SendScreenLockEvent started.");
     if (!IsSystemApp()) {
-        SCLOCK_HILOGD("Calling app is not system app");
+        SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
     if (!IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
-        SCLOCK_HILOGD("SendScreenLockEvent calling app is not whitelist app");
+        SCLOCK_HILOGE("Calling app is not whitelist app");
         return E_SCREENLOCK_NO_PERMISSION;
     }
     SCLOCK_HILOGD("event=%{public}s ,param=%{public}d", event.c_str(), param);
@@ -549,23 +548,23 @@ bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std:
 {
     std::string whiteListAppId = GetScreenlockParameter(key);
     if (whiteListAppId.empty()) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::GetLockScreenWhiteApp  is null");
+        SCLOCK_HILOGE("whiteListAppId is null.");
         return false;
     }
     AppInfo appInfo;
     if (!ScreenLockAppInfo::GetAppInfoByToken(callingTokenId, appInfo)) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp GetAppInfoByToken is failed");
+        SCLOCK_HILOGE("GetAppInfoByToken failed.");
         return false;
     }
     if (appInfo.appId.empty()) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp appInfo.appId is null");
+        SCLOCK_HILOGE("AppId in appInfo is null.");
         return false;
     }
     if (whiteListAppId != appInfo.appId) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility::IsWhiteListApp calling app is not Screenlock APP");
+        SCLOCK_HILOGE("Calling app is not the app which in the whitelist.");
         return false;
     }
-    SCLOCK_HILOGI("ScreenLockSystemAbility::IsWhiteListApp callingAppid=%{public}.5s, whiteListAppId=%{public}.5s",
+    SCLOCK_HILOGI("CallingAppid=%{public}.5s, whiteListAppId=%{public}.5s",
                   appInfo.appId.c_str(), whiteListAppId.c_str());
     return true;
 }
