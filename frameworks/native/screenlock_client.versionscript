@@ -13,6 +13,7 @@
 
 1.0 {
   global:
+    *_cfi_*;
     *ScreenLockManager*;
     *ScreenLockAppManager*;
     *ScreenLockSystemAbilityStub*;

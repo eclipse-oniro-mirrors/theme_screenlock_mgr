@@ -23,6 +23,11 @@ config("screenlock_mgr_frameworks_js_napi_config") {
 
 ohos_shared_library("screenlock") {
   if (is_standard_system) {
+    sanitize = {
+      cfi = true
+      cfi_cross_dso = true
+      debug = false
+    }
     include_dirs = [
       "${screenlock_mgr_path}/services/include",
       "${screenlock_mgr_path}/utils/include",
