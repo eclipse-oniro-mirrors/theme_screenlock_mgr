@@ -20,6 +20,11 @@ config("screenlock_mgr_service_config") {
 }
 
 ohos_shared_library("screenlock_server") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   sources = [
     "src/command.cpp",
     "src/dump_helper.cpp",

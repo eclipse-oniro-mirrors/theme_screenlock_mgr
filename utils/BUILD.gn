@@ -21,6 +21,11 @@ config("screenlock_utils_config") {
 }
 ohos_shared_library("screenlock_utils") {
   if (is_standard_system) {
+    sanitize = {
+      cfi = true
+      cfi_cross_dso = true
+      debug = false
+    }
     sources = [ "src/screenlock_appinfo.cpp" ]
 
     version_script = "screenlock_utils.versionscript"
