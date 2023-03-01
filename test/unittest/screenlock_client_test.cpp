@@ -105,11 +105,7 @@ HWTEST_F(ScreenLockClientTest, RequestLockTest003, TestSize.Level0)
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 
     listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
-    if (listener == nullptr) {
-        SCLOCK_HILOGE("listener object is nullptr");
-        EXPECT_EQ(false, true);
-        return;
-    }
+    ASSERT_NE(listener, nullptr);
     result = ScreenLockManager::GetInstance()->RequestLock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     result = ScreenLockManager::GetInstance()->RequestUnlock(listener);
@@ -127,6 +123,7 @@ HWTEST_F(ScreenLockClientTest, OnSystemEventTest004, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test OnSystemEvent");
     sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
+    ASSERT_NE(listener, nullptr);
     int32_t result = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
 }
