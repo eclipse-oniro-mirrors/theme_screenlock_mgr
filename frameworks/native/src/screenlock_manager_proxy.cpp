@@ -27,21 +27,34 @@ ScreenLockManagerProxy::ScreenLockManagerProxy(const sptr<IRemoteObject> &object
 {
 }
 
-bool ScreenLockManagerProxy::IsScreenLocked()
+int32_t ScreenLockManagerProxy::IsScreenLockedInner(int32_t isLockedCode, bool &isLocked)
 {
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    data.WriteInterfaceToken(GetDescriptor());
-    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLocked started.");
-    bool ret = Remote()->SendRequest(IS_SCREEN_LOCKED, data, reply, option);
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        SCLOCK_HILOGE(" Failed to write parcelable ");
+        return E_SCREENLOCK_WRITE_PARCEL_ERROR;
+    }
+    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLockedInner started.");
+    int32_t ret = Remote()->SendRequest(isLockedCode, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("IsScreenLocked, ret = %{public}d", ret);
-        return false;
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
     }
-    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLocked succeeded.");
-    bool result = reply.ReadBool();
-    return result;
+    isLocked = reply.ReadBool();
+    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLockedInner end .retCode is %{public}d", isLocked);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockManagerProxy::IsLocked(bool &isLocked)
+{
+    return IsScreenLockedInner(IS_LOCKED, isLocked);
+}
+
+int32_t ScreenLockManagerProxy::IsScreenLocked(bool &isLocked)
+{
+    return IsScreenLockedInner(IS_SCREEN_LOCKED, isLocked);
 }
 
 bool ScreenLockManagerProxy::GetSecure()
@@ -61,13 +74,14 @@ bool ScreenLockManagerProxy::GetSecure()
     return result;
 }
 
-int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::RequestUnlockInner(
+    int32_t unlockCode, const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
-    SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock started.");
+    SCLOCK_HILOGD("started.");
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr");
         return E_SCREENLOCK_NULLPTR;
@@ -76,14 +90,24 @@ int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbility
         SCLOCK_HILOGE("write parcel failed.");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    int32_t ret = Remote()->SendRequest(REQUEST_UNLOCK, data, reply, option);
+    int32_t ret = Remote()->SendRequest(unlockCode, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestUnlock, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
     }
     int32_t retCode = reply.ReadInt32();
-    SCLOCK_HILOGD("ScreenLockManagerProxy RequestUnlock end retCode is %{public}d.", retCode);
+    SCLOCK_HILOGD("end .retCode is %{public}d", retCode);
     return retCode;
+}
+
+int32_t ScreenLockManagerProxy::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
+    return RequestUnlockInner(REQUEST_UNLOCK, listener);
+}
+
+int32_t ScreenLockManagerProxy::RequestUnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
+    return RequestUnlockInner(REQUEST_UNLOCK_SCREEN, listener);
 }
 
 int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
@@ -109,7 +133,6 @@ int32_t ScreenLockManagerProxy::RequestLock(const sptr<ScreenLockSystemAbilityIn
         SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
     }
-
     int32_t retCode = reply.ReadInt32();
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestLock end .retCode is %{public}d", retCode);
     return retCode;

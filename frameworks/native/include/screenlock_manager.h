@@ -38,9 +38,9 @@ public:
     ScreenLockManager();
     ~ScreenLockManager() override;
     static sptr<ScreenLockManager> GetInstance();
-    bool IsScreenLocked();
+    int32_t IsScreenLocked(int32_t isLockedCode, bool &isLocked);
     bool GetSecure();
-    int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t RequestUnlock(int32_t unlockCode, const sptr<ScreenLockSystemAbilityInterface> &listener);
     int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     sptr<ScreenLockManagerInterface> GetProxy();

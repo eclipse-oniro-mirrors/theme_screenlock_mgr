@@ -59,7 +59,6 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info);
 napi_value NAPI_Unlock(napi_env env, napi_callback_info info);
 napi_value NAPI_Lock(napi_env env, napi_callback_info info);
 napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info);
-napi_value NAPI_IsSecure(napi_env env, napi_callback_info info);
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info);
 } // namespace ScreenLock

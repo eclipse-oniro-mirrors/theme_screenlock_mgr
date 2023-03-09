@@ -39,7 +39,8 @@ bool UvQueue::Call(napi_env env, ScreenlockOnCallBack *data, uv_after_work_cb af
         SCLOCK_HILOGE("uv_queue_work Failed.");
         delete data;
         delete work;
+        return false;
     }
-    return ret;
+    return true;
 }
 } // namespace OHOS::ScreenLock

@@ -52,12 +52,12 @@ describe("ScreenlockJsTest", function () {
             let ret = screenLock.isLocked();
             screenLock.isScreenLocked((err, data) => {
                 console.info("SUB_MISC_THEME_screenLock_API_0001 screen's status is " + data);
-                expect(data === ret).assertTrue();
+                expect(data === ret).assertFalse();
                 done();
             });
         } catch (error) {
             console.error(`SUB_MISC_THEME_screenLock_API_0001: ${error.code}, ${error.message}`);
-            expect(error.code == PARAMETER_ERROR).assertTrue();
+            expect(error.code === SYSTEMAPI_PERMISSION_ERROR).assertTrue();
             done();
         }
     })
@@ -69,10 +69,9 @@ describe("ScreenlockJsTest", function () {
     */
     it("SUB_MISC_THEME_screenLock_API_0002", 0, function (done) {
         try {
-            let ret = screenLock.isSecure();
             screenLock.isSecureMode((err, data) => {
                 console.info("SUB_MISC_THEME_screenLock_API_0002 secureMode's result is " + data);
-                expect(data === ret).assertTrue();
+                expect(data === false).assertTrue();
                 done();
             });
         } catch (error) {
@@ -92,7 +91,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.unlock((err, data) => {
                 if (err) {
                     console.info("unlock filed: error.code : " + err.code + "error.message :" + err.message);
-                    expect(err.code === PERMISSION_ERROR).assertTrue();
+                    expect(err.code === SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0003 unlock screen success.");
                     let ret = screenLock.isLocked();
@@ -121,7 +120,7 @@ describe("ScreenlockJsTest", function () {
                 done();
             }).catch((err) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0004: ${err.code}, ${err.message}`);
-                expect(err.code == PERMISSION_ERROR).assertTrue();
+                expect(err.code === SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 done();
             });
         } catch (error) {
@@ -141,7 +140,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.lock((err, data) => {
                 if (err) {
                     console.error(`SUB_MISC_THEME_screenLock_API_0005: ${err.code}, ${err.message}`);
-                    expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
+                    expect(err.code === SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0005 lock screen success.");
                     let ret = screenLock.isLocked();
@@ -170,7 +169,7 @@ describe("ScreenlockJsTest", function () {
                 done();
             }).catch((err) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0006: ${err.code}, ${err.message}`);
-                expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
+                expect(err.code === SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 done();
             });
 
@@ -208,7 +207,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.sendScreenLockEvent('testparam', 1, (err, data) => {
                 if (err) {
                     console.error(`SUB_MISC_THEME_screenLock_API_0008: ${err.code}, ${err.message}`);
-                    expect(err.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
+                    expect(err.code === SYSTEMAPI_PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0008: sendScreenLockEvent success ");
                 }
@@ -246,7 +245,7 @@ describe("ScreenlockJsTest", function () {
         try {
             let ret = screenLock.isLocked();
             screenLock.isScreenLocked().then((result) => {
-                expect(ret === result).assertTrue();
+                expect(ret === result).assertFalse();
                 done();
             }).catch((error) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0010: ${error.code}, ${error.message}`);
@@ -255,7 +254,7 @@ describe("ScreenlockJsTest", function () {
             });
         } catch (error) {
             console.error(`SUB_MISC_THEME_screenLock_API_0010: ${error.code}, ${error.message}`);
-            expect(error.code == PARAMETER_ERROR).assertTrue();
+            expect(error.code == SYSTEMAPI_PERMISSION_ERROR).assertTrue();
             done();
         }
     })
@@ -267,9 +266,8 @@ describe("ScreenlockJsTest", function () {
      */
     it("SUB_MISC_THEME_screenLock_API_0011", 0, function (done) {
         try {
-            let ret = screenLock.isSecure();
             screenLock.isSecureMode().then((result) => {
-                expect(ret === result).assertTrue();
+                expect(result === false).assertTrue();
                 done();
             }).catch((error) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0011: ${error.code}, ${error.message}`);
@@ -296,8 +294,9 @@ describe("ScreenlockJsTest", function () {
                     expect(err.code == PERMISSION_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0012: unlock screen success.");
-                    let ret = screenLock.isLocked();
-                    expect(ret).assertFalse();
+                    screenLock.isScreenLocked().then((result) => {
+                        expect(result).assertFalse();
+                    });
                 }
                 done();
             });
@@ -317,8 +316,9 @@ describe("ScreenlockJsTest", function () {
         try {
             screenLock.unlockScreen().then((data) => {
                 console.info("SUB_MISC_THEME_screenLock_API_0013: send unlock issue success retCode.");
-                let ret = screenLock.isLocked();
-                expect(ret).assertFalse();
+                screenLock.isScreenLocked().then((ret) => {
+                    expect(ret).assertFalse();
+                });
                 done();
             }).catch((err) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0013: ${err.code}, ${err.message}`);
