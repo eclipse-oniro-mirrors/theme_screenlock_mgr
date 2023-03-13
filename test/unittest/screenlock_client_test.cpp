@@ -67,12 +67,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest001, TestSize.Level0)
     SCLOCK_HILOGD("Test  IsScreenLocked state, get unlockstate");
     bool isLocked = false;
     int32_t status = 0;
-    status = ScreenLockManager::GetInstance()->IsScreenLocked(IS_SCREEN_LOCKED, isLocked);
+    status = ScreenLockManager::GetInstance()->IsScreenLocked(true, isLocked);
     SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
     EXPECT_EQ(status, E_SCREENLOCK_OK);
-    status = ScreenLockManager::GetInstance()->IsScreenLocked(IS_LOCKED, isLocked);
-    SCLOCK_HILOGD("IsLocked  result is-------->%{public}d", status);
-    EXPECT_EQ(status, E_SCREENLOCK_SENDREQUEST_FAILED);
     ScreenLockSystemAbility::GetInstance()->SetScreenlocked(true);
     ScreenLockSystemAbility::GetInstance()->IsScreenLocked(isLocked);
     SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", isLocked);
@@ -107,17 +104,15 @@ HWTEST_F(ScreenLockClientTest, RequestLockTest003, TestSize.Level0)
     sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
     int32_t result = ScreenLockManager::GetInstance()->RequestLock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(REQUEST_UNLOCK, listener);
+    result = ScreenLockManager::GetInstance()->RequestUnlock(false, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(REQUEST_UNLOCK_SCREEN, listener);
+    result = ScreenLockManager::GetInstance()->RequestUnlock(true, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
     listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
     result = ScreenLockManager::GetInstance()->RequestLock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(REQUEST_UNLOCK, listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(REQUEST_UNLOCK_SCREEN, listener);
+    result = ScreenLockManager::GetInstance()->RequestUnlock(true, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
