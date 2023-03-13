@@ -36,14 +36,14 @@ int32_t ScreenLockManagerProxy::IsScreenLockedInner(int32_t command, bool &isLoc
         SCLOCK_HILOGE(" Failed to write parcelable ");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLockedInner started.");
+    SCLOCK_HILOGD("IsScreenLockedInner started.");
     int32_t ret = Remote()->SendRequest(command, data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("IsScreenLocked, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
     }
     isLocked = reply.ReadBool();
-    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLockedInner end .retCode is %{public}d", isLocked);
+    SCLOCK_HILOGD("IsScreenLockedInner end .retCode is %{public}d", isLocked);
     return E_SCREENLOCK_OK;
 }
 

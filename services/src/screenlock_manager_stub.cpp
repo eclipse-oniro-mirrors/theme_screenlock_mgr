@@ -130,7 +130,7 @@ bool ScreenLockManagerStub::IsAppInForeground(uint32_t tokenId)
 
 bool ScreenLockManagerStub::IsSystemApp()
 {
-    return = TokenIdKit::IsSystemAppByFullTokenID(IPCSkeleton::GetCallingFullTokenID());
+    return TokenIdKit::IsSystemAppByFullTokenID(IPCSkeleton::GetCallingFullTokenID());
 }
 #endif
 
