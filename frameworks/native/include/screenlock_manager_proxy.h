@@ -40,7 +40,7 @@ public:
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
 
 private:
-    int32_t RequestUnlockInner(int32_t unlockCode,const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t RequestUnlockInner(int32_t unlockCode, const sptr<ScreenLockSystemAbilityInterface> &listener);
     int32_t IsScreenLockedInner(int32_t isLockedCode, bool &isLocked);
     static inline BrokerDelegator<ScreenLockManagerProxy> delegator_;
 };
