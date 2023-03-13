@@ -49,14 +49,14 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
     uint32_t code = ConvertToUint32(rawData);
     if (code == RANDNUM_ZERO) {
         bool islocked = false;
-        return ScreenLockManager::GetInstance()->IsScreenLocked(IS_SCREEN_LOCKED, islocked);
+        return ScreenLockManager::GetInstance()->IsScreenLocked(true, islocked);
     }
     if (code == RANDNUM_ONE) {
         return ScreenLockManager::GetInstance()->GetSecure();
     }
     if (code == RANDNUM_TWO) {
         sptr<ScreenLockSystemAbilityInterface> listener_ = new ScreenLockSystemAbilityStub();
-        return ScreenLockManager::GetInstance()->RequestUnlock(REQUEST_UNLOCK, listener_);
+        return ScreenLockManager::GetInstance()->RequestUnlock(true, listener_);
     }
     if (code == RANDNUM_THREE) {
         sptr<ScreenLockSystemAbilityInterface> listener_ = new ScreenLockSystemAbilityStub();
