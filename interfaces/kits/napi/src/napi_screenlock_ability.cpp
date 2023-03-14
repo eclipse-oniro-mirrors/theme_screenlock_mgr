@@ -234,7 +234,8 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
 
         SCLOCK_HILOGD("NAPI_Lock create callback");
         napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-        eventListener = new (std::nothrow) EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef };
+        eventListener = new (std::nothrow)
+            EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef, .callBackResult = true };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -244,7 +245,8 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_Lock create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        eventListener = new (std::nothrow) EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred };
+        eventListener = new (std::nothrow)
+            EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred, .callBackResult = true };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
