@@ -26,11 +26,16 @@ namespace ScreenLock {
 class ScreenLockManagerStub : public IRemoteStub<ScreenLockManagerInterface> {
 public:
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    bool IsAppInForeground(uint32_t tokenId);
+    bool IsSystemApp();
 
 private:
-    bool OnIsScreenLocked(Parcel &data, Parcel &reply);
+    int32_t OnIsLocked(Parcel &data, Parcel &reply);
+    int32_t OnIsScreenLocked(Parcel &data, Parcel &reply);
     bool OnGetSecure(Parcel &data, Parcel &reply);
+    void OnRequestUnlockInner(MessageParcel &data, MessageParcel &reply);
     void OnRequestUnlock(MessageParcel &data, MessageParcel &reply);
+    void OnRequestUnlockScreen(MessageParcel &data, MessageParcel &reply);
     void OnRequestLock(MessageParcel &data, MessageParcel &reply);
     int32_t OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply);
     int32_t OnScreenLockOn(MessageParcel &data, MessageParcel &reply);

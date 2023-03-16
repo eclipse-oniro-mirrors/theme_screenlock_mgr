@@ -55,7 +55,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "multimedia_image_framework:image_native",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
-    "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",

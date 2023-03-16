@@ -130,9 +130,11 @@ public:
     ScreenLockSystemAbility();
     ~ScreenLockSystemAbility() override;
     static sptr<ScreenLockSystemAbility> GetInstance();
-    bool IsScreenLocked() override;
+    int32_t IsLocked(bool &isLocked) override;
+    int32_t IsScreenLocked(bool &isLocked) override;
     bool GetSecure() override;
     int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t RequestUnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
@@ -169,12 +171,10 @@ private:
     void RegisterDumpCommand();
     int32_t Init();
     void InitServiceHandler();
-    static bool IsAppInForeground(uint32_t tokenId);
     void LockScreenEvent(int stateResult);
     void UnlockScreenEvent(int stateResult);
     std::string GetScreenlockParameter(const std::string &key) const;
     bool IsWhiteListApp(uint32_t callingTokenId, const std::string &key);
-    bool IsSystemApp();
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
     void PublishEvent(const std::string &eventAction);
 

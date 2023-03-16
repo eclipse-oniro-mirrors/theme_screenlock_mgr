@@ -67,7 +67,6 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("unlockScreen", OHOS::ScreenLock::NAPI_UnlockScreen),
         DECLARE_NAPI_FUNCTION("unlock", OHOS::ScreenLock::NAPI_Unlock),
         DECLARE_NAPI_FUNCTION("isSecureMode", OHOS::ScreenLock::NAPI_IsSecureMode),
-        DECLARE_NAPI_FUNCTION("isSecure", OHOS::ScreenLock::NAPI_IsSecure),
         DECLARE_NAPI_FUNCTION("onSystemEvent", NAPI_OnSystemEvent),
         DECLARE_NAPI_FUNCTION("sendScreenLockEvent", OHOS::ScreenLock::NAPI_ScreenLockSendEvent),
     };
@@ -156,7 +155,7 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         SCLOCK_HILOGD("exec ---- NAPI_IsScreenLocked begin");
-        context->allowed = ScreenLockManager::GetInstance()->IsScreenLocked();
+        ScreenLockManager::GetInstance()->IsScreenLocked(true, context->allowed);
         SCLOCK_HILOGD("NAPI_IsScreenLocked exec allowed = %{public}d ", context->allowed);
         context->SetStatus(napi_ok);
     };
@@ -167,11 +166,15 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
 
 napi_value NAPI_IsLocked(napi_env env, napi_callback_info info)
 {
-    SCLOCK_HILOGD("NAPI_IsScreenLocked begin");
-    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
-    SCLOCK_HILOGD("isScreenlocked  status=%{public}d", status);
     napi_value result = nullptr;
-    napi_get_boolean(env, status, &result);
+    bool isLocked = false;
+    int32_t status = ScreenLockManager::GetInstance()->IsScreenLocked(false, isLocked);
+    SCLOCK_HILOGD("is screen locked ret: %{public}d ", status);
+    if (status != E_SCREENLOCK_OK) {
+        ThrowError(env, JsErrorCode::ERR_NOT_SYSTEM_APP, NON_SYSTEM_APP);
+        return result;
+    }
+    napi_get_boolean(env, isLocked, &result);
     return result;
 }
 
@@ -239,7 +242,8 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
 
         SCLOCK_HILOGD("NAPI_Lock create callback");
         napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-        eventListener = new (std::nothrow) EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef };
+        eventListener = new (std::nothrow)
+            EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef, .callbackResult = true };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -249,7 +253,8 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_Lock create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        eventListener = new (std::nothrow) EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred };
+        eventListener = new (std::nothrow)
+            EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred, .callbackResult = true };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -279,7 +284,7 @@ void AsyncCallUnlockScreen(napi_env env, EventListener *unlockListener)
             }
             return;
         }
-        int32_t status = ScreenLockManager::GetInstance()->RequestUnlock(listener);
+        int32_t status = ScreenLockManager::GetInstance()->RequestUnlock(eventListener->beforeApi9, listener);
         if (status != E_SCREENLOCK_OK) {
             ErrorInfo errInfo(static_cast<uint32_t>(status));
             GetErrorInfo(status, errInfo);
@@ -314,7 +319,8 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         NAPI_ASSERT(env, valueType == napi_function, "callback is not a function");
         SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
         napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-        eventListener = new (std::nothrow) EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef };
+        eventListener = new (std::nothrow)
+            EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef, .beforeApi9 = true };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -324,7 +330,8 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_UnlockScreen create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        eventListener = new (std::nothrow) EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred };
+        eventListener = new (std::nothrow)
+            EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred, .beforeApi9 = true };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -357,8 +364,11 @@ napi_value NAPI_Unlock(napi_env env, napi_callback_info info)
 
         SCLOCK_HILOGD("NAPI_Unlock create callback");
         napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
-        eventListener = new (std::nothrow)
-            EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef, .callbackResult = true };
+        eventListener = new (std::nothrow) EventListener{ .env = env,
+            .thisVar = thisVar,
+            .callbackRef = callbackRef,
+            .callbackResult = true,
+            .beforeApi9 = false };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -368,8 +378,11 @@ napi_value NAPI_Unlock(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_Unlock create promise");
         napi_deferred deferred;
         napi_create_promise(env, &deferred, &ret);
-        eventListener = new (std::nothrow)
-            EventListener{ .env = env, .thisVar = thisVar, .deferred = deferred, .callbackResult = true };
+        eventListener = new (std::nothrow) EventListener{ .env = env,
+            .thisVar = thisVar,
+            .deferred = deferred,
+            .callbackResult = true,
+            .beforeApi9 = false };
         if (eventListener == nullptr) {
             SCLOCK_HILOGE("eventListener is nullptr");
             return nullptr;
@@ -404,16 +417,6 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, context, ARGS_SIZE_ZERO);
     return asyncCall.Call(env, exec);
-}
-
-napi_value NAPI_IsSecure(napi_env env, napi_callback_info info)
-{
-    SCLOCK_HILOGD("NAPI_IsSecure begin");
-    bool status = ScreenLockManager::GetInstance()->GetSecure();
-    SCLOCK_HILOGD("isSecureMode  status=%{public}d", status);
-    napi_value result = nullptr;
-    napi_get_boolean(env, status, &result);
-    return result;
 }
 
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)

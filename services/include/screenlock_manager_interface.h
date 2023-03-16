@@ -27,21 +27,28 @@ namespace ScreenLock {
 class ScreenLockManagerInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.screenlock.ScreenLockManagerInterface");
-    virtual bool IsScreenLocked() = 0;
+    virtual int32_t IsLocked(bool &isLocked) = 0;
+    virtual int32_t IsScreenLocked(bool &isLocked) = 0;
     virtual bool GetSecure() = 0;
     virtual int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
+    virtual int32_t RequestUnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
 };
 
 enum {
+    // before api version 9
     IS_SCREEN_LOCKED = 0,
     IS_SECURE_MODE,
-    REQUEST_UNLOCK,
+    REQUEST_UNLOCK_SCREEN,
     REQUEST_LOCK,
     ONSYSTEMEVENT,
     SEND_SCREENLOCK_EVENT,
+
+    // since 9, with exception or system app verification
+    IS_LOCKED,
+    REQUEST_UNLOCK,
 };
 } // namespace ScreenLock
 } // namespace OHOS
