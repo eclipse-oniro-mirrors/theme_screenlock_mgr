@@ -53,6 +53,7 @@ ohos_shared_library("screenlock_server") {
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
+    "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
@@ -94,6 +95,7 @@ ohos_static_library("screenlock_server_static") {
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
+    "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
