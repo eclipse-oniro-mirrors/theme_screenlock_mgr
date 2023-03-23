@@ -89,6 +89,11 @@ enum JsErrorCode : uint32_t {
     ERR_SERVICE_ABNORMAL = 13200002,
 };
 
+enum class Action : uint8_t {
+    LOCK = 0,
+    UNLOCK,
+    UNLOCKSCREEN,
+};
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
 constexpr int BEGIN_SLEEP_USER_REASON = 2;
 constexpr int BEGIN_SLEEP_LONG_TIME_UNOPERATOR = 3;

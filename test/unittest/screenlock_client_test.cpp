@@ -57,22 +57,16 @@ void ScreenLockClientTest::TearDown()
 
 /**
 * @tc.name: SetScreenLockTest001
-* @tc.desc: get unlockstate, IsScreenLocked state.
+* @tc.desc: set screen state and get state of the screen.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest001, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test  IsScreenLocked state, get unlockstate");
-    bool isLocked = false;
-    int32_t status = 0;
-    status = ScreenLockManager::GetInstance()->IsScreenLocked(true, isLocked);
-    SCLOCK_HILOGD("IsScreenLocked  status is-------->%{public}d", status);
-    EXPECT_EQ(status, E_SCREENLOCK_OK);
+    SCLOCK_HILOGD("Test IsScreenLocked state");
     ScreenLockSystemAbility::GetInstance()->SetScreenlocked(true);
-    ScreenLockSystemAbility::GetInstance()->IsScreenLocked(isLocked);
-    SCLOCK_HILOGD("IsScreenLocked  result is-------->%{public}d", isLocked);
+    bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     EXPECT_EQ(isLocked, true);
 }
 
@@ -92,28 +86,30 @@ HWTEST_F(ScreenLockClientTest, GetSecureTest002, TestSize.Level0)
 }
 
 /**
-* @tc.name: RequestLockTest003
-* @tc.desc: Test RequestLock and RequestUnlock
+* @tc.name: LockTest003
+* @tc.desc: Test Lock and Unlock
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockClientTest, RequestLockTest003, TestSize.Level0)
+HWTEST_F(ScreenLockClientTest, LockTest003, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestLock and RequestUnlock");
     sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
-    int32_t result = ScreenLockManager::GetInstance()->RequestLock(listener);
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(false, listener);
+    result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(true, listener);
+    result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCKSCREEN, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
     listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
-    result = ScreenLockManager::GetInstance()->RequestLock(listener);
+    result = ScreenLockManager::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    result = ScreenLockManager::GetInstance()->RequestUnlock(true, listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCKSCREEN, listener);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -183,7 +179,7 @@ HWTEST_F(ScreenLockClientTest, GetProxyTest007, TestSize.Level0)
 
 /**
 * @tc.name: ProxyTest008
-* @tc.desc: Test RequestLock, RequestUnLock and OnSystemEvent.
+* @tc.desc: Test Lock, UnLock and OnSystemEvent.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
@@ -195,11 +191,11 @@ HWTEST_F(ScreenLockClientTest, ProxyTest008, TestSize.Level0)
     sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
     int32_t result = proxy->OnSystemEvent(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = proxy->RequestLock(listener);
+    result = proxy->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = proxy->RequestUnlock(listener);
+    result = proxy->Unlock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = proxy->RequestUnlockScreen(listener);
+    result = proxy->Unlock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 } // namespace ScreenLock
