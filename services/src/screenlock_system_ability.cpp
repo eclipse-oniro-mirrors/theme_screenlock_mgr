@@ -23,6 +23,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include "common_event_support.h"
 #include "ability_manager_client.h"
 #include "command.h"
 #include "common_event_manager.h"
@@ -575,7 +576,7 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     if (stateResult == ScreenChange::SCREEN_SUCC) {
-        PublishEvent("common.event.LOCK_SCREEN");
+        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED);
     }
 }
 
@@ -605,7 +606,7 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     if (stateResult == ScreenChange::SCREEN_SUCC) {
-        PublishEvent("common.event.UNLOCK_SCREEN");
+        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_UNLOCKED);
     }
 }
 
