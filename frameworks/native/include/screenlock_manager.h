@@ -21,7 +21,6 @@
 
 #include "iremote_object.h"
 #include "refbase.h"
-#include "screenlock_common.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability_interface.h"
 
@@ -39,11 +38,10 @@ public:
     ScreenLockManager();
     ~ScreenLockManager() override;
     static sptr<ScreenLockManager> GetInstance();
-    int32_t IsLocked(bool &isLocked);
-    bool IsScreenLocked();
+    int32_t IsScreenLocked(bool beforeApi9, bool &isLocked);
     bool GetSecure();
-    int32_t Unlock(Action action, const sptr<ScreenLockSystemAbilityInterface> &listener);
-    int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t RequestUnlock(bool beforeApi9, const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     sptr<ScreenLockManagerInterface> GetProxy();
 
