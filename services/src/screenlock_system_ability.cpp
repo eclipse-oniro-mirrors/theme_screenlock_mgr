@@ -62,7 +62,8 @@ const std::int64_t INTERVAL_ZERO = 0L;
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
-
+constexpr const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteApp";
+constexpr const char *THEME_SCREENLOCK_APP = "const.theme.screenlockApp";
 constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
 static constexpr const int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
@@ -375,7 +376,8 @@ int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockSystemAbilityInterfac
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER") &&
+        !IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_WHITEAPP)) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
     if (stateValue_.GetScreenlockedState()) {
@@ -444,7 +446,8 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER") &&
+        !IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
     std::lock_guard<std::mutex> lck(listenerMutex_);
@@ -460,7 +463,8 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER") &&
+        !IsWhiteListApp(IPCSkeleton::GetCallingTokenID(), THEME_SCREENLOCK_APP)) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
     SCLOCK_HILOGD("event=%{public}s ,param=%{public}d", event.c_str(), param);
@@ -646,6 +650,11 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
 {
     return true;
 }
+
+bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std::string &key)
+{
+    return true;
+}
 #else
 bool ScreenLockSystemAbility::IsAppInForeground(uint32_t tokenId)
 {
@@ -680,6 +689,31 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
         SCLOCK_HILOGE("check permission failed.");
         return false;
     }
+    return true;
+}
+
+bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std::string &key)
+{
+    std::string whiteListAppId = GetScreenlockParameter(key);
+    if (whiteListAppId.empty()) {
+        SCLOCK_HILOGE("whiteListAppId is null.");
+        return false;
+    }
+    AppInfo appInfo;
+    if (!ScreenLockAppInfo::GetAppInfoByToken(callingTokenId, appInfo)) {
+        SCLOCK_HILOGE("GetAppInfoByToken failed.");
+        return false;
+    }
+    if (appInfo.appId.empty()) {
+        SCLOCK_HILOGE("AppId in appInfo is null.");
+        return false;
+    }
+    if (whiteListAppId != appInfo.appId) {
+        SCLOCK_HILOGE("Calling app is not the app which in the whitelist.");
+        return false;
+    }
+    SCLOCK_HILOGI("CallingAppid=%{public}.5s, whiteListAppId=%{public}.5s",
+        appInfo.appId.c_str(), whiteListAppId.c_str());
     return true;
 }
 #endif

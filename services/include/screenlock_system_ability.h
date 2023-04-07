@@ -180,6 +180,7 @@ private:
     bool IsAppInForeground(uint32_t tokenId);
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
+    bool IsWhiteListApp(uint32_t callingTokenId, const std::string &key);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
