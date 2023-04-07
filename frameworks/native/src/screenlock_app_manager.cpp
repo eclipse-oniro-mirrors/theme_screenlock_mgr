@@ -58,8 +58,9 @@ int32_t ScreenLockAppManager::SendScreenLockEvent(const std::string &event, int 
                       "failed.");
         return E_SCREENLOCK_NULLPTR;
     }
-    SCLOCK_HILOGD("ScreenLockAppManager::SendScreenLockEvent succeeded.");
-    return proxy->SendScreenLockEvent(event, param);
+    int ret = proxy->SendScreenLockEvent(event, param);
+    SCLOCK_HILOGD("SendScreenLockEvent result = %{public}d", ret);
+    return ret;
 }
 
 int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
