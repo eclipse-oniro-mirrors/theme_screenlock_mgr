@@ -30,14 +30,18 @@ public:
     explicit ScreenLockManagerProxy(const sptr<IRemoteObject> &object);
     ~ScreenLockManagerProxy() = default;
     DISALLOW_COPY_AND_MOVE(ScreenLockManagerProxy);
+    int32_t IsLocked(bool &isLocked) override;
     bool IsScreenLocked() override;
     bool GetSecure() override;
-    int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
 
 private:
+    int32_t UnlockInner(MessageParcel &reply, int32_t command, const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t IsScreenLockedInner(MessageParcel &reply, int32_t command);
     static inline BrokerDelegator<ScreenLockManagerProxy> delegator_;
 };
 } // namespace ScreenLock

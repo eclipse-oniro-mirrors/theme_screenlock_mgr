@@ -25,6 +25,7 @@
 #include <string>
 
 #include "ability_manager_client.h"
+#include "bundle_mgr_proxy.h"
 #include "command.h"
 #include "core_service_client.h"
 #include "display_manager.h"
@@ -320,14 +321,29 @@ void ScreenLockSystemAbility::OnExitAnimation()
     SystemEventCallBack(systemEvent);
 }
 
-int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
+    return UnlockInner(listener);
+}
+
+int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
+    if (!IsSystemApp()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    return UnlockInner(listener);
+}
+
+int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
         OnStart();
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
+
     // check whether the page of app request unlock is the focus page
     std::lock_guard<std::mutex> guard(lock_);
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
@@ -342,7 +358,7 @@ int32_t ScreenLockSystemAbility::RequestUnlock(const sptr<ScreenLockSystemAbilit
     return E_SCREENLOCK_OK;
 }
 
-int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock started.");
     if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
@@ -365,10 +381,20 @@ int32_t ScreenLockSystemAbility::RequestLock(const sptr<ScreenLockSystemAbilityI
     return E_SCREENLOCK_OK;
 }
 
+int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
+{
+    if (!IsSystemApp()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    isLocked = IsScreenLocked();
+    return E_SCREENLOCK_OK;
+}
+
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility IsScreenLocked restart.");
+        SCLOCK_HILOGI("IsScreenLocked restart.");
         OnStart();
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility IsScreenLocked started.");
@@ -598,6 +624,11 @@ bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std:
 {
     return true;
 }
+
+bool ScreenLockSystemAbility::IsSystemApp()
+{
+    return true;
+}
 #else
 bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std::string &key)
 {
@@ -622,6 +653,34 @@ bool ScreenLockSystemAbility::IsWhiteListApp(uint32_t callingTokenId, const std:
     SCLOCK_HILOGI("ScreenLockSystemAbility::IsWhiteListApp callingAppid=%{public}.5s, whiteListAppId=%{public}.5s",
         appInfo.appId.c_str(), whiteListAppId.c_str());
     return true;
+}
+
+static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
+{
+    auto systemAbilityManager = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        return nullptr;
+    }
+    auto bundleMgrSa = systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    if (bundleMgrSa == nullptr) {
+        return nullptr;
+    }
+    auto bundleMgr = OHOS::iface_cast<AppExecFwk::IBundleMgr>(bundleMgrSa);
+    if (bundleMgr == nullptr) {
+        SCLOCK_HILOGE("GetBundleMgr iface_cast get null");
+    }
+    return bundleMgr;
+}
+
+bool ScreenLockSystemAbility::IsSystemApp()
+{
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    auto bundleMgr = GetBundleMgr();
+    bool isSystemApplication = false;
+    if (bundleMgr != nullptr) {
+        isSystemApplication = bundleMgr->CheckIsSystemAppByUid(uid);
+    }
+    return isSystemApplication;
 }
 #endif
 

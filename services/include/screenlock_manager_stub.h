@@ -28,10 +28,12 @@ public:
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
 private:
-    bool OnIsScreenLocked(Parcel &data, Parcel &reply);
-    bool OnGetSecure(Parcel &data, Parcel &reply);
-    void OnRequestUnlock(MessageParcel &data, MessageParcel &reply);
-    void OnRequestLock(MessageParcel &data, MessageParcel &reply);
+    int32_t OnIsLocked(Parcel &data, Parcel &reply);
+    int32_t OnIsScreenLocked(Parcel &data, Parcel &reply);
+    int32_t OnGetSecure(Parcel &data, Parcel &reply);
+    int32_t OnUnlock(MessageParcel &data, MessageParcel &reply);
+    int32_t OnUnlockScreen(MessageParcel &data, MessageParcel &reply);
+    int32_t OnLock(MessageParcel &data, MessageParcel &reply);
     int32_t OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply);
     int32_t OnScreenLockOn(MessageParcel &data, MessageParcel &reply);
 };
