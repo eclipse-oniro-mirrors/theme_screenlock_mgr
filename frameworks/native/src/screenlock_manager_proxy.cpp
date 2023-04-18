@@ -119,10 +119,15 @@ int32_t ScreenLockManagerProxy::Unlock(const sptr<ScreenLockSystemAbilityInterfa
     return reply.ReadInt32();
 }
 
-void ScreenLockManagerProxy::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     MessageParcel reply;
-    UnlockInner(reply, UNLOCK_SCREEN, listener);
+    int ret = UnlockInner(reply, UNLOCK_SCREEN, listener);
+    if (ret != E_SCREENLOCK_OK) {
+        SCLOCK_HILOGE("Unlock, ret = %{public}d", ret);
+        return ret;
+    }
+    return reply.ReadInt32();
 }
 
 int32_t ScreenLockManagerProxy::Lock(const sptr<ScreenLockSystemAbilityInterface> &listener)

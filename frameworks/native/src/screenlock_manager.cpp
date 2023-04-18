@@ -93,8 +93,7 @@ int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockSystemAbil
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_UNLOCKSCREEN);
     if (action == Action::UNLOCKSCREEN) {
-        proxy->UnlockScreen(listener);
-        return E_SCREENLOCK_OK;
+        return proxy->UnlockScreen(listener);
     }
     return proxy->Unlock(listener);
 }

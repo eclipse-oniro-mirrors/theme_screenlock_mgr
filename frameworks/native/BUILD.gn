@@ -16,7 +16,11 @@ import("//build/ohos.gni")
 
 config("screenlock_mgr_frameworks_native_config") {
   visibility = [ ":*" ]
-  include_dirs = [ "include" ]
+  include_dirs = [
+    "include",
+    "${screenlock_mgr_path}/utils/include",
+    "${screenlock_mgr_path}/services/include",
+  ]
 
   cflags_cc = []
 }
@@ -41,7 +45,6 @@ ohos_shared_library("screenlock_client") {
 
     include_dirs = [
       "include",
-      "${screenlock_mgr_path}/services/include",
       "${screenlock_mgr_path}/frameworks/native/include",
     ]
 
