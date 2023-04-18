@@ -211,7 +211,7 @@ void AsyncCallFunc(napi_env env, EventListener *listener)
         } else if (eventListener->action == Action::UNLOCK || eventListener->action == Action::UNLOCKSCREEN) {
             status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
         }
-        if (status != E_SCREENLOCK_OK && eventListener->action != Action::UNLOCKSCREEN) {
+        if (status != E_SCREENLOCK_OK) {
             ErrorInfo errInfo(static_cast<uint32_t>(status));
             GetErrorInfo(status, errInfo);
             callback->SetErrorInfo(errInfo);

@@ -331,9 +331,9 @@ void ScreenLockSystemAbility::OnExitAnimation()
     SystemEventCallBack(systemEvent);
 }
 
-void ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    UnlockInner(listener);
+    return UnlockInner(listener);
 }
 
 int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener)

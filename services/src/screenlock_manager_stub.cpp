@@ -118,7 +118,8 @@ int32_t ScreenLockManagerStub::OnUnlockScreen(MessageParcel &data, MessageParcel
         SCLOCK_HILOGE("listener is null");
         return ERR_INVALID_DATA;
     }
-    UnlockScreen(listener);
+    int32_t ret = UnlockScreen(listener);
+    reply.WriteInt32(ret);
     return ERR_NONE;
 }
 

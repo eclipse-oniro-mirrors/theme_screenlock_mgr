@@ -109,7 +109,7 @@ HWTEST_F(ScreenLockClientTest, LockTest003, TestSize.Level0)
     result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCKSCREEN, listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**
