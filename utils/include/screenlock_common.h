@@ -66,6 +66,7 @@ enum ScreenLockError {
     E_SCREENLOCK_NO_PERMISSION,
     E_SCREENLOCK_NULLPTR,
     E_SCREENLOCK_SENDREQUEST_FAILED,
+    E_SCREENLOCK_NOT_SYSTEM_APP,
 };
 
 enum TraceTaskId : int32_t {
@@ -82,9 +83,16 @@ enum ScreenChange {
 
 enum JsErrorCode : uint32_t {
     ERR_NO_PERMISSION = 201,
+    ERR_NOT_SYSTEM_APP = 202,
     ERR_INVALID_PARAMS = 401,
     ERR_CANCEL_UNLOCK = 13200001,
     ERR_SERVICE_ABNORMAL = 13200002,
+};
+
+enum class Action : uint8_t {
+    LOCK = 0,
+    UNLOCK,
+    UNLOCKSCREEN,
 };
 
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;

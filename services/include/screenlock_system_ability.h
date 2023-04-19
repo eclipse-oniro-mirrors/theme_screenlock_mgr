@@ -129,10 +129,12 @@ public:
     ScreenLockSystemAbility();
     ~ScreenLockSystemAbility();
     static sptr<ScreenLockSystemAbility> GetInstance();
+    int32_t IsLocked(bool &isLocked) override;
     bool IsScreenLocked() override;
     bool GetSecure() override;
-    int32_t RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    int32_t RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
@@ -175,6 +177,8 @@ private:
     std::string GetScreenlockParameter(const std::string &key) const;
     bool IsWhiteListApp(uint32_t callingTokenId, const std::string &key);
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
+    int32_t UnlockInner(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    bool IsSystemApp();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;

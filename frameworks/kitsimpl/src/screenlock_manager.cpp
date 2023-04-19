@@ -50,29 +50,37 @@ sptr<ScreenLockManager> ScreenLockManager::GetInstance()
     return instance_;
 }
 
+int32_t ScreenLockManager::IsLocked(bool &isLocked)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("IsLocked quit because GetScreenLockManagerProxy failed.");
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    return proxy->IsLocked(isLocked);
+}
+
 bool ScreenLockManager::IsScreenLocked()
 {
     auto proxy = GetProxy();
-    if (proxy  == nullptr) {
-        SCLOCK_HILOGE("IsScreenLocked quit because redoing GetScreenLockManagerProxy failed.");
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("IsScreenLocked quit because GetScreenLockManagerProxy failed.");
         return false;
     }
-    SCLOCK_HILOGD("ScreenLockManager IsScreenLocked succeeded.");
     return proxy->IsScreenLocked();
 }
 
 bool ScreenLockManager::GetSecure()
 {
     auto proxy = GetProxy();
-    if (proxy  == nullptr) {
+    if (proxy == nullptr) {
         SCLOCK_HILOGE("GetSecure quit because redoing GetScreenLockManagerProxy failed.");
         return false;
     }
-    SCLOCK_HILOGD("ScreenLockManager GetSecure succeeded.");
     return proxy->GetSecure();
 }
 
-int32_t ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
@@ -83,12 +91,14 @@ int32_t ScreenLockManager::RequestUnlock(const sptr<ScreenLockSystemAbilityInter
         SCLOCK_HILOGE("listener is nullptr.");
         return E_SCREENLOCK_NULLPTR;
     }
-    SCLOCK_HILOGD("ScreenLockManager RequestUnlock succeeded.");
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_UNLOCKSCREEN);
-    return proxy->RequestUnlock(listener);
+    if (action == Action::UNLOCKSCREEN) {
+        return proxy->UnlockScreen(listener);
+    }
+    return proxy->Unlock(listener);
 }
 
-int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManager::Lock(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
@@ -100,7 +110,7 @@ int32_t ScreenLockManager::RequestLock(const sptr<ScreenLockSystemAbilityInterfa
         return E_SCREENLOCK_NULLPTR;
     }
     SCLOCK_HILOGD("ScreenLockManager RequestLock succeeded.");
-    return proxy->RequestLock(listener);
+    return proxy->Lock(listener);
 }
 
 sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()

@@ -19,6 +19,7 @@
 #include <cstdint>
 
 #include "napi/native_api.h"
+#include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -29,6 +30,7 @@ struct EventListener {
     napi_deferred deferred = nullptr;
     napi_async_work work = nullptr;
     bool callBackResult = false;
+    Action action;
 };
 } // namespace ScreenLock
 } // namespace OHOS
