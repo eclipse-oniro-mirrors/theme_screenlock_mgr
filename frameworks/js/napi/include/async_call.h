@@ -93,7 +93,8 @@ public:
     static constexpr size_t ASYNC_DEFAULT_POS = -1;
     AsyncCall(napi_env env, napi_callback_info info, Context *context, size_t pos = ASYNC_DEFAULT_POS);
     ~AsyncCall();
-    napi_value Call(const napi_env env, Context::ExecAction exec = nullptr);
+    napi_value Call(
+        const napi_env env, Context::ExecAction exec = nullptr, const std::string &resourceName = "AsyncCall");
     napi_value SyncCall(const napi_env env, Context::ExecAction exec = nullptr);
     static void GenerateBusinessError(napi_env env, const ErrorInfo &errorInfo, napi_value *result);
 

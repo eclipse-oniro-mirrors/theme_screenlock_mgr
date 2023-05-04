@@ -160,7 +160,7 @@ napi_value NAPI_IsScreenLocked(napi_env env, napi_callback_info info)
     };
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, context, ARGS_SIZE_ZERO);
-    return asyncCall.Call(env, exec);
+    return asyncCall.Call(env, exec, "isScreenLocked");
 }
 
 napi_value NAPI_IsLocked(napi_env env, napi_callback_info info)
@@ -188,7 +188,7 @@ static void CompleteAsyncWork(napi_env env, napi_status status, void *data)
     delete eventListener;
 }
 
-void AsyncCallFunc(napi_env env, EventListener *listener)
+void AsyncCallFunc(napi_env env, EventListener *listener, const std::string &resourceName)
 {
     napi_value resource = nullptr;
     auto execute = [](napi_env env, void *data) {
@@ -219,7 +219,8 @@ void AsyncCallFunc(napi_env env, EventListener *listener)
             callback->OnCallBack(systemEvent);
         }
     };
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource));
+    std::string name = "THEME_" + resourceName;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &resource));
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resource, execute, CompleteAsyncWork,
                                    static_cast<void *>(listener), &(listener->work)));
     NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, listener->work));
@@ -273,7 +274,7 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_Lock create callback");
         napi_get_undefined(env, &ret);
     }
-    AsyncCallFunc(env, eventListener);
+    AsyncCallFunc(env, eventListener, "lock");
     return ret;
 }
 
@@ -318,7 +319,7 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
         napi_get_undefined(env, &ret);
     }
-    AsyncCallFunc(env, eventListener);
+    AsyncCallFunc(env, eventListener, "unLockScreen");
     return ret;
 }
 
@@ -368,7 +369,7 @@ napi_value NAPI_Unlock(napi_env env, napi_callback_info info)
         SCLOCK_HILOGD("NAPI_Unlock create callback");
         napi_get_undefined(env, &ret);
     }
-    AsyncCallFunc(env, eventListener);
+    AsyncCallFunc(env, eventListener, "unLock");
     return ret;
 }
 
@@ -393,7 +394,7 @@ napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info)
     };
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, context, ARGS_SIZE_ZERO);
-    return asyncCall.Call(env, exec);
+    return asyncCall.Call(env, exec, "isSecureMode");
 }
 
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
@@ -484,7 +485,7 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     };
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, context, ARGV_TWO);
-    return asyncCall.Call(env, exec);
+    return asyncCall.Call(env, exec, "screenLockSendEvent");
 }
 
 static napi_value ScreenlockInit(napi_env env, napi_value exports)
