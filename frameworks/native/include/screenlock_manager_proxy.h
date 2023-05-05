@@ -20,6 +20,7 @@
 
 #include "iremote_proxy.h"
 #include "refbase.h"
+#include "screenlock_callback_interface.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability_interface.h"
 
@@ -33,15 +34,14 @@ public:
     int32_t IsLocked(bool &isLocked) override;
     bool IsScreenLocked() override;
     bool GetSecure() override;
-    int32_t Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    int32_t UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener) override;
+    int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener) override;
+    int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
 
 private:
-    int32_t UnlockInner(
-        MessageParcel &reply, int32_t command, const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t UnlockInner(MessageParcel &reply, int32_t command, const sptr<ScreenLockCallbackInterface> &listener);
     int32_t IsScreenLockedInner(MessageParcel &reply, uint32_t command);
     static inline BrokerDelegator<ScreenLockManagerProxy> delegator_;
 };

@@ -34,6 +34,7 @@ ohos_shared_library("screenlock_client") {
     }
     sources = [
       "src/screenlock_app_manager.cpp",
+      "src/screenlock_callback_stub.cpp",
       "src/screenlock_manager.cpp",
       "src/screenlock_manager_proxy.cpp",
       "src/screenlock_system_ability_stub.cpp",

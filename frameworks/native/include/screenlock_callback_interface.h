@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,29 +13,28 @@
  * limitations under the License.
  */
 
-#ifndef I_SCREENLOCK_CALLBACK_LISTENER_H
-#define I_SCREENLOCK_CALLBACK_LISTENER_H
+#ifndef I_SCREENLOCK_CALLBACK_INTERFACE_H
+#define I_SCREENLOCK_CALLBACK_INTERFACE_H
 
 #include "iremote_broker.h"
-#include "iremote_object.h"
-
 namespace OHOS {
 namespace ScreenLock {
-struct SystemEvent {
-    std::string eventType_;
-    std::string params_;
-    explicit SystemEvent(std::string eventType = "", std::string params = "") : eventType_(eventType), params_(params)
+struct ErrorInfo {
+    uint32_t errorCode_;
+    std::string message_;
+    explicit ErrorInfo(uint32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
     {
     }
 };
 
-class ScreenLockSystemAbilityInterface : public IRemoteBroker {
+class ScreenLockCallbackInterface : public IRemoteBroker {
 public:
-    DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface");
-    virtual void OnCallBack(const SystemEvent &systemEvent) = 0;
+    DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockCallbackInterface");
+    virtual void OnCallBack(const int32_t screenLockResult) = 0;
+    virtual void SetErrorInfo(const ErrorInfo &errorInfo) = 0;
     enum Message { ONCALLBACK = 0 };
 };
 } // namespace ScreenLock
 } // namespace OHOS
 
-#endif // I_SCREENLOCK_CALLBACK_LISTENER_H
+#endif // I_SCREENLOCK_CALLBACK_INTERFACE_H

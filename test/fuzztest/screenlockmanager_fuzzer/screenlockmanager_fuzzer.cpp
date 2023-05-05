@@ -20,10 +20,11 @@
 
 #include "message_parcel.h"
 #include "screenlock_app_manager.h"
-#include "screenlock_callback.h"
+#include "screenlock_callback_stub.h"
 #include "screenlock_manager.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability.h"
+#include "screenlock_system_ability_stub.h"
 
 using namespace OHOS::ScreenLock;
 
@@ -54,12 +55,12 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
         return ScreenLockManager::GetInstance()->GetSecure();
     }
     if (code == RANDNUM_TWO) {
-        sptr<ScreenLockSystemAbilityInterface> listener_ = new ScreenLockSystemAbilityStub();
+        sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
         int32_t ret = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener_);
         return ret == E_SCREENLOCK_OK;
     }
     if (code == RANDNUM_THREE) {
-        sptr<ScreenLockSystemAbilityInterface> listener_ = new ScreenLockSystemAbilityStub();
+        sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
         int32_t ret = ScreenLockManager::GetInstance()->Lock(listener_);
         return ret == E_SCREENLOCK_OK;
     }

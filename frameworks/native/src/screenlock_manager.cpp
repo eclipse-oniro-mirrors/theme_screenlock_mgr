@@ -80,7 +80,7 @@ bool ScreenLockManager::GetSecure()
     return proxy->GetSecure();
 }
 
-int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
@@ -99,7 +99,7 @@ int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockSystemAbil
 }
 
 
-int32_t ScreenLockManager::Lock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManager::Lock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {

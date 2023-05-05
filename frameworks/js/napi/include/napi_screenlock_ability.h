@@ -18,7 +18,6 @@
 #include "async_call.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
-#include "screenlock_system_ability_interface.h"
 
 namespace OHOS {
 namespace ScreenLock {

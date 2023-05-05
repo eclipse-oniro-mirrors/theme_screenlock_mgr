@@ -86,7 +86,7 @@ bool ScreenLockManagerProxy::GetSecure()
 }
 
 int32_t ScreenLockManagerProxy::UnlockInner(
-    MessageParcel &reply, int32_t command, const sptr<ScreenLockSystemAbilityInterface> &listener)
+    MessageParcel &reply, int32_t command, const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel data;
     MessageOption option;
@@ -108,7 +108,7 @@ int32_t ScreenLockManagerProxy::UnlockInner(
     return E_SCREENLOCK_OK;
 }
 
-int32_t ScreenLockManagerProxy::Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::Unlock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel reply;
     int ret = UnlockInner(reply, UNLOCK, listener);
@@ -119,7 +119,7 @@ int32_t ScreenLockManagerProxy::Unlock(const sptr<ScreenLockSystemAbilityInterfa
     return reply.ReadInt32();
 }
 
-int32_t ScreenLockManagerProxy::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel reply;
     int ret = UnlockInner(reply, UNLOCK_SCREEN, listener);
@@ -130,7 +130,7 @@ int32_t ScreenLockManagerProxy::UnlockScreen(const sptr<ScreenLockSystemAbilityI
     return reply.ReadInt32();
 }
 
-int32_t ScreenLockManagerProxy::Lock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockManagerProxy::Lock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel data;
     MessageParcel reply;

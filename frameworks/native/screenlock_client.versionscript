@@ -16,6 +16,7 @@
     *_cfi_*;
     *ScreenLockManager*;
     *ScreenLockAppManager*;
+    *ScreenLockCallbackStub*;
     *ScreenLockSystemAbilityStub*;
   local:
     *;

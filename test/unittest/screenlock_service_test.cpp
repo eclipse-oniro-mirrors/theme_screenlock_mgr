@@ -399,7 +399,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestLock");
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
-    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
+    sptr<ScreenLockCallbackInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
 
     ScreenLockSystemAbility::GetInstance()->stateValue_.SetScreenlocked(true);
@@ -423,7 +423,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestUnlock");
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_RUNNING;
-    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
+    sptr<ScreenLockCallbackInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
     ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);

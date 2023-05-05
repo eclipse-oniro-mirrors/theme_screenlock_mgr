@@ -18,6 +18,8 @@
 #include <iostream>
 
 #include "napi/native_api.h"
+#include "screenlock_callback_interface.h"
+#include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
 #include "uv.h"
 
@@ -29,7 +31,8 @@ struct ScreenlockOnCallBack {
     SystemEvent systemEvent;
     ErrorInfo errorInfo;
     napi_deferred deferred = nullptr;
-    bool callbackResult = false;
+    int32_t screenLockResult = -1;
+    Action action;
 };
 
 class UvQueue {

@@ -15,17 +15,25 @@
 #ifndef NAPI_SCREENLOCK_CALL_BACK_TEST_H
 #define NAPI_SCREENLOCK_CALL_BACK_TEST_H
 
+#include "screenlock_callback_stub.h"
 #include "screenlock_common.h"
 #include "screenlock_event_list_test.h"
 #include "screenlock_system_ability_stub.h"
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenlockCallbackTest : public ScreenLockSystemAbilityStub {
+class ScreenLockSystemAbilityTest : public ScreenLockSystemAbilityStub {
+public:
+    explicit ScreenLockSystemAbilityTest(const EventListenerTest &eventListener);
+    virtual ~ScreenLockSystemAbilityTest();
+    void OnCallBack(const SystemEvent &systemEvent) override;
+};
+
+class ScreenlockCallbackTest : public ScreenLockCallbackStub {
 public:
     explicit ScreenlockCallbackTest(const EventListenerTest &eventListener);
     virtual ~ScreenlockCallbackTest();
-    void OnCallBack(const SystemEvent &systemEvent) override;
+    void OnCallBack(const int32_t screenLockResult) override;
 };
 } // namespace ScreenLock
 } // namespace OHOS

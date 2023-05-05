@@ -19,6 +19,7 @@
 #include <string>
 
 #include "iremote_broker.h"
+#include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
 
@@ -30,9 +31,9 @@ public:
     virtual int32_t IsLocked(bool &isLocked) = 0;
     virtual bool IsScreenLocked() = 0;
     virtual bool GetSecure() = 0;
-    virtual int32_t Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
-    virtual int32_t UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
-    virtual int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
+    virtual int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener) = 0;
+    virtual int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener) = 0;
+    virtual int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener) = 0;
     virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
 };

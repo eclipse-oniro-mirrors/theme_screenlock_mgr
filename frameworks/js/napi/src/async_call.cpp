@@ -169,7 +169,9 @@ void AsyncCall::GenerateBusinessError(napi_env env, const ErrorInfo &errorInfo, 
 {
     napi_value message = nullptr;
     napi_value code = nullptr;
-    napi_create_int32(env, errorInfo.errorCode_, &code);
+    if (errorInfo.errorCode_ != 0) {
+        napi_create_int32(env, errorInfo.errorCode_, &code);
+    }
     napi_create_string_utf8(env, errorInfo.message_.c_str(), NAPI_AUTO_LENGTH, &message);
     napi_create_object(env, result);
     napi_set_named_property(env, *result, "code", code);

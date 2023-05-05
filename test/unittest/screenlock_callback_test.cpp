@@ -19,6 +19,19 @@
 
 namespace OHOS {
 namespace ScreenLock {
+ScreenLockSystemAbilityTest::ScreenLockSystemAbilityTest(const EventListenerTest &eventListener)
+{
+}
+
+ScreenLockSystemAbilityTest::~ScreenLockSystemAbilityTest()
+{
+}
+
+void ScreenLockSystemAbilityTest::OnCallBack(const SystemEvent &systemEvent)
+{
+    SCLOCK_HILOGD("event=%{public}s,params=%{public}s", systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
+}
+
 ScreenlockCallbackTest::ScreenlockCallbackTest(const EventListenerTest &eventListener)
 {
 }
@@ -27,9 +40,9 @@ ScreenlockCallbackTest::~ScreenlockCallbackTest()
 {
 }
 
-void ScreenlockCallbackTest::OnCallBack(const SystemEvent &systemEvent)
+void ScreenlockCallbackTest::OnCallBack(const int32_t screenLockResult)
 {
-    SCLOCK_HILOGD("event=%{public}s,params=%{public}s", systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
+    SCLOCK_HILOGD("screenLockResult=%{public}d", screenLockResult);
 }
 } // namespace ScreenLock
 } // namespace OHOS

@@ -64,7 +64,6 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
 constexpr const char *THEME_SCREENLOCK_WHITEAPP = "const.theme.screenlockWhiteApp";
 constexpr const char *THEME_SCREENLOCK_APP = "const.theme.screenlockApp";
-constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
 static constexpr const int CONFIG_LEN = 128;
 constexpr int32_t HANDLE_OK = 0;
 constexpr int32_t MAX_RETRY_TIMES = 20;
@@ -300,6 +299,9 @@ void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
     stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
     SystemEvent systemEvent(END_SLEEP, std::to_string(why));
     SystemEventCallBack(systemEvent);
+    if (stateValue_.GetScreenlockedState()) {
+        NotifyUnlockListener(SCREEN_CANCEL);
+    }
 }
 
 void ScreenLockSystemAbility::OnChangeUser(const int newUserId)
@@ -331,12 +333,12 @@ void ScreenLockSystemAbility::OnExitAnimation()
     SystemEventCallBack(systemEvent);
 }
 
-int32_t ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener)
 {
     return UnlockInner(listener);
 }
 
-int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
     if (!IsSystemApp()) {
@@ -346,7 +348,7 @@ int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockSystemAbilityInterf
     return UnlockInner(listener);
 }
 
-int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterface> &listener)
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
@@ -369,7 +371,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockSystemAbilityI
     return E_SCREENLOCK_OK;
 }
 
-int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockSystemAbilityInterface> &listener)
+int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock started.");
     if (!IsSystemApp()) {
@@ -556,8 +558,7 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
         auto callback = [this, stateResult]() {
             std::lock_guard<std::mutex> guard(lockListenerMutex_);
             for (size_t i = 0; i < lockVecListeners_.size(); i++) {
-                SystemEvent systemEvent("", std::to_string(stateResult));
-                lockVecListeners_[i]->OnCallBack(systemEvent);
+                lockVecListeners_[i]->OnCallBack(stateResult);
             }
             lockVecListeners_.clear();
         };
@@ -577,22 +578,7 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
     } else if (stateResult == SCREEN_FAIL || stateResult == SCREEN_CANCEL) {
         SetScreenlocked(true);
     }
-    std::lock_guard<std::mutex> autoLock(unlockListenerMutex_);
-    if (unlockVecListeners_.size()) {
-        auto callback = [this, stateResult]() {
-            std::lock_guard<std::mutex> guard(unlockListenerMutex_);
-            for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                if (stateResult == SCREEN_CANCEL) {
-                    ErrorInfo errorInfo(JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPERATION);
-                    unlockVecListeners_[i]->SetErrorInfo(errorInfo);
-                }
-                SystemEvent systemEvent("", std::to_string(stateResult));
-                unlockVecListeners_[i]->OnCallBack(systemEvent);
-            }
-            unlockVecListeners_.clear();
-        };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-    }
+    NotifyUnlockListener(stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_UNLOCKED);
     }
@@ -631,6 +617,21 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         }
     };
     if (serviceHandler_ != nullptr) {
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    }
+}
+
+void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResult)
+{
+    std::lock_guard<std::mutex> autoLock(unlockListenerMutex_);
+    if (unlockVecListeners_.size()) {
+        auto callback = [this, screenLockResult]() {
+            std::lock_guard<std::mutex> guard(unlockListenerMutex_);
+            for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
+                unlockVecListeners_[i]->OnCallBack(screenLockResult);
+            }
+            unlockVecListeners_.clear();
+        };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
 }

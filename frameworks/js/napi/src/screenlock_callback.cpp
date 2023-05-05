@@ -30,6 +30,8 @@
 namespace OHOS {
 namespace ScreenLock {
 enum class ARG_INFO { ARG_ERROR, ARG_DATA, ARG_BUTT };
+constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
+constexpr const char *SCREENLOCK_FAIL = "ScreenLock failed.";
 ScreenlockCallback::ScreenlockCallback(const EventListener &eventListener)
 {
     eventListener_ = eventListener;
@@ -44,47 +46,40 @@ void ScreenlockCallback::SetErrorInfo(const ErrorInfo &errorInfo)
     errorInfo_ = errorInfo;
 }
 
-void UvWorkOnCallBackInt(uv_work_t *work, int status)
+void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int status)
 {
     if (work == nullptr) {
-        SCLOCK_HILOGE("UvWorkNotifyMissionChanged, work is null");
+        SCLOCK_HILOGE("UvWorkOnCallBack, work is null");
         return;
     }
     ScreenlockOnCallBack *callBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
     if (callBackPtr == nullptr) {
-        SCLOCK_HILOGE("UvWorkOnCallBackInt, callBackPtr is null");
-        SAFE_DELETE(work);
-        return;
-    }
-    int32_t onCallbackResult = -1;
-    if (!StrToInt(callBackPtr->systemEvent.params_, onCallbackResult)) {
-        SAFE_DELETE(callBackPtr);
+        SCLOCK_HILOGE("UvWorkOnCallBack, callBackPtr is null");
         SAFE_DELETE(work);
         return;
     }
     napi_handle_scope scope = nullptr;
     napi_open_handle_scope(callBackPtr->env, &scope);
     napi_value result[ARGS_SIZE_TWO] = { 0 };
-    napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
-    if (onCallbackResult == SCREEN_SUCC) {
-        napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
-        if (callBackPtr->callbackResult) {
-            napi_get_boolean(callBackPtr->env, true, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
-        }
+    bool screenLockSuccess = callBackPtr->screenLockResult == SCREEN_SUCC;
+    if (callBackPtr->action == Action::UNLOCKSCREEN) {
+        napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     } else {
-        AsyncCall::GenerateBusinessError(
-            callBackPtr->env, callBackPtr->errorInfo, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
-        if (callBackPtr->callbackResult) {
-            napi_get_boolean(callBackPtr->env, false, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
-        }
+        napi_get_boolean(callBackPtr->env, screenLockSuccess, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
+    }
+    if (screenLockSuccess) {
+        napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+    } else {
+        AsyncCall::GenerateBusinessError(callBackPtr->env, callBackPtr->errorInfo,
+            &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
     }
     if (callBackPtr->deferred) {
-        if (onCallbackResult == SCREEN_SUCC) {
-            napi_resolve_deferred(
-                callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
+        if (screenLockSuccess) {
+            napi_resolve_deferred(callBackPtr->env, callBackPtr->deferred,
+                result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         } else {
-            napi_reject_deferred(
-                callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+            napi_reject_deferred(callBackPtr->env, callBackPtr->deferred,
+                result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
         }
     } else {
         napi_value callbackFunc = nullptr;
@@ -98,23 +93,27 @@ void UvWorkOnCallBackInt(uv_work_t *work, int status)
     SAFE_DELETE(work);
 }
 
-void ScreenlockCallback::OnCallBack(const SystemEvent &systemEvent)
+void ScreenlockCallback::OnCallBack(const int32_t screenLockResult)
 {
     ScreenlockOnCallBack *screenlockOnCallBack = new (std::nothrow) ScreenlockOnCallBack;
     if (screenlockOnCallBack == nullptr) {
         SCLOCK_HILOGE("new  ScreenlockOnCallBack failed");
         return;
     }
+    if (screenLockResult == SCREEN_CANCEL) {
+        errorInfo_.message_ = CANCEL_UNLOCK_OPERATION;
+    } else if (screenLockResult == SCREEN_FAIL) {
+        errorInfo_.message_ = SCREENLOCK_FAIL;
+    }
     screenlockOnCallBack->env = eventListener_.env;
     screenlockOnCallBack->callbackRef = eventListener_.callbackRef;
-    screenlockOnCallBack->systemEvent = systemEvent;
     screenlockOnCallBack->deferred = eventListener_.deferred;
+    screenlockOnCallBack->action = eventListener_.action;
     screenlockOnCallBack->errorInfo = errorInfo_;
-    screenlockOnCallBack->callbackResult = eventListener_.callbackResult;
-    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, UvWorkOnCallBackInt);
+    screenlockOnCallBack->screenLockResult = screenLockResult;
+    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, UvWorkOnCallBack);
     if (!bRet) {
-        SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
-            systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
+        SCLOCK_HILOGE("ScreenlockCallback::OnCallBack g_screenLockCallback failed");
     }
 }
 } // namespace ScreenLock

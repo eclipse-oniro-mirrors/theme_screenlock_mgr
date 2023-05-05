@@ -21,9 +21,9 @@
 
 #include "iremote_object.h"
 #include "refbase.h"
+#include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_manager_interface.h"
-#include "screenlock_system_ability_interface.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -42,8 +42,8 @@ public:
     int32_t IsLocked(bool &isLocked);
     bool IsScreenLocked();
     bool GetSecure();
-    int32_t Unlock(Action action, const sptr<ScreenLockSystemAbilityInterface> &listener);
-    int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
+    int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     sptr<ScreenLockManagerInterface> GetProxy();
 
