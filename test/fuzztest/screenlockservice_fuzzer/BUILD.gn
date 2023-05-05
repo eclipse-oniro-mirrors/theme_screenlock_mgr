@@ -27,6 +27,7 @@ ohos_fuzztest("ScreenlockServiceFuzzTest") {
   include_dirs = [
     "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
+    "//third_party/libuv/include",
     "//foundation/ability/ability_runtime/services/common/include",
     "${screenlock_mgr_path}/frameworks/js/napi/include",
     "${screenlock_mgr_path}/services/include",
