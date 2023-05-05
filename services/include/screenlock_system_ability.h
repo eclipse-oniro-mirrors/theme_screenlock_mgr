@@ -174,14 +174,12 @@ private:
     void InitServiceHandler();
     void LockScreenEvent(int stateResult);
     void UnlockScreenEvent(int stateResult);
-    std::string GetScreenlockParameter(const std::string &key) const;
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
     int32_t UnlockInner(const sptr<ScreenLockCallbackInterface> &listener);
     void PublishEvent(const std::string &eventAction);
     bool IsAppInForeground(uint32_t tokenId);
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
-    bool IsWhiteListApp(uint32_t callingTokenId, const std::string &key);
     void NotifyUnlockListener(const int32_t screenLockResult);
 
     ServiceRunningState state_;
