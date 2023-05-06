@@ -43,9 +43,5 @@ void ScreenLockCallbackProxy::OnCallBack(int32_t screenLockResult)
         SCLOCK_HILOGE("SendRequest failed, errorCode: %{public}d", errorCode);
     }
 }
-
-void ScreenLockCallbackProxy::SetErrorInfo(const ErrorInfo &errorInfo)
-{
-}
 } // namespace ScreenLock
 } // namespace OHOS

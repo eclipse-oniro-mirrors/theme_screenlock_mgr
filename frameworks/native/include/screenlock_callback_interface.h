@@ -28,7 +28,6 @@ class ScreenLockCallbackInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockCallbackInterface");
     virtual void OnCallBack(int32_t screenLockResult) = 0;
-    virtual void SetErrorInfo(const ErrorInfo &errorInfo) = 0;
     enum Message { ON_CALLBACK = 0 };
 };
 } // namespace ScreenLock

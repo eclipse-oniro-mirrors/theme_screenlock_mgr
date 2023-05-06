@@ -197,7 +197,7 @@ void AsyncCallFunc(napi_env env, EventListener *listener)
             return;
         }
 
-        sptr<ScreenLockCallbackInterface> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
+        sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
         if (callback == nullptr) {
             SCLOCK_HILOGE("NAPI_Lock create callback object fail");
             if (eventListener->callbackRef != nullptr) {
@@ -406,7 +406,7 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     napi_ref callbackRef = nullptr;
     napi_create_reference(env, argv, ARGS_SIZE_ONE, &callbackRef);
     EventListener eventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef };
-    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockSystemAbilityCallback(eventListener);
+    sptr<ScreenlockSystemAbilityCallback> listener = new (std::nothrow) ScreenlockSystemAbilityCallback(eventListener);
     if (listener != nullptr) {
         int32_t retCode = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
         if (retCode != E_SCREENLOCK_OK) {

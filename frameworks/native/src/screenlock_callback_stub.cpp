@@ -24,10 +24,6 @@ void ScreenLockCallbackStub::OnCallBack(int32_t screenLockResult)
 {
 }
 
-void ScreenLockCallbackStub::SetErrorInfo(const ErrorInfo &errorInfo)
-{
-}
-
 int32_t ScreenLockCallbackStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {

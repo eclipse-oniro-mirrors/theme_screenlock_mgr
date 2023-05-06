@@ -27,7 +27,6 @@ public:
     explicit ScreenLockCallbackProxy(const sptr<IRemoteObject> &impl);
     ~ScreenLockCallbackProxy() = default;
     void OnCallBack(int32_t screenLockResult) override;
-    void SetErrorInfo(const ErrorInfo &errorInfo) override;
 
 private:
     static inline BrokerDelegator<ScreenLockCallbackProxy> delegator_;

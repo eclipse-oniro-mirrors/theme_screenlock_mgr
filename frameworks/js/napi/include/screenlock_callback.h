@@ -26,7 +26,7 @@ public:
     explicit ScreenlockCallback(const EventListener &eventListener);
     ~ScreenlockCallback() override;
     void OnCallBack(const int32_t screenLockResult) override;
-    void SetErrorInfo(const ErrorInfo &errorInfo) override;
+    void SetErrorInfo(const ErrorInfo &errorInfo);
 
 private:
     static void UvWorkOnCallBack(uv_work_t *work, int32_t status);
