@@ -32,9 +32,8 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParce
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
         return E_SCREENLOCK_TRANSACT_ERROR;
     }
-    SCLOCK_HILOGD("ScreenLockSystemAbilityStub  code----》%{public}u", code);
     switch (code) {
-        case ONCALLBACK: {
+        case ON_CALLBACK: {
             SystemEvent systemEvent(data.ReadString(), data.ReadString());
             OnCallBack(systemEvent);
             break;

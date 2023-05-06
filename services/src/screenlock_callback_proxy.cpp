@@ -24,7 +24,7 @@ ScreenLockCallbackProxy::ScreenLockCallbackProxy(const sptr<IRemoteObject> &impl
 {
 }
 
-void ScreenLockCallbackProxy::OnCallBack(const int32_t screenLockResult)
+void ScreenLockCallbackProxy::OnCallBack(int32_t screenLockResult)
 {
     SCLOCK_HILOGD("ScreenLockCallbackProxy::OnCallBack  screenLockResult Start");
     MessageParcel data;
@@ -38,7 +38,7 @@ void ScreenLockCallbackProxy::OnCallBack(const int32_t screenLockResult)
         SCLOCK_HILOGE("write screenLockResult failed");
         return;
     }
-    int32_t errorCode = Remote()->SendRequest(ONCALLBACK, data, reply, option);
+    int32_t errorCode = Remote()->SendRequest(ON_CALLBACK, data, reply, option);
     if (errorCode != 0) {
         SCLOCK_HILOGE("SendRequest failed, errorCode: %{public}d", errorCode);
     }

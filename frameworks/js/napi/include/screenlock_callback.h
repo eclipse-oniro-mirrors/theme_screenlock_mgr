@@ -29,7 +29,7 @@ public:
     void SetErrorInfo(const ErrorInfo &errorInfo) override;
 
 private:
-    static void UvWorkOnCallBack(uv_work_t *work, int status);
+    static void UvWorkOnCallBack(uv_work_t *work, int32_t status);
 
 private:
     EventListener eventListener_;

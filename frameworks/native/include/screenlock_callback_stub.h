@@ -29,7 +29,7 @@ public:
     virtual ~ScreenLockCallbackStub()
     {
     }
-    void OnCallBack(const int32_t screenLockResult) override;
+    void OnCallBack(int32_t screenLockResult) override;
     void SetErrorInfo(const ErrorInfo &errorInfo) override;
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 };

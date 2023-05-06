@@ -33,7 +33,7 @@ class ScreenLockSystemAbilityInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface");
     virtual void OnCallBack(const SystemEvent &systemEvent) = 0;
-    enum Message { ONCALLBACK = 0 };
+    enum Message { ON_CALLBACK = 0 };
 };
 } // namespace ScreenLock
 } // namespace OHOS

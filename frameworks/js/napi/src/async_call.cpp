@@ -123,7 +123,7 @@ void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
     napi_value result[static_cast<uint32_t>(ARG_INFO::ARG_BUTT)] = { nullptr };
     SCLOCK_HILOGD("run the js callback function:status[%{public}d]runStatus[%{public}d]", status, runStatus);
     if (status == napi_ok && runStatus == napi_ok) {
-        napi_get_undefined(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
+        napi_get_null(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
         if (output != nullptr) {
             SCLOCK_HILOGD("AsyncCall::OnComplete output != nullptr");
             result[static_cast<uint32_t>(ARG_INFO::ARG_DATA)] = output;

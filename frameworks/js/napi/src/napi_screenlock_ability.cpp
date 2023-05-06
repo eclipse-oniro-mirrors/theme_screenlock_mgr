@@ -212,7 +212,8 @@ void AsyncCallFunc(napi_env env, EventListener *listener)
             status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
         }
         if (status != E_SCREENLOCK_OK) {
-            ErrorInfo errInfo(static_cast<uint32_t>(status));
+            ErrorInfo errInfo;
+            errInfo.errorCode_ = static_cast<uint32_t>(status);
             GetErrorInfo(status, errInfo);
             callback->SetErrorInfo(errInfo);
             callback->OnCallBack(status);
@@ -409,7 +410,8 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     if (listener != nullptr) {
         int32_t retCode = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
         if (retCode != E_SCREENLOCK_OK) {
-            ErrorInfo errInfo(static_cast<uint32_t>(retCode));
+            ErrorInfo errInfo;
+            errInfo.errorCode_ = static_cast<uint32_t>(retCode);
             GetErrorInfo(retCode, errInfo);
             ThrowError(env, errInfo.errorCode_, errInfo.message_);
             status = false;
@@ -427,7 +429,6 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     SCLOCK_HILOGD("NAPI_ScreenLockSendEvent begin");
     SendEventInfo *context = new SendEventInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
-        SCLOCK_HILOGD("input ---- argc : %{public}zu", argc);
         if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
@@ -460,7 +461,8 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     auto exec = [context](AsyncCall::Context *ctx) {
         int32_t retCode = ScreenLockAppManager::GetInstance()->SendScreenLockEvent(context->eventInfo, context->param);
         if (retCode != E_SCREENLOCK_OK) {
-            ErrorInfo errInfo(static_cast<uint32_t>(retCode));
+            ErrorInfo errInfo;
+            errInfo.errorCode_ = static_cast<uint32_t>(retCode);
             GetErrorInfo(retCode, errInfo);
             context->SetErrorInfo(errInfo);
             context->allowed = false;

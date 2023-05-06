@@ -20,7 +20,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
-void ScreenLockCallbackStub::OnCallBack(const int32_t screenLockResult)
+void ScreenLockCallbackStub::OnCallBack(int32_t screenLockResult)
 {
 }
 
@@ -36,9 +36,8 @@ int32_t ScreenLockCallbackStub::OnRemoteRequest(uint32_t code, MessageParcel &da
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
         return E_SCREENLOCK_TRANSACT_ERROR;
     }
-    SCLOCK_HILOGD("ScreenLockCallbackStub  code----》%{public}u", code);
     switch (code) {
-        case ONCALLBACK: {
+        case ON_CALLBACK: {
             int32_t screenLockResult = data.ReadInt32();
             OnCallBack(screenLockResult);
             break;

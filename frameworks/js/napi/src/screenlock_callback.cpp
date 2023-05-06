@@ -46,7 +46,7 @@ void ScreenlockCallback::SetErrorInfo(const ErrorInfo &errorInfo)
     errorInfo_ = errorInfo;
 }
 
-void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int status)
+void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
 {
     if (work == nullptr) {
         SCLOCK_HILOGE("UvWorkOnCallBack, work is null");
@@ -68,7 +68,7 @@ void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int status)
         napi_get_boolean(callBackPtr->env, screenLockSuccess, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     }
     if (screenLockSuccess) {
-        napi_get_undefined(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
+        napi_get_null(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
     } else {
         AsyncCall::GenerateBusinessError(callBackPtr->env, callBackPtr->errorInfo,
             &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);

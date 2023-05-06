@@ -26,7 +26,7 @@ class ScreenLockCallbackProxy : public IRemoteProxy<ScreenLockCallbackInterface>
 public:
     explicit ScreenLockCallbackProxy(const sptr<IRemoteObject> &impl);
     ~ScreenLockCallbackProxy() = default;
-    void OnCallBack(const int32_t screenLockResult) override;
+    void OnCallBack(int32_t screenLockResult) override;
     void SetErrorInfo(const ErrorInfo &errorInfo) override;
 
 private:

@@ -20,19 +20,16 @@
 namespace OHOS {
 namespace ScreenLock {
 struct ErrorInfo {
-    uint32_t errorCode_;
+    uint32_t errorCode_ = 0;
     std::string message_;
-    explicit ErrorInfo(uint32_t errorCode = 0, std::string message = "") : errorCode_(errorCode), message_(message)
-    {
-    }
 };
 
 class ScreenLockCallbackInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockCallbackInterface");
-    virtual void OnCallBack(const int32_t screenLockResult) = 0;
+    virtual void OnCallBack(int32_t screenLockResult) = 0;
     virtual void SetErrorInfo(const ErrorInfo &errorInfo) = 0;
-    enum Message { ONCALLBACK = 0 };
+    enum Message { ON_CALLBACK = 0 };
 };
 } // namespace ScreenLock
 } // namespace OHOS
