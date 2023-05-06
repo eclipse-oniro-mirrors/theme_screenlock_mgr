@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/theme/screenlock_mgr/screenlock.gni")
 import("//build/ohos.gni")
+import("../../screenlock.gni")
 
 config("screenlock_mgr_frameworks_native_config") {
   visibility = [ ":*" ]

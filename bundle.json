@@ -20,8 +20,8 @@
     "adapted_system_type": [
       "standard"
     ],
-    "rom":"300KB",
-    "ram":"1024KB",
+    "rom":"390KB",
+    "ram":"4614KB",
     "deps": {
       "components": [
         "multimedia_image_framework",
@@ -39,7 +39,6 @@
         "access_token",
         "hicollie_native",
         "init",
-        "os_account:os_account_innerkits",
         "window_manager",
         "hiviewdfx_hilog_native",
         "user_auth_framework",
