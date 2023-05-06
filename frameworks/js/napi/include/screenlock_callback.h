@@ -15,19 +15,21 @@
 #ifndef NAPI_SCREENLOCK_CALL_BACK_H
 #define NAPI_SCREENLOCK_CALL_BACK_H
 
-#include <string>
-
 #include "event_listener.h"
-#include "screenlock_system_ability_stub.h"
+#include "screenlock_callback_stub.h"
+#include "uv.h"
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenlockCallback : public ScreenLockSystemAbilityStub {
+class ScreenlockCallback : public ScreenLockCallbackStub {
 public:
     explicit ScreenlockCallback(const EventListener &eventListener);
     ~ScreenlockCallback() override;
-    void OnCallBack(const SystemEvent &systemEvent) override;
-    void SetErrorInfo(const ErrorInfo &errorInfo) override;
+    void OnCallBack(const int32_t screenLockResult) override;
+    void SetErrorInfo(const ErrorInfo &errorInfo);
+
+private:
+    static void UvWorkOnCallBack(uv_work_t *work, int32_t status);
 
 private:
     EventListener eventListener_;

@@ -17,13 +17,14 @@
 
 #include <string>
 
+#include "ability_manager_client.h"
+#include "ipc_skeleton.h"
 #include "parcel.h"
 #include "sclock_log.h"
+#include "screenlock_appinfo.h"
+#include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
-#include "ipc_skeleton.h"
-#include "ability_manager_client.h"
-#include "screenlock_appinfo.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -96,7 +97,7 @@ int32_t ScreenLockManagerStub::OnUnlock(MessageParcel &data, MessageParcel &repl
         SCLOCK_HILOGE("remote is nullptr");
         return ERR_INVALID_DATA;
     }
-    sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
+    sptr<ScreenLockCallbackInterface> listener = iface_cast<ScreenLockCallbackInterface>(remote);
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGE("listener is null");
         return ERR_INVALID_DATA;
@@ -113,7 +114,7 @@ int32_t ScreenLockManagerStub::OnUnlockScreen(MessageParcel &data, MessageParcel
         SCLOCK_HILOGE("remote is nullptr");
         return ERR_INVALID_DATA;
     }
-    sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
+    sptr<ScreenLockCallbackInterface> listener = iface_cast<ScreenLockCallbackInterface>(remote);
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGE("listener is null");
         return ERR_INVALID_DATA;
@@ -130,7 +131,7 @@ int32_t ScreenLockManagerStub::OnLock(MessageParcel &data, MessageParcel &reply)
         SCLOCK_HILOGE("ScreenLockManagerStub remote is nullptr");
         return ERR_INVALID_DATA;
     }
-    sptr<ScreenLockSystemAbilityInterface> listener = iface_cast<ScreenLockSystemAbilityInterface>(remote);
+    sptr<ScreenLockCallbackInterface> listener = iface_cast<ScreenLockCallbackInterface>(remote);
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGE("ScreenLockManagerStub listener is null");
         return ERR_INVALID_DATA;

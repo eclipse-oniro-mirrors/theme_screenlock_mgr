@@ -24,6 +24,7 @@
 #include "dm_common.h"
 #include "event_handler.h"
 #include "iremote_object.h"
+#include "screenlock_callback_interface.h"
 #include "screenlock_manager_stub.h"
 #include "screenlock_system_ability_interface.h"
 #include "system_ability.h"
@@ -133,9 +134,9 @@ public:
     int32_t IsLocked(bool &isLocked) override;
     bool IsScreenLocked() override;
     bool GetSecure() override;
-    int32_t Unlock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    int32_t UnlockScreen(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
-    int32_t Lock(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
+    int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener) override;
+    int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener) override;
+    int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
@@ -174,11 +175,12 @@ private:
     void LockScreenEvent(int stateResult);
     void UnlockScreenEvent(int stateResult);
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
-    int32_t UnlockInner(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    int32_t UnlockInner(const sptr<ScreenLockCallbackInterface> &listener);
     void PublishEvent(const std::string &eventAction);
     bool IsAppInForeground(uint32_t tokenId);
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
+    void NotifyUnlockListener(const int32_t screenLockResult);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
@@ -188,9 +190,9 @@ private:
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     std::mutex unlockListenerMutex_;
-    std::vector<sptr<ScreenLockSystemAbilityInterface>> unlockVecListeners_;
+    std::vector<sptr<ScreenLockCallbackInterface>> unlockVecListeners_;
     std::mutex lockListenerMutex_;
-    std::vector<sptr<ScreenLockSystemAbilityInterface>> lockVecListeners_;
+    std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
     StateValue stateValue_;
     const int32_t startTime_ = 1900;
     const int32_t extraMonth_ = 1;

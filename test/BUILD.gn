@@ -28,6 +28,7 @@ ohos_unittest("ScreenLockServiceTest") {
   sources = [
     "${screenlock_mgr_path}/services/src/command.cpp",
     "${screenlock_mgr_path}/services/src/dump_helper.cpp",
+    "${screenlock_mgr_path}/services/src/screenlock_callback_proxy.cpp",
     "${screenlock_mgr_path}/services/src/screenlock_get_info_callback.cpp",
     "${screenlock_mgr_path}/services/src/screenlock_manager_stub.cpp",
     "${screenlock_mgr_path}/services/src/screenlock_system_ability.cpp",

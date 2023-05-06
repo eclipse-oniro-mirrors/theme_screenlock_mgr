@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,18 +13,18 @@
  * limitations under the License.
  */
 
-#include "screenlock_system_ability_stub.h"
+#include "screenlock_callback_stub.h"
 
 #include "sclock_log.h"
 #include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {
-void ScreenLockSystemAbilityStub::OnCallBack(const SystemEvent &systemEvent)
+void ScreenLockCallbackStub::OnCallBack(int32_t screenLockResult)
 {
 }
 
-int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+int32_t ScreenLockCallbackStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
     auto descriptorToken = data.ReadInterfaceToken();
@@ -34,8 +34,8 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParce
     }
     switch (code) {
         case ON_CALLBACK: {
-            SystemEvent systemEvent(data.ReadString(), data.ReadString());
-            OnCallBack(systemEvent);
+            int32_t screenLockResult = data.ReadInt32();
+            OnCallBack(screenLockResult);
             break;
         }
         default: {

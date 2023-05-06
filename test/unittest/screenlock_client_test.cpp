@@ -95,7 +95,7 @@ HWTEST_F(ScreenLockClientTest, GetSecureTest002, TestSize.Level0)
 HWTEST_F(ScreenLockClientTest, LockTest003, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestLock and RequestUnlock");
-    sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
     int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
     result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener);
@@ -122,7 +122,8 @@ HWTEST_F(ScreenLockClientTest, LockTest003, TestSize.Level0)
 HWTEST_F(ScreenLockClientTest, OnSystemEventTest004, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test OnSystemEvent");
-    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
+    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow)
+        ScreenLockSystemAbilityTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
     int32_t result = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
@@ -191,11 +192,12 @@ HWTEST_F(ScreenLockClientTest, ProxyTest008, TestSize.Level0)
     sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
     int32_t result = proxy->OnSystemEvent(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = proxy->Lock(listener);
+    sptr<ScreenLockCallbackInterface> callback = nullptr;
+    result = proxy->Lock(callback);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = proxy->Unlock(listener);
+    result = proxy->Unlock(callback);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-    result = proxy->Unlock(listener);
+    result = proxy->Unlock(callback);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 } // namespace ScreenLock

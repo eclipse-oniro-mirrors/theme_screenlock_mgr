@@ -30,7 +30,6 @@ struct EventListener {
     napi_ref callbackRef = nullptr;
     napi_deferred deferred = nullptr;
     napi_async_work work = nullptr;
-    bool callbackResult = false;
     Action action;
 };
 } // namespace ScreenLock

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,26 +13,24 @@
  * limitations under the License.
  */
 
-#ifndef SCREENLOCK_CALLBACK_INTERFACE_H
-#define SCREENLOCK_CALLBACK_INTERFACE_H
+#ifndef I_SCREENLOCK_CALLBACK_INTERFACE_H
+#define I_SCREENLOCK_CALLBACK_INTERFACE_H
 
-#include <cstdint>
-#include <string>
-
-#include "iremote_stub.h"
-#include "screenlock_system_ability_interface.h"
-
+#include "iremote_broker.h"
 namespace OHOS {
 namespace ScreenLock {
-class ScreenLockSystemAbilityStub : public IRemoteStub<ScreenLockSystemAbilityInterface> {
+struct ErrorInfo {
+    uint32_t errorCode_ = 0;
+    std::string message_;
+};
+
+class ScreenLockCallbackInterface : public IRemoteBroker {
 public:
-    ScreenLockSystemAbilityStub() = default;
-    virtual ~ScreenLockSystemAbilityStub()
-    {
-    }
-    void OnCallBack(const SystemEvent &systemEvent) override;
-    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockCallbackInterface");
+    virtual void OnCallBack(int32_t screenLockResult) = 0;
+    enum Message { ON_CALLBACK = 0 };
 };
 } // namespace ScreenLock
 } // namespace OHOS
-#endif // SCREENLOCK_CALLBACK_INTERFACE_H
+
+#endif // I_SCREENLOCK_CALLBACK_INTERFACE_H

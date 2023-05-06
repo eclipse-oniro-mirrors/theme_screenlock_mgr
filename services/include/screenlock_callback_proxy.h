@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,27 +13,25 @@
  * limitations under the License.
  */
 
-#ifndef I_SCREENLOCK_CALLBACK_LISTENER_PROXY_H
-#define I_SCREENLOCK_CALLBACK_LISTENER_PROXY_H
-
-#include <string>
+#ifndef I_SCREENLOCK_CALLBACK_PROXY_H
+#define I_SCREENLOCK_CALLBACK_PROXY_H
 
 #include "iremote_proxy.h"
 #include "refbase.h"
-#include "screenlock_system_ability_interface.h"
+#include "screenlock_callback_interface.h"
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenLockSystemAbilityProxy : public IRemoteProxy<ScreenLockSystemAbilityInterface> {
+class ScreenLockCallbackProxy : public IRemoteProxy<ScreenLockCallbackInterface> {
 public:
-    explicit ScreenLockSystemAbilityProxy(const sptr<IRemoteObject> &impl);
-    ~ScreenLockSystemAbilityProxy() = default;
-    void OnCallBack(const SystemEvent &systemEvent) override;
+    explicit ScreenLockCallbackProxy(const sptr<IRemoteObject> &impl);
+    ~ScreenLockCallbackProxy() = default;
+    void OnCallBack(int32_t screenLockResult) override;
 
 private:
-    static inline BrokerDelegator<ScreenLockSystemAbilityProxy> delegator_;
+    static inline BrokerDelegator<ScreenLockCallbackProxy> delegator_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
 
-#endif // I_SCREENLOCK_CALLBACK_LISTENER_PROXY_H
+#endif // I_SCREENLOCK_CALLBACK_PROXY_H
