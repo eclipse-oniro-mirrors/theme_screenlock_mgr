@@ -17,7 +17,6 @@ import("//build/ohos.gni")
 group("screenlock_mgr_packages") {
   if (is_standard_system) {
     deps = [
-      "etc/init:screenlockservice.cfg",
       "sa_profile:screenlock_sa_profiles",
       "services:screenlock_server",
     ]
