@@ -31,10 +31,10 @@ using namespace OHOS::ScreenLock;
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr int32_t OFFSET = 4;
+constexpr size_t LENGTH = 1;
 constexpr size_t RANDNUM_ZERO = 0;
 constexpr size_t RANDNUM_ONE = 1;
 constexpr size_t RANDNUM_TWO = 2;
-constexpr size_t RANDNUM_THREE = 3;
 
 uint32_t ConvertToUint32(const uint8_t *ptr)
 {
@@ -56,15 +56,30 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
     }
     if (code == RANDNUM_TWO) {
         sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
-        int32_t ret = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener_);
-        return ret == E_SCREENLOCK_OK;
-    }
-    if (code == RANDNUM_THREE) {
-        sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
         int32_t ret = ScreenLockManager::GetInstance()->Lock(listener_);
         return ret == E_SCREENLOCK_OK;
     }
     return true;
+}
+
+bool UnlockFuzzTest(const uint8_t *rawData, size_t size)
+{
+    sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t ret = ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % 3), listener_);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool IsLockedFuzzTest(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    bool isLocked = static_cast<bool>(rawData[0] % 2);
+    int32_t ret = ScreenLockManager::GetInstance()->IsLocked(isLocked);
+    return ret == E_SCREENLOCK_OK;
 }
 
 bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
@@ -96,6 +111,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
     /* Run your code on data */
     OHOS::FuzzScreenlockManager(data, size);
+    OHOS::UnlockFuzzTest(data, size);
+    OHOS::IsLockedFuzzTest(data, size);
     OHOS::FuzzScreenlockAppManager(data, size);
     return 0;
 }
