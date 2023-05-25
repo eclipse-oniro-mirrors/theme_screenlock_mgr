@@ -1,0 +1,108 @@
+# Copyright (C) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("../../screenlock.gni")
+
+config("screenlock_mgr_frameworks_native_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "include",
+    "${screenlock_mgr_path}/frameworks/native/include",
+    "${screenlock_mgr_path}/utils/include",
+    "${screenlock_mgr_path}/services/include",
+  ]
+
+  cflags_cc = []
+}
+
+ohos_shared_library("screenlock_client") {
+  if (is_standard_system) {
+    sanitize = {
+      cfi = true
+      cfi_cross_dso = true
+      debug = false
+    }
+    sources = [
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_system_ability_stub.cpp",
+    ]
+
+    cflags = [
+      "-fdata-sections",
+      "-ffunction-sections",
+      "-fvisibility=hidden",
+      "-Os",
+    ]
+
+    version_script = "screenlock_client.versionscript"
+
+    public_configs = [ ":screenlock_mgr_frameworks_native_config" ]
+
+    include_dirs = [
+      "include",
+      "${screenlock_mgr_path}/frameworks/native/include",
+    ]
+
+    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
+
+    external_deps = [
+      "c_utils:utils",
+      "hitrace_native:hitrace_meter",
+      "hiviewdfx_hilog_native:libhilog",
+      "ipc:ipc_single",
+      "samgr:samgr_proxy",
+    ]
+    subsystem_name = "theme"
+    part_name = "screenlock_mgr"
+  }
+}
+
+ohos_static_library("screenlock_client_static") {
+  if (is_standard_system) {
+    sanitize = {
+      cfi = true
+      cfi_cross_dso = true
+      debug = false
+    }
+    sources = [
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_system_ability_stub.cpp",
+    ]
+
+    public_configs = [ ":screenlock_mgr_frameworks_native_config" ]
+
+    include_dirs = [
+      "include",
+      "${screenlock_mgr_path}/frameworks/native/include",
+    ]
+
+    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
+
+    external_deps = [
+      "c_utils:utils",
+      "hitrace_native:hitrace_meter",
+      "hiviewdfx_hilog_native:libhilog",
+      "ipc:ipc_single",
+      "samgr:samgr_proxy",
+    ]
+    subsystem_name = "theme"
+    part_name = "screenlock_mgr"
+  }
+}
