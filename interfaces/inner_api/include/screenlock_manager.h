@@ -24,6 +24,7 @@
 #include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_manager_interface.h"
+#include "visibility.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -40,7 +41,17 @@ public:
     ~ScreenLockManager() override;
     static sptr<ScreenLockManager> GetInstance();
     int32_t IsLocked(bool &isLocked);
-    bool IsScreenLocked();
+
+    /**
+     * @brief Checks whether the screen is currently locked.
+     *
+     * This function is used to Check whether the screen is currently locked.
+     *
+     * @return Returns true if the screen is currently locked; returns false otherwise.
+     * @since 7
+     */
+    SCREENLOCK_API bool IsScreenLocked();
+
     bool GetSecure();
     int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
     int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
