@@ -1,0 +1,12 @@
+{
+    "process": "screenlock_server",
+    "systemability": [
+        {
+            "name": 3704,
+            "libpath": "libscreenlock_server.z.so",
+            "run-on-create": true,
+            "distributed": false,
+            "dump_level": 1
+        }
+    ]
+}
