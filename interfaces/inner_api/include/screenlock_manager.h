@@ -37,10 +37,10 @@ public:
 
 class ScreenLockManager : public RefBase {
 public:
-    ScreenLockManager();
-    ~ScreenLockManager() override;
-    static sptr<ScreenLockManager> GetInstance();
-    int32_t IsLocked(bool &isLocked);
+    SCREENLOCK_API ScreenLockManager();
+    SCREENLOCK_API ~ScreenLockManager() override;
+    SCREENLOCK_API static sptr<ScreenLockManager> GetInstance();
+    SCREENLOCK_API int32_t IsLocked(bool &isLocked);
 
     /**
      * @brief Checks whether the screen is currently locked.
@@ -52,11 +52,11 @@ public:
      */
     SCREENLOCK_API bool IsScreenLocked();
 
-    bool GetSecure();
-    int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
-    int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API bool GetSecure();
+    SCREENLOCK_API int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
-    sptr<ScreenLockManagerInterface> GetProxy();
+    SCREENLOCK_API sptr<ScreenLockManagerInterface> GetProxy();
 
 private:
     static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
