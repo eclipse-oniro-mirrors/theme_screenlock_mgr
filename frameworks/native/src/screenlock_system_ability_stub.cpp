@@ -20,6 +20,10 @@
 
 namespace OHOS {
 namespace ScreenLock {
+ScreenLockSystemAbilityStub::~ScreenLockSystemAbilityStub()
+{
+}
+
 void ScreenLockSystemAbilityStub::OnCallBack(const SystemEvent &systemEvent)
 {
 }
