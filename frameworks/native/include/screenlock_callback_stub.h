@@ -29,7 +29,8 @@ public:
     SCREENLOCK_API ScreenLockCallbackStub() = default;
     SCREENLOCK_API ~ScreenLockCallbackStub() override;
     SCREENLOCK_API void OnCallBack(int32_t screenLockResult) override;
-    SCREENLOCK_API int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    SCREENLOCK_API int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+        MessageOption &option) override;
 };
 } // namespace ScreenLock
 } // namespace OHOS
