@@ -21,17 +21,17 @@
 
 #include "iremote_stub.h"
 #include "screenlock_system_ability_interface.h"
+#include "visibility.h"
 
 namespace OHOS {
 namespace ScreenLock {
 class ScreenLockSystemAbilityStub : public IRemoteStub<ScreenLockSystemAbilityInterface> {
 public:
-    ScreenLockSystemAbilityStub() = default;
-    virtual ~ScreenLockSystemAbilityStub()
-    {
-    }
-    void OnCallBack(const SystemEvent &systemEvent) override;
-    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    SCREENLOCK_API ScreenLockSystemAbilityStub() = default;
+    SCREENLOCK_API ~ScreenLockSystemAbilityStub() override;
+    SCREENLOCK_API void OnCallBack(const SystemEvent &systemEvent) override;
+    SCREENLOCK_API int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+        MessageOption &option) override;
 };
 } // namespace ScreenLock
 } // namespace OHOS

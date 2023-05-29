@@ -23,6 +23,7 @@
 #include "refbase.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability_interface.h"
+#include "visibility.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -35,13 +36,13 @@ public:
 
 class ScreenLockAppManager : public RefBase {
 public:
-    ScreenLockAppManager();
-    ~ScreenLockAppManager() override;
-    static sptr<ScreenLockAppManager> GetInstance();
-    int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
-    int32_t SendScreenLockEvent(const std::string &event, int param);
-    void OnRemoteSaDied(const wptr<IRemoteObject> &object);
-    sptr<ScreenLockManagerInterface> GetProxy();
+    SCREENLOCK_API ScreenLockAppManager();
+    SCREENLOCK_API ~ScreenLockAppManager() override;
+    SCREENLOCK_API static sptr<ScreenLockAppManager> GetInstance();
+    SCREENLOCK_API int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    SCREENLOCK_API int32_t SendScreenLockEvent(const std::string &event, int param);
+    SCREENLOCK_API void OnRemoteSaDied(const wptr<IRemoteObject> &object);
+    SCREENLOCK_API sptr<ScreenLockManagerInterface> GetProxy();
 
 private:
     static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();

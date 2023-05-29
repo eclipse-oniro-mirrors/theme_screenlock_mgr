@@ -20,6 +20,10 @@
 
 namespace OHOS {
 namespace ScreenLock {
+ScreenLockCallbackStub::~ScreenLockCallbackStub()
+{
+}
+
 void ScreenLockCallbackStub::OnCallBack(int32_t screenLockResult)
 {
 }

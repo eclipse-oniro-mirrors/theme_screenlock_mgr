@@ -24,6 +24,7 @@
 #include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_manager_interface.h"
+#include "visibility.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -36,16 +37,26 @@ public:
 
 class ScreenLockManager : public RefBase {
 public:
-    ScreenLockManager();
-    ~ScreenLockManager() override;
-    static sptr<ScreenLockManager> GetInstance();
-    int32_t IsLocked(bool &isLocked);
-    bool IsScreenLocked();
-    bool GetSecure();
-    int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
-    int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API ScreenLockManager();
+    SCREENLOCK_API ~ScreenLockManager() override;
+    SCREENLOCK_API static sptr<ScreenLockManager> GetInstance();
+    SCREENLOCK_API int32_t IsLocked(bool &isLocked);
+
+    /**
+     * @brief Checks whether the screen is currently locked.
+     *
+     * This function is used to Check whether the screen is currently locked.
+     *
+     * @return Returns true if the screen is currently locked; returns false otherwise.
+     * @since 7
+     */
+    SCREENLOCK_API bool IsScreenLocked();
+
+    SCREENLOCK_API bool GetSecure();
+    SCREENLOCK_API int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
-    sptr<ScreenLockManagerInterface> GetProxy();
+    SCREENLOCK_API sptr<ScreenLockManagerInterface> GetProxy();
 
 private:
     static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();

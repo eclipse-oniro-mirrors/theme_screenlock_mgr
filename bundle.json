@@ -51,7 +51,7 @@
         "base_group": [
         ],
         "fwk_group": [
-          "//base/theme/screenlock_mgr/frameworks/native:screenlock_client",
+          "//base/theme/screenlock_mgr/interfaces/inner_api:screenlock_client",
           "//base/theme/screenlock_mgr/frameworks/js/napi:screenlock",
           "//base/theme/screenlock_mgr/utils:screenlock_utils"
         ],
@@ -59,8 +59,17 @@
           "//base/theme/screenlock_mgr:screenlock_mgr_packages"
         ]
       },
-      "inner_kits": [
-      ],
+      "inner_api": [
+        {
+          "name": "//base/theme/screenlock_mgr/interfaces/inner_api:screenlock_client", 
+          "header": {
+            "header_files": [
+              "screenlock_manager.h"
+            ], 
+            "header_base": "//base/theme/screenlock_mgr/interfaces/inner_api/include"
+          }
+        }
+      ], 
       "test": [
         "//base/theme/screenlock_mgr/frameworks/js/napi/test:unittest",
         "//base/theme/screenlock_mgr/test:unittest",
