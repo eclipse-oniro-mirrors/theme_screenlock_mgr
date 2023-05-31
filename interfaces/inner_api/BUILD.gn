@@ -70,39 +70,3 @@ ohos_shared_library("screenlock_client") {
     part_name = "screenlock_mgr"
   }
 }
-
-ohos_static_library("screenlock_client_static") {
-  if (is_standard_system) {
-    sanitize = {
-      cfi = true
-      cfi_cross_dso = true
-      debug = false
-    }
-    sources = [
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_system_ability_stub.cpp",
-    ]
-
-    public_configs = [ ":screenlock_mgr_frameworks_native_config" ]
-
-    include_dirs = [
-      "include",
-      "${screenlock_mgr_path}/frameworks/native/include",
-    ]
-
-    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
-
-    external_deps = [
-      "c_utils:utils",
-      "hitrace_native:hitrace_meter",
-      "hiviewdfx_hilog_native:libhilog",
-      "ipc:ipc_single",
-      "samgr:samgr_proxy",
-    ]
-    subsystem_name = "theme"
-    part_name = "screenlock_mgr"
-  }
-}
