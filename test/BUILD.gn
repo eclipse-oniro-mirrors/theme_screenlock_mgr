@@ -62,7 +62,7 @@ ohos_unittest("ScreenLockServiceTest") {
   ]
 
   deps = [
-    "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
+    "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client",
     "${screenlock_mgr_path}/utils:screenlock_utils",
     "//third_party/googletest:gtest_main",
   ]
