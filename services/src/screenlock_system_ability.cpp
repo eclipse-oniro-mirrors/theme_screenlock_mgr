@@ -55,7 +55,7 @@ using namespace OHOS::Rosen;
 using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Security::AccessToken;
 
-constexpr bool REGISTER_RESULT = Rosen::SceneBoardJudgement::IsSceneBoardEnabled() ? false :
+const bool REGISTER_RESULT = Rosen::SceneBoardJudgement::IsSceneBoardEnabled() ? false :
     SystemAbility::MakeAndRegisterAbility(new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true));
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000L;

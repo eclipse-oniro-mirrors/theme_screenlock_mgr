@@ -16,10 +16,10 @@ import("../screenlock.gni")
 
 config("screenlock_mgr_service_config") {
   visibility = [ ":*" ]
-  include_dirs = [ 
+  include_dirs = [
     "include",
     "${screenlock_mgr_path}/frameworks/native/include",
-    "${screenlock_mgr_path}/utils/include", 
+    "${screenlock_mgr_path}/utils/include",
   ]
 }
 
@@ -111,6 +111,7 @@ ohos_static_library("screenlock_server_static") {
     "safwk:system_ability_fwk",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
+    "window_manager:libwsutils",
   ]
 
   subsystem_name = "theme"
