@@ -59,6 +59,7 @@ ohos_unittest("ScreenLockServiceTest") {
     "samgr:samgr_proxy",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
+    "window_manager:libwsutils",
   ]
 
   deps = [

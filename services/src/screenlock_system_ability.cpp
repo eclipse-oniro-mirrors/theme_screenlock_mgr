@@ -45,6 +45,7 @@
 #include "user_idm_client.h"
 #include "want.h"
 #include "xcollie/watchdog.h"
+#include "scene_board_judgement.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -54,7 +55,8 @@ using namespace OHOS::Rosen;
 using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Security::AccessToken;
 
-REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
+const bool REGISTER_RESULT = Rosen::SceneBoardJudgement::IsSceneBoardEnabled() ? false :
+    SystemAbility::MakeAndRegisterAbility(new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true));
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000L;
 const std::int64_t DELAY_TIME = 1000L;
@@ -71,7 +73,13 @@ ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool r
 
 ScreenLockSystemAbility::~ScreenLockSystemAbility()
 {
-    SCLOCK_HILOGI("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
+    SCLOCK_HILOGD("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
+    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        serviceHandler_ = nullptr;
+        instance_ = nullptr;
+        DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+        displayPowerEventListener_ = nullptr;
+    }
 }
 
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
@@ -79,8 +87,9 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
     if (instance_ == nullptr) {
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
+            SCLOCK_HILOGI("ScreenLockSystemAbility create instance.");
             instance_ = new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true);
-            SCLOCK_HILOGE("ScreenLockSystemAbility create instance.");
+            instance_->Initialize();
         }
     }
     return instance_;
@@ -113,8 +122,7 @@ void ScreenLockSystemAbility::OnStart()
     if (Init() != ERR_OK) {
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
-        SCLOCK_HILOGE("ScreenLockSystemAbility Init failed. Try again 5s later");
-        return;
+        SCLOCK_HILOGW("ScreenLockSystemAbility Init failed. Try again 5s later");
     }
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
     RegisterDumpCommand();
@@ -130,11 +138,6 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
             displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
         }
         RegisterDisplayPowerEventListener(times);
-        if (flag_) {
-            state_ = ServiceRunningState::STATE_RUNNING;
-            auto callback = [=]() { OnSystemReady(); };
-            serviceHandler_->PostTask(callback, INTERVAL_ZERO);
-        }
     }
 }
 
@@ -144,9 +147,13 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
     flag_ = (DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_) ==
              DMError::DM_OK);
     if (flag_ == false && times <= MAX_RETRY_TIMES) {
-        SCLOCK_HILOGE("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
+        SCLOCK_HILOGW("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
         serviceHandler_->PostTask(callback, DELAY_TIME);
+    } else if (flag_) {
+        state_ = ServiceRunningState::STATE_RUNNING;
+        auto callback = [=]() { OnSystemReady(); };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener end, flag_:%{public}d, times:%{public}d",
         flag_, times);
@@ -352,12 +359,14 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
 
-    // check whether the page of app request unlock is the focus page
-    if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
-        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
-                         HITRACE_UNLOCKSCREEN);
-        SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
-        return E_SCREENLOCK_NO_PERMISSION;
+    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        // check whether the page of app request unlock is the focus page
+        if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
+            FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
+                HITRACE_UNLOCKSCREEN);
+            SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
+            return E_SCREENLOCK_NO_PERMISSION;
+        }
     }
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);
@@ -615,6 +624,18 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
         };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
+}
+
+void ScreenLockSystemAbility::Initialize()
+{
+    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        return;
+    }
+    InitServiceHandler();
+    displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    int times = 0;
+    RegisterDisplayPowerEventListener(times);
+    stateValue_.Reset();
 }
 
 #ifdef OHOS_TEST_FLAG
