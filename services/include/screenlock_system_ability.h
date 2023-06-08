@@ -181,6 +181,7 @@ private:
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
+    void Initialize();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;

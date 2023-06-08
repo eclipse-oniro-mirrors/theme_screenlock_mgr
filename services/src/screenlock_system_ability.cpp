@@ -69,13 +69,6 @@ constexpr int32_t MAX_RETRY_TIMES = 20;
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
 {
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        InitServiceHandler();
-        displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
-        int times = 0;
-        RegisterDisplayPowerEventListener(times);
-        stateValue_.Reset();
-    }
 }
 
 ScreenLockSystemAbility::~ScreenLockSystemAbility()
@@ -94,8 +87,9 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
     if (instance_ == nullptr) {
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
-            instance_ = new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true);
             SCLOCK_HILOGI("ScreenLockSystemAbility create instance.");
+            instance_ = new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true);
+            instance_->Initialize();
         }
     }
     return instance_;
@@ -630,6 +624,18 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
         };
         serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     }
+}
+
+void ScreenLockSystemAbility::Initialize()
+{
+    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        return;
+    }
+    InitServiceHandler();
+    displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
+    int times = 0;
+    RegisterDisplayPowerEventListener(times);
+    stateValue_.Reset();
 }
 
 #ifdef OHOS_TEST_FLAG
