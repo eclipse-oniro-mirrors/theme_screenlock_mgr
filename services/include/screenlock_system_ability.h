@@ -28,6 +28,7 @@
 #include "screenlock_manager_stub.h"
 #include "screenlock_system_ability_interface.h"
 #include "system_ability.h"
+#include "visibility.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -130,7 +131,7 @@ public:
     ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate);
     ScreenLockSystemAbility();
     ~ScreenLockSystemAbility() override;
-    static sptr<ScreenLockSystemAbility> GetInstance();
+    SCREENLOCK_API static sptr<ScreenLockSystemAbility> GetInstance();
     int32_t IsLocked(bool &isLocked) override;
     bool IsScreenLocked() override;
     bool GetSecure() override;
