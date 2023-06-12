@@ -37,7 +37,7 @@
         "ability_runtime",
         "hitrace_native",
         "access_token",
-        "hicollie_native",
+        "hicollie",
         "init",
         "window_manager",
         "hiviewdfx_hilog_native",
