@@ -19,6 +19,7 @@ config("screenlock_mgr_service_config") {
   include_dirs = [
     "include",
     "${screenlock_mgr_path}/frameworks/native/include",
+    "${screenlock_mgr_path}/interfaces/inner_api/include",
     "${screenlock_mgr_path}/utils/include",
   ]
 }
