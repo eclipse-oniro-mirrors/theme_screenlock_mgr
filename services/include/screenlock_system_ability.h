@@ -183,6 +183,7 @@ private:
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
     void Initialize();
+    void NotifyDisplayEvent(Rosen::DisplayEvent event);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;

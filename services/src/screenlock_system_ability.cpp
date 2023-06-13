@@ -477,8 +477,7 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
         UnlockScreenEvent(stateResult);
     } else if (event == SCREEN_DRAWDONE) {
         SetScreenlocked(true);
-        auto callback = []() { DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN); };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     } else if (event == LOCK_SCREEN_RESULT) {
         LockScreenEvent(stateResult);
     }
@@ -552,8 +551,7 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
     SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(true);
-        auto callback = []() { DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN); };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     } else if (stateResult == ScreenChange::SCREEN_FAIL || stateResult == ScreenChange::SCREEN_CANCEL) {
         SetScreenlocked(false);
     }
@@ -578,8 +576,7 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
     SCLOCK_HILOGD("ScreenLockSystemAbility UnlockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(false);
-        auto callback = []() { DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::UNLOCK); };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        NotifyDisplayEvent(DisplayEvent::UNLOCK);
     } else if (stateResult == SCREEN_FAIL || stateResult == SCREEN_CANCEL) {
         SetScreenlocked(true);
     }
@@ -639,6 +636,16 @@ void ScreenLockSystemAbility::Initialize()
     int times = 0;
     RegisterDisplayPowerEventListener(times);
     stateValue_.Reset();
+}
+
+void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)
+{
+    if (serviceHandler_ == nullptr) {
+        SCLOCK_HILOGE("NotifyDisplayEvent serviceHandler_ is nullptr.");
+        return;
+    }
+    auto callback = [event]() { DisplayManager::GetInstance().NotifyDisplayEvent(event); };
+    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
 }
 
 #ifdef OHOS_TEST_FLAG
