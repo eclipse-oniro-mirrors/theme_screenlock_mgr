@@ -477,7 +477,8 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
         UnlockScreenEvent(stateResult);
     } else if (event == SCREEN_DRAWDONE) {
         SetScreenlocked(true);
-        DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
+        auto callback = []() { DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN); };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     } else if (event == LOCK_SCREEN_RESULT) {
         LockScreenEvent(stateResult);
     }
@@ -551,7 +552,8 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
     SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(true);
-        DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
+        auto callback = []() { DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN); };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     } else if (stateResult == ScreenChange::SCREEN_FAIL || stateResult == ScreenChange::SCREEN_CANCEL) {
         SetScreenlocked(false);
     }
@@ -576,7 +578,8 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
     SCLOCK_HILOGD("ScreenLockSystemAbility UnlockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(false);
-        DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::UNLOCK);
+        auto callback = []() { DisplayManager::GetInstance().NotifyDisplayEvent(DisplayEvent::UNLOCK); };
+        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
     } else if (stateResult == SCREEN_FAIL || stateResult == SCREEN_CANCEL) {
         SetScreenlocked(true);
     }
