@@ -68,6 +68,16 @@
             ], 
             "header_base": "//base/theme/screenlock_mgr/interfaces/inner_api/include"
           }
+        },
+        {
+          "type" : "so",
+          "name": "//base/theme/screenlock_mgr/services:screenlock_server", 
+          "header": {
+            "header_files": [
+              "screenlock_system_ability.h"
+            ], 
+            "header_base": "//base/theme/screenlock_mgr/services/include"
+          }
         }
       ], 
       "test": [
