@@ -31,6 +31,7 @@
         "common_event_service",
         "ipc",
         "eventhandler",
+        "graphic_standard",
         "os_account",
         "bundle_framework",
         "ability_base",
@@ -67,6 +68,16 @@
               "screenlock_manager.h"
             ], 
             "header_base": "//base/theme/screenlock_mgr/interfaces/inner_api/include"
+          }
+        },
+        {
+          "type" : "so",
+          "name": "//base/theme/screenlock_mgr/services:screenlock_server", 
+          "header": {
+            "header_files": [
+              "screenlock_system_ability.h"
+            ], 
+            "header_base": "//base/theme/screenlock_mgr/services/include"
           }
         }
       ], 

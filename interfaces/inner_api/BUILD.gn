@@ -21,7 +21,6 @@ config("screenlock_mgr_frameworks_native_config") {
     "${screenlock_mgr_path}/frameworks/native/include",
     "${screenlock_mgr_path}/utils/include",
     "${screenlock_mgr_path}/services/include",
-    "${window_base_path}/interfaces/innerkits/wm",
   ]
 
   cflags_cc = []
@@ -56,21 +55,20 @@ ohos_shared_library("screenlock_client") {
     include_dirs = [
       "include",
       "${screenlock_mgr_path}/frameworks/native/include",
+      "${window_base_path}/interfaces/innerkits/wm",
     ]
 
-    deps = [
-      "${graphic_base_path}/graphic_2d/rosen/modules/render_service_client:librender_service_client",
-      "${screenlock_mgr_path}/utils:screenlock_utils",
-      "${window_base_path}//window_scene/session_manager:session_manager",
-    ]
+    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
 
     external_deps = [
       "c_utils:utils",
+      "graphic_standard:librender_service_client",
       "hitrace_native:hitrace_meter",
       "hiviewdfx_hilog_native:libhilog",
       "ipc:ipc_single",
       "samgr:samgr_proxy",
       "window_manager:libwsutils",
+      "window_manager:session_manager",
     ]
     subsystem_name = "theme"
     innerapi_tags = [ "platformsdk" ]
