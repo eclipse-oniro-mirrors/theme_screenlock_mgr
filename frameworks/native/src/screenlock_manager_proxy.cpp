@@ -17,6 +17,7 @@
 #include "hilog/log_cpp.h"
 #include "iremote_broker.h"
 #include "sclock_log.h"
+#include "screenlock_server_ipc_interface_code.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -46,7 +47,7 @@ int32_t ScreenLockManagerProxy::IsScreenLockedInner(MessageParcel &reply, uint32
 int32_t ScreenLockManagerProxy::IsLocked(bool &isLocked)
 {
     MessageParcel reply;
-    int32_t ret = IsScreenLockedInner(reply, IS_LOCKED);
+    int32_t ret = IsScreenLockedInner(reply, static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_LOCKED));
     if (ret != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("IsLocked, ret = %{public}d", ret);
         return ret;
@@ -63,7 +64,7 @@ int32_t ScreenLockManagerProxy::IsLocked(bool &isLocked)
 bool ScreenLockManagerProxy::IsScreenLocked()
 {
     MessageParcel reply;
-    int32_t ret = IsScreenLockedInner(reply, IS_SCREEN_LOCKED);
+    int32_t ret = IsScreenLockedInner(reply, static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_SCREEN_LOCKED));
     if (ret != E_SCREENLOCK_OK) {
         return false;
     }
@@ -77,7 +78,8 @@ bool ScreenLockManagerProxy::GetSecure()
     MessageOption option;
     data.WriteInterfaceToken(ScreenLockManagerProxy::GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy GetSecure started.");
-    bool ret = Remote()->SendRequest(IS_SECURE_MODE, data, reply, option);
+    bool ret =
+        Remote()->SendRequest(static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_SECURE_MODE), data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("GetSecure, ret = %{public}d", ret);
         return false;
@@ -111,7 +113,7 @@ int32_t ScreenLockManagerProxy::UnlockInner(
 int32_t ScreenLockManagerProxy::Unlock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel reply;
-    int ret = UnlockInner(reply, UNLOCK, listener);
+    int ret = UnlockInner(reply, static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::UNLOCK), listener);
     if (ret != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("Unlock, ret = %{public}d", ret);
         return ret;
@@ -122,7 +124,7 @@ int32_t ScreenLockManagerProxy::Unlock(const sptr<ScreenLockCallbackInterface> &
 int32_t ScreenLockManagerProxy::UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel reply;
-    int ret = UnlockInner(reply, UNLOCK_SCREEN, listener);
+    int ret = UnlockInner(reply, static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::UNLOCK_SCREEN), listener);
     if (ret != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("Unlock, ret = %{public}d", ret);
         return ret;
@@ -148,7 +150,7 @@ int32_t ScreenLockManagerProxy::Lock(const sptr<ScreenLockCallbackInterface> &li
         SCLOCK_HILOGE("write parcel failed.");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    int32_t ret = Remote()->SendRequest(LOCK, data, reply, option);
+    int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::LOCK), data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
@@ -176,7 +178,8 @@ int32_t ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbility
         SCLOCK_HILOGE("write parcel failed.");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    int32_t result = Remote()->SendRequest(ONSYSTEMEVENT, data, reply, option);
+    int32_t result =
+        Remote()->SendRequest(static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::ONSYSTEMEVENT), data, reply, option);
     if (result != ERR_NONE) {
         SCLOCK_HILOGE(" ScreenLockManagerProxy::OnSystemEvent fail, result = %{public}d ", result);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
@@ -195,7 +198,8 @@ int32_t ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, in
     SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent started.");
     data.WriteString(event);
     data.WriteInt32(param);
-    int32_t ret = Remote()->SendRequest(SEND_SCREENLOCK_EVENT, data, reply, option);
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::SEND_SCREENLOCK_EVENT), data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("ScreenLockManagerProxy SendScreenLockEvent, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;

@@ -37,20 +37,6 @@ public:
     virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
 };
-
-enum {
-    // before api version 9
-    IS_SCREEN_LOCKED = 0,
-    IS_SECURE_MODE,
-    UNLOCK_SCREEN,
-
-    // since 9, with exception or system app verification
-    LOCK,
-    ONSYSTEMEVENT,
-    SEND_SCREENLOCK_EVENT,
-    IS_LOCKED,
-    UNLOCK,
-};
 } // namespace ScreenLock
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_SCLOCK_SERVICE_INTERFACE_H
