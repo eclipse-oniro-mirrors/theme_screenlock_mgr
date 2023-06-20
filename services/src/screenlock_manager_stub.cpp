@@ -24,6 +24,7 @@
 #include "screenlock_appinfo.h"
 #include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
+#include "screenlock_server_ipc_interface_code.h"
 #include "screenlock_system_ability_interface.h"
 
 namespace OHOS {
@@ -34,34 +35,41 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
     MessageOption &option)
 {
     SCLOCK_HILOGD("OnRemoteRequest started, code = %{public}d", code);
-    int32_t result = -1;
     auto descriptorToken = data.ReadInterfaceToken();
     if (descriptorToken != GetDescriptor()) {
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
-        return E_SCREENLOCK_TRANSACT_ERROR;
+        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     switch (code) {
-        case IS_LOCKED:
-            return OnIsLocked(data, reply);
-        case IS_SCREEN_LOCKED:
-            return OnIsScreenLocked(data, reply);
-        case IS_SECURE_MODE:
-            return OnGetSecure(data, reply);
-        case UNLOCK:
-            return OnUnlock(data, reply);
-        case UNLOCK_SCREEN:
-            return OnUnlockScreen(data, reply);
-        case LOCK:
-            return OnLock(data, reply);
-        case SEND_SCREENLOCK_EVENT:
-            return OnSendScreenLockEvent(data, reply);
-        case ONSYSTEMEVENT:
-            return OnScreenLockOn(data, reply);
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_LOCKED):
+            OnIsLocked(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_SCREEN_LOCKED):
+            OnIsScreenLocked(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_SECURE_MODE):
+            OnGetSecure(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::UNLOCK):
+            OnUnlock(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::UNLOCK_SCREEN):
+            OnUnlockScreen(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::LOCK):
+            OnLock(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::SEND_SCREENLOCK_EVENT):
+            OnSendScreenLockEvent(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::ONSYSTEMEVENT):
+            OnScreenLockOn(data, reply);
+            break;
         default:
             SCLOCK_HILOGE("Default value received, check needed.");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    return result;
+    return ERR_NONE;
 }
 
 int32_t ScreenLockManagerStub::OnIsLocked(Parcel &data, Parcel &reply)
