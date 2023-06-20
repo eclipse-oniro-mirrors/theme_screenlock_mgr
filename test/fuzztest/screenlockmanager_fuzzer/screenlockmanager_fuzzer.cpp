@@ -20,11 +20,11 @@
 
 #include "message_parcel.h"
 #include "screenlock_app_manager.h"
-#include "screenlock_callback_stub.h"
+#include "screenlock_callback.h"
 #include "screenlock_manager.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability.h"
-#include "screenlock_system_ability_stub.h"
+#include "screenlock_system_ability_callback.h"
 
 using namespace OHOS::ScreenLock;
 
@@ -48,6 +48,7 @@ uint32_t ConvertToUint32(const uint8_t *ptr)
 bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
 {
     uint32_t code = ConvertToUint32(rawData);
+    EventListener eventListener;
     if (code == RANDNUM_ZERO) {
         return ScreenLockManager::GetInstance()->IsScreenLocked();
     }
@@ -55,7 +56,7 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
         return ScreenLockManager::GetInstance()->GetSecure();
     }
     if (code == RANDNUM_TWO) {
-        sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
+        sptr<ScreenlockCallback> listener_ = new ScreenlockCallback(eventListener);
         int32_t ret = ScreenLockManager::GetInstance()->Lock(listener_);
         return ret == E_SCREENLOCK_OK;
     }
@@ -64,7 +65,8 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
 
 bool UnlockFuzzTest(const uint8_t *rawData, size_t size)
 {
-    sptr<ScreenLockCallbackInterface> listener_ = new ScreenLockCallbackStub();
+    EventListener eventListener;
+    sptr<ScreenlockCallback> listener_ = new ScreenlockCallback(eventListener);
     if (size < LENGTH) {
         return true;
     }
@@ -87,8 +89,9 @@ bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
     uint32_t code = ConvertToUint32(rawData);
     rawData = rawData + OFFSET;
     size = size - OFFSET;
+    EventListener eventListener;
     if (code == RANDNUM_ZERO) {
-        sptr<ScreenLockSystemAbilityInterface> listener_ = new ScreenLockSystemAbilityStub();
+        sptr<ScreenlockSystemAbilityCallback> listener_ = new ScreenlockSystemAbilityCallback(eventListener);
         int32_t ret = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener_);
         return ret == E_SCREENLOCK_OK;
     }
