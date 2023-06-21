@@ -16,3 +16,5 @@ screenlock_mgr_path = "//base/theme/screenlock_mgr"
 window_base_path = "//foundation/window/window_manager"
 
 graphic_base_path = "//foundation/graphic"
+
+resourceschedule_ffrt_path = "//foundation/resourceschedule/ffrt"

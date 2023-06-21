@@ -23,6 +23,7 @@
 
 #include "dm_common.h"
 #include "event_handler.h"
+#include "ffrt.h"
 #include "iremote_object.h"
 #include "screenlock_callback_interface.h"
 #include "screenlock_manager_stub.h"
@@ -188,7 +189,7 @@ private:
     ServiceRunningState state_;
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
-    static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
+    static std::shared_ptr<ffrt::queue> queue_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;

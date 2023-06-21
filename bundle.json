@@ -43,7 +43,8 @@
         "window_manager",
         "hiviewdfx_hilog_native",
         "user_auth_framework",
-        "c_utils"
+        "c_utils",
+        "ffrt"
       ],
       "third_party": []
     },
