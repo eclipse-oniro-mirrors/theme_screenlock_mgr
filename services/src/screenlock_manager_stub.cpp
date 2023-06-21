@@ -41,28 +41,28 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     switch (code) {
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_LOCKED):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED):
             OnIsLocked(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_SCREEN_LOCKED):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREEN_LOCKED):
             OnIsScreenLocked(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::IS_SECURE_MODE):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE):
             OnGetSecure(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::UNLOCK):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK):
             OnUnlock(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::UNLOCK_SCREEN):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN):
             OnUnlockScreen(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::LOCK):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK):
             OnLock(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::SEND_SCREENLOCK_EVENT):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SEND_SCREENLOCK_EVENT):
             OnSendScreenLockEvent(data, reply);
             break;
-        case static_cast<uint32_t>(ScreenLockMgrServiceInterfaceCode::ONSYSTEMEVENT):
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT):
             OnScreenLockOn(data, reply);
             break;
         default:

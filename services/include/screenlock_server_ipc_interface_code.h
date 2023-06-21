@@ -19,7 +19,7 @@
 /* SAID: 3704*/
 namespace OHOS {
 namespace ScreenLock {
-enum class ScreenLockMgrServiceInterfaceCode {
+enum class ScreenLockServerIpcInterfaceCode {
     // before api version 9
     IS_SCREEN_LOCKED = 0,
     IS_SECURE_MODE,
