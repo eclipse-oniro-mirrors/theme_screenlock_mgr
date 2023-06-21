@@ -36,6 +36,7 @@ ohos_shared_library("screenlock_utils") {
       "access_token:libaccesstoken_sdk",
       "hiviewdfx_hilog_native:libhilog",
     ]
+    innerapi_tags = [ "platformsdk_indirect" ]
     subsystem_name = "theme"
     part_name = "screenlock_mgr"
   }
