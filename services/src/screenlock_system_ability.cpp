@@ -22,6 +22,7 @@
 #include <string>
 #include <sys/time.h>
 #include <unistd.h>
+#include <memory>
 
 #include "common_event_support.h"
 #include "ability_manager_client.h"
@@ -58,14 +59,12 @@ using namespace OHOS::Security::AccessToken;
 const bool REGISTER_RESULT = Rosen::SceneBoardJudgement::IsSceneBoardEnabled() ? false :
     SystemAbility::MakeAndRegisterAbility(new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true));
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
-const std::int64_t INIT_INTERVAL = 5000L;
-const std::int64_t DELAY_TIME = 1000L;
-const std::int64_t INTERVAL_ZERO = 0L;
+const std::int64_t INIT_INTERVAL = 5000000L;
+const std::int64_t DELAY_TIME = 1000000L;
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
-std::shared_ptr<AppExecFwk::EventHandler> ScreenLockSystemAbility::serviceHandler_;
 constexpr int32_t MAX_RETRY_TIMES = 20;
-
+std::shared_ptr<ffrt::queue> ScreenLockSystemAbility::queue_;
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
 {
@@ -75,7 +74,7 @@ ScreenLockSystemAbility::~ScreenLockSystemAbility()
 {
     SCLOCK_HILOGD("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
     if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        serviceHandler_ = nullptr;
+        queue_ = nullptr;
         instance_ = nullptr;
         DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
         displayPowerEventListener_ = nullptr;
@@ -121,7 +120,7 @@ void ScreenLockSystemAbility::OnStart()
     InitServiceHandler();
     if (Init() != ERR_OK) {
         auto callback = [=]() { Init(); };
-        serviceHandler_->PostTask(callback, INIT_INTERVAL);
+        queue_->submit(callback, ffrt::task_attr().delay(INIT_INTERVAL));
         SCLOCK_HILOGW("ScreenLockSystemAbility Init failed. Try again 5s later");
     }
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
@@ -149,11 +148,11 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
     if (flag_ == false && times <= MAX_RETRY_TIMES) {
         SCLOCK_HILOGW("ScreenLockSystemAbility RegisterDisplayPowerEventListener failed");
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
-        serviceHandler_->PostTask(callback, DELAY_TIME);
+        queue_->submit(callback, ffrt::task_attr().delay(DELAY_TIME));
     } else if (flag_) {
         state_ = ServiceRunningState::STATE_RUNNING;
         auto callback = [=]() { OnSystemReady(); };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        queue_->submit(callback);
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility RegisterDisplayPowerEventListener end, flag_:%{public}d, times:%{public}d",
         flag_, times);
@@ -162,16 +161,11 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
 void ScreenLockSystemAbility::InitServiceHandler()
 {
     SCLOCK_HILOGI("InitServiceHandler started.");
-    if (serviceHandler_ != nullptr) {
+    if (queue_ != nullptr) {
         SCLOCK_HILOGI("InitServiceHandler already init.");
         return;
     }
-    std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("ScreenLockSystemAbility");
-    serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
-    if (HiviewDFX::Watchdog::GetInstance().AddThread("ScreenLockSystemAbility", serviceHandler_,
-        TIME_OUT_MILLISECONDS) != 0) {
-        SCLOCK_HILOGE("HiviewDFX::Watchdog::GetInstance AddThread Fail");
-    }
+    queue_ = std::make_shared<ffrt::queue>("ScreenLockSystemAbility");
     SCLOCK_HILOGI("InitServiceHandler succeeded.");
 }
 
@@ -181,7 +175,7 @@ void ScreenLockSystemAbility::OnStop()
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         return;
     }
-    serviceHandler_ = nullptr;
+    queue_ = nullptr;
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
@@ -564,7 +558,7 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
             }
             lockVecListeners_.clear();
         };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        queue_->submit(callback);
     }
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED);
@@ -606,8 +600,8 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
                 HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback", traceTaskId);
         }
     };
-    if (serviceHandler_ != nullptr) {
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    if (queue_ != nullptr) {
+        queue_->submit(callback);
     }
 }
 
@@ -622,7 +616,7 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
             }
             unlockVecListeners_.clear();
         };
-        serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+        queue_->submit(callback);
     }
 }
 
@@ -640,12 +634,12 @@ void ScreenLockSystemAbility::Initialize()
 
 void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)
 {
-    if (serviceHandler_ == nullptr) {
-        SCLOCK_HILOGE("NotifyDisplayEvent serviceHandler_ is nullptr.");
+    if (queue_ == nullptr) {
+        SCLOCK_HILOGE("NotifyDisplayEvent queue_ is nullptr.");
         return;
     }
     auto callback = [event]() { DisplayManager::GetInstance().NotifyDisplayEvent(event); };
-    serviceHandler_->PostTask(callback, INTERVAL_ZERO);
+    queue_->submit(callback);
 }
 
 #ifdef OHOS_TEST_FLAG
