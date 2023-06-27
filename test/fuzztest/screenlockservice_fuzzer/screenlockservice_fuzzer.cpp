@@ -24,13 +24,13 @@
 #include "screenlock_callback.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability.h"
+#include "screenlock_server_ipc_interface_code.h"
 
 using namespace OHOS::ScreenLock;
 using namespace OHOS::Rosen;
 
 namespace OHOS {
-constexpr size_t THRESHOLD = 14;
-constexpr int32_t OFFSET = 4;
+constexpr int32_t THRESHOLD = 4;
 const std::u16string SCREENLOCK_SYSTEMABILITY_INTERFACE_TOKEN = u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface";
 const std::u16string SCREENLOCK_MANAGER_INTERFACE_TOKEN = u"ohos.screenlock.ScreenLockManagerInterface";
 
@@ -46,8 +46,6 @@ uint32_t ConvertToUint32(const uint8_t *ptr)
 bool FuzzScreenlockCallback(const uint8_t *rawData, size_t size)
 {
     uint32_t code = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
-    size = size - OFFSET;
 
     EventListener mEventListener;
     MessageParcel data;
@@ -65,26 +63,20 @@ bool FuzzScreenlockCallback(const uint8_t *rawData, size_t size)
 
 bool FuzzScreenlockService(const uint8_t *rawData, size_t size)
 {
-    uint32_t code = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
-    size = size - OFFSET;
-
+    uint32_t code = ConvertToUint32(rawData) % (static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK) + 1);
     MessageParcel data;
     data.WriteInterfaceToken(SCREENLOCK_MANAGER_INTERFACE_TOKEN);
     data.WriteBuffer(rawData, size);
     data.RewindRead(0);
     MessageParcel reply;
     MessageOption option;
-
     ScreenLockSystemAbility::GetInstance()->OnRemoteRequest(code, data, reply, option);
-
     return true;
 }
 
 bool FuzzScreenlockDisplayPowerEvent(const uint8_t *rawData, size_t size)
 {
     uint32_t event = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
     uint32_t status = ConvertToUint32(rawData);
 
     sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
