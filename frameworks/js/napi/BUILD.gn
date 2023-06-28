@@ -83,8 +83,8 @@ ohos_static_library("screenlock_static") {
 
     external_deps = [
       "c_utils:utils",
-      "hitrace:hitrace_meter",
       "hilog:libhilog",
+      "hitrace:hitrace_meter",
       "ipc:ipc_single",
       "napi:ace_napi",
     ]
