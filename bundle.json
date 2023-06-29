@@ -24,7 +24,6 @@
     "ram":"4614KB",
     "deps": {
       "components": [
-        "multimedia_image_framework",
         "safwk",
         "napi",
         "samgr",
@@ -36,12 +35,12 @@
         "bundle_framework",
         "ability_base",
         "ability_runtime",
-        "hitrace_native",
+        "hitrace",
         "access_token",
         "hicollie",
         "init",
         "window_manager",
-        "hiviewdfx_hilog_native",
+        "hilog",
         "user_auth_framework",
         "c_utils",
         "ffrt"

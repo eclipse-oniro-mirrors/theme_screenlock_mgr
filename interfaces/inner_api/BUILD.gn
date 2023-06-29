@@ -63,8 +63,8 @@ ohos_shared_library("screenlock_client") {
     external_deps = [
       "c_utils:utils",
       "graphic_standard:librender_service_client",
-      "hitrace_native:hitrace_meter",
-      "hiviewdfx_hilog_native:libhilog",
+      "hilog:libhilog",
+      "hitrace:hitrace_meter",
       "ipc:ipc_single",
       "samgr:samgr_proxy",
       "window_manager:libwsutils",
