@@ -78,8 +78,8 @@ bool ScreenLockManagerProxy::GetSecure()
     MessageOption option;
     data.WriteInterfaceToken(ScreenLockManagerProxy::GetDescriptor());
     SCLOCK_HILOGD("ScreenLockManagerProxy GetSecure started.");
-    bool ret =
-        Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE), data, reply, option);
+    bool ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE), data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("GetSecure, ret = %{public}d", ret);
         return false;
@@ -150,7 +150,8 @@ int32_t ScreenLockManagerProxy::Lock(const sptr<ScreenLockCallbackInterface> &li
         SCLOCK_HILOGE("write parcel failed.");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);
+    int32_t ret =
+        Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestLock, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
@@ -178,8 +179,8 @@ int32_t ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbility
         SCLOCK_HILOGE("write parcel failed.");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    int32_t result =
-        Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, reply, option);
+    int32_t result = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, reply, option);
     if (result != ERR_NONE) {
         SCLOCK_HILOGE(" ScreenLockManagerProxy::OnSystemEvent fail, result = %{public}d ", result);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
