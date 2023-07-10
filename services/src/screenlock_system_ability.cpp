@@ -25,7 +25,6 @@
 #include <memory>
 
 #include "common_event_support.h"
-#include "ability_manager_client.h"
 #include "accesstoken_kit.h"
 #include "command.h"
 #include "common_event_manager.h"
@@ -47,6 +46,7 @@
 #include "want.h"
 #include "xcollie/watchdog.h"
 #include "scene_board_judgement.h"
+#include "window_manager.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -353,14 +353,12 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
 
-    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        // check whether the page of app request unlock is the focus page
-        if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
-            FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
-                HITRACE_UNLOCKSCREEN);
-            SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
-            return E_SCREENLOCK_NO_PERMISSION;
-        }
+    // check whether the page of app request unlock is the focus page
+    if (!IsAppInForeground(IPCSkeleton::GetCallingUid())) {
+        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
+            HITRACE_UNLOCKSCREEN);
+        SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
+        return E_SCREENLOCK_NO_PERMISSION;
     }
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);
@@ -643,7 +641,7 @@ void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)
 }
 
 #ifdef OHOS_TEST_FLAG
-bool ScreenLockSystemAbility::IsAppInForeground(uint32_t tokenId)
+bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
 {
     return true;
 }
@@ -659,19 +657,12 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
 }
 
 #else
-bool ScreenLockSystemAbility::IsAppInForeground(uint32_t tokenId)
+bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
 {
-    using namespace OHOS::AAFwk;
-    AppInfo appInfo;
-    auto ret = ScreenLockAppInfo::GetAppInfoByToken(tokenId, appInfo);
-    if (!ret || appInfo.bundleName.empty()) {
-        SCLOCK_HILOGE("get bundle name by token failed");
-        return false;
-    }
-    auto elementName = AbilityManagerClient::GetInstance()->GetTopAbility();
-    SCLOCK_HILOGD(" TopelementName:%{public}s, elementName.GetBundleName:%{public}s",
-                  elementName.GetBundleName().c_str(), appInfo.bundleName.c_str());
-    return elementName.GetBundleName() == appInfo.bundleName;
+    FocusChangeInfo focusInfo;
+    WindowManager::GetInstance().GetFocusWindowInfo(focusInfo);
+    SCLOCK_HILOGD("callingUid:%{public}d, focusWidnowUid:%{public}d", uid, focusInfo.uid_);
+    return uid == focusInfo.uid_;
 }
 
 bool ScreenLockSystemAbility::IsSystemApp()

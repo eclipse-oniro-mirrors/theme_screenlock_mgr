@@ -17,7 +17,6 @@
 
 #include <string>
 
-#include "ability_manager_client.h"
 #include "ipc_skeleton.h"
 #include "parcel.h"
 #include "sclock_log.h"
