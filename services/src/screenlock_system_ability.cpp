@@ -354,7 +354,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
 
     // check whether the page of app request unlock is the focus page
-    if (!IsAppInForeground(IPCSkeleton::GetCallingTokenID())) {
+    if (!IsAppInForeground(IPCSkeleton::GetCallingUid())) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
             HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
