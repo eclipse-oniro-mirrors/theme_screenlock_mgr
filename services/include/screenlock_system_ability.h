@@ -179,7 +179,7 @@ private:
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
     int32_t UnlockInner(const sptr<ScreenLockCallbackInterface> &listener);
     void PublishEvent(const std::string &eventAction);
-    bool IsAppInForeground(uint32_t tokenId);
+    bool IsAppInForeground(int32_t uid);
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
