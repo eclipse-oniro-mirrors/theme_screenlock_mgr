@@ -223,7 +223,7 @@ void AsyncCallFunc(napi_env env, EventListener *listener, const std::string &res
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &resource));
     NAPI_CALL_RETURN_VOID(env, napi_create_async_work(env, nullptr, resource, execute, CompleteAsyncWork,
                                    static_cast<void *>(listener), &(listener->work)));
-    NAPI_CALL_RETURN_VOID(env, napi_queue_async_work(env, listener->work));
+    NAPI_CALL_RETURN_VOID(env, napi_queue_async_work_with_qos(env, listener->work, napi_qos_user_initiated));
 }
 
 napi_value NAPI_Lock(napi_env env, napi_callback_info info)

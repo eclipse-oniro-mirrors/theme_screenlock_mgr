@@ -33,8 +33,8 @@ bool UvQueue::Call(napi_env env, ScreenlockOnCallBack *data, uv_after_work_cb af
         return false;
     }
     work->data = data;
-    int ret = uv_queue_work(
-        loop, work, [](uv_work_t *work) {}, afterCallback);
+    int ret = uv_queue_work_with_qos(
+        loop, work, [](uv_work_t *work) {}, afterCallback, uv_qos_user_initiated);
     if (ret != 0) {
         SCLOCK_HILOGE("uv_queue_work Failed.");
         delete data;
