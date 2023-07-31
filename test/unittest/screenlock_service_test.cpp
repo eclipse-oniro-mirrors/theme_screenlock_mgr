@@ -51,6 +51,7 @@ void ScreenLockServiceTest::SetUpTestCase()
 
 void ScreenLockServiceTest::TearDownTestCase()
 {
+    ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
 }
 
 void ScreenLockServiceTest::SetUp()

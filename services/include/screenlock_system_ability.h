@@ -144,6 +144,7 @@ public:
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
+    void ResetFfrtQueue();
     StateValue &GetState()
     {
         return stateValue_;
