@@ -659,6 +659,9 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
 #else
 bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
 {
+#ifdef CONFIG_FACTORY_MODE
+    return true;
+#endif
     FocusChangeInfo focusInfo;
     WindowManager::GetInstance().GetFocusWindowInfo(focusInfo);
     SCLOCK_HILOGD("callingUid:%{public}d, focusWidnowUid:%{public}d", uid, focusInfo.uid_);

@@ -26,6 +26,11 @@ config("screenlock_mgr_service_config") {
 }
 
 ohos_shared_library("screenlock_server") {
+  version_mode = getenv("versionmode")
+  if (version_mode == "factory") {
+    cflags_cc = [ "-DCONFIG_FACTORY_MODE" ]
+  }
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
