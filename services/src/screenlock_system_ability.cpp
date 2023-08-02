@@ -640,6 +640,11 @@ void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)
     queue_->submit(callback);
 }
 
+void ScreenLockSystemAbility::ResetFfrtQueue()
+{
+    queue_.reset();
+}
+
 #ifdef OHOS_TEST_FLAG
 bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
 {

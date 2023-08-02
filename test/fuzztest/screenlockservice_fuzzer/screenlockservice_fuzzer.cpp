@@ -109,5 +109,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzScreenlockService(data, size);
     OHOS::FuzzScreenlockDisplayPowerEvent(data, size);
     OHOS::FuzzScreenlockDump(data, size);
+    ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
     return 0;
 }
