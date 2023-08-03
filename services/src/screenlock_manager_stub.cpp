@@ -31,7 +31,7 @@ namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+    MessageOption &option) __attribute__((no_sanitize("cfi")))
 {
     SCLOCK_HILOGD("OnRemoteRequest started, code = %{public}d", code);
     auto descriptorToken = data.ReadInterfaceToken();
