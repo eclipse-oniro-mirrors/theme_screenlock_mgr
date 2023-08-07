@@ -75,7 +75,6 @@ ScreenLockSystemAbility::~ScreenLockSystemAbility()
     SCLOCK_HILOGD("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
     if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
         queue_ = nullptr;
-        instance_ = nullptr;
         DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
         displayPowerEventListener_ = nullptr;
     }
