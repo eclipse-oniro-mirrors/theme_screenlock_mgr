@@ -478,7 +478,7 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
 
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked started.");
+    SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked state:%{public}d.", isScreenlocked);
     stateValue_.SetScreenlocked(isScreenlocked);
 }
 
