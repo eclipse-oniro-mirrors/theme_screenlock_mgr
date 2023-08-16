@@ -556,7 +556,7 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
             }
             lockVecListeners_.clear();
         };
-        queue_->submit(callback);
+        ffrt::submit(callback);
     }
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED);
@@ -614,7 +614,7 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
             }
             unlockVecListeners_.clear();
         };
-        queue_->submit(callback);
+        ffrt::submit(callback);
     }
 }
 
