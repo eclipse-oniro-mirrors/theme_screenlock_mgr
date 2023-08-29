@@ -19,7 +19,7 @@
 
 ```
 /base/theme/screenlock_mgr
-├── figures                  # 构架图
+├── figures                  # 架构图
 ├── frameworks
 │   ├── js/napi              # js接口解析成napi接口
 │   └── native               # 对客户端提供的接口
@@ -33,8 +33,7 @@
 
 ### 接口说明
 
--   ScreenLock接口文档
-    -   [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/reference/apis/js-apis-screen-lock.md) 提供从API version 7开始的接口定义和示例代码。
+-   ScreenLock接口文档 [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/reference/apis/js-apis-screen-lock.md) 提供从API version 7开始的接口定义和示例代码。
 
 ## 相关仓
 

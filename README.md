@@ -23,8 +23,7 @@ Provide screenOn callback, screenOff callback, screenSaver in and out callback, 
 
 #### JS APIs and instructions
 
--   ScreenLock interface documentation
-    -   [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/master/en/application-dev/reference/apis/js-apis-screen-lock.md) Provides interface definitions and sample code starting with API version 7.
+-   ScreenLock interface documentation [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/master/en/application-dev/reference/apis/js-apis-screen-lock.md) Provides interface definitions and sample code starting with API version 7.
 
 #### Debugging method
 
