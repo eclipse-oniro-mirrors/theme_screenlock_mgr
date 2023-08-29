@@ -22,37 +22,8 @@ Provide screenOn callback, screenOff callback, screenSaver in and out callback, 
 └── utils                    # module contains log printing and constants for ordered commonEvent
 
 #### JS APIs and instructions
-1.   JS APIs
-function isScreenLocked(callback: AsyncCallback<boolean>): void; query the screenlock status，callback mode
-function isScreenLocked(): Promise<boolean>; void; query the screenlock status，Promise mode
 
-function isSecureMode(callback: AsyncCallback<boolean>): void; query whether to set screenlock password (gesture, digital password, pin, SIM)，callback mode
-function isSecureMode(): Promise<boolean>; query whether to set screenlock password (gesture, digital password, pin, SIM)，Promise mode
-
-function unlockScreen(callback: AsyncCallback<void>): void; request unlockScreen，callback mode
-function unlockScreen(): Promise<void>; request unlockScreen，Promise mode
-
-2.  JS APIs instructions
-// Import module
-import screenLock from '@ohos.screenLock';
-
-// query the screenlock status asynchronously with a Promise
-screenLock.isScreenLocked()    
-      .then((value) => {        
-          console.log(`success to screenLock.isScreenLocked: ${value}`);   
-       }).catch((err) => {        
-          console.error(`failed to screenLock.isScreenLocked because ${err.message}`)  
-    });
-
-
-// query the screenlock status asynchronously with a callback
-screenLock.isScreenLocked((err, value) => {   
-     if (err) {        
-          console.error(`failed to screenLock.isScreenLocked because ${err.message}`);   
-           return;   
-         }    
-       console.log(`success to screenLock.isScreenLocked: ${value}`);   
-    });
+-   ScreenLock interface documentation [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/master/en/application-dev/reference/apis/js-apis-screen-lock.md) Provides interface definitions and sample code starting with API version 7.
 
 #### Debugging method
 
