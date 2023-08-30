@@ -160,16 +160,10 @@ protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
 
 private:
-    void OnBeginScreenOn();
-    void OnEndScreenOn();
-    void OnBeginScreenOff();
-    void OnEndScreenOff();
-    void OnBeginWakeUp();
-    void OnEndWakeUp();
-    void OnBeginSleep(const int why);
-    void OnEndSleep(const int why, const int isTriggered);
-    void OnChangeUser(const int newUserId);
-    void OnScreenlockEnabled(bool enabled);
+    void OnScreenOn(Rosen::EventStatus status);
+    void OnScreenOff(Rosen::EventStatus status);
+    void OnWakeUp(Rosen::EventStatus status);
+    void OnSleep(Rosen::EventStatus status);
     void OnExitAnimation();
     void OnSystemReady();
     void RegisterDumpCommand();
@@ -199,8 +193,6 @@ private:
     std::mutex lockListenerMutex_;
     std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
     StateValue stateValue_;
-    const int32_t startTime_ = 1900;
-    const int32_t extraMonth_ = 1;
     bool flag_ = false;
 };
 } // namespace ScreenLock

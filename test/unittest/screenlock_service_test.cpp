@@ -283,61 +283,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest010
-* @tc.desc: changeUser event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest010, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test event of changeuser");
-    int paramOne = 10;
-    ScreenLockSystemAbility::GetInstance()->OnChangeUser(paramOne);
-    int retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetCurrentUser();
-    SCLOCK_HILOGD("Test_ChangeUser retVal=%{public}d", retVal);
-    EXPECT_EQ(retVal, paramOne);
-    int paramTwo = -1;
-    ScreenLockSystemAbility::GetInstance()->OnChangeUser(paramTwo);
-    retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetCurrentUser();
-    EXPECT_EQ(retVal, paramOne);
-}
-
-/**
-* @tc.name: ScreenLockTest011
-* @tc.desc: screenLockEnabled event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest011, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test event of screenlockenabled");
-    bool enabled = SCREENLOCK_APP_CAN_USE;
-    ScreenLockSystemAbility::GetInstance()->OnScreenlockEnabled(enabled);
-    bool retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenlockEnabled();
-    SCLOCK_HILOGD("Test_ScreenLockEnabled retVal=%{public}d", retVal);
-    EXPECT_EQ(retVal, enabled);
-}
-
-/**
-* @tc.name: ScreenLockTest012
-* @tc.desc: screenLockEnabled event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest012, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test event of screenlockenabled");
-    bool enabled = SCREENLOCK_APP_CAN_NOT_USE;
-    ScreenLockSystemAbility::GetInstance()->OnScreenlockEnabled(enabled);
-    bool retVal = ScreenLockSystemAbility::GetInstance()->GetState().GetScreenlockEnabled();
-    SCLOCK_HILOGD("Test_ScreenLockEnabled retVal=%{public}d", retVal);
-    EXPECT_EQ(retVal, enabled);
-}
-
-/**
 * @tc.name: ScreenLockDumperTest013
 * @tc.desc: dump showhelp.
 * @tc.type: FUNC

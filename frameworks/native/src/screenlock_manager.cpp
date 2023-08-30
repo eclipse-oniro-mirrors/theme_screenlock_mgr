@@ -93,11 +93,15 @@ int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockCallbackIn
         SCLOCK_HILOGE("listener is nullptr.");
         return E_SCREENLOCK_NULLPTR;
     }
-    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager RequestUnlock start", HITRACE_UNLOCKSCREEN);
+    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager Unlock start", HITRACE_UNLOCKSCREEN);
+    int32_t ret = 0;
     if (action == Action::UNLOCKSCREEN) {
-        return proxy->UnlockScreen(listener);
+        ret = proxy->UnlockScreen(listener);
+    } else {
+        ret = proxy->Unlock(listener);
     }
-    return proxy->Unlock(listener);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockManager Unlock end", HITRACE_UNLOCKSCREEN);
+    return ret;
 }
 
 

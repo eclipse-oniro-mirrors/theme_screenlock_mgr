@@ -169,8 +169,7 @@ int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, Messag
 {
     std::string event = data.ReadString();
     int param = data.ReadInt32();
-    SCLOCK_HILOGD("event=%{public}s ", event.c_str());
-    SCLOCK_HILOGD("param=%{public}d ", param);
+    SCLOCK_HILOGD("event=%{public}s, param=%{public}d", event.c_str(), param);
     int32_t retCode = SendScreenLockEvent(event, param);
     reply.WriteInt32(retCode);
     return ERR_NONE;

@@ -68,6 +68,7 @@ auto g_onUvWorkCallback = [](uv_work_t *work, int status) {
     callbackValue = result;
     napi_call_function(
         screenlockOnCallBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_ONE, &callbackValue, &callbackResult);
+    SCLOCK_HILOGI("OnCallBack eventType:%{public}s", screenlockOnCallBackPtr->systemEvent.eventType_.c_str());
     napi_close_handle_scope(screenlockOnCallBackPtr->env, scope);
     if (screenlockOnCallBackPtr != nullptr) {
         delete screenlockOnCallBackPtr;

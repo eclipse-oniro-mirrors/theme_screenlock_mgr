@@ -91,6 +91,7 @@ void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
     napi_close_handle_scope(callBackPtr->env, scope);
     SAFE_DELETE(callBackPtr);
     SAFE_DELETE(work);
+    SCLOCK_HILOGI("UvWorkOnCallBack end");
 }
 
 void ScreenlockCallback::OnCallBack(const int32_t screenLockResult)
