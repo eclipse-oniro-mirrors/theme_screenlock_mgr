@@ -101,7 +101,6 @@ int32_t ScreenLockSystemAbility::Init()
         SCLOCK_HILOGE("Publish ScreenLockSystemAbility failed.");
         return E_SCREENLOCK_PUBLISH_FAIL;
     }
-    SCLOCK_HILOGD("state_ is %{public}d.", static_cast<int>(state_));
     stateValue_.Reset();
     SCLOCK_HILOGI("Init ScreenLockSystemAbility success.");
     return ERR_OK;
@@ -110,11 +109,15 @@ int32_t ScreenLockSystemAbility::Init()
 void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
+    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        SCLOCK_HILOGW("Is SceneBoard enabled.");
+        return;
+    }
     if (instance_ == nullptr) {
         instance_ = this;
     }
     if (state_ == ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility is already running.");
+        SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
         return;
     }
     InitServiceHandler();
@@ -160,7 +163,6 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
 
 void ScreenLockSystemAbility::InitServiceHandler()
 {
-    SCLOCK_HILOGI("InitServiceHandler started.");
     if (queue_ != nullptr) {
         SCLOCK_HILOGI("InitServiceHandler already init.");
         return;
@@ -172,6 +174,10 @@ void ScreenLockSystemAbility::InitServiceHandler()
 void ScreenLockSystemAbility::OnStop()
 {
     SCLOCK_HILOGI("OnStop started.");
+    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        SCLOCK_HILOGW("Is SceneBoard enabled.");
+        return;
+    }
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         return;
     }
@@ -185,54 +191,50 @@ void ScreenLockSystemAbility::OnStop()
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
     EventStatus status)
 {
-    SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d", static_cast<int>(event));
-    SCLOCK_HILOGI("OnDisplayPowerEvent status= %{public}d", static_cast<int>(status));
-    if (status == EventStatus::BEGIN) {
-        if (event == DisplayPowerEvent::WAKE_UP) {
-            instance_->OnBeginWakeUp();
-        } else if (event == DisplayPowerEvent::SLEEP) {
-            instance_->OnBeginSleep(0);
-        } else if (event == DisplayPowerEvent::DISPLAY_ON) {
-            instance_->OnBeginScreenOn();
-        } else if (event == DisplayPowerEvent::DISPLAY_OFF) {
-            instance_->OnBeginScreenOff();
-        } else if (event == DisplayPowerEvent::DESKTOP_READY) {
+    SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
+        static_cast<int>(status));
+    switch (event) {
+        case DisplayPowerEvent::WAKE_UP:
+            instance_->OnWakeUp(status);
+            break;
+        case DisplayPowerEvent::SLEEP:
+            instance_->OnSleep(status);
+            break;
+        case DisplayPowerEvent::DISPLAY_ON:
+            instance_->OnScreenOn(status);
+            break;
+        case DisplayPowerEvent::DISPLAY_OFF:
+            instance_->OnScreenOff(status);
+            break;
+        case DisplayPowerEvent::DESKTOP_READY:
             instance_->OnExitAnimation();
-        }
-    } else if (status == EventStatus::END) {
-        if (event == DisplayPowerEvent::WAKE_UP) {
-            instance_->OnEndWakeUp();
-        } else if (event == DisplayPowerEvent::SLEEP) {
-            instance_->OnEndSleep(0, 0);
-        } else if (event == DisplayPowerEvent::DISPLAY_ON) {
-            instance_->OnEndScreenOn();
-        } else if (event == DisplayPowerEvent::DISPLAY_OFF) {
-            instance_->OnEndScreenOff();
-        }
+            break;
+        default:
+            break;
     }
 }
 
-void ScreenLockSystemAbility::OnBeginScreenOff()
+void ScreenLockSystemAbility::OnScreenOff(EventStatus status)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOff started.");
-    stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_BEGIN_OFF));
     SystemEvent systemEvent(BEGIN_SCREEN_OFF);
+    if (status == EventStatus::BEGIN) {
+        stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_BEGIN_OFF));
+    } else if (status == EventStatus::END) {
+        stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_END_OFF));
+        systemEvent.eventType_ = END_SCREEN_OFF;
+    }
     SystemEventCallBack(systemEvent);
 }
 
-void ScreenLockSystemAbility::OnEndScreenOff()
+void ScreenLockSystemAbility::OnScreenOn(EventStatus status)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOff started.");
-    stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_END_OFF));
-    SystemEvent systemEvent(END_SCREEN_OFF);
-    SystemEventCallBack(systemEvent);
-}
-
-void ScreenLockSystemAbility::OnBeginScreenOn()
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginScreenOn started.");
-    stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_BEGIN_ON));
     SystemEvent systemEvent(BEGIN_SCREEN_ON);
+    if (status == EventStatus::BEGIN) {
+        stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_BEGIN_ON));
+    } else if (status == EventStatus::END) {
+        stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_END_ON));
+        systemEvent.eventType_ = END_SCREEN_ON;
+    }
     SystemEventCallBack(systemEvent);
 }
 
@@ -240,7 +242,7 @@ void ScreenLockSystemAbility::OnSystemReady()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady started.");
     bool isExitFlag = false;
-    int tryTime = 20;
+    int tryTime = 50;
     int minTryTime = 0;
     while (!isExitFlag && (tryTime > minTryTime)) {
         if (systemEventListener_ != nullptr) {
@@ -257,88 +259,47 @@ void ScreenLockSystemAbility::OnSystemReady()
     }
 }
 
-void ScreenLockSystemAbility::OnEndScreenOn()
+void ScreenLockSystemAbility::OnWakeUp(EventStatus status)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnEndScreenOn started.");
-    stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_END_ON));
-    SystemEvent systemEvent(END_SCREEN_ON);
-    SystemEventCallBack(systemEvent);
-}
-
-void ScreenLockSystemAbility::OnBeginWakeUp()
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginWakeUp started.");
-    stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP));
     SystemEvent systemEvent(BEGIN_WAKEUP);
-    SystemEventCallBack(systemEvent);
-}
-
-void ScreenLockSystemAbility::OnEndWakeUp()
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnEndWakeUp started.");
-    stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP));
-    SystemEvent systemEvent(END_WAKEUP);
-    SystemEventCallBack(systemEvent);
-}
-
-void ScreenLockSystemAbility::OnBeginSleep(const int why)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnBeginSleep started.");
-    stateValue_.SetOffReason(why);
-    stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP));
-    SystemEvent systemEvent(BEGIN_SLEEP, std::to_string(why));
-    SystemEventCallBack(systemEvent);
-}
-
-void ScreenLockSystemAbility::OnEndSleep(const int why, const int isTriggered)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnEndSleep started.");
-    stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
-    SystemEvent systemEvent(END_SLEEP, std::to_string(why));
-    SystemEventCallBack(systemEvent);
-    if (stateValue_.GetScreenlockedState()) {
-        NotifyUnlockListener(SCREEN_CANCEL);
+    if (status == EventStatus::BEGIN) {
+        stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_BEGIN_WAKEUP));
+    } else if (status == EventStatus::END) {
+        stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_END_WAKEUP));
+        systemEvent.eventType_ = END_WAKEUP;
     }
-}
-
-void ScreenLockSystemAbility::OnChangeUser(const int newUserId)
-{
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnChangeUser started. newUserId %{public}d", newUserId);
-    const int minUserId = 0;
-    const int maxUserID = 999999999;
-    if (newUserId < minUserId || newUserId >= maxUserID) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility newUserId invalid.");
-        return;
-    }
-    stateValue_.SetCurrentUser(newUserId);
-    SystemEvent systemEvent(CHANGE_USER, std::to_string(newUserId));
     SystemEventCallBack(systemEvent);
 }
 
-void ScreenLockSystemAbility::OnScreenlockEnabled(bool enabled)
+void ScreenLockSystemAbility::OnSleep(EventStatus status)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnScreenlockEnabled started.");
-    stateValue_.SetScreenlockEnabled(enabled);
-    SystemEvent systemEvent(SCREENLOCK_ENABLED, std::to_string(enabled));
+    SystemEvent systemEvent(BEGIN_SLEEP);
+    if (status == EventStatus::BEGIN) {
+        stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_BEGIN_SLEEP));
+    } else if (status == EventStatus::END) {
+        stateValue_.SetInteractiveState(static_cast<int32_t>(InteractiveState::INTERACTIVE_STATE_END_SLEEP));
+        systemEvent.eventType_ = END_SLEEP;
+    }
     SystemEventCallBack(systemEvent);
 }
 
 void ScreenLockSystemAbility::OnExitAnimation()
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility OnExitAnimation started.");
     SystemEvent systemEvent(EXIT_ANIMATION);
     SystemEventCallBack(systemEvent);
 }
 
 int32_t ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener)
 {
+    StartAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen begin", HITRACE_UNLOCKSCREEN);
     return UnlockInner(listener);
 }
 
 int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockCallbackInterface> &listener)
 {
-    StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock begin", HITRACE_UNLOCKSCREEN);
+    StartAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen begin", HITRACE_UNLOCKSCREEN);
     if (!IsSystemApp()) {
+        FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Calling app is not system app", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -348,16 +309,13 @@ int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockCallbackInterface> 
 int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterface> &listener)
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock restart.");
+        SCLOCK_HILOGW("UnlockScreen restart.");
         OnStart();
     }
-    SCLOCK_HILOGI("ScreenLockSystemAbility RequestUnlock started.");
-
     // check whether the page of app request unlock is the focus page
     if (!IsAppInForeground(IPCSkeleton::GetCallingUid())) {
-        FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::RequestUnlock finish by focus",
-            HITRACE_UNLOCKSCREEN);
-        SCLOCK_HILOGE("ScreenLockSystemAbility RequestUnlock  Unfocused.");
+        FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
+        SCLOCK_HILOGE("UnlockScreen  Unfocused.");
         return E_SCREENLOCK_NO_PERMISSION;
     }
     unlockListenerMutex_.lock();
@@ -365,12 +323,12 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     unlockListenerMutex_.unlock();
     SystemEvent systemEvent(UNLOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end", HITRACE_UNLOCKSCREEN);
     return E_SCREENLOCK_OK;
 }
 
 int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &listener)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility RequestLock started.");
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
@@ -403,18 +361,18 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("IsScreenLocked restart.");
+        SCLOCK_HILOGW("IsScreenLocked restart.");
         OnStart();
     }
     bool isScreenLocked = stateValue_.GetScreenlockedState();
-    SCLOCK_HILOGD("IsScreenLocked = %{public}d", isScreenLocked);
+    SCLOCK_HILOGI("IsScreenLocked = %{public}d", isScreenLocked);
     return isScreenLocked;
 }
 
 bool ScreenLockSystemAbility::GetSecure()
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
+        SCLOCK_HILOGW("ScreenLockSystemAbility GetSecure restart.");
         OnStart();
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure started.");
@@ -439,7 +397,6 @@ bool ScreenLockSystemAbility::GetSecure()
 
 int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent started.");
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
@@ -455,7 +412,7 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
 
 int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility SendScreenLockEvent started.");
+    SCLOCK_HILOGI("SendScreenLockEvent event=%{public}s ,param=%{public}d", event.c_str(), param);
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
@@ -463,7 +420,6 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    SCLOCK_HILOGD("event=%{public}s ,param=%{public}d", event.c_str(), param);
     int stateResult = param;
     if (event == UNLOCK_SCREEN_RESULT) {
         UnlockScreenEvent(stateResult);
@@ -580,7 +536,7 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 
 void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId)
 {
-    SCLOCK_HILOGI("OnCallBack eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
+    SCLOCK_HILOGI("eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
         systemEvent.params_.c_str());
     if (systemEventListener_ == nullptr) {
         SCLOCK_HILOGE("systemEventListener_ is nullptr.");
