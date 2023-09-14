@@ -85,7 +85,7 @@ screenlock_fuzztests = [
 
 foreach(item, screenlock_fuzztests) {
   ohos_fuzztest(item.targetName) {
-    module_out_path = "theme/screenlock_mgr"
+    module_out_path = "screenlock_mgr/screenlock_mgr"
 
     fuzz_config_file = "${screenlock_mgr_path}/test/fuzztest/screenlockservice_fuzzer/${item.configFuzzer}"
 

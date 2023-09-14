@@ -20,7 +20,7 @@ import("../../../screenlock.gni")
 
 ##############################fuzztest##########################################
 ohos_fuzztest("ScreenlockManagerFuzzTest") {
-  module_out_path = "theme/screenlock_mgr"
+  module_out_path = "screenlock_mgr/screenlock_mgr"
 
   fuzz_config_file =
       "${screenlock_mgr_path}/test/fuzztest/screenlockmanager_fuzzer"
