@@ -105,7 +105,7 @@ foreach(item, screenlock_fuzztests) {
 
     deps = [
       "${screenlock_mgr_path}/frameworks/js/napi:screenlock_static",
-      "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client",
+      "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
       "${screenlock_mgr_path}/services:screenlock_server_static",
       "${screenlock_mgr_path}/utils:screenlock_utils",
     ]

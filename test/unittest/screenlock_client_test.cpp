@@ -200,5 +200,21 @@ HWTEST_F(ScreenLockClientTest, ProxyTest008, TestSize.Level0)
     result = proxy->Unlock(callback);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
+
+/**
+* @tc.name: LockTest009
+* @tc.desc: Test Lock Screen.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest009, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test RequestLock.");
+    auto proxy = ScreenLockAppManager::GetInstance()->GetProxy();
+    int32_t uid = 0;
+    int32_t result = proxy->Lock(uid);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
+}
 } // namespace ScreenLock
 } // namespace OHOS
