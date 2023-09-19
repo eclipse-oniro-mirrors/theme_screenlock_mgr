@@ -180,7 +180,8 @@ int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, Messag
 
 int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t retCode = Lock(data.ReadInt32());
+    int32_t uid = data.ReadInt32();
+    int32_t retCode = Lock(uid);
     reply.WriteInt32(retCode);
     return ERR_NONE;
 }
