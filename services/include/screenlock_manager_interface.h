@@ -34,6 +34,7 @@ public:
     virtual int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener) = 0;
     virtual int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener) = 0;
     virtual int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener) = 0;
+    virtual int32_t Lock(int32_t uid) = 0;
     virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
 };

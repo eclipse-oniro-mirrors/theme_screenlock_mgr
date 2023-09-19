@@ -347,9 +347,25 @@ int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &l
     return E_SCREENLOCK_OK;
 }
 
+int32_t ScreenLockSystemAbility::Lock(int32_t uid)
+{
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+
+    SystemEvent systemEvent(LOCKSCREEN);
+    SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
+    return E_SCREENLOCK_OK;
+}
+
 int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 {
-    if (!IsSystemApp()) {
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_NATIVE && !CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+    if (tokenType != TOKEN_NATIVE && !IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }

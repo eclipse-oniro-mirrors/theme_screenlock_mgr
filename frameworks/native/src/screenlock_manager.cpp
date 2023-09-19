@@ -29,8 +29,6 @@ namespace OHOS {
 namespace ScreenLock {
 std::mutex ScreenLockManager::instanceLock_;
 sptr<ScreenLockManager> ScreenLockManager::instance_;
-sptr<ScreenLockSaDeathRecipient> ScreenLockManager::deathRecipient_;
-
 ScreenLockManager::ScreenLockManager()
 {
 }
@@ -45,8 +43,6 @@ sptr<ScreenLockManager> ScreenLockManager::GetInstance()
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         if (instance_ == nullptr) {
             instance_ = new ScreenLockManager;
-            std::lock_guard<std::mutex> guard(instance_->managerProxyLock_);
-            instance_->screenlockManagerProxy_ = GetScreenLockManagerProxy();
         }
     }
     return instance_;
@@ -120,6 +116,16 @@ int32_t ScreenLockManager::Lock(const sptr<ScreenLockCallbackInterface> &listene
     return proxy->Lock(listener);
 }
 
+int32_t ScreenLockManager::Lock(int32_t uid)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    return proxy->Lock(uid);
+}
+
 sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()
 {
     if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
@@ -164,20 +170,6 @@ sptr<ScreenLockManagerInterface> ScreenLockManager::GetProxy()
         screenlockManagerProxy_ = GetScreenLockManagerProxy();
     }
     return screenlockManagerProxy_;
-}
-
-ScreenLockSaDeathRecipient::ScreenLockSaDeathRecipient()
-{
-}
-
-ScreenLockSaDeathRecipient::~ScreenLockSaDeathRecipient()
-{
-}
-
-void ScreenLockSaDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &object)
-{
-    SCLOCK_HILOGE("ScreenLockSaDeathRecipient on remote systemAbility died.");
-    ScreenLockManager::GetInstance()->OnRemoteSaDied(object);
 }
 } // namespace ScreenLock
 } // namespace OHOS

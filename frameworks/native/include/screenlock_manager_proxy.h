@@ -37,6 +37,7 @@ public:
     int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener) override;
     int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener) override;
     int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener) override;
+    int32_t Lock(int32_t uid) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
 

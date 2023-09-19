@@ -145,6 +145,7 @@ public:
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
     void ResetFfrtQueue();
+    int32_t Lock(int32_t uid) override;
     StateValue &GetState()
     {
         return stateValue_;

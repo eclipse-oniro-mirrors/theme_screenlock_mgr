@@ -28,41 +28,48 @@
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {
-public:
-    explicit ScreenLockSaDeathRecipient();
-    ~ScreenLockSaDeathRecipient() override;
-    void OnRemoteDied(const wptr<IRemoteObject> &object) override;
-};
-
 class ScreenLockManager : public RefBase {
 public:
-    SCREENLOCK_API ScreenLockManager();
-    SCREENLOCK_API ~ScreenLockManager() override;
     SCREENLOCK_API static sptr<ScreenLockManager> GetInstance();
-    SCREENLOCK_API int32_t IsLocked(bool &isLocked);
+    /**
+     * Lock the screen.
+     *
+     * @param uid Indicates the user ID.
+     * @return Returns E_SCREENLOCK_OK if success; otherwise failed.
+     */
+    SCREENLOCK_API int32_t Lock(int32_t uid);
 
     /**
-     * @brief Checks whether the screen is currently locked.
+     * Check whether the screen is currently locked.
      *
-     * This function is used to Check whether the screen is currently locked.
-     *
-     * @return Returns true if the screen is currently locked; returns false otherwise.
-     * @since 7
+     * @param isLocked Indicates the screen lock state.
+     * @return Returns E_SCREENLOCK_OK if success; otherwise failed.
      */
-    SCREENLOCK_API bool IsScreenLocked();
+    SCREENLOCK_API int32_t IsLocked(bool &isLocked);
 
-    SCREENLOCK_API bool GetSecure();
-    SCREENLOCK_API int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
-    SCREENLOCK_API int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
-    void OnRemoteSaDied(const wptr<IRemoteObject> &object);
-    SCREENLOCK_API sptr<ScreenLockManagerInterface> GetProxy();
-
+    bool IsScreenLocked();
+    bool GetSecure();
+    int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
+    int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
 private:
-    static sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
+    class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {
+    public:
+        explicit ScreenLockSaDeathRecipient(){};
+        ~ScreenLockSaDeathRecipient() = default;
+        void OnRemoteDied(const wptr<IRemoteObject> &object) override
+        {
+            ScreenLockManager::GetInstance()->OnRemoteSaDied(object);
+        }
+    };
+
+    ScreenLockManager();
+    ~ScreenLockManager() override;
+    void OnRemoteSaDied(const wptr<IRemoteObject> &object);
+    sptr<ScreenLockManagerInterface> GetProxy();
+    sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
     static std::mutex instanceLock_;
     static sptr<ScreenLockManager> instance_;
-    static sptr<ScreenLockSaDeathRecipient> deathRecipient_;
+    sptr<ScreenLockSaDeathRecipient> deathRecipient_;
     std::mutex managerProxyLock_;
     sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
 };
