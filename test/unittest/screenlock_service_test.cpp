@@ -32,7 +32,6 @@
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
 #include "securec.h"
-#include "scene_board_judgement.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -292,10 +291,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest013, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of showhelp");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD1, result);
     EXPECT_TRUE(ret);
@@ -313,10 +308,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest013, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest014, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of -h");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD2, result);
     EXPECT_TRUE(ret);
@@ -334,10 +325,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest014, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest015, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of -all");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
     EXPECT_TRUE(ret);
@@ -512,10 +499,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test Onstop");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_RUNNING;
     ScreenLockSystemAbility::GetInstance()->OnStart();
     ScreenLockSystemAbility::GetInstance()->OnStop();

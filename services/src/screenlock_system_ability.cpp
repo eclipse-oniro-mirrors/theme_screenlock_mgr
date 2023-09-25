@@ -45,7 +45,6 @@
 #include "user_idm_client.h"
 #include "want.h"
 #include "xcollie/watchdog.h"
-#include "scene_board_judgement.h"
 #include "window_manager.h"
 
 namespace OHOS {
@@ -55,9 +54,7 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
 using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Security::AccessToken;
-
-const bool REGISTER_RESULT = Rosen::SceneBoardJudgement::IsSceneBoardEnabled() ? false :
-    SystemAbility::MakeAndRegisterAbility(new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true));
+REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
@@ -72,12 +69,6 @@ ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool r
 
 ScreenLockSystemAbility::~ScreenLockSystemAbility()
 {
-    SCLOCK_HILOGD("~ScreenLockSystemAbility state_  is %{public}d.", static_cast<int>(state_));
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        queue_ = nullptr;
-        DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
-        displayPowerEventListener_ = nullptr;
-    }
 }
 
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
@@ -87,7 +78,6 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
         if (instance_ == nullptr) {
             SCLOCK_HILOGI("ScreenLockSystemAbility create instance.");
             instance_ = new ScreenLockSystemAbility(SCREENLOCK_SERVICE_ID, true);
-            instance_->Initialize();
         }
     }
     return instance_;
@@ -108,10 +98,6 @@ int32_t ScreenLockSystemAbility::Init()
 void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        SCLOCK_HILOGW("Is SceneBoard enabled.");
-        return;
-    }
     if (instance_ == nullptr) {
         instance_ = this;
     }
@@ -173,10 +159,6 @@ void ScreenLockSystemAbility::InitServiceHandler()
 void ScreenLockSystemAbility::OnStop()
 {
     SCLOCK_HILOGI("OnStop started.");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        SCLOCK_HILOGW("Is SceneBoard enabled.");
-        return;
-    }
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         return;
     }
@@ -405,6 +387,7 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     }
     std::lock_guard<std::mutex> lck(listenerMutex_);
     systemEventListener_ = listener;
+    stateValue_.Reset();
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent end.");
     return E_SCREENLOCK_OK;
 }
@@ -498,7 +481,6 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
     SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(true);
-        NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     } else if (stateResult == ScreenChange::SCREEN_FAIL || stateResult == ScreenChange::SCREEN_CANCEL) {
         SetScreenlocked(false);
     }
@@ -571,18 +553,6 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
         };
         ffrt::submit(callback);
     }
-}
-
-void ScreenLockSystemAbility::Initialize()
-{
-    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        return;
-    }
-    InitServiceHandler();
-    displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
-    int times = 0;
-    RegisterDisplayPowerEventListener(times);
-    stateValue_.Reset();
 }
 
 void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)

@@ -55,20 +55,16 @@ ohos_shared_library("screenlock_client") {
     include_dirs = [
       "include",
       "${screenlock_mgr_path}/frameworks/native/include",
-      "${window_base_path}/interfaces/innerkits/wm",
     ]
 
     deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
 
     external_deps = [
       "c_utils:utils",
-      "graphic_2d:librender_service_client",
       "hilog:libhilog",
       "hitrace:hitrace_meter",
       "ipc:ipc_single",
       "samgr:samgr_proxy",
-      "window_manager:libwsutils",
-      "window_manager:session_manager",
     ]
     subsystem_name = "theme"
     innerapi_tags = [ "platformsdk" ]

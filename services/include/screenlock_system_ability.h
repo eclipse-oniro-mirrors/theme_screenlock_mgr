@@ -178,7 +178,6 @@ private:
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
-    void Initialize();
     void NotifyDisplayEvent(Rosen::DisplayEvent event);
 
     ServiceRunningState state_;

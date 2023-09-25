@@ -59,7 +59,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
-    "window_manager:libwsutils",
   ]
 
   deps = [
