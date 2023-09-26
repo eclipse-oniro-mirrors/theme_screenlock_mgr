@@ -373,10 +373,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     ASSERT_NE(listener, nullptr);
     ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**

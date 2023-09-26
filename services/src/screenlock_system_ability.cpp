@@ -570,23 +570,6 @@ void ScreenLockSystemAbility::ResetFfrtQueue()
     queue_.reset();
 }
 
-#ifdef OHOS_TEST_FLAG
-bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
-{
-    return true;
-}
-
-bool ScreenLockSystemAbility::IsSystemApp()
-{
-    return true;
-}
-
-bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
-{
-    return true;
-}
-
-#else
 bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
 {
 #ifdef CONFIG_FACTORY_MODE
@@ -618,7 +601,5 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
     }
     return true;
 }
-
-#endif
 } // namespace ScreenLock
 } // namespace OHOS
