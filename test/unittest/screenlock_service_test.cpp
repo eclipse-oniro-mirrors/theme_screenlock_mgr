@@ -46,10 +46,10 @@ constexpr const uint16_t TOTAL_LENGTH = 1000;
 constexpr const char *CMD1 = "hidumper -s 3704";
 constexpr const char *CMD2 = "hidumper -s 3704 -a -h";
 constexpr const char *CMD3 = "hidumper -s 3704 -a -all";
-uint64_t g_SelfTokenID_ = 0;
+uint64_t g_selfTokenID_ = 0;
 static EventListenerTest g_unlockTestListener;
 
-static HapPolicyParams g_PolicyParams = { .apl = APL_SYSTEM_CORE,
+static HapPolicyParams g_policyParams = { .apl = APL_SYSTEM_CORE,
     .domain = "test.domain",
     .permList = { { .permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
         .bundleName = "ohos.screenlock_test.demo",
@@ -65,7 +65,7 @@ static HapPolicyParams g_PolicyParams = { .apl = APL_SYSTEM_CORE,
         .grantStatus = { PermissionState::PERMISSION_GRANTED },
         .grantFlags = { 1 } } } };
 
-HapInfoParams g_InfoParams = { .userID = 1,
+HapInfoParams g_infoParams = { .userID = 1,
     .bundleName = "screenlock_service",
     .instIndex = 0,
     .appIDDesc = "test",
@@ -74,9 +74,9 @@ HapInfoParams g_InfoParams = { .userID = 1,
 
 void GrantNativePermission()
 {
-    g_SelfTokenID_ = GetSelfTokenID();
+    g_selfTokenID_ = GetSelfTokenID();
     AccessTokenIDEx tokenIdEx = { 0 };
-    tokenIdEx = AccessTokenKit::AllocHapToken(g_InfoParams, g_PolicyParams);
+    tokenIdEx = AccessTokenKit::AllocHapToken(g_infoParams, g_policyParams);
     int32_t ret = SetSelfTokenID(tokenIdEx.tokenIDEx);
     if (ret == 0) {
         SCLOCK_HILOGI("SetSelfTokenID success!");
@@ -93,7 +93,7 @@ void ScreenLockServiceTest::SetUpTestCase()
 void ScreenLockServiceTest::TearDownTestCase()
 {
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
-    SetSelfTokenID(g_SelfTokenID_);
+    SetSelfTokenID(g_selfTokenID_);
 }
 
 void ScreenLockServiceTest::SetUp()
