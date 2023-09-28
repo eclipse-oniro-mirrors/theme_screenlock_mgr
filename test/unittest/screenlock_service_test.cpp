@@ -46,7 +46,7 @@ constexpr const uint16_t TOTAL_LENGTH = 1000;
 constexpr const char *CMD1 = "hidumper -s 3704";
 constexpr const char *CMD2 = "hidumper -s 3704 -a -h";
 constexpr const char *CMD3 = "hidumper -s 3704 -a -all";
-uint64_t g_selfTokenID_ = 0;
+uint64_t g_selfTokenID = 0;
 static EventListenerTest g_unlockTestListener;
 
 static HapPolicyParams g_policyParams = { .apl = APL_SYSTEM_CORE,
@@ -74,7 +74,7 @@ HapInfoParams g_infoParams = { .userID = 1,
 
 void GrantNativePermission()
 {
-    g_selfTokenID_ = GetSelfTokenID();
+    g_selfTokenID = GetSelfTokenID();
     AccessTokenIDEx tokenIdEx = { 0 };
     tokenIdEx = AccessTokenKit::AllocHapToken(g_infoParams, g_policyParams);
     int32_t ret = SetSelfTokenID(tokenIdEx.tokenIDEx);
@@ -93,7 +93,7 @@ void ScreenLockServiceTest::SetUpTestCase()
 void ScreenLockServiceTest::TearDownTestCase()
 {
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
-    SetSelfTokenID(g_selfTokenID_);
+    SetSelfTokenID(g_selfTokenID);
 }
 
 void ScreenLockServiceTest::SetUp()
