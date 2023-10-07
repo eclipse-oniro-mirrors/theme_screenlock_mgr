@@ -20,8 +20,6 @@
 #include "sclock_log.h"
 #include "screenlock_common.h"
 #include "system_ability_definition.h"
-#include "scene_board_judgement.h"
-#include "session_manager.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -87,9 +85,6 @@ int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityIn
 
 sptr<ScreenLockManagerInterface> ScreenLockAppManager::GetScreenLockManagerProxy()
 {
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        return Rosen::SessionManager::GetInstance().GetScreenLockManagerProxy();
-    }
     sptr<ISystemAbilityManager> systemAbilityManager =
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemAbilityManager == nullptr) {
