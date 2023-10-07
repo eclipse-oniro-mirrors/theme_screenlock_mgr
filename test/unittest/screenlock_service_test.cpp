@@ -23,6 +23,7 @@
 #include <string>
 #include <sys/time.h>
 
+#include "accesstoken_kit.h"
 #include "sclock_log.h"
 #include "screenlock_callback_test.h"
 #include "screenlock_common.h"
@@ -32,27 +33,67 @@
 #include "screenlock_system_ability.h"
 #include "screenlock_system_ability_stub.h"
 #include "securec.h"
-#include "scene_board_judgement.h"
+#include "token_setproc.h"
+
 
 namespace OHOS {
 namespace ScreenLock {
 using namespace testing::ext;
 using namespace OHOS::Rosen;
+using namespace OHOS::Security::AccessToken;
 constexpr const uint16_t EACH_LINE_LENGTH = 100;
 constexpr const uint16_t TOTAL_LENGTH = 1000;
 constexpr const char *CMD1 = "hidumper -s 3704";
 constexpr const char *CMD2 = "hidumper -s 3704 -a -h";
 constexpr const char *CMD3 = "hidumper -s 3704 -a -all";
-
+uint64_t g_selfTokenID = 0;
 static EventListenerTest g_unlockTestListener;
+
+static HapPolicyParams g_policyParams = { .apl = APL_SYSTEM_CORE,
+    .domain = "test.domain",
+    .permList = { { .permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+        .bundleName = "ohos.screenlock_test.demo",
+        .grantMode = 1,
+        .availableLevel = APL_NORMAL,
+        .label = "label",
+        .labelId = 1,
+        .description = "test",
+        .descriptionId = 1 } },
+    .permStateList = { { .permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+        .isGeneral = true,
+        .resDeviceID = { "local" },
+        .grantStatus = { PermissionState::PERMISSION_GRANTED },
+        .grantFlags = { 1 } } } };
+
+HapInfoParams g_infoParams = { .userID = 1,
+    .bundleName = "screenlock_service",
+    .instIndex = 0,
+    .appIDDesc = "test",
+    .apiVersion = 9,
+    .isSystemApp = true };
+
+void GrantNativePermission()
+{
+    g_selfTokenID = GetSelfTokenID();
+    AccessTokenIDEx tokenIdEx = { 0 };
+    tokenIdEx = AccessTokenKit::AllocHapToken(g_infoParams, g_policyParams);
+    int32_t ret = SetSelfTokenID(tokenIdEx.tokenIDEx);
+    if (ret == 0) {
+        SCLOCK_HILOGI("SetSelfTokenID success!");
+    } else {
+        SCLOCK_HILOGE("SetSelfTokenID fail!");
+    }
+}
 
 void ScreenLockServiceTest::SetUpTestCase()
 {
+    GrantNativePermission();
 }
 
 void ScreenLockServiceTest::TearDownTestCase()
 {
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
+    SetSelfTokenID(g_selfTokenID);
 }
 
 void ScreenLockServiceTest::SetUp()
@@ -292,10 +333,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest009, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest013, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of showhelp");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD1, result);
     EXPECT_TRUE(ret);
@@ -313,10 +350,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest013, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest014, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of -h");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD2, result);
     EXPECT_TRUE(ret);
@@ -334,10 +367,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest014, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest015, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test hidumper of -all");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
     EXPECT_TRUE(ret);
@@ -386,10 +415,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     ASSERT_NE(listener, nullptr);
     ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**
@@ -512,10 +541,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test Onstop");
-    if (Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
-        EXPECT_TRUE(true);
-        return; // Because there is no ScreenLock SA when the Sceneboard is enabled, skip the following use cases.
-    }
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_RUNNING;
     ScreenLockSystemAbility::GetInstance()->OnStart();
     ScreenLockSystemAbility::GetInstance()->OnStop();

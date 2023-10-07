@@ -75,7 +75,6 @@ ohos_shared_library("screenlock_server") {
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
-    "window_manager:libwsutils",
   ]
 
   innerapi_tags = [ "platformsdk" ]
@@ -121,7 +120,6 @@ ohos_static_library("screenlock_server_static") {
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
-    "window_manager:libwsutils",
   ]
 
   subsystem_name = "theme"
