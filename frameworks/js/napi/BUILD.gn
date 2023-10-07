@@ -44,7 +44,9 @@ ohos_shared_library("screenlock") {
       "src/uv_queue.cpp",
     ]
 
-    deps = [ "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static" ]
+    deps = [
+      "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
+    ]
 
     external_deps = [
       "c_utils:utils",
@@ -79,7 +81,9 @@ ohos_static_library("screenlock_static") {
       "src/uv_queue.cpp",
     ]
 
-    deps = [ "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static" ]
+    deps = [
+      "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
+    ]
 
     external_deps = [
       "c_utils:utils",
