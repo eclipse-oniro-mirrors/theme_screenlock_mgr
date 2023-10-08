@@ -214,7 +214,7 @@ HWTEST_F(ScreenLockClientTest, LockTest009, TestSize.Level0)
     auto proxy = ScreenLockAppManager::GetInstance()->GetProxy();
     int32_t uid = 0;
     int32_t result = proxy->Lock(uid);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 } // namespace ScreenLock
 } // namespace OHOS

@@ -18,6 +18,7 @@
       *OHOS::ScreenLock::ScreenLockManager::GetInstance*;
       *OHOS::ScreenLock::ScreenLockManager::Lock*;
       *OHOS::ScreenLock::ScreenLockManager::IsLocked*;
+      *OHOS::ScreenLock::ScreenLockManager::IsScreenLocked*;
     };
   local:
     *;
