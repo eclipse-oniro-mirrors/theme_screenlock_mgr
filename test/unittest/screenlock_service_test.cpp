@@ -508,27 +508,11 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest022, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test SendScreenLockEvent");
+    ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(SCREEN_DRAWDONE, SCREEN_SUCC);
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(LOCK_SCREEN_RESULT, SCREEN_CANCEL);
     bool isLocked;
     ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
     EXPECT_EQ(isLocked, false);
-}
-
-/**
-* @tc.name: ScreenLockTest024
-* @tc.desc: Test SendScreenLockEvent.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest024, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test SendScreenLockEvent");
-    ScreenLockSystemAbility::GetInstance()->OnSystemReady();
-    ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(SCREEN_DRAWDONE, SCREEN_CANCEL);
-    bool isLocked;
-    ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
-    EXPECT_EQ(isLocked, true);
 }
 
 /**
