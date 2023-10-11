@@ -406,7 +406,6 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
     if (event == UNLOCK_SCREEN_RESULT) {
         UnlockScreenEvent(stateResult);
     } else if (event == SCREEN_DRAWDONE) {
-        SetScreenlocked(true);
         NotifyDisplayEvent(DisplayEvent::KEYGUARD_DRAWN);
     } else if (event == LOCK_SCREEN_RESULT) {
         LockScreenEvent(stateResult);
