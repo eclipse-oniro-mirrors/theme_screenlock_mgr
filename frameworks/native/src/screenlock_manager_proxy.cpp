@@ -161,7 +161,7 @@ int32_t ScreenLockManagerProxy::Lock(const sptr<ScreenLockCallbackInterface> &li
     return retCode;
 }
 
-int32_t ScreenLockManagerProxy::Lock(int32_t uid)
+int32_t ScreenLockManagerProxy::Lock(int32_t userId)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -170,12 +170,12 @@ int32_t ScreenLockManagerProxy::Lock(int32_t uid)
         SCLOCK_HILOGE(" Failed to write parcelable ");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    if (!data.WriteInt32(uid)) {
-        SCLOCK_HILOGE(" Failed to write uid");
+    if (!data.WriteInt32(userId)) {
+        SCLOCK_HILOGE(" Failed to write userId");
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
-    int32_t ret =
-        Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN), data, reply, option);
+    int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN), data,
+        reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestLock failed, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;

@@ -596,8 +596,8 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, LockTest028, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestLock.");
-    int32_t uid = 0;
-    int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(uid);
+    int32_t userId = 0;
+    int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 } // namespace ScreenLock

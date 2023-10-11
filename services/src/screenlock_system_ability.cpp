@@ -329,7 +329,7 @@ int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &l
     return E_SCREENLOCK_OK;
 }
 
-int32_t ScreenLockSystemAbility::Lock(int32_t uid)
+int32_t ScreenLockSystemAbility::Lock(int32_t userId)
 {
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;

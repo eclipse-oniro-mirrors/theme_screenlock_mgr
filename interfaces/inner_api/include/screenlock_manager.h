@@ -34,10 +34,10 @@ public:
     /**
      * Lock the screen.
      *
-     * @param uid Indicates the user ID.
+     * @param userId Indicates the user ID.
      * @return Returns E_SCREENLOCK_OK if success; otherwise failed.
      */
-    SCREENLOCK_API int32_t Lock(int32_t uid);
+    SCREENLOCK_API int32_t Lock(int32_t userId);
 
     /**
      * Check whether the screen is currently locked.

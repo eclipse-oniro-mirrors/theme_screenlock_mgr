@@ -114,14 +114,14 @@ int32_t ScreenLockManager::Lock(const sptr<ScreenLockCallbackInterface> &listene
     return proxy->Lock(listener);
 }
 
-int32_t ScreenLockManager::Lock(int32_t uid)
+int32_t ScreenLockManager::Lock(int32_t userId)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
-    return proxy->Lock(uid);
+    return proxy->Lock(userId);
 }
 
 sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()
