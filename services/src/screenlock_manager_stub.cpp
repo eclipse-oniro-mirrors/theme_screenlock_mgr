@@ -64,6 +64,9 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT):
             OnScreenLockOn(data, reply);
             break;
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN):
+            OnLockScreen(data, reply);
+            break;
         default:
             SCLOCK_HILOGE("Default value received, check needed.");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -171,6 +174,14 @@ int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, Messag
     int param = data.ReadInt32();
     SCLOCK_HILOGD("event=%{public}s, param=%{public}d", event.c_str(), param);
     int32_t retCode = SendScreenLockEvent(event, param);
+    reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t useId = data.ReadInt32();
+    int32_t retCode = Lock(useId);
     reply.WriteInt32(retCode);
     return ERR_NONE;
 }

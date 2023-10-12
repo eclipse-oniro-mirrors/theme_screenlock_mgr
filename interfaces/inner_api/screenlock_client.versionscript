@@ -14,10 +14,12 @@
 1.0 {
   global:
     *_cfi_*;
-    *ScreenLockManager*;
-    *ScreenLockAppManager*;
-    *ScreenLockCallbackStub*;
-    *ScreenLockSystemAbilityStub*;
+    extern "C++" {
+      *OHOS::ScreenLock::ScreenLockManager::GetInstance*;
+      *OHOS::ScreenLock::ScreenLockManager::Lock*;
+      *OHOS::ScreenLock::ScreenLockManager::IsLocked*;
+      *OHOS::ScreenLock::ScreenLockManager::IsScreenLocked*;
+    };
   local:
     *;
 };
