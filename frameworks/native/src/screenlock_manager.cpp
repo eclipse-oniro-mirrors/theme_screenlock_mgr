@@ -14,7 +14,7 @@
  */
 
 #include "screenlock_manager.h"
-
+#include "screenlock_manager_proxy.h"
 #include <hitrace_meter.h>
 
 #include "if_system_ability_manager.h"

@@ -47,7 +47,7 @@ public:
      */
     SCREENLOCK_API int32_t IsLocked(bool &isLocked);
 
-    bool IsScreenLocked();
+    SCREENLOCK_API bool IsScreenLocked();
     bool GetSecure();
     int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
     int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
