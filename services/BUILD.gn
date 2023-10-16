@@ -83,6 +83,11 @@ ohos_shared_library("screenlock_server") {
 }
 
 ohos_static_library("screenlock_server_static") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   sources = [
     "src/command.cpp",
     "src/dump_helper.cpp",
