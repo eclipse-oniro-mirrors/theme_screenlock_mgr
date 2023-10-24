@@ -32,6 +32,10 @@ ohos_shared_library("screenlock_client") {
       cfi = true
       cfi_cross_dso = true
       debug = false
+      integer_overflow = true
+      boundary_sanitize = true
+      ubsan = true
+      stack_protector_ret = true
     }
     sources = [
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
@@ -66,14 +70,6 @@ ohos_shared_library("screenlock_client") {
       "ipc:ipc_single",
       "samgr:samgr_proxy",
     ]
-    sanitize = {
-      cfi = true
-      debug = false
-      integer_overflow = true
-      boundary_sanitize = true
-      ubsan = true
-      stack_protector_ret = true
-    }
     subsystem_name = "theme"
     innerapi_tags = [ "platformsdk" ]
     part_name = "screenlock_mgr"
@@ -85,6 +81,10 @@ ohos_static_library("screenlock_client_static") {
       cfi = true
       cfi_cross_dso = true
       debug = false
+      integer_overflow = true
+      boundary_sanitize = true
+      ubsan = true
+      stack_protector_ret = true
     }
     sources = [
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
