@@ -66,6 +66,14 @@ ohos_shared_library("screenlock_client") {
       "ipc:ipc_single",
       "samgr:samgr_proxy",
     ]
+    sanitize = {
+      cfi = true
+      debug = false
+      integer_overflow = true
+      boundary_sanitize = true
+      ubsan = true
+      stack_protector_ret = true
+    }
     subsystem_name = "theme"
     innerapi_tags = [ "platformsdk" ]
     part_name = "screenlock_mgr"
