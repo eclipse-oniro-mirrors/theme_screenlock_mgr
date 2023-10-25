@@ -604,11 +604,6 @@ bool ScreenLockSystemAbility::IsSystemApp()
 bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
 {
     AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType != TOKEN_NATIVE && tokenType != TOKEN_SHELL && tokenType != TOKEN_HAP) {
-        SCLOCK_HILOGE("check permission tokenType illegal");
-        return false;
-    }
     int result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
     if (result != PERMISSION_GRANTED) {
         SCLOCK_HILOGE("check permission failed.");
