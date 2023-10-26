@@ -27,6 +27,10 @@ ohos_shared_library("screenlock") {
       cfi = true
       cfi_cross_dso = true
       debug = false
+      integer_overflow = true
+      boundary_sanitize = true
+      ubsan = true
+      stack_protector_ret = true
     }
     include_dirs = [
       "${screenlock_mgr_path}/services/include",

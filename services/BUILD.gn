@@ -35,6 +35,10 @@ ohos_shared_library("screenlock_server") {
     cfi = true
     cfi_cross_dso = true
     debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+    stack_protector_ret = true
   }
   sources = [
     "src/command.cpp",
@@ -87,6 +91,10 @@ ohos_static_library("screenlock_server_static") {
     cfi = true
     cfi_cross_dso = true
     debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+    stack_protector_ret = true
   }
   sources = [
     "src/command.cpp",
