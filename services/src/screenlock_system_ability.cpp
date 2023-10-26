@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <memory>
 
+#include "ability_manager_client.h"
 #include "common_event_support.h"
 #include "accesstoken_kit.h"
 #include "command.h"
@@ -294,7 +295,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
         OnStart();
     }
     // check whether the page of app request unlock is the focus page
-    if (!IsAppInForeground(IPCSkeleton::GetCallingUid())) {
+    if (!IsAppInForeground(IPCSkeleton::GetCallingPid(), IPCSkeleton::GetCallingTokenID())) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGE("UnlockScreen  Unfocused.");
         return E_SCREENLOCK_NO_PERMISSION;
@@ -585,15 +586,22 @@ void ScreenLockSystemAbility::ResetFfrtQueue()
     queue_.reset();
 }
 
-bool ScreenLockSystemAbility::IsAppInForeground(int32_t uid)
+bool ScreenLockSystemAbility::IsAppInForeground(int32_t callingPid, uint32_t callingTokenId)
 {
 #ifdef CONFIG_FACTORY_MODE
     return true;
 #endif
     FocusChangeInfo focusInfo;
     WindowManager::GetInstance().GetFocusWindowInfo(focusInfo);
-    SCLOCK_HILOGD("callingUid:%{public}d, focusWidnowUid:%{public}d", uid, focusInfo.uid_);
-    return uid == focusInfo.uid_;
+    if (callingPid == focusInfo.pid_) {
+        return true;
+    }
+    bool isFocused = false;
+    std::string identity = IPCSkeleton::ResetCallingIdentity();
+    auto ret = AAFwk::AbilityManagerClient::GetInstance()->CheckUIExtensionIsFocused(callingTokenId, isFocused);
+    IPCSkeleton::SetCallingIdentity(identity);
+    SCLOCK_HILOGI("tokenId:%{public}d check result:%{public}d, isFocused:%{public}d", callingTokenId, ret, isFocused);
+    return ret == ERR_OK && isFocused;
 }
 
 bool ScreenLockSystemAbility::IsSystemApp()
