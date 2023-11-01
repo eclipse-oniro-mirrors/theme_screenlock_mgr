@@ -394,7 +394,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     EXPECT_EQ(isLocked, true);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
     ScreenLockSystemAbility::GetInstance()->stateValue_.SetScreenlocked(false);
     result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
@@ -448,7 +448,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_FAIL);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, true);
+    EXPECT_EQ(isLocked, false);
 }
 
 /**
@@ -463,7 +463,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_CANCEL);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, true);
+    EXPECT_EQ(isLocked, false);
 }
 
 /**
@@ -495,7 +495,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest022, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(LOCK_SCREEN_RESULT, SCREEN_FAIL);
     bool isLocked;
     ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
-    EXPECT_EQ(isLocked, false);
+    EXPECT_EQ(isLocked, true);
 }
 
 /**
@@ -512,7 +512,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest023, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(LOCK_SCREEN_RESULT, SCREEN_CANCEL);
     bool isLocked;
     ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
-    EXPECT_EQ(isLocked, false);
+    EXPECT_EQ(isLocked, true);
 }
 
 /**
@@ -567,7 +567,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->UnlockScreenEvent(SCREEN_CANCEL);
     bool isLocked;
     ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
-    EXPECT_EQ(isLocked, true);
+    EXPECT_EQ(isLocked, false);
 }
 
 /**

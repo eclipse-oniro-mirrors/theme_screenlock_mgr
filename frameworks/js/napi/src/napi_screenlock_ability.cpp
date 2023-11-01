@@ -169,7 +169,10 @@ napi_value NAPI_IsLocked(napi_env env, napi_callback_info info)
     bool isLocked = false;
     int32_t status = ScreenLockManager::GetInstance()->IsLocked(isLocked);
     if (status != E_SCREENLOCK_OK) {
-        ThrowError(env, JsErrorCode::ERR_NOT_SYSTEM_APP, NON_SYSTEM_APP);
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ThrowError(env, errInfo.errorCode_, errInfo.message_);
         return result;
     }
     napi_get_boolean(env, isLocked, &result);
