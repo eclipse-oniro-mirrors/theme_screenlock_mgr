@@ -35,8 +35,8 @@ ohos_shared_library("screenlock_client") {
       integer_overflow = true
       boundary_sanitize = true
       ubsan = true
-      stack_protector_ret = true
     }
+    branch_protector_ret = "pac_ret"
     sources = [
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
@@ -84,8 +84,8 @@ ohos_static_library("screenlock_client_static") {
       integer_overflow = true
       boundary_sanitize = true
       ubsan = true
-      stack_protector_ret = true
     }
+    branch_protector_ret = "pac_ret"
     sources = [
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
