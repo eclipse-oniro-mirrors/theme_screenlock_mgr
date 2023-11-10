@@ -319,7 +319,7 @@ int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &l
         return E_SCREENLOCK_NO_PERMISSION;
     }
     if (stateValue_.GetScreenlockedState()) {
-        return E_SCREENLOCK_NO_PERMISSION;
+        SCLOCK_HILOGI("Currently in a locked screen state");
     }
     lockListenerMutex_.lock();
     lockVecListeners_.push_back(listener);
@@ -335,7 +335,9 @@ int32_t ScreenLockSystemAbility::Lock(int32_t userId)
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-
+    if (stateValue_.GetScreenlockedState()) {
+        SCLOCK_HILOGI("Currently in a locked screen state");
+    }
     SystemEvent systemEvent(LOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
     return E_SCREENLOCK_OK;
@@ -497,8 +499,6 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
     SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(true);
-    } else if (stateResult == ScreenChange::SCREEN_FAIL || stateResult == ScreenChange::SCREEN_CANCEL) {
-        SetScreenlocked(false);
     }
     std::lock_guard<std::mutex> autoLock(lockListenerMutex_);
     if (lockVecListeners_.size()) {
@@ -522,8 +522,6 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(false);
         NotifyDisplayEvent(DisplayEvent::UNLOCK);
-    } else if (stateResult == SCREEN_FAIL || stateResult == SCREEN_CANCEL) {
-        SetScreenlocked(true);
     }
     NotifyUnlockListener(stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
