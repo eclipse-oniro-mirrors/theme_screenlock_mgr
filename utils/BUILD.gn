@@ -28,8 +28,8 @@ ohos_shared_library("screenlock_utils") {
       integer_overflow = true
       boundary_sanitize = true
       ubsan = true
-      stack_protector_ret = true
     }
+    branch_protector_ret = "pac_ret"
     sources = [ "src/screenlock_appinfo.cpp" ]
 
     version_script = "screenlock_utils.versionscript"

@@ -30,8 +30,8 @@ ohos_shared_library("screenlock") {
       integer_overflow = true
       boundary_sanitize = true
       ubsan = true
-      stack_protector_ret = true
     }
+    branch_protector_ret = "pac_ret"
     include_dirs = [
       "${screenlock_mgr_path}/services/include",
       "${screenlock_mgr_path}/utils/include",

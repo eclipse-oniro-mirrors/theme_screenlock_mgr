@@ -38,8 +38,8 @@ ohos_shared_library("screenlock_server") {
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
-    stack_protector_ret = true
   }
+  branch_protector_ret = "pac_ret"
   sources = [
     "src/command.cpp",
     "src/dump_helper.cpp",
@@ -95,8 +95,8 @@ ohos_static_library("screenlock_server_static") {
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
-    stack_protector_ret = true
   }
+  branch_protector_ret = "pac_ret"
   sources = [
     "src/command.cpp",
     "src/dump_helper.cpp",
