@@ -68,6 +68,15 @@ ohos_shared_library("screenlock") {
 
 ohos_static_library("screenlock_static") {
   if (is_standard_system) {
+    sanitize = {
+      cfi = true
+      cfi_cross_dso = true
+      debug = false
+      integer_overflow = true
+      boundary_sanitize = true
+      ubsan = true
+    }
+    branch_protector_ret = "pac_ret"
     testonly = true
     include_dirs = [
       "${screenlock_mgr_path}/services/include",
