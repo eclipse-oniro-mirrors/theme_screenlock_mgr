@@ -298,7 +298,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     if (!IsAppInForeground(IPCSkeleton::GetCallingPid(), IPCSkeleton::GetCallingTokenID())) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGE("UnlockScreen  Unfocused.");
-        return E_SCREENLOCK_NO_PERMISSION;
+        return E_SCREENLOCK_NOT_FOCUS_APP;
     }
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);

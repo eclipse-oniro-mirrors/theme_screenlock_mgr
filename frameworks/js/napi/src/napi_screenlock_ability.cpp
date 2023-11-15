@@ -40,6 +40,7 @@ constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission verification fa
 constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter verification failed.";
 constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
 constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
+constexpr const char *ILLEGAL_USE = "illegal use.";
 constexpr const char *NON_SYSTEM_APP = "Permission verification failed, application which is not a system application "
                                        "uses system API.";
 const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
@@ -48,6 +49,7 @@ const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
     { E_SCREENLOCK_WRITE_PARCEL_ERROR, JsErrorCode::ERR_SERVICE_ABNORMAL },
     { E_SCREENLOCK_NULLPTR, JsErrorCode::ERR_SERVICE_ABNORMAL },
     { E_SCREENLOCK_SENDREQUEST_FAILED, JsErrorCode::ERR_SERVICE_ABNORMAL },
+    { E_SCREENLOCK_NOT_FOCUS_APP, JsErrorCode::ERR_ILLEGAL_USE },
     { E_SCREENLOCK_NOT_SYSTEM_APP, JsErrorCode::ERR_NOT_SYSTEM_APP },
 };
 const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
@@ -55,6 +57,7 @@ const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
     { JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED },
     { JsErrorCode::ERR_CANCEL_UNLOCK, CANCEL_UNLOCK_OPERATION },
     { JsErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL },
+    { JsErrorCode::ERR_ILLEGAL_USE, ILLEGAL_USE },
     { JsErrorCode::ERR_NOT_SYSTEM_APP, NON_SYSTEM_APP },
 };
 

@@ -19,6 +19,7 @@ import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from '
 const SLEEP_TIME = 1000;
 const PERMISSION_ERROR = 201;
 const PARAMETER_ERROR = 401;
+const UNFOCUSED_ERROR = 13200003;
 describe("ScreenlockJsTest", function () {
     beforeAll(function () {
         // input testsuite setup step，setup invoked before all testcases
@@ -42,6 +43,7 @@ describe("ScreenlockJsTest", function () {
 
     /*
      * @tc.name:SUB_MISC_THEME_screenLock_API_0001
+     * @tc.number:SUB_MISC_THEME_screenLock_API_0001
      * @tc.desc: Checks whether the screen lock of the current device is secure.
      * @tc.type: Function
      * @tc.require: SR000HHEJQ
@@ -61,6 +63,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0002
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0002
     * @tc.desc: Checks whether the screen is currently locked. 
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -79,6 +82,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0003
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0003
     * @tc.desc: Unlock the screen
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -88,7 +92,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.unlock((err, data) => {
                 if (err) {
                     console.info("unlock filed: error.code : " + err.code + "error.message :" + err.message);
-                    expect(err.code === PERMISSION_ERROR).assertTrue();
+                    expect(err.code === UNFOCUSED_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0003 unlock screen success.");
                     let ret = screenLock.isLocked();
@@ -104,6 +108,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0004
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0004
     * @tc.desc: Unlock the screen
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -118,7 +123,7 @@ describe("ScreenlockJsTest", function () {
                 done();
             }).catch((err) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0004: ${err.code}, ${err.message}`);
-                expect(err.code === PERMISSION_ERROR).assertTrue();
+                expect(err.code === UNFOCUSED_ERROR).assertTrue();
                 done();
             });
         } catch (error) {
@@ -128,6 +133,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
    * @tc.name:SUB_MISC_THEME_screenLock_API_0005
+   * @tc.number:SUB_MISC_THEME_screenLock_API_0005
    * @tc.desc: Lock the screen
    * @tc.type: Function
    * @tc.require: SR000HHEJQ
@@ -153,6 +159,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0006
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0006
     * @tc.desc: Lock the screen
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -178,6 +185,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0007
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0007
     * @tc.desc: Register system event to screenlockSA.
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -195,6 +203,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0008
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0008
     * @tc.desc: screenlockAPP send event to screenlockSA
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -217,6 +226,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0009
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0009
     * @tc.desc: screenlockAPP send event to screenlockSA
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -234,6 +244,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
      * @tc.name:SUB_MISC_THEME_screenLock_API_0010
+     * @tc.number:SUB_MISC_THEME_screenLock_API_0010
      * @tc.desc: Checks whether the screen lock of the current device is secure.
      * @tc.type: Function
      * @tc.require: SR000HHEJQ
@@ -256,6 +267,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
      * @tc.name:SUB_MISC_THEME_screenLock_API_0011
+     * @tc.number:SUB_MISC_THEME_screenLock_API_0011
      * @tc.desc: Checks whether the screen is currently locked.
      * @tc.type: Function
      * @tc.require: SR000HHEJQ
@@ -277,6 +289,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0012
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0012
     * @tc.desc: Unlock the screen
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -286,7 +299,7 @@ describe("ScreenlockJsTest", function () {
             screenLock.unlockScreen((err, data) => {
                 if (err) {
                     console.error(`SUB_MISC_THEME_screenLock_API_0012: ${err.code}, ${err.message}`);
-                    expect(err.code == PERMISSION_ERROR).assertTrue();
+                    expect(err.code == UNFOCUSED_ERROR).assertTrue();
                 } else {
                     console.info("SUB_MISC_THEME_screenLock_API_0012: unlock screen success.");
                     let ret = screenLock.isLocked();
@@ -302,6 +315,7 @@ describe("ScreenlockJsTest", function () {
     })
     /*
     * @tc.name:SUB_MISC_THEME_screenLock_API_0013
+    * @tc.number:SUB_MISC_THEME_screenLock_API_0013
     * @tc.desc: Unlock the screen
     * @tc.type: Function
     * @tc.require: SR000HHEJQ
@@ -316,7 +330,7 @@ describe("ScreenlockJsTest", function () {
                 done();
             }).catch((err) => {
                 console.error(`SUB_MISC_THEME_screenLock_API_0013: ${err.code}, ${err.message}`);
-                expect(err.code == PERMISSION_ERROR).assertTrue();
+                expect(err.code == UNFOCUSED_ERROR).assertTrue();
                 done();
             });
         } catch (error) {
@@ -326,7 +340,8 @@ describe("ScreenlockJsTest", function () {
     })
 
     /*
-     * @tc.name:SUB_MISC_THEME_screenLock_API_0008
+     * @tc.name:SUB_MISC_THEME_screenLock_API_0014
+     * @tc.number:SUB_MISC_THEME_screenLock_API_0014
      * @tc.desc: screenlockAPP send event to screenlockSA
      * @tc.type: Function
      * @tc.require: SR000HHEJQ

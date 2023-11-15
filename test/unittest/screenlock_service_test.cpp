@@ -413,12 +413,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_RUNNING;
     sptr<ScreenLockCallbackInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
-    ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
-    int32_t result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    int32_t result = ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+    result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
 }
 
 /**

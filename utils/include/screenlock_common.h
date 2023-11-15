@@ -67,6 +67,7 @@ enum ScreenLockError {
     E_SCREENLOCK_NULLPTR,
     E_SCREENLOCK_SENDREQUEST_FAILED,
     E_SCREENLOCK_NOT_SYSTEM_APP,
+    E_SCREENLOCK_NOT_FOCUS_APP,
 };
 
 enum TraceTaskId : int32_t {
@@ -87,6 +88,7 @@ enum JsErrorCode : uint32_t {
     ERR_INVALID_PARAMS = 401,
     ERR_CANCEL_UNLOCK = 13200001,
     ERR_SERVICE_ABNORMAL = 13200002,
+    ERR_ILLEGAL_USE = 13200003,
 };
 
 enum class Action : uint8_t {
