@@ -73,7 +73,7 @@ ohos_shared_library("screenlock_client") {
     subsystem_name = "theme"
     innerapi_tags = [
       "platformsdk",
-      "sasdk"
+      "sasdk",
     ]
     part_name = "screenlock_mgr"
   }
