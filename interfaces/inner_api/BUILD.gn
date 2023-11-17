@@ -71,7 +71,10 @@ ohos_shared_library("screenlock_client") {
       "samgr:samgr_proxy",
     ]
     subsystem_name = "theme"
-    innerapi_tags = [ "platformsdk" ]
+    innerapi_tags = [
+      "platformsdk",
+      "sasdk"
+    ]
     part_name = "screenlock_mgr"
   }
 }
