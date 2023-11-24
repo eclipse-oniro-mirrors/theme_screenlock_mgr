@@ -42,7 +42,7 @@
 #undef SCLOCK_HILOGD
 #endif
 
-constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, 0xD001C00, "SclockKit" };
+constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, 0xD001C30, "SclockKit" };
 
 #define FILENAME_PREFIX (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
