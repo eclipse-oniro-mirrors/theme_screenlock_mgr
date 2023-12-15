@@ -193,7 +193,7 @@ private:
     std::mutex lockListenerMutex_;
     std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
     StateValue stateValue_;
-    bool flag_ = false;
+    std::atomic<bool> systemReady_ = false;
 };
 } // namespace ScreenLock
 } // namespace OHOS
