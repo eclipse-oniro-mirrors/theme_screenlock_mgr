@@ -69,6 +69,11 @@ screenlockunlock_test = {
   configFuzzer = "screenlockunlock_fuzzer"
   source = "screenlockunlock_fuzzer/screenlockunlock_fuzzer.cpp"
 }
+screenlocklockscreen_test = {
+  targetName = "ScreenlockLockScreenFuzzTest"
+  configFuzzer = "screenlocklockscreen_fuzzer"
+  source = "screenlocklockscreen_fuzzer/screenlocklockscreen_fuzzer.cpp"
+}
 
 screenlock_fuzztests = [
   screenlockislocked_test,
@@ -81,6 +86,7 @@ screenlock_fuzztests = [
   screenlocksendscreenlockevent_test,
   screenlockunlockscreen_test,
   screenlockunlock_test,
+  screenlocklockscreen_test,
 ]
 
 foreach(item, screenlock_fuzztests) {
@@ -138,6 +144,7 @@ group("fuzztest") {
     ":ScreenlockIsSecureModeFuzzTest",
     ":ScreenlockIslockedFuzzTest",
     ":ScreenlockLockFuzzTest",
+    ":ScreenlockLockScreenFuzzTest",
     ":ScreenlockOnSystemEventFuzzTest",
     ":ScreenlockSendScreenlockEventFuzzTest",
     ":ScreenlockUnlockFuzzTest",
