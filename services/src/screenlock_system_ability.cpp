@@ -345,10 +345,7 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 {
     AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType == TOKEN_NATIVE && !CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
-        return E_SCREENLOCK_NO_PERMISSION;
-    }
-    if (tokenType != TOKEN_NATIVE && !IsSystemApp()) {
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -362,9 +359,7 @@ bool ScreenLockSystemAbility::IsScreenLocked()
         SCLOCK_HILOGW("IsScreenLocked restart.");
         OnStart();
     }
-    bool isScreenLocked = stateValue_.GetScreenlockedState();
-    SCLOCK_HILOGI("IsScreenLocked = %{public}d", isScreenLocked);
-    return isScreenLocked;
+    return stateValue_.GetScreenlockedState();
 }
 
 bool ScreenLockSystemAbility::GetSecure()
