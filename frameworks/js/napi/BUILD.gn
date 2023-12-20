@@ -54,6 +54,7 @@ ohos_shared_library("screenlock") {
 
     external_deps = [
       "c_utils:utils",
+      "eventhandler:libeventhandler",
       "hilog:libhilog",
       "hitrace:hitrace_meter",
       "ipc:ipc_single",
@@ -100,6 +101,7 @@ ohos_static_library("screenlock_static") {
 
     external_deps = [
       "c_utils:utils",
+      "eventhandler:libeventhandler",
       "hilog:libhilog",
       "hitrace:hitrace_meter",
       "ipc:ipc_single",
