@@ -20,6 +20,7 @@
 #include <string>
 
 #include "event_listener.h"
+#include "event_handler.h"
 #include "screenlock_system_ability_stub.h"
 
 namespace OHOS {
@@ -29,9 +30,11 @@ public:
     explicit ScreenlockSystemAbilityCallback(const EventListener &eventListener);
     ~ScreenlockSystemAbilityCallback() override;
     void OnCallBack(const SystemEvent &systemEvent) override;
-
+    static std::shared_ptr<AppExecFwk::EventHandler> GetEventHandler();
 private:
     EventListener eventListener_;
+    static std::mutex eventHandlerMutex_;
+    static std::shared_ptr<AppExecFwk::EventHandler> handler_;
 };
 } // namespace ScreenLock
 } // namespace OHOS

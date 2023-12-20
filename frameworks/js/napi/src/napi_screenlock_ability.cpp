@@ -415,6 +415,7 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     EventListener eventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef };
     sptr<ScreenlockSystemAbilityCallback> listener = new (std::nothrow) ScreenlockSystemAbilityCallback(eventListener);
     if (listener != nullptr) {
+        ScreenlockSystemAbilityCallback::GetEventHandler();
         int32_t retCode = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;

@@ -26,6 +26,8 @@
 
 namespace OHOS {
 namespace ScreenLock {
+std::mutex ScreenlockSystemAbilityCallback::eventHandlerMutex_;
+std::shared_ptr<AppExecFwk::EventHandler> ScreenlockSystemAbilityCallback::handler_{ nullptr };
 ScreenlockSystemAbilityCallback::ScreenlockSystemAbilityCallback(const EventListener &eventListener)
     : eventListener_(eventListener)
 {
@@ -35,67 +37,40 @@ ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()
 {
 }
 
-auto g_onUvWorkCallback = [](uv_work_t *work, int status) {
-    SCLOCK_HILOGD("g_onUvWorkCallback status = %{public}d", status);
-    if (work == nullptr) {
-        return;
-    }
-    ScreenlockOnCallBack *screenlockOnCallBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
-    if (screenlockOnCallBackPtr == nullptr) {
-        delete work;
-        work = nullptr;
-        return;
-    }
-    napi_handle_scope scope = nullptr;
-    napi_open_handle_scope(screenlockOnCallBackPtr->env, &scope);
-    napi_value undefined = nullptr;
-    napi_get_undefined(screenlockOnCallBackPtr->env, &undefined);
-    napi_value callbackFunc = nullptr;
-    napi_get_reference_value(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->callbackRef, &callbackFunc);
-    napi_value callbackResult = nullptr;
-    napi_value callbackValue = nullptr;
-
-    napi_value result = nullptr;
-    napi_create_object(screenlockOnCallBackPtr->env, &result);
-    napi_value eventType = nullptr;
-    napi_value params = nullptr;
-    napi_create_string_utf8(screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->systemEvent.eventType_.c_str(),
-        NAPI_AUTO_LENGTH, &eventType);
-    napi_create_string_utf8(
-        screenlockOnCallBackPtr->env, screenlockOnCallBackPtr->systemEvent.params_.c_str(), NAPI_AUTO_LENGTH, &params);
-    napi_set_named_property(screenlockOnCallBackPtr->env, result, "eventType", eventType);
-    napi_set_named_property(screenlockOnCallBackPtr->env, result, "params", params);
-    callbackValue = result;
-    napi_call_function(
-        screenlockOnCallBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_ONE, &callbackValue, &callbackResult);
-    SCLOCK_HILOGI("OnCallBack eventType:%{public}s", screenlockOnCallBackPtr->systemEvent.eventType_.c_str());
-    napi_close_handle_scope(screenlockOnCallBackPtr->env, scope);
-    if (screenlockOnCallBackPtr != nullptr) {
-        delete screenlockOnCallBackPtr;
-        screenlockOnCallBackPtr = nullptr;
-    }
-    if (work != nullptr) {
-        delete work;
-        work = nullptr;
-    }
-};
-
 void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 {
-    SCLOCK_HILOGD("ScreenlockSystemAbilityCallback  ONCALLBACK");
-    ScreenlockOnCallBack *screenlockOnCallBack = new (std::nothrow) ScreenlockOnCallBack;
-    if (screenlockOnCallBack == nullptr) {
+    if (handler_ == nullptr) {
+        SCLOCK_HILOGE("eventHandler is nullptr");
         return;
     }
-    screenlockOnCallBack->env = eventListener_.env;
-    screenlockOnCallBack->callbackRef = eventListener_.callbackRef;
-    screenlockOnCallBack->thisVar = eventListener_.thisVar;
-    screenlockOnCallBack->systemEvent = systemEvent;
-    bool bRet = UvQueue::Call(eventListener_.env, screenlockOnCallBack, g_onUvWorkCallback);
-    if (!bRet) {
-        SCLOCK_HILOGE("ScreenlockCallback::OnCallBack failed, event=%{public}s,result=%{public}s",
-            systemEvent.eventType_.c_str(), systemEvent.params_.c_str());
+    auto task = [systemEvent, this]() {
+        napi_handle_scope scope = nullptr;
+        napi_open_handle_scope(eventListener_.env, &scope);
+        napi_value callbackFunc = nullptr;
+        napi_get_reference_value(eventListener_.env, eventListener_.callbackRef, &callbackFunc);
+        napi_value result = nullptr;
+        napi_create_object(eventListener_.env, &result);
+        napi_value eventType = nullptr;
+        napi_value params = nullptr;
+        napi_create_string_utf8(eventListener_.env, systemEvent.eventType_.c_str(), NAPI_AUTO_LENGTH, &eventType);
+        napi_create_string_utf8(eventListener_.env, systemEvent.params_.c_str(), NAPI_AUTO_LENGTH, &params);
+        napi_set_named_property(eventListener_.env, result, "eventType", eventType);
+        napi_set_named_property(eventListener_.env, result, "params", params);
+        napi_value output = nullptr;
+        napi_call_function(eventListener_.env, nullptr, callbackFunc, ARGS_SIZE_ONE, &result, &output);
+        SCLOCK_HILOGI("OnCallBack eventType:%{public}s", systemEvent.eventType_.c_str());
+        napi_close_handle_scope(eventListener_.env, scope);
+    };
+    handler_->PostTask(task, "ScreenlockSystemAbilityCallback");
+}
+
+std::shared_ptr<AppExecFwk::EventHandler> ScreenlockSystemAbilityCallback::GetEventHandler()
+{
+    std::lock_guard<std::mutex> lock(eventHandlerMutex_);
+    if (handler_ == nullptr) {
+        handler_ = AppExecFwk::EventHandler::Current();
     }
+    return handler_;
 }
 } // namespace ScreenLock
 } // namespace OHOS
