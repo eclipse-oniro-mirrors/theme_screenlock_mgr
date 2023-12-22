@@ -43,23 +43,31 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         SCLOCK_HILOGE("eventHandler is nullptr");
         return;
     }
-    auto task = [systemEvent, this]() {
+    auto entry = std::make_shared<ScreenlockOnCallBack>();
+    if (entry == nullptr) {
+        SCLOCK_HILOGE("entry is nullptr");
+        return;
+    }
+    entry->env = eventListener_.env;
+    entry->callbackRef = eventListener_.callbackRef;
+    entry->systemEvent = systemEvent;
+    auto task = [entry]() {
         napi_handle_scope scope = nullptr;
-        napi_open_handle_scope(eventListener_.env, &scope);
+        napi_open_handle_scope(entry->env, &scope);
         napi_value callbackFunc = nullptr;
-        napi_get_reference_value(eventListener_.env, eventListener_.callbackRef, &callbackFunc);
+        napi_get_reference_value(entry->env, entry->callbackRef, &callbackFunc);
         napi_value result = nullptr;
-        napi_create_object(eventListener_.env, &result);
+        napi_create_object(entry->env, &result);
         napi_value eventType = nullptr;
         napi_value params = nullptr;
-        napi_create_string_utf8(eventListener_.env, systemEvent.eventType_.c_str(), NAPI_AUTO_LENGTH, &eventType);
-        napi_create_string_utf8(eventListener_.env, systemEvent.params_.c_str(), NAPI_AUTO_LENGTH, &params);
-        napi_set_named_property(eventListener_.env, result, "eventType", eventType);
-        napi_set_named_property(eventListener_.env, result, "params", params);
+        napi_create_string_utf8(entry->env, entry->systemEvent.eventType_.c_str(), NAPI_AUTO_LENGTH, &eventType);
+        napi_create_string_utf8(entry->env, entry->systemEvent.params_.c_str(), NAPI_AUTO_LENGTH, &params);
+        napi_set_named_property(entry->env, result, "eventType", eventType);
+        napi_set_named_property(entry->env, result, "params", params);
         napi_value output = nullptr;
-        napi_call_function(eventListener_.env, nullptr, callbackFunc, ARGS_SIZE_ONE, &result, &output);
-        SCLOCK_HILOGI("OnCallBack eventType:%{public}s", systemEvent.eventType_.c_str());
-        napi_close_handle_scope(eventListener_.env, scope);
+        napi_call_function(entry->env, nullptr, callbackFunc, ARGS_SIZE_ONE, &result, &output);
+        SCLOCK_HILOGI("OnCallBack eventType:%{public}s", entry->systemEvent.eventType_.c_str());
+        napi_close_handle_scope(entry->env, scope);
     };
     handler_->PostTask(task, "ScreenlockSystemAbilityCallback");
 }
