@@ -44,10 +44,6 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         return;
     }
     auto entry = std::make_shared<ScreenlockOnCallBack>();
-    if (entry == nullptr) {
-        SCLOCK_HILOGE("entry is nullptr");
-        return;
-    }
     entry->env = eventListener_.env;
     entry->callbackRef = eventListener_.callbackRef;
     entry->systemEvent = systemEvent;
