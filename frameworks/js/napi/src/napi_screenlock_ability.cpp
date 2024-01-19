@@ -232,6 +232,7 @@ void AsyncCallFunc(napi_env env, EventListener *listener, const std::string &res
     auto ret = napi_queue_async_work_with_qos(env, listener->work, napi_qos_user_initiated);
     if (ret != napi_ok) {
         CompleteAsyncWork(env, ret, listener);
+        NAPI_CALL_RETURN_VOID(env, ret);
     }
 }
 
