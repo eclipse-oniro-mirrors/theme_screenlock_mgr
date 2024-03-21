@@ -26,8 +26,7 @@ config("screenlock_mgr_service_config") {
 }
 
 ohos_shared_library("screenlock_server") {
-  version_mode = getenv("versionmode")
-  if (version_mode == "factory") {
+  if (factory == true) {
     cflags_cc = [ "-DCONFIG_FACTORY_MODE" ]
   }
 
