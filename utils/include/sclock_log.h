@@ -43,24 +43,26 @@
 #endif
 
 constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, 0xD001C30, "SclockKit" };
+static constexpr uint32_t KG_DOMAIN_ID = 0xD001C30;
+static const char* KG_TAG = "SclockKit";
 
 #define FILENAME_PREFIX (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define SCLOCK_HILOGF(fmt, ...)          \
-    (void)OHOS::HiviewDFX::HiLog::Fatal( \
-        LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+    HILOG_IMPL(LOG_CORE, LOG_FATAL, KG_DOMAIN_ID, \
+        KG_TAG, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define SCLOCK_HILOGE(fmt, ...)          \
-    (void)OHOS::HiviewDFX::HiLog::Error( \
-        LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+    HILOG_IMPL(LOG_CORE, LOG_ERROR, KG_DOMAIN_ID, \
+        KG_TAG, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define SCLOCK_HILOGW(fmt, ...)         \
-    (void)OHOS::HiviewDFX::HiLog::Warn( \
-        LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+    HILOG_IMPL(LOG_CORE, LOG_WARN, KG_DOMAIN_ID, \
+        KG_TAG, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define SCLOCK_HILOGI(fmt, ...)         \
-    (void)OHOS::HiviewDFX::HiLog::Info( \
-        LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+    HILOG_IMPL(LOG_CORE, LOG_INFO, KG_DOMAIN_ID, \
+        KG_TAG, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define SCLOCK_HILOGD(fmt, ...)          \
-    (void)OHOS::HiviewDFX::HiLog::Debug( \
-        LOG_LABEL, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+    HILOG_IMPL(LOG_CORE, LOG_DEBUG, KG_DOMAIN_ID, \
+        KG_TAG, "[%{public}s(%{public}s:%{public}d)]" fmt, FILENAME_PREFIX, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #else
 
 #define SCLOCK_HILOGF(...)
