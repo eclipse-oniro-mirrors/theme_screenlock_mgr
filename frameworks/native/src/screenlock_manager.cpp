@@ -33,6 +33,8 @@ ScreenLockManager::ScreenLockManager()
 
 ScreenLockManager::~ScreenLockManager()
 {
+    SCLOCK_HILOGW("~ScreenLockManager");
+    RemoveDeathRecipient();
 }
 
 sptr<ScreenLockManager> ScreenLockManager::GetInstance()
@@ -165,6 +167,22 @@ sptr<ScreenLockManagerInterface> ScreenLockManager::GetProxy()
         screenlockManagerProxy_ = GetScreenLockManagerProxy();
     }
     return screenlockManagerProxy_;
+}
+
+void ScreenLockManager::RemoveDeathRecipient()
+{
+    sptr<ISystemAbilityManager> systemAbilityManager =
+        SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        SCLOCK_HILOGE("Getting SystemAbilityManager failed.");
+        return;
+    }
+    auto systemAbility = systemAbilityManager->GetSystemAbility(SCREENLOCK_SERVICE_ID, "");
+    if (systemAbility == nullptr) {
+        SCLOCK_HILOGE("Get SystemAbility failed.");
+        return;
+    }
+    systemAbility->RemoveDeathRecipient(deathRecipient_);
 }
 } // namespace ScreenLock
 } // namespace OHOS
