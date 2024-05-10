@@ -64,6 +64,7 @@ private:
 
     ScreenLockManager();
     ~ScreenLockManager() override;
+    void RemoveDeathRecipient();
     void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     sptr<ScreenLockManagerInterface> GetProxy();
     sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
