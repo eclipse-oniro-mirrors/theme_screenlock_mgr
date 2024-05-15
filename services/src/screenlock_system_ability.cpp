@@ -293,11 +293,11 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
         OnStart();
     }
     // check whether the page of app request unlock is the focus page
-    if (!IsAppInForeground(IPCSkeleton::GetCallingPid(), IPCSkeleton::GetCallingTokenID())) {
-        FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
-        SCLOCK_HILOGE("UnlockScreen  Unfocused.");
-        return E_SCREENLOCK_NOT_FOCUS_APP;
-    }
+    // if (!IsAppInForeground(IPCSkeleton::GetCallingPid(), IPCSkeleton::GetCallingTokenID()) || ) {
+    //     FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
+    //     SCLOCK_HILOGE("UnlockScreen  Unfocused.");
+    //     return E_SCREENLOCK_NOT_FOCUS_APP;
+    // }
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);
     unlockListenerMutex_.unlock();
@@ -373,7 +373,10 @@ bool ScreenLockSystemAbility::GetSecure()
     SCLOCK_HILOGD("ScreenLockSystemAbility::GetSecure callingUid=%{public}d", callingUid);
     int userId = 0;
     AccountSA::OsAccountManager::GetOsAccountLocalIdFromUid(callingUid, userId);
-    SCLOCK_HILOGD("userId=%{public}d", userId);
+    if (userId == 0) {
+        AccountSA::OsAccountManager::GetForegroundOsAccountLocalId(userId);
+    }
+    SCLOCK_HILOGI("userId=%{public}d", userId);
     auto getInfoCallback = std::make_shared<ScreenLockGetInfoCallback>();
     int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
     SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
