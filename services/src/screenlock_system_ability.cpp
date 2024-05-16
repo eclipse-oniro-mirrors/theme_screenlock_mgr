@@ -293,7 +293,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
         OnStart();
     }
     AccessTokenID callerTokenId = IPCSkeleton::GetCallingTokenID();
-    check whether the page of app request unlock is the focus page
+    // check whether the page of app request unlock is the focus page
     if (!IsAppInForeground(IPCSkeleton::GetCallingPid(), callerTokenId) || 
         !AccessTokenKit::GetTokenTypeFlag(callerTokenId) == TOKEN_NATIVE) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
