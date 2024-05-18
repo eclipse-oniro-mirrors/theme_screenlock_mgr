@@ -37,6 +37,8 @@ public:
     virtual int32_t Lock(int32_t userId) = 0;
     virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) = 0;
     virtual int32_t SendScreenLockEvent(const std::string &event, int param) = 0;
+    virtual int32_t IsScreenLockDisabled(int userId, bool &isDisabled) = 0;
+    virtual int32_t SetScreenLockDisabled(bool disable, int userId) = 0;
 };
 } // namespace ScreenLock
 } // namespace OHOS

@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,6 +47,7 @@
 #include "want.h"
 #include "xcollie/watchdog.h"
 #include "window_manager.h"
+#include "commeventsubscriber.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -55,6 +56,7 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
 using namespace OHOS::UserIam::UserAuth;
 using namespace OHOS::Security::AccessToken;
+using namespace OHOS::AccountSA;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
@@ -65,12 +67,9 @@ constexpr int32_t MAX_RETRY_TIMES = 20;
 std::shared_ptr<ffrt::queue> ScreenLockSystemAbility::queue_;
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
-{
-}
+{}
 
-ScreenLockSystemAbility::~ScreenLockSystemAbility()
-{
-}
+ScreenLockSystemAbility::~ScreenLockSystemAbility() {}
 
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
 {
@@ -82,6 +81,38 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
         }
     }
     return instance_;
+}
+
+static int32_t GetCurrentActiveOsAccountId()
+{
+    std::vector<int> activatedOsAccountIds;
+    OHOS::ErrCode res = OsAccountManager::QueryActiveOsAccountIds(activatedOsAccountIds);
+    if (res != OHOS::ERR_OK || (activatedOsAccountIds.size() <= 0)) {
+        SCLOCK_HILOGE("QueryActiveOsAccountIds fail. [Res]: %{public}d", res);
+        return SCREEN_FAIL;
+    }
+    int osAccountId = activatedOsAccountIds[0];
+    SCLOCK_HILOGD("GetCurrentActiveOsAccountId.[osAccountId]:%{public}d", osAccountId);
+    return osAccountId;
+}
+
+ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSubscribeInfo &subscribeInfo)
+    : OsAccountSubscriber(subscribeInfo)
+{}
+
+void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id)
+{
+    SCLOCK_HILOGI("OnAccountsChanged.[osAccountId]:%{public}d, [lastId]:%{public}d", id, userId_);
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return;
+    }
+    preferencesUtil->RemoveKey(std::to_string(userId_));
+    preferencesUtil->SaveBool(std::to_string(id), false);
+    preferencesUtil->Refresh();
+    userId_ = id;
+    return;
 }
 
 int32_t ScreenLockSystemAbility::Init()
@@ -113,6 +144,7 @@ void ScreenLockSystemAbility::OnStart()
         SCLOCK_HILOGW("ScreenLockSystemAbility Init failed. Try again 5s later");
     }
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
+    AddSystemAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN);
     RegisterDumpCommand();
     return;
 }
@@ -127,13 +159,16 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
         }
         RegisterDisplayPowerEventListener(times);
     }
+    if (systemAbilityId == SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN) {
+        InitUserId();
+    }
 }
 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
 {
     times++;
-    systemReady_ = (DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_)
-                    == DMError::DM_OK);
+    systemReady_ =
+        (DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_) == DMError::DM_OK);
     if (systemReady_ == false && times <= MAX_RETRY_TIMES) {
         SCLOCK_HILOGW("RegisterDisplayPowerEventListener failed");
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
@@ -155,6 +190,29 @@ void ScreenLockSystemAbility::InitServiceHandler()
     SCLOCK_HILOGI("InitServiceHandler succeeded.");
 }
 
+void ScreenLockSystemAbility::InitUserId()
+{
+    OsAccountSubscribeInfo subscribeInfo;
+    subscribeInfo.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVED);
+    accountSubscriber_ = std::make_shared<AccountSubscriber>(subscribeInfo);
+
+    int32_t ret = OsAccountManager::SubscribeOsAccount(accountSubscriber_);
+    if (ret != ERR_OK) {
+        SCLOCK_HILOGE("SubscribeOsAccount failed.[ret]:%{public}d", ret);
+    }
+    Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
+
+    int userId = GetCurrentActiveOsAccountId();
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return;
+    }
+    preferencesUtil->SaveBool(std::to_string(userId), false);
+    preferencesUtil->Refresh();
+    return;
+}
+
 void ScreenLockSystemAbility::OnStop()
 {
     SCLOCK_HILOGI("OnStop started.");
@@ -165,6 +223,10 @@ void ScreenLockSystemAbility::OnStop()
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+    int ret = OsAccountManager::UnsubscribeOsAccount(accountSubscriber_);
+    if (ret != SUCCESS) {
+        SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
+    }
     SCLOCK_HILOGI("OnStop end.");
 }
 
@@ -427,6 +489,41 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
     return E_SCREENLOCK_OK;
 }
 
+int32_t ScreenLockSystemAbility::IsScreenLockDisabled(int userId, bool &isDisabled)
+{
+    SCLOCK_HILOGI("IsScreenLockDisabled userId=%{public}d", userId);
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    isDisabled = preferencesUtil->ObtainBool(std::to_string(userId), false);
+    SCLOCK_HILOGI("IsScreenLockDisabled isDisabled=%{public}d", isDisabled);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
+{
+    SCLOCK_HILOGI("SetScreenLockDisabled disable=%{public}d ,param=%{public}d", disable, userId);
+    if (GetCurrentActiveOsAccountId() != userId) {
+        SCLOCK_HILOGE("it's not currentAccountId userId=%{public}d", userId);
+        return SCREEN_FAIL;
+    }
+    if (GetSecure() == true) {
+        SCLOCK_HILOGE("The screen lock password has been set.");
+        return SCREEN_FAIL;
+    }
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    preferencesUtil->RemoveKey(std::to_string(userId));
+    preferencesUtil->SaveBool(std::to_string(userId), disable);
+    preferencesUtil->Refresh();
+    return E_SCREENLOCK_OK;
+}
+
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked state:%{public}d.", isScreenlocked);
@@ -473,8 +570,8 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
                 .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
                 .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
-                .append(
-                " * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
+                .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
+                "\t\tscreen interaction status\n");
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
@@ -540,8 +637,8 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         std::lock_guard<std::mutex> lck(listenerMutex_);
         systemEventListener_->OnCallBack(systemEvent);
         if (traceTaskId != HITRACE_BUTT) {
-            FinishAsyncTrace(
-                HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback", traceTaskId);
+            FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback",
+                traceTaskId);
         }
     };
     if (queue_ != nullptr) {

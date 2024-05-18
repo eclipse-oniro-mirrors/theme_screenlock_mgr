@@ -41,6 +41,7 @@ ohos_shared_library("screenlock_server") {
   branch_protector_ret = "pac_ret"
   sources = [
     "src/command.cpp",
+    "src/commeventsubscriber.cpp",
     "src/dump_helper.cpp",
     "src/screenlock_callback_proxy.cpp",
     "src/screenlock_get_info_callback.cpp",
@@ -97,7 +98,9 @@ ohos_static_library("screenlock_server_static") {
   }
   branch_protector_ret = "pac_ret"
   sources = [
+    "${screenlock_mgr_path}/utils/src/preferencesutil.cpp",
     "src/command.cpp",
+    "src/commeventsubscriber.cpp",
     "src/dump_helper.cpp",
     "src/screenlock_callback_proxy.cpp",
     "src/screenlock_get_info_callback.cpp",
@@ -130,6 +133,7 @@ ohos_static_library("screenlock_server_static") {
     "init:libbegetutil",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
+    "preferences:native_preferences",
     "safwk:system_ability_fwk",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
