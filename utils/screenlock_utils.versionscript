@@ -15,6 +15,7 @@
   global:
     *_cfi_*;
     *ScreenLockAppInfo*;
+    *PreferencesUtil*;
   local:
     *;
 };

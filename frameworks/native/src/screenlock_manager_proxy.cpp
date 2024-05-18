@@ -233,5 +233,51 @@ int32_t ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, in
     SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent end retCode is %{public}d.", retCode);
     return retCode;
 }
+
+int32_t ScreenLockManagerProxy::IsScreenLockDisabled(int userId, bool &isDisabled)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLockDisabled started.");
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREENLOCK_DISABLED), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("IsScreenLockDisabled SendRequest failed, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    if (retCode != E_SCREENLOCK_OK) {
+        return retCode;
+    }
+    isDisabled = reply.ReadBool();
+    SCLOCK_HILOGD("IsScreenLockDisabled end retCode is %{public}d, %{public}d.", retCode, isDisabled);
+    return retCode;
+}
+
+
+int32_t ScreenLockManagerProxy::SetScreenLockDisabled(bool disable, int userId)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteBool(disable);
+    data.WriteInt32(userId);
+    SCLOCK_HILOGD("ScreenLockManagerProxy SetScreenLockDisabled started.");
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("SetScreenLockDisabled SendRequest failed, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("IsScreenLockDisabled end retCode is %{public}d, %{public}d.", retCode, disable);
+    return retCode;
+}
+
+
 } // namespace ScreenLock
 } // namespace OHOS

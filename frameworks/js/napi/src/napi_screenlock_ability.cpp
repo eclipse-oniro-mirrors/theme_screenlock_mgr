@@ -72,6 +72,8 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("isSecureMode", OHOS::ScreenLock::NAPI_IsSecureMode),
         DECLARE_NAPI_FUNCTION("onSystemEvent", NAPI_OnSystemEvent),
         DECLARE_NAPI_FUNCTION("sendScreenLockEvent", OHOS::ScreenLock::NAPI_ScreenLockSendEvent),
+        DECLARE_NAPI_FUNCTION("isScreenLockDisabled", OHOS::ScreenLock::NAPI_IsScreenLockDisabled),
+        DECLARE_NAPI_FUNCTION("setScreenLockDisabled", OHOS::ScreenLock::NAPI_SetScreenLockDisabled),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
@@ -486,6 +488,83 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, context, ARGV_TWO);
     return asyncCall.Call(env, exec, "screenLockSendEvent");
+}
+
+napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_IsScreenLockDisabled in");
+    napi_value result = nullptr;
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    int userId = -1;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    bool isDisabled = false;
+    int32_t status = ScreenLockAppManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ThrowError(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    SCLOCK_HILOGI("NAPI_IsScreenLockDisabled [isDisabled]=%{public}d", isDisabled);
+    napi_get_boolean(env, isDisabled, &result);
+    return result;
+}
+
+napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_SetScreenLockDisabled begin");
+    ScreenLockDisableInfo *context = new ScreenLockDisableInfo();
+    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
+        if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        if (CheckParamType(env, argv[ARGV_ZERO], napi_boolean) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        napi_get_value_bool(env, argv[ARGV_ZERO], &context->disable);
+        if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[ARGV_ONE], &context->userId);
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        napi_status status = napi_get_boolean(env, context->allowed, result);
+        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        int32_t retCode = ScreenLockAppManager::GetInstance()->SetScreenLockDisabled(context->disable, context->userId);
+        if (retCode != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo;
+            errInfo.errorCode_ = static_cast<uint32_t>(retCode);
+            GetErrorInfo(retCode, errInfo);
+            context->SetErrorInfo(errInfo);
+            context->allowed = false;
+        } else {
+            context->SetStatus(napi_ok);
+            context->allowed = true;
+        }
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, context, ARGV_TWO);
+    return asyncCall.Call(env, exec, "setScreenLockDisabled");
 }
 
 static napi_value ScreenlockInit(napi_env env, napi_value exports)
