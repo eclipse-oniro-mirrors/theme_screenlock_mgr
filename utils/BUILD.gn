@@ -19,6 +19,7 @@ config("screenlock_utils_config") {
 
   cflags_cc = []
 }
+
 ohos_shared_library("screenlock_utils") {
   if (is_standard_system) {
     sanitize = {
@@ -32,7 +33,7 @@ ohos_shared_library("screenlock_utils") {
     branch_protector_ret = "pac_ret"
     sources = [
       "src/preferences_util.cpp",
-      "src/screenlock_appinfo.cpp"
+      "src/screenlock_appinfo.cpp",
     ]
 
     version_script = "screenlock_utils.versionscript"

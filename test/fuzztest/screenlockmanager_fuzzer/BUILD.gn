@@ -51,6 +51,7 @@ ohos_fuzztest("ScreenlockManagerFuzzTest") {
     "hilog:libhilog",
     "ipc:ipc_single",
     "napi:ace_napi",
+    "os_account:os_account_innerkits",
     "window_manager:libdm",
   ]
 
