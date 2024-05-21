@@ -19,6 +19,7 @@ config("screenlock_utils_config") {
 
   cflags_cc = []
 }
+
 ohos_shared_library("screenlock_utils") {
   if (is_standard_system) {
     sanitize = {
@@ -30,7 +31,10 @@ ohos_shared_library("screenlock_utils") {
       ubsan = true
     }
     branch_protector_ret = "pac_ret"
-    sources = [ "src/screenlock_appinfo.cpp" ]
+    sources = [
+      "src/preferences_util.cpp",
+      "src/screenlock_appinfo.cpp",
+    ]
 
     version_script = "screenlock_utils.versionscript"
 
@@ -39,6 +43,7 @@ ohos_shared_library("screenlock_utils") {
     external_deps = [
       "access_token:libaccesstoken_sdk",
       "hilog:libhilog",
+      "preferences:native_preferences",
     ]
     innerapi_tags = [ "platformsdk_indirect" ]
     subsystem_name = "theme"

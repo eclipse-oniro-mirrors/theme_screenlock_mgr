@@ -45,6 +45,20 @@ struct SendEventInfo : public AsyncCall::Context {
     ~SendEventInfo() override{};
 };
 
+struct ScreenLockDisableInfo : public AsyncCall::Context {
+    bool disable;
+    int32_t userId;
+    napi_status status;
+    bool allowed;
+    ScreenLockDisableInfo()
+        : Context(nullptr, nullptr), disable(false), userId(-1), status(napi_generic_failure),
+          allowed(false){};
+    ScreenLockDisableInfo(InputAction input, OutputAction output)
+        : Context(std::move(input), std::move(output)), disable(false), userId(-1),
+          status(napi_generic_failure), allowed(false){};
+    ~ScreenLockDisableInfo() override{};
+};
+
 napi_status IsValidEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
 napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);
@@ -60,6 +74,8 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info);
 napi_value NAPI_IsSecureMode(napi_env env, napi_callback_info info);
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info);
+napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info);
+napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info);
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_ABILITY_H

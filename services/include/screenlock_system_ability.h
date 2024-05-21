@@ -30,6 +30,9 @@
 #include "screenlock_system_ability_interface.h"
 #include "system_ability.h"
 #include "visibility.h"
+#include "os_account_manager.h"
+#include "preferences_util.h"
+#include "os_account_subscribe_info.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -141,6 +144,8 @@ public:
     int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener) override;
     int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener) override;
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
+    int32_t IsScreenLockDisabled(int userId, bool &isDisabled) override;
+    int32_t SetScreenLockDisabled(bool disable, int userId) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
@@ -153,6 +158,17 @@ public:
     class ScreenLockDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
     public:
         void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
+    };
+
+    class AccountSubscriber : public AccountSA::OsAccountSubscriber {
+    public:
+        explicit AccountSubscriber(const AccountSA::OsAccountSubscribeInfo &subscribeInfo);
+        ~AccountSubscriber() override = default;
+        int GetUserId() { return userId_; }
+        void OnAccountsChanged(const int &id) override;
+
+    private:
+        int userId_{-1};
     };
 
 protected:
@@ -169,6 +185,7 @@ private:
     void OnSystemReady();
     void RegisterDumpCommand();
     int32_t Init();
+    void InitUserId();
     void InitServiceHandler();
     void LockScreenEvent(int stateResult);
     void UnlockScreenEvent(int stateResult);
@@ -185,6 +202,7 @@ private:
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<ffrt::queue> queue_;
+    std::shared_ptr<AccountSubscriber> accountSubscriber_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;

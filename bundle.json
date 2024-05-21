@@ -42,7 +42,8 @@
         "hilog",
         "user_auth_framework",
         "c_utils",
-        "ffrt"
+        "ffrt",
+        "preferences"
       ],
       "third_party": []
     },

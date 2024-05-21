@@ -50,6 +50,7 @@ ohos_unittest("ScreenLockServiceTest") {
     "hilog:libhilog",
     "hitrace:hitrace_meter",
     "ipc:ipc_single",
+    "os_account:os_account_innerkits",
     "samgr:samgr_proxy",
     "window_manager:libdm",
   ]

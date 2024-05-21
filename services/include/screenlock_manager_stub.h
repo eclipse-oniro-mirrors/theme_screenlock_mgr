@@ -37,6 +37,8 @@ private:
     int32_t OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply);
     int32_t OnScreenLockOn(MessageParcel &data, MessageParcel &reply);
     int32_t OnLockScreen(MessageParcel &data, MessageParcel &reply);
+    int32_t OnIsScreenLockDisabled(MessageParcel &data, MessageParcel &reply);
+    int32_t OnSetScreenLockDisabled(MessageParcel &data, MessageParcel &reply);
 };
 } // namespace ScreenLock
 } // namespace OHOS

@@ -32,6 +32,8 @@ enum class ScreenLockServerIpcInterfaceCode {
     IS_LOCKED,
     UNLOCK,
     LOCK_SCREEN,
+    IS_SCREENLOCK_DISABLED,
+    SET_SCREENLOCK_DISABLED,
 };
 } // namespace ScreenLock
 } // namespace OHOS
