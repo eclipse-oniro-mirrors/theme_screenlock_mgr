@@ -33,7 +33,7 @@
 
 ### 接口说明
 
--   ScreenLock接口文档 [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/reference/apis/js-apis-screen-lock.md) 提供从API version 7开始的接口定义和示例代码。
+-   ScreenLock接口文档 [js-apis-screen-lock.md](https://gitee.com/openharmony/docs/blob/OpenHarmony-4.1-Release/zh-cn/application-dev/reference/apis-basic-services-kit/js-apis-screen-lock.md) 提供从API version 7开始的接口定义和示例代码。
 
 ## 相关仓
 
