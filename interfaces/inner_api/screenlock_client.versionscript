@@ -19,6 +19,9 @@
       *OHOS::ScreenLock::ScreenLockManager::Lock*;
       *OHOS::ScreenLock::ScreenLockManager::IsLocked*;
       *OHOS::ScreenLock::ScreenLockManager::IsScreenLocked*;
+      *OHOS::ScreenLock::ScreenLockManager::GetSecure*;
+      *OHOS::ScreenLock::ScreenLockManager::Unlock*;
+      *OHOS::ScreenLock::ScreenLockCallbackStub*;
     };
   local:
     *;
