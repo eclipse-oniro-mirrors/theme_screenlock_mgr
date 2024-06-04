@@ -252,7 +252,8 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
     if (argc == ARGS_SIZE_ONE) {
         SCLOCK_HILOGD("NAPI_Lock callback");
         if (CheckParamType(env, argv[ARGV_ZERO], napi_function) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"callback\" must be function";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return ret;
         }
         SCLOCK_HILOGD("NAPI_Lock create callback");
@@ -343,7 +344,8 @@ napi_value NAPI_Unlock(napi_env env, napi_callback_info info)
     if (argc == ARGS_SIZE_ONE) {
         SCLOCK_HILOGD("NAPI_Unlock callback");
         if (CheckParamType(env, argv[ARGV_ZERO], napi_function) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"callback\" must be function";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return nullptr;
         }
         SCLOCK_HILOGD("NAPI_Unlock create callback");
@@ -409,11 +411,13 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, &argv, &thisVar, &data));
     if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
-        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        std::string errMsg = "Parameter error. The number of parameters should 1";
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
         return result;
     }
     if (CheckParamType(env, argv, napi_function) != napi_ok) {
-        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        std::string errMsg = "Parameter error. The type of \"callback\" must be function";
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
         return result;
     }
     napi_ref callbackRef = nullptr;
@@ -444,11 +448,13 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     SendEventInfo *context = new SendEventInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The number of parameters should 2";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         if (CheckParamType(env, argv[ARGV_ZERO], napi_string) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"event\" must be string";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         char event[MAX_VALUE_LEN] = { 0 };
@@ -457,11 +463,13 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
         context->eventInfo = event;
         std::string type = event;
         if (IsValidEvent(type) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"event\" invalid";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"parameter\" must be number";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         napi_get_value_int32(env, argv[ARGV_ONE], &context->param);
@@ -501,11 +509,13 @@ napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info)
     int userId = -1;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
     if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
-        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        std::string errMsg = "Parameter error. The number of parameters should 1";
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
         return result;
     }
     if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
-        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        std::string errMsg = "Parameter error. The type of \"userId\" must be number";
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
         return result;
     }
     napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
@@ -529,16 +539,19 @@ napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info)
     ScreenLockDisableInfo *context = new ScreenLockDisableInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The number of parameters should be at least 2";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         if (CheckParamType(env, argv[ARGV_ZERO], napi_boolean) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"disable\" must be boolean";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         napi_get_value_bool(env, argv[ARGV_ZERO], &context->disable);
         if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            std::string errMsg = "Parameter error. The type of \"userId\" must be number";
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
             return napi_invalid_arg;
         }
         napi_get_value_int32(env, argv[ARGV_ONE], &context->userId);
