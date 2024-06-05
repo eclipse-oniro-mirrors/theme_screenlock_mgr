@@ -444,7 +444,6 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
 
 napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
 {
-    SCLOCK_HILOGD("NAPI_ScreenLockSendEvent begin");
     SendEventInfo *context = new SendEventInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
@@ -461,10 +460,8 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
         size_t len;
         napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len);
         context->eventInfo = event;
-        std::string type = event;
-        if (IsValidEvent(type) != napi_ok) {
-            std::string errMsg = "Parameter error. The type of \"event\" invalid";
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
+        if (IsValidEvent(context->eventInfo) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
         if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
