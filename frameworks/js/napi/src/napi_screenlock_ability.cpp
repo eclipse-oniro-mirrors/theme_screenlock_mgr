@@ -465,8 +465,7 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
             return napi_invalid_arg;
         }
         if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
-            std::string errMsg = "Parameter error. The type of \"parameter\" must be number";
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, errMsg);
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
         napi_get_value_int32(env, argv[ARGV_ONE], &context->param);
