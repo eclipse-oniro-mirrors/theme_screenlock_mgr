@@ -474,7 +474,6 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_get_boolean(env, context->allowed, result);
-        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
