@@ -40,6 +40,7 @@ public:
     virtual int32_t IsScreenLockDisabled(int userId, bool &isDisabled) = 0;
     virtual int32_t SetScreenLockDisabled(bool disable, int userId) = 0;
     virtual int32_t SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken) = 0;
+    virtual int32_t GetScreenLockAuthState(int userId, int32_t &authState) = 0;
 };
 } // namespace ScreenLock
 } // namespace OHOS
