@@ -90,7 +90,29 @@ int32_t ScreenLockAppManager::SetScreenLockDisabled(bool disable, int userId)
 
 int32_t ScreenLockAppManager::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
 {
+    SCLOCK_HILOGD("ScreenLockAppManager::SetScreenLockAuthState in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockAppManager::SetScreenLockAuthState quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->SetScreenLockAuthState(userId, authState, authToken);
+    SCLOCK_HILOGD("ScreenLockAppManager::SetScreenLockAuthState out, status=%{public}d", status);
+    return status;
+    return 0;
+}
 
+int32_t ScreenLockAppManager::GetScreenLockAuthState(int userId, int32_t &authState)
+{
+    SCLOCK_HILOGD("ScreenLockAppManager::GetScreenLockAuthState in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockAppManager::GetScreenLockAuthState quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->GetScreenLockAuthState(userId, authState);
+    SCLOCK_HILOGD("ScreenLockAppManager::GetScreenLockAuthState out, status=%{public}d", status);
+    return status;
 }
 
 int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
