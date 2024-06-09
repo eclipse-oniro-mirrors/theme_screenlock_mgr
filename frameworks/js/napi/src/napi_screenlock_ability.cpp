@@ -75,6 +75,7 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("isScreenLockDisabled", OHOS::ScreenLock::NAPI_IsScreenLockDisabled),
         DECLARE_NAPI_FUNCTION("setScreenLockDisabled", OHOS::ScreenLock::NAPI_SetScreenLockDisabled),
         DECLARE_NAPI_FUNCTION("setScreenLockAuthState", OHOS::ScreenLock::NAPI_SetScreenLockAuthState),
+        DECLARE_NAPI_FUNCTION("getScreenLockAuthState", OHOS::ScreenLock::NAPI_GetScreenLockAuthState),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
@@ -575,6 +576,94 @@ napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info)
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, context, ARGV_TWO);
     return asyncCall.Call(env, exec, "setScreenLockDisabled");
+}
+
+napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_SetScreenLockAuthState begin");
+    ScreenLockAuthStatInfo *context = new ScreenLockAuthStatInfo();
+    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
+        if (CheckParamNumber(argc, ARGS_SIZE_THREE) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[ARGV_ZERO], &context->userId);
+
+        if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[ARGV_ONE], &context->authState);
+
+        if (CheckParamType(env, argv[ARGV_TWO], napi_string) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        char authToken[MAX_VALUE_LEN] = { 0 };
+        size_t len;
+        napi_get_value_string_utf8(env, argv[ARGV_TWO], authToken, MAX_VALUE_LEN, &len);
+        context->authToken = authToken;
+
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        napi_status status = napi_get_boolean(env, context->allowed, result);
+        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        int32_t retCode = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(context->userId, context->authState, context->authToken);
+        if (retCode != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo;
+            errInfo.errorCode_ = static_cast<uint32_t>(retCode);
+            GetErrorInfo(retCode, errInfo);
+            context->SetErrorInfo(errInfo);
+            context->allowed = false;
+        } else {
+            context->SetStatus(napi_ok);
+            context->allowed = true;
+        }
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, context, ARGS_SIZE_THREE);
+    return asyncCall.Call(env, exec, "setScreenLockDisabled");
+}
+
+napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_GetScreenLockAuthState in");
+    napi_value result = nullptr;
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    int userId = -1;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    int32_t authState = -1;
+    int32_t status = ScreenLockAppManager::GetInstance()->GetScreenLockAuthState(userId, authState);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ThrowError(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    SCLOCK_HILOGI("NAPI_GetScreenLockAuthState [authState]=%{public}d", authState);
+    napi_create_int32(env, authState, &result);
+    return result;
 }
 
 static napi_value ScreenlockInit(napi_env env, napi_value exports)
