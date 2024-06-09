@@ -524,6 +524,11 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
     return E_SCREENLOCK_OK;
 }
 
+int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
+{
+    
+}
+
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked state:%{public}d.", isScreenlocked);

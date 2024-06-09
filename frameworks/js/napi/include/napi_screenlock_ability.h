@@ -76,6 +76,8 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info);
 napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info);
+napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info);
+
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_ABILITY_H

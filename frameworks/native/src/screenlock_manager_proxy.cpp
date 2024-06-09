@@ -257,7 +257,6 @@ int32_t ScreenLockManagerProxy::IsScreenLockDisabled(int userId, bool &isDisable
     return retCode;
 }
 
-
 int32_t ScreenLockManagerProxy::SetScreenLockDisabled(bool disable, int userId)
 {
     MessageParcel data;
@@ -278,6 +277,10 @@ int32_t ScreenLockManagerProxy::SetScreenLockDisabled(bool disable, int userId)
     return retCode;
 }
 
+int32_t ScreenLockAppManager::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
+{
+
+}
 
 } // namespace ScreenLock
 } // namespace OHOS

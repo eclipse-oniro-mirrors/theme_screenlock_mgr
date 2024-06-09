@@ -74,6 +74,7 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("sendScreenLockEvent", OHOS::ScreenLock::NAPI_ScreenLockSendEvent),
         DECLARE_NAPI_FUNCTION("isScreenLockDisabled", OHOS::ScreenLock::NAPI_IsScreenLockDisabled),
         DECLARE_NAPI_FUNCTION("setScreenLockDisabled", OHOS::ScreenLock::NAPI_SetScreenLockDisabled),
+        DECLARE_NAPI_FUNCTION("setScreenLockAuthState", OHOS::ScreenLock::NAPI_SetScreenLockAuthState),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;

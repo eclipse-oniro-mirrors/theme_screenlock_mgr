@@ -197,6 +197,11 @@ int32_t ScreenLockManagerStub::OnIsScreenLockDisabled(MessageParcel &data, Messa
     return ERR_NONE;
 }
 
+int32_t ScreenLockManagerStub::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
+{
+    
+}
+
 int32_t ScreenLockManagerStub::OnSetScreenLockDisabled(MessageParcel &data, MessageParcel &reply)
 {
     bool disable = data.ReadBool();

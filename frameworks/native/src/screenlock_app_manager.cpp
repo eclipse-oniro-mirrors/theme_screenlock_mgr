@@ -88,6 +88,11 @@ int32_t ScreenLockAppManager::SetScreenLockDisabled(bool disable, int userId)
     return status;
 }
 
+int32_t ScreenLockAppManager::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
+{
+
+}
+
 int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent in");
