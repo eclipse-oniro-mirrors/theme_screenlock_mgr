@@ -277,10 +277,46 @@ int32_t ScreenLockManagerProxy::SetScreenLockDisabled(bool disable, int userId)
     return retCode;
 }
 
-int32_t ScreenLockAppManager::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
+int32_t ScreenLockManagerProxy::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
 {
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+    data.WriteInt32(authState);
+    data.WriteString(authToken);
 
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_AUTHSTATE), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy SetScreenLockAuthState, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy SetScreenLockAuthState end retCode is %{public}d.", retCode);
+    return retCode;
+    return 0;
 }
 
+int32_t ScreenLockManagerProxy::GetScreenLockAuthState(int userId, int32_t &authState)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_SCREENLOCK_AUTHSTATE), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy GetScreenLockAuthState, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    authState = reply.ReadInt32();
+    SCLOCK_HILOGD("GetScreenLockAuthState end retCode is %{public}d, %{public}d.", retCode, authState);
+    return retCode;
+}
 } // namespace ScreenLock
 } // namespace OHOS
