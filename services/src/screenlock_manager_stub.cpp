@@ -73,6 +73,12 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED):
             OnSetScreenLockDisabled(data, reply);
             break;
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_AUTHSTATE):
+            OnSetScreenLockAuthState(data, reply);
+            break;
+        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_SCREENLOCK_AUTHSTATE):
+            OnGetScreenLockAuthState(data, reply);
+            break;
         default:
             SCLOCK_HILOGE("Default value received, check needed.");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -197,11 +203,6 @@ int32_t ScreenLockManagerStub::OnIsScreenLockDisabled(MessageParcel &data, Messa
     return ERR_NONE;
 }
 
-int32_t ScreenLockManagerStub::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
-{
-    
-}
-
 int32_t ScreenLockManagerStub::OnSetScreenLockDisabled(MessageParcel &data, MessageParcel &reply)
 {
     bool disable = data.ReadBool();
@@ -210,6 +211,30 @@ int32_t ScreenLockManagerStub::OnSetScreenLockDisabled(MessageParcel &data, Mess
     int32_t retCode = SetScreenLockDisabled(disable, userId);
     reply.WriteInt32(retCode);
     return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnSetScreenLockAuthState(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t useId = data.ReadInt32();
+    int32_t authState = data.ReadInt32();
+    std::string authToken = data.ReadString();
+    int32_t retCode = SetScreenLockAuthState(useId, authState, authToken);
+    reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t authState = -1;
+    int32_t userId = data.ReadInt32();
+    SCLOCK_HILOGD("userId=%{public}d", userId);
+    int32_t retCode = GetScreenLockAuthState(userId, authState);
+    reply.WriteInt32(retCode);
+    if (retCode == E_SCREENLOCK_OK) {
+        reply.WriteInt32(authState);
+    }
+    return ERR_NONE;
+
 }
 
 int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &reply)
