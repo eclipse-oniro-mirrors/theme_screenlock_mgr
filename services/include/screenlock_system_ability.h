@@ -128,13 +128,12 @@ enum class InteractiveState : int32_t {
 };
 
 enum class AuthState : int32_t {
-    UNAUTH = 0; //默认值
-    PRE_AUTHED_BY_CREDENTIAL = 1;
-    PRE_AUTHED_BY_BIOMIETRIC = 2;
-    AUTHED_BY_CREDENTIAL = 3;
-    AUTHED_BY_BIOMIETRIC = 4;
-}
-
+    UNAUTH = 0,
+    PRE_AUTHED_BY_CREDENTIAL = 1,
+    PRE_AUTHED_BY_BIOMIETRIC = 2,
+    AUTHED_BY_CREDENTIAL = 3,
+    AUTHED_BY_BIOMIETRIC = 4,
+};
 
 class ScreenLockSystemAbility : public SystemAbility, public ScreenLockManagerStub {
     DECLARE_SYSTEM_ABILITY(ScreenLockSystemAbility);
@@ -223,6 +222,7 @@ private:
     std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
     StateValue stateValue_;
     std::atomic<bool> systemReady_ = false;
+    std::map<int32_t, int32_t> authStateInfo;
 };
 } // namespace ScreenLock
 } // namespace OHOS
