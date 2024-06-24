@@ -104,9 +104,9 @@ napi_status CheckParamArrayType(napi_env env, napi_value param, napi_typedarray_
     size_t length = 0;
     void *data = nullptr;
     napi_typedarray_type type = napi_biguint64_array;
-    napi_value input_buffer = nullptr;
-    size_t byte_offset = 0;
-    napi_get_typedarray_info(env, param, &type, &length, &data, &input_buffer, &byte_offset);
+    napi_value inputBuffer = nullptr;
+    size_t byteOffset = 0;
+    napi_get_typedarray_info(env, param, &type, &length, &data, &inputBuffer, &byteOffset);
     if (type != jsType || data == nullptr) {
         SCLOCK_HILOGE("napi_get_typedarray_info err");
         return napi_invalid_arg;
@@ -595,7 +595,6 @@ napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info)
 
 napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info)
 {
-    SCLOCK_HILOGD("NAPI_SetScreenLockAuthState begin");
     ScreenLockAuthStatInfo *context = new ScreenLockAuthStatInfo();
     auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
         if (CheckParamNumber(argc, ARGS_SIZE_THREE) != napi_ok) {
