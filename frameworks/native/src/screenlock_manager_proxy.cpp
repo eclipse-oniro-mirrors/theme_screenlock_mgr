@@ -277,14 +277,14 @@ int32_t ScreenLockManagerProxy::SetScreenLockDisabled(bool disable, int userId)
     return retCode;
 }
 
-int32_t ScreenLockManagerProxy::SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken)
+int32_t ScreenLockManagerProxy::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
-    data.WriteInt32(userId);
     data.WriteInt32(authState);
+    data.WriteInt32(userId);
     data.WriteString(authToken);
 
     int32_t ret = Remote()->SendRequest(
