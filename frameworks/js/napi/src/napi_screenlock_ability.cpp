@@ -99,6 +99,21 @@ napi_status CheckParamType(napi_env env, napi_value param, napi_valuetype jsType
     return napi_ok;
 }
 
+napi_status CheckParamArrayType(napi_env env, napi_value param, napi_typedarray_type jsType)
+{
+    size_t length = 0;
+    void *data = nullptr;
+    napi_typedarray_type type = napi_biguint64_array;
+    napi_value input_buffer = nullptr;
+    size_t byte_offset = 0;
+    napi_get_typedarray_info(env, param, &type, &length, &data, &input_buffer, &byte_offset);
+    if (type != jsType || data == nullptr) {
+        SCLOCK_HILOGE("napi_get_typedarray_info err");
+        return napi_invalid_arg;
+    }
+    return napi_ok;
+}
+
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber)
 {
     if (argc < paramNumber) {
@@ -591,15 +606,15 @@ napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info)
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[ARGV_ZERO], &context->userId);
+        napi_get_value_int32(env, argv[ARGV_ZERO], &context->authState);
 
         if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[ARGV_ONE], &context->authState);
+        napi_get_value_int32(env, argv[ARGV_ONE], &context->userId);
 
-        if (CheckParamType(env, argv[ARGV_TWO], napi_string) != napi_ok) {
+        if (CheckParamArrayType(env, argv[ARGV_TWO], napi_uint8_array) != napi_ok) {
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
             return napi_invalid_arg;
         }
@@ -616,7 +631,8 @@ napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        int32_t retCode = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(context->userId, context->authState, context->authToken);
+        int32_t retCode = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(context->authState,
+            context->userId, context->authToken);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;
             errInfo.errorCode_ = static_cast<uint32_t>(retCode);
