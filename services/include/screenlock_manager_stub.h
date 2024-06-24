@@ -17,6 +17,7 @@
 #define SERVICES_INCLUDE_SCLOCK_SERVICE_STUB_H
 
 #include <cstdint>
+#include <map>
 
 #include "iremote_stub.h"
 #include "screenlock_manager_interface.h"
@@ -24,13 +25,19 @@
 namespace OHOS {
 namespace ScreenLock {
 class ScreenLockManagerStub : public IRemoteStub<ScreenLockManagerInterface> {
+    using handleFunc = int32_t (ScreenLockManagerStub::*)(MessageParcel &, MessageParcel &);
+    using HandleFuncMap = std::map<uint32_t, handleFunc>;
+
 public:
+    ScreenLockManagerStub();
+    ~ScreenLockManagerStub() = default;
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
 private:
-    int32_t OnIsLocked(Parcel &data, Parcel &reply);
-    int32_t OnIsScreenLocked(Parcel &data, Parcel &reply);
-    int32_t OnGetSecure(Parcel &data, Parcel &reply);
+    void InitHandleMap(void);
+    int32_t OnIsLocked(MessageParcel &data, MessageParcel &reply);
+    int32_t OnIsScreenLocked(MessageParcel &data, MessageParcel &reply);
+    int32_t OnGetSecure(MessageParcel &data, MessageParcel &reply);
     int32_t OnUnlock(MessageParcel &data, MessageParcel &reply);
     int32_t OnUnlockScreen(MessageParcel &data, MessageParcel &reply);
     int32_t OnLock(MessageParcel &data, MessageParcel &reply);
@@ -41,6 +48,8 @@ private:
     int32_t OnSetScreenLockDisabled(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetScreenLockAuthState(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetScreenLockAuthState(MessageParcel &data, MessageParcel &reply);
+
+    HandleFuncMap handleFuncMap;
 };
 } // namespace ScreenLock
 } // namespace OHOS
