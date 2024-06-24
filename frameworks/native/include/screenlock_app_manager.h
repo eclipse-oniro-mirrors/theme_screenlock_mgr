@@ -43,7 +43,7 @@ public:
     SCREENLOCK_API int32_t SendScreenLockEvent(const std::string &event, int param);
     SCREENLOCK_API int32_t IsScreenLockDisabled(int userId, bool &isDisabled);
     SCREENLOCK_API int32_t SetScreenLockDisabled(bool disable, int userId);
-    SCREENLOCK_API int32_t SetScreenLockAuthState(int userId, int32_t authState, std::string &authToken);
+    SCREENLOCK_API int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken);
     SCREENLOCK_API int32_t GetScreenLockAuthState(int userId, int32_t &authState);
     SCREENLOCK_API void OnRemoteSaDied(const wptr<IRemoteObject> &object);
     SCREENLOCK_API sptr<ScreenLockManagerInterface> GetProxy();
