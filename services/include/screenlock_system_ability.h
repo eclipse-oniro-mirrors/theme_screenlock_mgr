@@ -127,6 +127,14 @@ enum class InteractiveState : int32_t {
     INTERACTIVE_STATE_BEGIN_SLEEP = 3,
 };
 
+enum class AuthState : int32_t {
+    UNAUTH = 0,
+    PRE_AUTHED_BY_CREDENTIAL = 1,
+    PRE_AUTHED_BY_BIOMIETRIC = 2,
+    AUTHED_BY_CREDENTIAL = 3,
+    AUTHED_BY_BIOMIETRIC = 4,
+};
+
 class ScreenLockSystemAbility : public SystemAbility, public ScreenLockManagerStub {
     DECLARE_SYSTEM_ABILITY(ScreenLockSystemAbility);
 
@@ -146,6 +154,8 @@ public:
     int32_t SendScreenLockEvent(const std::string &event, int param) override;
     int32_t IsScreenLockDisabled(int userId, bool &isDisabled) override;
     int32_t SetScreenLockDisabled(bool disable, int userId) override;
+    int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken) override;
+    int32_t GetScreenLockAuthState(int userId, int32_t &authState) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
@@ -212,6 +222,7 @@ private:
     std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
     StateValue stateValue_;
     std::atomic<bool> systemReady_ = false;
+    std::map<int32_t, int32_t> authStateInfo;
 };
 } // namespace ScreenLock
 } // namespace OHOS

@@ -29,6 +29,38 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
+ScreenLockManagerStub::ScreenLockManagerStub()
+{
+    InitHandleMap();
+}
+
+void ScreenLockManagerStub::InitHandleMap()
+{
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED)] =
+        &ScreenLockManagerStub::OnIsLocked;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREEN_LOCKED)] =
+        &ScreenLockManagerStub::OnIsScreenLocked;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE)] =
+        &ScreenLockManagerStub::OnGetSecure;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK)] = &ScreenLockManagerStub::OnUnlock;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN)] =
+        &ScreenLockManagerStub::OnUnlockScreen;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK)] = &ScreenLockManagerStub::OnLock;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SEND_SCREENLOCK_EVENT)] =
+        &ScreenLockManagerStub::OnSendScreenLockEvent;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT)] =
+        &ScreenLockManagerStub::OnScreenLockOn;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN)] =
+        &ScreenLockManagerStub::OnLockScreen;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREENLOCK_DISABLED)] =
+        &ScreenLockManagerStub::OnIsScreenLockDisabled;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED)] =
+        &ScreenLockManagerStub::OnSetScreenLockDisabled;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_AUTHSTATE)] =
+        &ScreenLockManagerStub::OnSetScreenLockAuthState;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_SCREENLOCK_AUTHSTATE)] =
+        &ScreenLockManagerStub::OnGetScreenLockAuthState;
+}
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option) __attribute__((no_sanitize("cfi")))
@@ -39,48 +71,21 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    switch (code) {
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED):
-            OnIsLocked(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREEN_LOCKED):
-            OnIsScreenLocked(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE):
-            OnGetSecure(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK):
-            OnUnlock(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN):
-            OnUnlockScreen(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK):
-            OnLock(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SEND_SCREENLOCK_EVENT):
-            OnSendScreenLockEvent(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT):
-            OnScreenLockOn(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN):
-            OnLockScreen(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREENLOCK_DISABLED):
-            OnIsScreenLockDisabled(data, reply);
-            break;
-        case static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED):
-            OnSetScreenLockDisabled(data, reply);
-            break;
-        default:
-            SCLOCK_HILOGE("Default value received, check needed.");
-            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+
+    auto itFunc = handleFuncMap.find(code);
+    if (itFunc != handleFuncMap.end()) {
+        auto requestFunc = itFunc->second;
+        if (requestFunc != nullptr) {
+            (this->*requestFunc)(data, reply);
+            return ERR_NONE;
+        }
     }
-    return ERR_NONE;
+
+    SCLOCK_HILOGI("Default value received, check needed.");
+    return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
 }
 
-int32_t ScreenLockManagerStub::OnIsLocked(Parcel &data, Parcel &reply)
+int32_t ScreenLockManagerStub::OnIsLocked(MessageParcel &data, MessageParcel &reply)
 {
     bool isLocked = false;
     int32_t ret = IsLocked(isLocked);
@@ -91,14 +96,14 @@ int32_t ScreenLockManagerStub::OnIsLocked(Parcel &data, Parcel &reply)
     return ERR_NONE;
 }
 
-int32_t ScreenLockManagerStub::OnIsScreenLocked(Parcel &data, Parcel &reply)
+int32_t ScreenLockManagerStub::OnIsScreenLocked(MessageParcel &data, MessageParcel &reply)
 {
     bool isScreenLocked = IsScreenLocked();
     reply.WriteBool(isScreenLocked);
     return ERR_NONE;
 }
 
-int32_t ScreenLockManagerStub::OnGetSecure(Parcel &data, Parcel &reply)
+int32_t ScreenLockManagerStub::OnGetSecure(MessageParcel &data, MessageParcel &reply)
 {
     bool result = GetSecure();
     reply.WriteBool(result);
@@ -204,6 +209,29 @@ int32_t ScreenLockManagerStub::OnSetScreenLockDisabled(MessageParcel &data, Mess
     SCLOCK_HILOGD("disable=%{public}d, userId=%{public}d", disable, userId);
     int32_t retCode = SetScreenLockDisabled(disable, userId);
     reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnSetScreenLockAuthState(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t authState = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    std::string authToken = data.ReadString();
+    int32_t retCode = SetScreenLockAuthState(authState, userId, authToken);
+    reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t authState = -1;
+    int32_t userId = data.ReadInt32();
+    SCLOCK_HILOGD("userId=%{public}d", userId);
+    int32_t retCode = GetScreenLockAuthState(userId, authState);
+    reply.WriteInt32(retCode);
+    if (retCode == E_SCREENLOCK_OK) {
+        reply.WriteInt32(authState);
+    }
     return ERR_NONE;
 }
 
