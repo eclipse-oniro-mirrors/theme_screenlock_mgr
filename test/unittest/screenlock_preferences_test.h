@@ -12,3 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#ifndef SCREENLOCK_PREFERENCE_TEST_H
+#define SCREENLOCK_PREFERENCE_TEST_H
+#include "gtest/gtest.h"
+
+namespace OHOS {
+namespace ScreenLock {
+class ScreenLockPreferenceTest : public testing::Test {
+public:
+    static void SetUpTestCase();
+    static void TearDownTestCase();
+    static bool ExecuteCmd(const std::string &cmd, std::string &result);
+    void SetUp();
+    void TearDown();
+};
+} // namespace ScreenLock
+} // namespace OHOS
+#endif // SCREENLOCK_PREFERENCE_TEST_H
