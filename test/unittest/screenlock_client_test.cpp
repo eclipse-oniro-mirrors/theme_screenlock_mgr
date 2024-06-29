@@ -231,8 +231,8 @@ HWTEST_F(ScreenLockClientTest, LockTest0010, TestSize.Level0)
     int32_t userId = 0;
     int32_t result = proxy->SetScreenLockDisabled(false, userId);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
-	bool isDisabled = true;
-	result = proxy->IsScreenLockDisabled(userId, isDisabled);
+    bool isDisabled = true;
+    result = proxy->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
 }
 
@@ -249,11 +249,11 @@ HWTEST_F(ScreenLockClientTest, LockTest0011, TestSize.Level0)
     SCLOCK_HILOGD("Test SetScreenLockAuthState.");
     auto proxy = ScreenLockAppManager::GetInstance()->GetProxy();
     int32_t userId = 0;
-	std::string authtoken = "test";
-    int32_t result = proxy->SetScreenLockAuthState(1, userId,authtoken);
+    std::string authtoken = "test";
+    int32_t result = proxy->SetScreenLockAuthState(1, userId, authtoken);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
-	int32_t authState = 0;
-	result = proxy->GetScreenLockAuthState(userId, authState);
+    int32_t authState = 0;
+    result = proxy->GetScreenLockAuthState(userId, authState);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
 }
 
