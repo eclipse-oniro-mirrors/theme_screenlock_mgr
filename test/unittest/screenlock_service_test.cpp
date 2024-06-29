@@ -610,10 +610,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest029, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test SetScreenLockDisabled.");
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
-	int userId = 0;
+    int userId = 0;
     int32_t ret = ScreenLockSystemAbility::GetInstance()->SetScreenLockDisabled(false, userId);
-	bool disable = true;
-	ScreenLockSystemAbility::GetInstance()->IsScreenLockDisabled(userId, disable);
+    bool disable = true;
+    ScreenLockSystemAbility::GetInstance()->IsScreenLockDisabled(userId, disable);
     SCLOCK_HILOGD("SetScreenLockDisabled.[ret]:%{public}d, [disable]:%{public}d", ret, disable);
 }
 
@@ -629,12 +629,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
     SCLOCK_HILOGD("Test SetScreenLockAuthState.");
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
 	int userId = 0;
-	std::string authtoken = "test";
+    std::string authtoken = "test";
     int32_t ret = ScreenLockSystemAbility::GetInstance()->SetScreenLockAuthState(1, userId, authtoken);
     SCLOCK_HILOGD("SetScreenLockAuthState.[ret]:%{public}d", ret);
 
-	int32_t authState = 0;
-	ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
+    int32_t authState = 0;
+    ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
 }
 
 } // namespace ScreenLock
