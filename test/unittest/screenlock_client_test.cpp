@@ -219,14 +219,43 @@ HWTEST_F(ScreenLockClientTest, LockTest009, TestSize.Level0)
 
 /**
 * @tc.name: LockTest010
-* @tc.desc: Test Lock Screen.
+* @tc.desc: Test SetScreenLockDisabled.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
-HWTEST_F(ScreenLockClientTest, LockTest010, TestSize.Level0)
+HWTEST_F(ScreenLockClientTest, LockTest0010, TestSize.Level0)
 {
-
+    SCLOCK_HILOGD("Test SetScreenLockDisabled.");
+    auto proxy = ScreenLockAppManager::GetInstance()->GetProxy();
+    int32_t userId = 0;
+    int32_t result = proxy->SetScreenLockDisabled(false, userId);
+    SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
+	bool isDisabled = true;
+	result = proxy->IsScreenLockDisabled(userId, isDisabled);
+    SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
 }
+
+
+/**
+* @tc.name: LockTest0011
+* @tc.desc: Test SetScreenLockAuthState.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0011, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test SetScreenLockAuthState.");
+    auto proxy = ScreenLockAppManager::GetInstance()->GetProxy();
+    int32_t userId = 0;
+	std::string authtoken = "test";
+    int32_t result = proxy->SetScreenLockAuthState(1, userId,authtoken);
+    SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
+	int32_t authState = 0;
+	result = proxy->GetScreenLockAuthState(userId, authState);
+    SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
