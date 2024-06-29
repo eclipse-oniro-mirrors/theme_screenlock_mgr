@@ -216,5 +216,17 @@ HWTEST_F(ScreenLockClientTest, LockTest009, TestSize.Level0)
     int32_t result = proxy->Lock(userId);
     EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
+
+/**
+* @tc.name: LockTest010
+* @tc.desc: Test Lock Screen.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest010, TestSize.Level0)
+{
+
+}
 } // namespace ScreenLock
 } // namespace OHOS

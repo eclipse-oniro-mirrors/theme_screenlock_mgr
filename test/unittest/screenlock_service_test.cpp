@@ -598,5 +598,18 @@ HWTEST_F(ScreenLockServiceTest, LockTest028, TestSize.Level0)
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
+
+/**
+* @tc.name: LockTest029
+* @tc.desc: Test Lock Screen.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, LockTest029, TestSize.Level0)
+{
+
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
