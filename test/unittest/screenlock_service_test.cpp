@@ -628,7 +628,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test SetScreenLockAuthState.");
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
-	int userId = 0;
+    int userId = 0;
     std::string authtoken = "test";
     int32_t ret = ScreenLockSystemAbility::GetInstance()->SetScreenLockAuthState(1, userId, authtoken);
     SCLOCK_HILOGD("SetScreenLockAuthState.[ret]:%{public}d", ret);
