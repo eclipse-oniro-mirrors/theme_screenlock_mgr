@@ -91,6 +91,8 @@ enum JsErrorCode : uint32_t {
     ERR_ILLEGAL_USE = 13200003,
 };
 
+int32_t RequestStrongAuth(int userId, int32_t &authState)
+
 enum class Action : uint8_t {
     LOCK = 0,
     UNLOCK,

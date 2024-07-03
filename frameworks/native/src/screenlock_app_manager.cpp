@@ -115,6 +115,11 @@ int32_t ScreenLockAppManager::GetScreenLockAuthState(int userId, int32_t &authSt
     return status;
 }
 
+int32_t RequestStrongAuth(int userId, int32_t &authState)
+{
+    
+}
+
 int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockAppManager::OnSystemEvent in");

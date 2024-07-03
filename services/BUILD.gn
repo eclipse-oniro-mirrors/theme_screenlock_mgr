@@ -48,6 +48,7 @@ ohos_shared_library("screenlock_server") {
     "src/screenlock_manager_stub.cpp",
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
+    "src/strongauthmanager.cpp",
   ]
 
   public_configs = [ ":screenlock_mgr_service_config" ]
@@ -106,6 +107,7 @@ ohos_static_library("screenlock_server_static") {
     "src/screenlock_manager_stub.cpp",
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
+    "src/strongauthmanager.cpp",
   ]
 
   public_configs = [ ":screenlock_mgr_service_config" ]

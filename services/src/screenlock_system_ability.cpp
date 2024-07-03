@@ -549,6 +549,11 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
     return E_SCREENLOCK_OK;
 }
 
+int32_t RequestStrongAuth(int userId, int32_t &authState)
+{
+    
+}
+
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked state:%{public}d.", isScreenlocked);

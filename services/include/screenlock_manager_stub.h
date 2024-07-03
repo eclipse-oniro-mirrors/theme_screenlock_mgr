@@ -48,7 +48,7 @@ private:
     int32_t OnSetScreenLockDisabled(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetScreenLockAuthState(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetScreenLockAuthState(MessageParcel &data, MessageParcel &reply);
-
+    int32_t RequestStrongAuth(int userId, int32_t &authState);
     HandleFuncMap handleFuncMap;
 };
 } // namespace ScreenLock

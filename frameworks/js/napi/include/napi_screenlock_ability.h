@@ -74,6 +74,9 @@ struct ScreenLockAuthStatInfo : public AsyncCall::Context {
     ~ScreenLockAuthStatInfo() override{};
 };
 
+struct ScreenLockStrongAuthInfo : public AsyncCall::Context {
+}
+
 napi_status IsValidEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
 napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);

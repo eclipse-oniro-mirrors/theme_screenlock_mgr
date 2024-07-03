@@ -318,5 +318,10 @@ int32_t ScreenLockManagerProxy::GetScreenLockAuthState(int userId, int32_t &auth
     SCLOCK_HILOGD("GetScreenLockAuthState end retCode is %{public}d, %{public}d.", retCode, authState);
     return retCode;
 }
+
+int32_t RequestStrongAuth(int userId, int32_t &authState)
+{
+    
+}
 } // namespace ScreenLock
 } // namespace OHOS

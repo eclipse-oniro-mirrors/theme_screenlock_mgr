@@ -19,6 +19,7 @@ group("screenlock_mgr_packages") {
     deps = [
       "sa_profile:screenlock_sa_profiles",
       "services:screenlock_server",
+      ":screenlock_cfg",
     ]
   }
 }

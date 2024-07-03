@@ -24,7 +24,8 @@ namespace ScreenLock {
 struct SystemEvent {
     std::string eventType_;
     std::string params_;
-    explicit SystemEvent(std::string eventType = "", std::string params = "") : eventType_(eventType), params_(params)
+    int32_t userId_;
+    explicit SystemEvent(std::string eventType = "", std::string params = "", int32_t userId) : eventType_(eventType), params_(params), userId_(userId)
     {
     }
 };

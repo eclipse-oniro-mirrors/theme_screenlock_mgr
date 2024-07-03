@@ -235,6 +235,11 @@ int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, Mes
     return ERR_NONE;
 }
 
+int32_t RequestStrongAuth(int userId, int32_t &authState)
+{
+    
+}
+
 int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &reply)
 {
     int32_t useId = data.ReadInt32();

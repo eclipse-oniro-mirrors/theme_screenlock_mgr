@@ -44,6 +44,7 @@ public:
     int32_t SetScreenLockDisabled(bool disable, int userId) override;
     int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken) override;
     int32_t GetScreenLockAuthState(int userId, int32_t &authState) override;
+    int32_t RequestStrongAuth(int userId, int32_t &authState) override;
 
 private:
     int32_t UnlockInner(MessageParcel &reply, int32_t command, const sptr<ScreenLockCallbackInterface> &listener);
