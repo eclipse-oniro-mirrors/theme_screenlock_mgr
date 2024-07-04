@@ -41,7 +41,8 @@ public:
     virtual int32_t SetScreenLockDisabled(bool disable, int userId) = 0;
     virtual int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken) = 0;
     virtual int32_t GetScreenLockAuthState(int userId, int32_t &authState) = 0;
-    virtual int32_t RequestStrongAuth(int userId, int32_t &authState) = 0;
+    virtual int32_t RequestStrongAuth(int reasonFlag, int32_t userId) = 0;
+    virtual int32_t GetStrongAuth(int32_t userId, int32_t &reasonFlag) = 0;
 };
 } // namespace ScreenLock
 } // namespace OHOS
