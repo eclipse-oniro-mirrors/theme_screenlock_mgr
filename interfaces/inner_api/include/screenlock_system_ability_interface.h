@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,16 +25,18 @@ struct SystemEvent {
     std::string eventType_;
     std::string params_;
     int32_t userId_;
-    explicit SystemEvent(std::string eventType = "", std::string params = "", int32_t userId) : eventType_(eventType), params_(params), userId_(userId)
-    {
-    }
+    explicit SystemEvent(std::string eventType = "", std::string params = "", int32_t userId = -1)
+        : eventType_(eventType), params_(params), userId_(userId)
+    {}
 };
 
 class ScreenLockSystemAbilityInterface : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface");
     virtual void OnCallBack(const SystemEvent &systemEvent) = 0;
-    enum Message { ON_CALLBACK = 0 };
+    enum Message {
+        ON_CALLBACK = 0
+    };
 };
 } // namespace ScreenLock
 } // namespace OHOS
