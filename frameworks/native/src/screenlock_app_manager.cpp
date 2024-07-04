@@ -115,9 +115,31 @@ int32_t ScreenLockAppManager::GetScreenLockAuthState(int userId, int32_t &authSt
     return status;
 }
 
-int32_t RequestStrongAuth(int userId, int32_t &authState)
+int32_t ScreenLockAppManager::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
-    
+    SCLOCK_HILOGD("ScreenLockAppManager::RequestStrongAuth in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockAppManager::RequestStrongAuth quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->RequestStrongAuth(reasonFlag, userId);
+    SCLOCK_HILOGD("ScreenLockAppManager::RequestStrongAuth out, status=%{public}d", status);
+    return status;
+    return 0;
+}
+
+int32_t ScreenLockAppManager::GetStrongAuth(int userId, int32_t &reasonFlag)
+{
+    SCLOCK_HILOGD("ScreenLockAppManager::GetStrongAuth in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockAppManager::GetStrongAuth quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->GetStrongAuth(userId, reasonFlag);
+    SCLOCK_HILOGD("ScreenLockAppManager::GetStrongAuth out, status=%{public}d", status);
+    return status;
 }
 
 int32_t ScreenLockAppManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
