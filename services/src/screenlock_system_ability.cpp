@@ -48,6 +48,12 @@
 #include "xcollie/watchdog.h"
 #include "window_manager.h"
 #include "commeventsubscriber.h"
+#include "user_auth_client_callback.h"
+#include "user_auth_client_impl.h"
+#include "strongauthmanager.h"
+
+using namespace OHOS;
+using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 namespace ScreenLock {
@@ -92,7 +98,7 @@ static int32_t GetCurrentActiveOsAccountId()
         return SCREEN_FAIL;
     }
     int osAccountId = activatedOsAccountIds[0];
-    SCLOCK_HILOGD("GetCurrentActiveOsAccountId.[osAccountId]:%{public}d", osAccountId);
+    SCLOCK_HILOGI("GetCurrentActiveOsAccountId.[osAccountId]:%{public}d", osAccountId);
     return osAccountId;
 }
 
@@ -103,12 +109,12 @@ ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSub
 void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id)
 {
     SCLOCK_HILOGI("OnAccountsChanged.[osAccountId]:%{public}d, [lastId]:%{public}d", id, userId_);
+    StrongAuthManger::GetInstance()->StartStrongAuthTimer(id);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return;
     }
-    preferencesUtil->RemoveKey(std::to_string(userId_));
     preferencesUtil->SaveBool(std::to_string(id), false);
     preferencesUtil->Refresh();
     userId_ = id;
@@ -145,6 +151,7 @@ void ScreenLockSystemAbility::OnStart()
     }
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
     AddSystemAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN);
+    AddSystemAbilityListener(SUBSYS_USERIAM_SYS_ABILITY_USERIDM);
     RegisterDumpCommand();
     return;
 }
@@ -162,6 +169,32 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     if (systemAbilityId == SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN) {
         InitUserId();
     }
+    if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
+        RegistUserAuthSuccessEventListener();
+    }
+}
+
+void ScreenLockSystemAbility::RegistUserAuthSuccessEventListener()
+{
+    SCLOCK_HILOGD("RegistUserAuthSuccessEventListener start");
+    std::vector<UserIam::UserAuth::AuthType> authTypeList;
+    authTypeList.emplace_back(AuthType::PIN);
+    authTypeList.emplace_back(AuthType::FACE);
+    authTypeList.emplace_back(AuthType::FINGERPRINT);
+
+    if (listener_ == nullptr) {
+        sptr<UserIam::UserAuth::AuthEventListenerInterface> wrapper(new (std::nothrow) AuthEventListenerService());
+        if (wrapper == nullptr) {
+            SCLOCK_HILOGE("get listener failed");
+            return;
+        }
+        listener_ = wrapper;
+        int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistUserAuthSuccessEventListener(
+            authTypeList, listener_);
+        SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
+    }
+
+    return;
 }
 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
@@ -208,6 +241,9 @@ void ScreenLockSystemAbility::InitUserId()
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return;
     }
+    if (preferencesUtil->ObtainBool(std::to_string(userId), false)) {
+        return;
+    }
     preferencesUtil->SaveBool(std::to_string(userId), false);
     preferencesUtil->Refresh();
     return;
@@ -223,11 +259,25 @@ void ScreenLockSystemAbility::OnStop()
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+    UserIam::UserAuth::UserAuthClientImpl::GetInstance().UnRegistUserAuthSuccessEventListener(listener_);
+    StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
     int ret = OsAccountManager::UnsubscribeOsAccount(accountSubscriber_);
     if (ret != SUCCESS) {
         SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
     }
     SCLOCK_HILOGI("OnStop end.");
+}
+
+void ScreenLockSystemAbility::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
+    UserIam::UserAuth::AuthType authType, int32_t callerType, std::string &bundleName)
+{
+    SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, callerType: %{public}d", userId,
+        static_cast<int32_t>(authType), bundleName.c_str(), callerType);
+    if (authType == AuthType::PIN) {
+        StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
+        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
+    }
+    return;
 }
 
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
@@ -331,6 +381,15 @@ void ScreenLockSystemAbility::OnExitAnimation()
     SystemEventCallBack(systemEvent);
 }
 
+void ScreenLockSystemAbility::StrongAuthChanged(int32_t userId, int32_t reasonFlag)
+{
+    SystemEvent systemEvent(STRONG_AUTH_CHANGED);
+    systemEvent.userId_ = userId;
+    systemEvent.params_ = reasonFlag;
+    SystemEventCallBack(systemEvent);
+    SCLOCK_HILOGI("StrongAuthChanged: userId: %{public}d, reasonFlag:%{public}d", userId, reasonFlag);
+}
+
 int32_t ScreenLockSystemAbility::UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen begin", HITRACE_UNLOCKSCREEN);
@@ -359,8 +418,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     bool hasPermission = CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
     SCLOCK_HILOGE("hasPermission: {public}%d.", hasPermission);
     if (AccessTokenKit::GetTokenTypeFlag(callerTokenId) != TOKEN_NATIVE &&
-        !IsAppInForeground(IPCSkeleton::GetCallingPid(), callerTokenId) &&
-        !hasPermission) {
+        !IsAppInForeground(IPCSkeleton::GetCallingPid(), callerTokenId) && !hasPermission) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
         SCLOCK_HILOGE("UnlockScreen  Unfocused.");
         return E_SCREENLOCK_NOT_FOCUS_APP;
@@ -521,7 +579,6 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return E_SCREENLOCK_NULLPTR;
     }
-    preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->SaveBool(std::to_string(userId), disable);
     preferencesUtil->Refresh();
     return E_SCREENLOCK_OK;
@@ -530,7 +587,11 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     SCLOCK_HILOGI("SetScreenLockAuthState authState=%{public}d ,userId=%{public}d", authState, userId);
-
+    auto iter = authStateInfo.find(userId);
+    if (iter != authStateInfo.end()) {
+        iter->second = authState;
+        return E_SCREENLOCK_OK;
+    }
     authStateInfo.insert(std::make_pair(userId, authState));
     return E_SCREENLOCK_OK;
 }
@@ -540,7 +601,6 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
     SCLOCK_HILOGD("GetScreenLockAuthState userId=%{public}d", userId);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
-        std::string output;
         authState = iter->second;
         return E_SCREENLOCK_OK;
     }
@@ -549,9 +609,19 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
     return E_SCREENLOCK_OK;
 }
 
-int32_t RequestStrongAuth(int userId, int32_t &authState)
+int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
-    
+    SCLOCK_HILOGI("RequestStrongAuth reasonFlag=%{public}d ,userId=%{public}d", reasonFlag, userId);
+    StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
+    StrongAuthChanged(userId, reasonFlag);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
+{
+    reasonFlag = StrongAuthManger::GetInstance()->GetStrongAuthStat(userId);
+    SCLOCK_HILOGI("GetStrongAuth userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
+    return E_SCREENLOCK_OK;
 }
 
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
