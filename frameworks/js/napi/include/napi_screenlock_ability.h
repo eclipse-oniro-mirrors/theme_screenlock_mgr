@@ -75,7 +75,18 @@ struct ScreenLockAuthStatInfo : public AsyncCall::Context {
 };
 
 struct ScreenLockStrongAuthInfo : public AsyncCall::Context {
-}
+    int32_t reasonFlag;
+    int32_t userId;
+    napi_status status;
+    bool allowed;
+    ScreenLockStrongAuthInfo()
+        : Context(nullptr, nullptr), reasonFlag(-1), userId(-1), status(napi_generic_failure),
+          allowed(false){};
+    ScreenLockStrongAuthInfo(InputAction input, OutputAction output)
+        : Context(std::move(input), std::move(output)), reasonFlag(-1), userId(-1),
+          status(napi_generic_failure), allowed(false){};
+    ~ScreenLockStrongAuthInfo() override{};
+};
 
 napi_status IsValidEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
@@ -96,6 +107,8 @@ napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info);
 napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info);
 napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info);
 napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info);
+napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info);
+napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info);
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_ABILITY_H
