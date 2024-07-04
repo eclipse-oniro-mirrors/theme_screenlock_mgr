@@ -138,10 +138,8 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
     timerId = MiscServices::TimeServiceClient::GetInstance()->CreateTimer(timer);
     int64_t currentTime = 0;
     MiscServices::TimeServiceClient::GetInstance()->GetWallTimeMs(currentTime);
-    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId,
-    currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
     strongAuthTimerInfo.insert(std::make_pair(userId, timerId));
-    SCLOCK_HILOGI("StartStrongAuthTimer success! timerId:%{public}u", timerId);
     return;
 }
 
@@ -155,9 +153,7 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId)
     int64_t currentTime = 0;
     MiscServices::TimeServiceClient::GetInstance()->GetWallTimeMs(currentTime);
     MiscServices::TimeServiceClient::GetInstance()->StopTimer(timerId);
-    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId,
-        currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
-    SCLOCK_HILOGI("ResetStrongAuthTimer success! currentTime:%{public}ld", currentTime);
+    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
     return;
 }
 
@@ -173,7 +169,6 @@ void StrongAuthManger::DestroyStrongAuthTimer(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     int timerId = GetTimerId(userId);
-    SCLOCK_HILOGI("DestroyStrongAuthTimer! timerId:%{public}u", timerId);
     if (timerId == 0) {
         return;
     }
@@ -198,9 +193,6 @@ void StrongAuthManger::SetStrongAuthStat(int32_t userId, int32_t reasonFlag)
 int32_t StrongAuthManger::GetStrongAuthStat(int32_t userId)
 {
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT);
-    for (auto iter = strongAuthStateInfo.begin(); iter != strongAuthStateInfo.end(); ++iter) {
-        SCLOCK_HILOGI("userId:%{public}d, reasonFlag:%{public}u \n", iter->first, iter->second);
-    }
     auto iter = strongAuthStateInfo.find(userId);
     if (iter != strongAuthStateInfo.end()) {
         reasonFlag = iter->second;
