@@ -33,6 +33,7 @@
 #include "os_account_manager.h"
 #include "preferences_util.h"
 #include "os_account_subscribe_info.h"
+#include "user_auth_event_listener_stub.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -156,11 +157,14 @@ public:
     int32_t SetScreenLockDisabled(bool disable, int userId) override;
     int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken) override;
     int32_t GetScreenLockAuthState(int userId, int32_t &authState) override;
-    int32_t RequestStrongAuth(int userId, int32_t &authState) override;
+    int32_t RequestStrongAuth(int reasonFlag, int32_t userId) override;
+    int32_t GetStrongAuth(int userId, int32_t &reasonFlag) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
+    void RegistUserAuthSuccessEventListener();
     void ResetFfrtQueue();
+    void StrongAuthChanged(int32_t userId, int32_t reasonFlag);
     int32_t Lock(int32_t userId) override;
     StateValue &GetState()
     {
@@ -169,6 +173,14 @@ public:
     class ScreenLockDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
     public:
         void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
+    };
+
+    class AuthEventListenerService : public UserIam::UserAuth::AuthEventListenerStub {
+    public:
+        AuthEventListenerService() = default;
+        ~AuthEventListenerService() = default;
+        void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType, int32_t callerType,
+                                   std::string &bundleName) override;
     };
 
     class AccountSubscriber : public AccountSA::OsAccountSubscriber {
@@ -215,6 +227,7 @@ private:
     static std::shared_ptr<ffrt::queue> queue_;
     std::shared_ptr<AccountSubscriber> accountSubscriber_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
+    sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     std::mutex unlockListenerMutex_;
