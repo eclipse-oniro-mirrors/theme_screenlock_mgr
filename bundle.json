@@ -44,7 +44,7 @@
         "c_utils",
         "ffrt",
         "preferences",
-        "time_client"
+        "time_service"
       ],
       "third_party": []
     },
