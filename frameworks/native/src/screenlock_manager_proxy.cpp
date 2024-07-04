@@ -319,9 +319,45 @@ int32_t ScreenLockManagerProxy::GetScreenLockAuthState(int userId, int32_t &auth
     return retCode;
 }
 
-int32_t RequestStrongAuth(int userId, int32_t &authState)
+int32_t ScreenLockManagerProxy::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
-    
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(reasonFlag);
+    data.WriteInt32(userId);
+
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REQUEST_STRONG_AUTHSTATE), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy RequestStrongAuth, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy RequestStrongAuth end retCode is %{public}d.", retCode);
+    return retCode;
+    return 0;
+}
+
+int32_t ScreenLockManagerProxy::GetStrongAuth(int userId, int32_t &reasonFlag)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_STRONG_AUTHSTATE), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy GetStrongAuth, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    reasonFlag = reply.ReadInt32();
+    SCLOCK_HILOGD("GetStrongAuth end retCode is %{public}d, %{public}d.", retCode, reasonFlag);
+    return retCode;
 }
 } // namespace ScreenLock
 } // namespace OHOS
