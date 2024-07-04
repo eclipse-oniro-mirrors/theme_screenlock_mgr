@@ -123,6 +123,7 @@ foreach(item, screenlock_fuzztests) {
       "ipc:ipc_single",
       "napi:ace_napi",
       "os_account:os_account_innerkits",
+      "user_auth_framework:userauth_client",
       "window_manager:libdm",
     ]
 
