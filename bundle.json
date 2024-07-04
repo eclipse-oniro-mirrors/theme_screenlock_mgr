@@ -43,7 +43,8 @@
         "user_auth_framework",
         "c_utils",
         "ffrt",
-        "preferences"
+        "preferences",
+        "time_service"
       ],
       "third_party": []
     },

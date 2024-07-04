@@ -14,9 +14,17 @@ import("//build/ohos.gni")
 
 ################################################################################
 
+ohos_prebuilt_etc("screenlock_cfg") {
+  source = "screenlock.cfg"
+  relative_install_dir = "init"
+  part_name = "screenlock_mgr"
+  subsystem_name = "theme"
+}
+
 group("screenlock_mgr_packages") {
   if (is_standard_system) {
     deps = [
+      ":screenlock_cfg",
       "sa_profile:screenlock_sa_profiles",
       "services:screenlock_server",
     ]

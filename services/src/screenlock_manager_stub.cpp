@@ -60,6 +60,10 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnSetScreenLockAuthState;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_SCREENLOCK_AUTHSTATE)] =
         &ScreenLockManagerStub::OnGetScreenLockAuthState;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REQUEST_STRONG_AUTHSTATE)] =
+        &ScreenLockManagerStub::OnRequestStrongAuth;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_STRONG_AUTHSTATE)] =
+        &ScreenLockManagerStub::OnGetStrongAuth;
 }
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -231,6 +235,29 @@ int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, Mes
     reply.WriteInt32(retCode);
     if (retCode == E_SCREENLOCK_OK) {
         reply.WriteInt32(authState);
+    }
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnRequestStrongAuth(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t reasonFlag = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    SCLOCK_HILOGD("OnRequestStrongAuth. reasonFlag=%{public}d", reasonFlag);
+    int32_t retCode = RequestStrongAuth(reasonFlag, userId);
+    reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t reasonFlag = -1;
+    int32_t userId = data.ReadInt32();
+    int32_t retCode = GetStrongAuth(userId, reasonFlag);
+    SCLOCK_HILOGI("userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
+    reply.WriteInt32(retCode);
+    if (retCode == E_SCREENLOCK_OK) {
+        reply.WriteInt32(reasonFlag);
     }
     return ERR_NONE;
 }
