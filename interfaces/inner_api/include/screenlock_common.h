@@ -35,6 +35,7 @@ const std::string BEGIN_SLEEP = "beginSleep";
 const std::string END_SLEEP = "endSleep";
 const std::string BEGIN_SCREEN_OFF = "beginScreenOff";
 const std::string END_SCREEN_OFF = "endScreenOff";
+const std::string STRONG_AUTH_CHANGED = "strongAuthChanged";
 const std::string CHANGE_USER = "changeUser";
 const std::string SCREENLOCK_ENABLED = "screenlockEnabled";
 const std::string EXIT_ANIMATION = "beginExitAnimation";
@@ -91,13 +92,20 @@ enum JsErrorCode : uint32_t {
     ERR_ILLEGAL_USE = 13200003,
 };
 
-int32_t RequestStrongAuth(int userId, int32_t &authState)
-
 enum class Action : uint8_t {
     LOCK = 0,
     UNLOCK,
     UNLOCKSCREEN,
 };
+
+enum class StrongAuthReasonFlags : int32_t{
+    NONE = 0x00000000,
+    AFTER_BOOT = 0x00000001,
+    AFTER_TIMEOUT = 0x00000002,
+    ACTIVE_REQUEST= 0x00000004,
+    DPM_RESTRICT = 0x00000008,
+};
+
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
 constexpr int BEGIN_SLEEP_USER_REASON = 2;
 constexpr int BEGIN_SLEEP_LONG_TIME_UNOPERATOR = 3;
