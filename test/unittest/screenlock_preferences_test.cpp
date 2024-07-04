@@ -134,9 +134,8 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest004, TestSize.Level0)
     }
     int userId = 0;
     int64_t defaulVal = false;
-    int result = preferencesUtil->SaveLong(std::to_string(userId), defaulVal);
-    int64_t val = preferencesUtil->ObtainLong(std::to_string(userId), defaulVal);
-    SCLOCK_HILOGD("String.[result]:%{public}d, val: [%{public}" PRId64 "] ", result, val);
+    preferencesUtil->SaveLong(std::to_string(userId), defaulVal);
+    preferencesUtil->ObtainLong(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 }
