@@ -98,11 +98,11 @@ enum class Action : uint8_t {
     UNLOCKSCREEN,
 };
 
-enum class StrongAuthReasonFlags : int32_t{
+enum class StrongAuthReasonFlags : int32_t {
     NONE = 0x00000000,
     AFTER_BOOT = 0x00000001,
     AFTER_TIMEOUT = 0x00000002,
-    ACTIVE_REQUEST= 0x00000004,
+    ACTIVE_REQUEST = 0x00000004,
     DPM_RESTRICT = 0x00000008,
 };
 
