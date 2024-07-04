@@ -76,7 +76,8 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setScreenLockDisabled", OHOS::ScreenLock::NAPI_SetScreenLockDisabled),
         DECLARE_NAPI_FUNCTION("setScreenLockAuthState", OHOS::ScreenLock::NAPI_SetScreenLockAuthState),
         DECLARE_NAPI_FUNCTION("getScreenLockAuthState", OHOS::ScreenLock::NAPI_GetScreenLockAuthState),
-        DECLARE_NAPI_FUNCTION("requestStrongAuth", OHOS::ScreenLock::NAPI_GetScreenLockAuthState),
+        DECLARE_NAPI_FUNCTION("requestStrongAuth", OHOS::ScreenLock::NAPI_RequestStrongAuth),
+        DECLARE_NAPI_FUNCTION("getStrongAuth", OHOS::ScreenLock::NAPI_GetStrongAuth),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
@@ -679,6 +680,84 @@ napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info)
     }
     SCLOCK_HILOGI("NAPI_GetScreenLockAuthState [authState]=%{public}d", authState);
     napi_create_int32(env, authState, &result);
+    return result;
+}
+
+napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info)
+{
+    ScreenLockStrongAuthInfo *context = new ScreenLockStrongAuthInfo();
+    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
+        if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[ARGV_ZERO], &context->reasonFlag);
+
+        if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
+            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[ARGV_ONE], &context->userId);
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        napi_status status = napi_get_boolean(env, context->allowed, result);
+        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        int32_t retCode = ScreenLockAppManager::GetInstance()->RequestStrongAuth(context->reasonFlag,
+            context->userId);
+        if (retCode != E_SCREENLOCK_OK) {
+            ErrorInfo errInfo;
+            errInfo.errorCode_ = static_cast<uint32_t>(retCode);
+            GetErrorInfo(retCode, errInfo);
+            context->SetErrorInfo(errInfo);
+            context->allowed = false;
+        } else {
+            context->SetStatus(napi_ok);
+            context->allowed = true;
+        }
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, context, ARGS_SIZE_THREE);
+    return asyncCall.Call(env, exec, "requestStrongAuth");
+}
+
+napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_GetStrongAuth in");
+    napi_value result = nullptr;
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    int userId = -1;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    int32_t reasonFlag = -1;
+    int32_t status = ScreenLockAppManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ThrowError(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    SCLOCK_HILOGI("NAPI_GetStrongAuth [reasonFlag]=%{public}d", reasonFlag);
+    napi_create_int32(env, reasonFlag, &result);
     return result;
 }
 
