@@ -161,7 +161,6 @@ public:
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
-    void RegistUserAuthSuccessEventListener();
     void ResetFfrtQueue();
     void StrongAuthChanged(int32_t userId, int32_t reasonFlag);
     int32_t Lock(int32_t userId) override;
@@ -218,7 +217,6 @@ private:
     static std::shared_ptr<ffrt::queue> queue_;
     std::shared_ptr<AccountSubscriber> accountSubscriber_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
-    sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     std::mutex unlockListenerMutex_;
