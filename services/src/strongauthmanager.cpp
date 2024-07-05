@@ -27,7 +27,8 @@ sptr<StrongAuthManger> StrongAuthManger::instance_;
 using namespace OHOS::UserIam::UserAuth;
 
 // 强认证默认时间 3days
-const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
+//const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
+const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 10 * 1000;
 
 StrongAuthManger::StrongAuthManger() {}
 
@@ -41,7 +42,7 @@ StrongAuthManger::authTimer::authTimer(bool repeat, uint64_t interval, bool isEx
     this->interval = interval;
     this->type = TIMER_TYPE_WAKEUP;
     if (isExact) {
-        this->type = TIMER_TYPE_WAKEUP + TIMER_TYPE_EXACT;
+        this->type = TIMER_TYPE_WAKEUP + TIMER_TYPE_REALTIME;
     }
     if (isIdle) {
         this->type = TIMER_TYPE_IDLE;
@@ -98,7 +99,7 @@ static void StrongAuthTimerCallback(int32_t userId)
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
     int32_t timerId = StrongAuthManger::GetInstance()->GetTimerId(userId);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
-    StrongAuthManger::GetInstance()->ResetStrongAuthTimer(timerId);
+    StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
     return;
@@ -179,12 +180,11 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
         return;
     }
 
-    std::shared_ptr<authTimer> timer = std::make_shared<authTimer>(false, 0, true, false);
+    std::shared_ptr<authTimer> timer = std::make_shared<authTimer>(true, DEFAULT_STRONG_AUTH_TIMEOUT_MS, true, false);
     timer->SetCallbackInfo(StrongAuthTimerCallback);
     timer->SetUserId(userId);
     timerId = MiscServices::TimeServiceClient::GetInstance()->CreateTimer(timer);
-    int64_t currentTime = 0;
-    MiscServices::TimeServiceClient::GetInstance()->GetWallTimeMs(currentTime);
+    int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
     strongAuthTimerInfo.insert(std::make_pair(userId, timerId));
     return;
@@ -197,8 +197,7 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId)
         StartStrongAuthTimer(userId);
         return;
     }
-    int64_t currentTime = 0;
-    MiscServices::TimeServiceClient::GetInstance()->GetWallTimeMs(currentTime);
+    int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     MiscServices::TimeServiceClient::GetInstance()->StopTimer(timerId);
     MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
     return;
