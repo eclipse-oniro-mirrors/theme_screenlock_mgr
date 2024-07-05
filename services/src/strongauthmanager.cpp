@@ -17,11 +17,14 @@
 #include "screenlock_common.h"
 #include "sclock_log.h"
 #include "screenlock_system_ability.h"
+#include "user_auth_client_callback.h"
+#include "user_auth_client_impl.h"
 
 namespace OHOS {
 namespace ScreenLock {
 std::mutex StrongAuthManger::instanceLock_;
 sptr<StrongAuthManger> StrongAuthManger::instance_;
+using namespace OHOS::UserIam::UserAuth;
 
 // 强认证默认时间 3days
 const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
@@ -111,6 +114,40 @@ sptr<StrongAuthManger> StrongAuthManger::GetInstance()
     return instance_;
 }
 
+
+int32_t StrongAuthManger::GetTimerId(int32_t userId)
+{
+    int32_t timerId = 0;
+    auto iter = strongAuthTimerInfo.find(userId);
+    if (iter != strongAuthTimerInfo.end()) {
+        timerId = iter->second;
+    }
+    return timerId;
+}
+
+void StrongAuthManger::RegistUserAuthSuccessEventListener()
+{
+    SCLOCK_HILOGD("RegistUserAuthSuccessEventListener start");
+    std::vector<UserIam::UserAuth::AuthType> authTypeList;
+    authTypeList.emplace_back(AuthType::PIN);
+    authTypeList.emplace_back(AuthType::FACE);
+    authTypeList.emplace_back(AuthType::FINGERPRINT);
+
+    if (listener_ == nullptr) {
+        sptr<UserIam::UserAuth::AuthEventListenerInterface> wrapper(new (std::nothrow) AuthEventListenerService());
+        if (wrapper == nullptr) {
+            SCLOCK_HILOGE("get listener failed");
+            return;
+        }
+        listener_ = wrapper;
+        int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistUserAuthSuccessEventListener(
+            authTypeList, listener_);
+        SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
+    }
+
+    return;
+}
+
 void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
     UserIam::UserAuth::AuthType authType, int32_t callerType, std::string &bundleName)
 {
@@ -123,15 +160,13 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_
     return;
 }
 
-
-int32_t StrongAuthManger::GetTimerId(int32_t userId)
+void StrongAuthManger::UnRegistUserAuthSuccessEventListener()
 {
-    int32_t timerId = 0;
-    auto iter = strongAuthTimerInfo.find(userId);
-    if (iter != strongAuthTimerInfo.end()) {
-        timerId = iter->second;
+    if (listener_ != nullptr) {
+        int32_t ret =
+            UserIam::UserAuth::UserAuthClientImpl::GetInstance().UnRegistUserAuthSuccessEventListener(listener_);
+        SCLOCK_HILOGI("UnRegistUserAuthSuccessEventListener ret: %{public}d", ret);
     }
-    return timerId;
 }
 
 void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
