@@ -33,7 +33,6 @@
 #include "os_account_manager.h"
 #include "preferences_util.h"
 #include "os_account_subscribe_info.h"
-#include "user_auth_event_listener_stub.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -173,14 +172,6 @@ public:
     class ScreenLockDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
     public:
         void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
-    };
-
-    class AuthEventListenerService : public UserIam::UserAuth::AuthEventListenerStub {
-    public:
-        AuthEventListenerService() = default;
-        ~AuthEventListenerService() = default;
-        void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType, int32_t callerType,
-                                   std::string &bundleName) override;
     };
 
     class AccountSubscriber : public AccountSA::OsAccountSubscriber {
