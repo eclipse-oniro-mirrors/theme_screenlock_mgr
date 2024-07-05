@@ -43,9 +43,11 @@ public:
     void ResetStrongAuthTimer(int32_t userId);
     void SetStrongAuthStat(int32_t userId, int32_t reasonFlag);
     int32_t GetStrongAuthStat(int32_t userId);
-
+    void RegistUserAuthSuccessEventListener();
+    void UnRegistUserAuthSuccessEventListener();
 
 public:
+
     class AuthEventListenerService : public UserIam::UserAuth::AuthEventListenerStub {
     public:
         AuthEventListenerService() = default;
@@ -79,6 +81,7 @@ private:
     static sptr<StrongAuthManger> instance_;
     std::map<int32_t, int32_t> strongAuthStateInfo;
     std::map<int32_t, int32_t> strongAuthTimerInfo;
+    sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
 };
 } // namespace OHOS
 } // namespace ScreenLock
