@@ -52,6 +52,7 @@ StrongAuthManger::authTimer::~authTimer() {}
 
 void StrongAuthManger::authTimer::OnTrigger()
 {
+    SCLOCK_HILOGI("%{public}d, OnTrigger enter", userId_);
     if (callBack_) {
         callBack_(userId_);
     }
