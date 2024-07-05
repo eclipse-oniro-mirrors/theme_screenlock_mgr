@@ -27,8 +27,7 @@ sptr<StrongAuthManger> StrongAuthManger::instance_;
 using namespace OHOS::UserIam::UserAuth;
 
 // 强认证默认时间 3days
-//const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
-const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 10 * 1000;
+const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
 
 StrongAuthManger::StrongAuthManger() {}
 
