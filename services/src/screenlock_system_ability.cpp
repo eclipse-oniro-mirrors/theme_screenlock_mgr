@@ -170,31 +170,8 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
         InitUserId();
     }
     if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
-        RegistUserAuthSuccessEventListener();
+        StrongAuthManger::GetInstance()->RegistUserAuthSuccessEventListener();
     }
-}
-
-void ScreenLockSystemAbility::RegistUserAuthSuccessEventListener()
-{
-    SCLOCK_HILOGD("RegistUserAuthSuccessEventListener start");
-    std::vector<UserIam::UserAuth::AuthType> authTypeList;
-    authTypeList.emplace_back(AuthType::PIN);
-    authTypeList.emplace_back(AuthType::FACE);
-    authTypeList.emplace_back(AuthType::FINGERPRINT);
-
-    if (listener_ == nullptr) {
-        sptr<UserIam::UserAuth::AuthEventListenerInterface> wrapper(new (std::nothrow) AuthEventListenerService());
-        if (wrapper == nullptr) {
-            SCLOCK_HILOGE("get listener failed");
-            return;
-        }
-        listener_ = wrapper;
-        int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistUserAuthSuccessEventListener(
-            authTypeList, listener_);
-        SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
-    }
-
-    return;
 }
 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
@@ -259,25 +236,13 @@ void ScreenLockSystemAbility::OnStop()
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
-    UserIam::UserAuth::UserAuthClientImpl::GetInstance().UnRegistUserAuthSuccessEventListener(listener_);
+    StrongAuthManger::GetInstance()->UnRegistUserAuthSuccessEventListener();
     StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
     int ret = OsAccountManager::UnsubscribeOsAccount(accountSubscriber_);
     if (ret != SUCCESS) {
         SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
     }
     SCLOCK_HILOGI("OnStop end.");
-}
-
-void ScreenLockSystemAbility::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
-    UserIam::UserAuth::AuthType authType, int32_t callerType, std::string &bundleName)
-{
-    SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, callerType: %{public}d", userId,
-        static_cast<int32_t>(authType), bundleName.c_str(), callerType);
-    if (authType == AuthType::PIN) {
-        StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
-        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
-    }
-    return;
 }
 
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,

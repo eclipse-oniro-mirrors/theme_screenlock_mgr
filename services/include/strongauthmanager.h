@@ -25,6 +25,7 @@
 #include "visibility.h"
 #include "time_service_client.h"
 #include "itimer_info.h"
+#include "user_auth_event_listener_stub.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -42,6 +43,18 @@ public:
     void ResetStrongAuthTimer(int32_t userId);
     void SetStrongAuthStat(int32_t userId, int32_t reasonFlag);
     int32_t GetStrongAuthStat(int32_t userId);
+    void RegistUserAuthSuccessEventListener();
+    void UnRegistUserAuthSuccessEventListener();
+
+public:
+
+    class AuthEventListenerService : public UserIam::UserAuth::AuthEventListenerStub {
+    public:
+        AuthEventListenerService() = default;
+        ~AuthEventListenerService() = default;
+        void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType, int32_t callerType,
+                                   std::string &bundleName) override;
+    };
 
     class authTimer : public MiscServices::ITimerInfo {
     public:
@@ -68,6 +81,7 @@ private:
     static sptr<StrongAuthManger> instance_;
     std::map<int32_t, int32_t> strongAuthStateInfo;
     std::map<int32_t, int32_t> strongAuthTimerInfo;
+    sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
 };
 } // namespace OHOS
 } // namespace ScreenLock
