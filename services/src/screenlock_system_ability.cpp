@@ -350,7 +350,7 @@ void ScreenLockSystemAbility::StrongAuthChanged(int32_t userId, int32_t reasonFl
 {
     SystemEvent systemEvent(STRONG_AUTH_CHANGED);
     systemEvent.userId_ = userId;
-    systemEvent.params_ = reasonFlag;
+    systemEvent.params_ = std::to_string(reasonFlag);
     SystemEventCallBack(systemEvent);
     SCLOCK_HILOGI("StrongAuthChanged: userId: %{public}d, reasonFlag:%{public}d", userId, reasonFlag);
 }
