@@ -71,7 +71,8 @@ void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
     napi_get_null(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
 
     if (callBackPtr->deferred) {
-        napi_resolve_deferred(callBackPtr->env, callBackPtr->deferred, result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
+        napi_resolve_deferred(callBackPtr->env, callBackPtr->deferred,
+                result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     } else {
         napi_value callbackFunc = nullptr;
         napi_value callbackResult = nullptr;
