@@ -33,7 +33,10 @@ StrongAuthManger::StrongAuthManger() {}
 
 StrongAuthManger::~StrongAuthManger() {}
 
-StrongAuthManger::authTimer::authTimer() {}
+StrongAuthManger::authTimer::authTimer()
+{
+    userId_ = 0;
+}
 
 StrongAuthManger::authTimer::authTimer(bool repeat, uint64_t interval, bool isExact, bool isIdle)
 {
@@ -46,6 +49,7 @@ StrongAuthManger::authTimer::authTimer(bool repeat, uint64_t interval, bool isEx
     if (isIdle) {
         this->type = TIMER_TYPE_IDLE;
     }
+    userId_ = 0;
 }
 
 StrongAuthManger::authTimer::~authTimer() {}
@@ -96,7 +100,7 @@ void StrongAuthManger::authTimer::SetUserId(int32_t userId)
 static void StrongAuthTimerCallback(int32_t userId)
 {
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
-    int32_t timerId = StrongAuthManger::GetInstance()->GetTimerId(userId);
+    uint64_t timerId = StrongAuthManger::GetInstance()->GetTimerId(userId);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
     StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
@@ -116,9 +120,9 @@ sptr<StrongAuthManger> StrongAuthManger::GetInstance()
 }
 
 
-int32_t StrongAuthManger::GetTimerId(int32_t userId)
+uint64_t StrongAuthManger::GetTimerId(int32_t userId)
 {
-    int32_t timerId = 0;
+    uint64_t timerId = 0;
     auto iter = strongAuthTimerInfo.find(userId);
     if (iter != strongAuthTimerInfo.end()) {
         timerId = iter->second;
@@ -173,7 +177,7 @@ void StrongAuthManger::UnRegistUserAuthSuccessEventListener()
 void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    int timerId = GetTimerId(userId);
+    uint64_t timerId = GetTimerId(userId);
     if (timerId != 0) {
         SCLOCK_HILOGI("StrongAuthTimer exist. userId:%{public}d", userId);
         return;
@@ -191,7 +195,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
 
 void StrongAuthManger::ResetStrongAuthTimer(int32_t userId)
 {
-    int timerId = GetTimerId(userId);
+    uint64_t timerId = GetTimerId(userId);
     if (timerId == 0) {
         StartStrongAuthTimer(userId);
         return;
@@ -213,7 +217,7 @@ void StrongAuthManger::DestroyAllStrongAuthTimer()
 void StrongAuthManger::DestroyStrongAuthTimer(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    int timerId = GetTimerId(userId);
+    uint64_t timerId = GetTimerId(userId);
     if (timerId == 0) {
         return;
     }
