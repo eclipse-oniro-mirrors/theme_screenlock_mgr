@@ -36,7 +36,7 @@ public:
     StrongAuthManger();
     ~StrongAuthManger() override;
 
-    int32_t GetTimerId(int32_t userId);
+    uint64_t GetTimerId(int32_t userId);
     void StartStrongAuthTimer(int32_t userId);
     void DestroyStrongAuthTimer(int32_t userId);
     void DestroyAllStrongAuthTimer();
@@ -71,8 +71,8 @@ public:
         void SetUserId(int32_t userId);
 
     private:
-        int32_t userId_;
-        std::function<void(int32_t)> callBack_;
+        int32_t userId_ = 0;
+        std::function<void(int32_t)> callBack_ = nullptr;
     };
 
 private:
