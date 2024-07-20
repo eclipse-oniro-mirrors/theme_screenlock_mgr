@@ -80,7 +80,7 @@ private:
     static std::mutex instanceLock_;
     static sptr<StrongAuthManger> instance_;
     std::map<int32_t, int32_t> strongAuthStateInfo;
-    std::map<int32_t, int32_t> strongAuthTimerInfo;
+    std::map<int32_t, uint64_t> strongAuthTimerInfo;
     sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
 };
 } // namespace OHOS
