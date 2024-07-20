@@ -110,14 +110,17 @@ void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id
 {
     SCLOCK_HILOGI("OnAccountsChanged.[osAccountId]:%{public}d, [lastId]:%{public}d", id, userId_);
     StrongAuthManger::GetInstance()->StartStrongAuthTimer(id);
+    userId_ = id;
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return;
     }
+    if (preferencesUtil->ObtainBool(std::to_string(id), false)) {
+        return;
+    }
     preferencesUtil->SaveBool(std::to_string(id), false);
     preferencesUtil->Refresh();
-    userId_ = id;
     return;
 }
 
