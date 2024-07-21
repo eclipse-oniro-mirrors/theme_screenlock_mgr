@@ -105,12 +105,12 @@ public:
     };
 
 private:
-    std::atomic<bool> isScreenlocked_ = false;
-    std::atomic<bool> screenlockEnabled_ = false;
-    std::atomic<int32_t> offReason_ = 0;
-    std::atomic<int32_t> currentUser_ = 0;
-    std::atomic<int32_t> screenState_ = 0;
-    std::atomic<int32_t> interactiveState_ = 0;
+    std::atomic<bool> isScreenlocked_ { false };
+    std::atomic<bool> screenlockEnabled_ { false };
+    std::atomic<int32_t> offReason_ {0};
+    std::atomic<int32_t> currentUser_ {0};
+    std::atomic<int32_t> screenState_ {0};
+    std::atomic<int32_t> interactiveState_ {0};
 };
 
 enum class ScreenState : int32_t {
