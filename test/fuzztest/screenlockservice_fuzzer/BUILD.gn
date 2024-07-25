@@ -19,6 +19,36 @@ import("//build/test.gni")
 import("../../../screenlock.gni")
 
 ##############################fuzztest##########################################
+screenlockisdisabled_test = {
+  targetName = "ScreenlockIsdisabledFuzzTest"
+  configFuzzer = "screenlockisdisabled_fuzzer"
+  source = "screenlockisdisabled_fuzzer/screenlockisdisabled_fuzzer.cpp"
+}
+screenlocksetdisabled_test = {
+  targetName = "ScreenlockSetdisabledFuzzTest"
+  configFuzzer = "screenlocksetdisabled_fuzzer"
+  source = "screenlocksetdisabled_fuzzer/screenlocksetdisabled_fuzzer.cpp"
+}
+screenlocksetauthstate_test = {
+  targetName = "ScreenlockSetAuthstateFuzzTest"
+  configFuzzer = "screenlocksetauthstate_fuzzer"
+  source = "screenlocksetauthstate_fuzzer/screenlocksetauthstate_fuzzer.cpp"
+}
+screenlockgetauthstate_test = {
+  targetName = "ScreenlockGetAuthstateFuzzTest"
+  configFuzzer = "screenlockgetauthstate_fuzzer"
+  source = "screenlockgetauthstate_fuzzer/screenlockgetauthstate_fuzzer.cpp"
+}
+screenlockrequeststrong_test = {
+  targetName = "ScreenlockRequestStrongFuzzTest"
+  configFuzzer = "screenlockrequeststrong_fuzzer"
+  source = "screenlockrequeststrong_fuzzer/screenlockrequeststrong_fuzzer.cpp"
+}
+screenlockgetstrongstate_test = {
+  targetName = "ScreenlockGetStrongStateFuzzTest"
+  configFuzzer = "screenlockgetstrongstate_fuzzer"
+  source = "screenlockgetstrongstate_fuzzer/screenlockgetstrongstate_fuzzer.cpp"
+}
 screenlockislocked_test = {
   targetName = "ScreenlockIslockedFuzzTest"
   configFuzzer = "screenlockislocked_fuzzer"
@@ -76,6 +106,12 @@ screenlocklockscreen_test = {
 }
 
 screenlock_fuzztests = [
+  screenlockisdisabled_test,
+  screenlocksetdisabled_test,
+  screenlocksetauthstate_test,
+  screenlockgetauthstate_test,
+  screenlockrequeststrong_test,
+  screenlockgetstrongstate_test,
   screenlockislocked_test,
   screenlockboundarycode_test,
   screenlockdump_test,
@@ -142,13 +178,19 @@ group("fuzztest") {
     # deps file
     ":ScreenlockBoundaryCodeFuzzTest",
     ":ScreenlockDumpFuzzTest",
+    ":ScreenlockGetAuthstateFuzzTest",
+    ":ScreenlockGetStrongStateFuzzTest",
     ":ScreenlockIsScreenlockedFuzzTest",
     ":ScreenlockIsSecureModeFuzzTest",
+    ":ScreenlockIsdisabledFuzzTest",
     ":ScreenlockIslockedFuzzTest",
     ":ScreenlockLockFuzzTest",
     ":ScreenlockLockScreenFuzzTest",
     ":ScreenlockOnSystemEventFuzzTest",
+    ":ScreenlockRequestStrongFuzzTest",
     ":ScreenlockSendScreenlockEventFuzzTest",
+    ":ScreenlockSetAuthstateFuzzTest",
+    ":ScreenlockSetdisabledFuzzTest",
     ":ScreenlockUnlockFuzzTest",
     ":ScreenlockUnlockScreenFuzzTest",
   ]
