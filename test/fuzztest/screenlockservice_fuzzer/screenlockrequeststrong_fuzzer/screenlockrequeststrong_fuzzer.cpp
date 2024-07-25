@@ -29,8 +29,6 @@ namespace OHOS {
 constexpr int32_t THRESHOLD = 4;
 } // namespace OHOS
 
-
-
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
