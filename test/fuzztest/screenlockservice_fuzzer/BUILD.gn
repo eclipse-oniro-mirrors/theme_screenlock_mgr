@@ -49,6 +49,16 @@ screenlockgetstrongstate_test = {
   configFuzzer = "screenlockgetstrongstate_fuzzer"
   source = "screenlockgetstrongstate_fuzzer/screenlockgetstrongstate_fuzzer.cpp"
 }
+screenlockutils_test = {
+  targetName = "ScreenlockUtilsFuzzTest"
+  configFuzzer = "screenlockutils_fuzzer"
+  source = "screenlockutils_fuzzer/screenlockutils_fuzzer.cpp"
+}
+screenlockauthmanager_test = {
+  targetName = "ScreenlockAuthManagerFuzzTest"
+  configFuzzer = "screenlockauthmanager_fuzzer"
+  source = "screenlockauthmanager_fuzzer/screenlockauthmanager_fuzzer.cpp"
+}
 screenlockislocked_test = {
   targetName = "ScreenlockIslockedFuzzTest"
   configFuzzer = "screenlockislocked_fuzzer"
@@ -106,12 +116,14 @@ screenlocklockscreen_test = {
 }
 
 screenlock_fuzztests = [
+  screenlockauthmanager_test,
   screenlockisdisabled_test,
   screenlocksetdisabled_test,
   screenlocksetauthstate_test,
   screenlockgetauthstate_test,
   screenlockrequeststrong_test,
   screenlockgetstrongstate_test,
+  screenlockutils_test,
   screenlockislocked_test,
   screenlockboundarycode_test,
   screenlockdump_test,
@@ -153,12 +165,18 @@ foreach(item, screenlock_fuzztests) {
     ]
 
     external_deps = [
+      "ability_base:want",
+      "ability_runtime:ability_manager",
+      "access_token:libaccesstoken_sdk",
+      "access_token:libtokenid_sdk",
       "c_utils:utils",
       "ffrt:libffrt",
       "hilog:libhilog",
       "ipc:ipc_single",
       "napi:ace_napi",
       "os_account:os_account_innerkits",
+      "preferences:native_preferences",
+      "time_service:time_client",
       "user_auth_framework:userauth_client",
       "window_manager:libdm",
     ]
@@ -176,6 +194,7 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
+    ":ScreenlockAuthManagerFuzzTest",
     ":ScreenlockBoundaryCodeFuzzTest",
     ":ScreenlockDumpFuzzTest",
     ":ScreenlockGetAuthstateFuzzTest",
@@ -193,6 +212,7 @@ group("fuzztest") {
     ":ScreenlockSetdisabledFuzzTest",
     ":ScreenlockUnlockFuzzTest",
     ":ScreenlockUnlockScreenFuzzTest",
+    ":ScreenlockUtilsFuzzTest",
   ]
 }
 ###############################################################################
