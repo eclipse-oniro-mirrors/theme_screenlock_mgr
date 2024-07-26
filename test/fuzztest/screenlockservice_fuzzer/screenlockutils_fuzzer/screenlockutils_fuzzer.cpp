@@ -47,14 +47,14 @@ bool FuzzScreenlockUtils(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     // int
-    int defaulVal = static_cast<int>(rawData[0]);
+    int defaulVal = 1;
     preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
     preferencesUtil->ObtainInt(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
     // bool
-    bool boolVal = static_cast<bool>(rawData[0] % 2);
+    bool boolVal = 0;
     preferencesUtil->SaveBool(std::to_string(userId), boolVal);
     preferencesUtil->ObtainBool(std::to_string(userId), boolVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
