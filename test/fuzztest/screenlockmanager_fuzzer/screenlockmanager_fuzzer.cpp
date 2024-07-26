@@ -103,6 +103,74 @@ bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
     }
     return true;
 }
+
+bool FuzzScreenlockIsDisabled(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    bool isDisabled = static_cast<bool>(rawData[0] % 2);
+    int32_t ret = ScreenLockAppManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool FuzzScreenlockSetDisabled(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    bool isDisabled = static_cast<bool>(rawData[0] % 2);
+    int32_t ret = ScreenLockAppManager::GetInstance()->SetScreenLockDisabled(isDisabled, userId);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool FuzzScreenlockSetAuthState(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int32_t authState = static_cast<int32_t>(rawData[0]);
+    std::string authToken = "test";
+    int32_t ret = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(authState, userId, authToken);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool FuzzScreenlockGetAuthState(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int32_t authState = static_cast<int32_t>(rawData[0]);
+    int32_t ret = ScreenLockAppManager::GetInstance()->GetScreenLockAuthState(userId, authState);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool FuzzScreenlockRequestStrongAuth(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int reasonFlag = static_cast<int>(rawData[0]);
+    int32_t ret = ScreenLockAppManager::GetInstance()->RequestStrongAuth(reasonFlag, userId);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool FuzzScreenlockGetStrongAuth(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int reasonFlag = static_cast<int>(rawData[0]);
+    int32_t ret = ScreenLockAppManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
+    return ret == E_SCREENLOCK_OK;
+}
+
 } // namespace OHOS
 
 /* Fuzzer entry point */
@@ -117,5 +185,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::UnlockFuzzTest(data, size);
     OHOS::IsLockedFuzzTest(data, size);
     OHOS::FuzzScreenlockAppManager(data, size);
+    OHOS::FuzzScreenlockIsDisabled(data, size);
+    OHOS::FuzzScreenlockSetDisabled(data, size);
+    OHOS::FuzzScreenlockSetAuthState(data, size);
+    OHOS::FuzzScreenlockGetAuthState(data, size);
+    OHOS::FuzzScreenlockRequestStrongAuth(data, size);
+    OHOS::FuzzScreenlockGetStrongAuth(data, size);
     return 0;
 }
