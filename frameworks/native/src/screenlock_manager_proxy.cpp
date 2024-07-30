@@ -296,7 +296,6 @@ int32_t ScreenLockManagerProxy::SetScreenLockAuthState(int authState, int32_t us
     int32_t retCode = reply.ReadInt32();
     SCLOCK_HILOGD("ScreenLockManagerProxy SetScreenLockAuthState end retCode is %{public}d.", retCode);
     return retCode;
-    return 0;
 }
 
 int32_t ScreenLockManagerProxy::GetScreenLockAuthState(int userId, int32_t &authState)

@@ -99,7 +99,6 @@ int32_t ScreenLockAppManager::SetScreenLockAuthState(int authState, int32_t user
     int32_t status = proxy->SetScreenLockAuthState(authState, userId, authToken);
     SCLOCK_HILOGD("ScreenLockAppManager::SetScreenLockAuthState out, status=%{public}d", status);
     return status;
-    return 0;
 }
 
 int32_t ScreenLockAppManager::GetScreenLockAuthState(int userId, int32_t &authState)
