@@ -34,6 +34,7 @@ ohos_unittest("ScreenLockServiceTest") {
     "unittest/screenlock_callback_test.cpp",
     "unittest/screenlock_client_test.cpp",
     "unittest/screenlock_notify_test_instance.cpp",
+    "unittest/screenlock_preferences_test.cpp",
     "unittest/screenlock_service_test.cpp",
     "unittest/screenlock_strongauth_test.cpp",
   ]
