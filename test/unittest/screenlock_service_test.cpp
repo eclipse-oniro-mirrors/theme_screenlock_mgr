@@ -637,5 +637,26 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
 }
 
+/**
+* @tc.name: ScreenLockTest031
+* @tc.desc: Test RequestStrongAuth.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest031, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test RequestStrongAuth.");
+    ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
+    int32_t userId = 0;
+    int reasonFlag = 1;
+    int32_t ret = ScreenLockSystemAbility::GetInstance()->RequestStrongAuth(reasonFlag, userId);
+
+    ret = ScreenLockSystemAbility::GetInstance()->GetStrongAuth(userId, reasonFlag);
+
+    EXPECT_EQ(ret, E_SCREENLOCK_OK);
+    EXPECT_EQ(reasonFlag, 1);
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
