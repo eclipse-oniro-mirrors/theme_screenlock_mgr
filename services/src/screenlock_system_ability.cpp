@@ -600,7 +600,7 @@ void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
 
 void StateValue::Reset()
 {
-    isScreenlocked_ = true;
+    isScreenlocked_ = false;
     screenlockEnabled_ = true;
     currentUser_ = USER_NULL;
 }
