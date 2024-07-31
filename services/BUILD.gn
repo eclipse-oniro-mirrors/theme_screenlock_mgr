@@ -84,6 +84,7 @@ ohos_shared_library("screenlock_server") {
     "window_manager:libwm",
   ]
 
+  innerapi_tags = [ "platformsdk" ]
   subsystem_name = "theme"
   part_name = "screenlock_mgr"
 }
