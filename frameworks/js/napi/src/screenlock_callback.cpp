@@ -68,7 +68,7 @@ void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
         napi_get_boolean(callBackPtr->env, screenLockSuccess, &result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
     }
 
-    if (screenLockSuccess || callBackPtr->action == Action::UNLOCKSCREEN) {
+    if (screenLockSuccess || callBackPtr->action == Action::UNLOCK) {
         napi_get_null(callBackPtr->env, &result[static_cast<int32_t>(ARG_INFO::ARG_ERROR)]);
     } else {
         AsyncCall::GenerateBusinessError(callBackPtr->env, callBackPtr->errorInfo,
@@ -76,7 +76,7 @@ void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
     }
 
     if (callBackPtr->deferred) {
-        if (screenLockSuccess || callBackPtr->action == Action::UNLOCKSCREEN) {
+        if (screenLockSuccess || callBackPtr->action == Action::UNLOCK) {
             napi_resolve_deferred(callBackPtr->env, callBackPtr->deferred,
                 result[static_cast<int32_t>(ARG_INFO::ARG_DATA)]);
         } else {
