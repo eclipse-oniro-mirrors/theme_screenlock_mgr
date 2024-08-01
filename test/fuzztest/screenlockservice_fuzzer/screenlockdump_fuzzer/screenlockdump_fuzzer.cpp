@@ -65,9 +65,6 @@ bool FuzzScreenlockDisplayPowerEvent(const uint8_t *rawData, size_t size)
 
     sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
-    if (displayPowerEventListener_ == nullptr) {
-        return false;
-    }
     displayPowerEventListener_->OnDisplayPowerEvent(
         static_cast<DisplayPowerEvent>(event), static_cast<EventStatus>(status));
     return true;
