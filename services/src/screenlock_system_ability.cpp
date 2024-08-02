@@ -682,10 +682,11 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(false);
         NotifyDisplayEvent(DisplayEvent::UNLOCK);
-    }
-    NotifyUnlockListener(stateResult);
-    if (stateResult == ScreenChange::SCREEN_SUCC) {
         PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_UNLOCKED);
+    }
+
+    if (stateResult != ScreenChange::SCREEN_FAIL) {
+        NotifyUnlockListener(stateResult);
     }
 }
 
