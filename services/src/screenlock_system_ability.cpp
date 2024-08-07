@@ -378,8 +378,7 @@ int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockCallbackInterface> 
 int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterface> &listener)
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGW("UnlockScreen restart.");
-        OnStart();
+        SCLOCK_HILOGI("UnlockScreen restart.");
     }
     AccessTokenID callerTokenId = IPCSkeleton::GetCallingTokenID();
     // check whether the page of app request unlock is the focus page
@@ -449,8 +448,7 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGW("IsScreenLocked restart.");
-        OnStart();
+        SCLOCK_HILOGI("IsScreenLocked restart.");
     }
     return stateValue_.GetScreenlockedState();
 }
@@ -458,8 +456,7 @@ bool ScreenLockSystemAbility::IsScreenLocked()
 bool ScreenLockSystemAbility::GetSecure()
 {
     if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGW("ScreenLockSystemAbility GetSecure restart.");
-        OnStart();
+        SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure started.");
     int callingUid = IPCSkeleton::GetCallingUid();
