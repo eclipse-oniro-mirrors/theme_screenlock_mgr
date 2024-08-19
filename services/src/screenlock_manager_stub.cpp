@@ -20,7 +20,6 @@
 #include "ipc_skeleton.h"
 #include "parcel.h"
 #include "sclock_log.h"
-#include "screenlock_appinfo.h"
 #include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_server_ipc_interface_code.h"
