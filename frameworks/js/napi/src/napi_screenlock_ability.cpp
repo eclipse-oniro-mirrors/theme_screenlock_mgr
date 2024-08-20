@@ -40,7 +40,7 @@ constexpr const char *PERMISSION_VALIDATION_FAILED = "Permission verification fa
 constexpr const char *PARAMETER_VALIDATION_FAILED = "Parameter verification failed.";
 constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock operation.";
 constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service is abnormal.";
-constexpr const char *ILLEGAL_USE = "illegal use.";
+constexpr const char *ILLEGAL_USE = "Invalid use.";
 constexpr const char *NON_SYSTEM_APP = "Permission verification failed, application which is not a system application "
                                        "uses system API.";
 const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
