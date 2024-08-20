@@ -31,9 +31,7 @@ ohos_shared_library("screenlock_utils") {
       ubsan = true
     }
     branch_protector_ret = "pac_ret"
-    sources = [
-      "src/preferences_util.cpp",
-    ]
+    sources = [ "src/preferences_util.cpp" ]
 
     version_script = "screenlock_utils.versionscript"
 
