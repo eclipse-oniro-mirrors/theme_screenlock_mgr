@@ -23,6 +23,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <memory>
+#include <mutex>
 
 #include "ability_manager_client.h"
 #include "common_event_support.h"
@@ -552,6 +553,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     SCLOCK_HILOGI("SetScreenLockAuthState authState=%{public}d ,userId=%{public}d", authState, userId);
+    std::lock_guard<std::mutex> lock(mutex);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         iter->second = authState;
