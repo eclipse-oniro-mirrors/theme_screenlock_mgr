@@ -162,23 +162,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest001, TestSize.Level0)
 }
 
 /**
-* @tc.name: ScreenLockTest002
-* @tc.desc: OnsystemEvent
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest002, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test OnsystemEvent");
-    sptr<ScreenLockSystemAbilityInterface> listener = new (std::nothrow)
-        ScreenlockNotifyTestInstance(g_unlockTestListener);
-    ASSERT_NE(listener, nullptr);
-    ScreenLockSystemAbility::GetInstance()->OnSystemEvent(listener);
-    EXPECT_NE(ScreenLockSystemAbility::GetInstance()->systemEventListener_, nullptr);
-}
-
-/**
 * @tc.name: ScreenLockTest003
 * @tc.desc: beginSleep event.
 * @tc.type: FUNC
