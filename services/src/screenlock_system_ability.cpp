@@ -523,6 +523,10 @@ int32_t ScreenLockSystemAbility::IsScreenLockDisabled(int userId, bool &isDisabl
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return E_SCREENLOCK_NULLPTR;
     }
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     isDisabled = preferencesUtil->ObtainBool(std::to_string(userId), false);
     SCLOCK_HILOGI("IsScreenLockDisabled isDisabled=%{public}d", isDisabled);
     return E_SCREENLOCK_OK;
@@ -539,6 +543,10 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
         SCLOCK_HILOGE("The screen lock password has been set.");
         return SCREEN_FAIL;
     }
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
@@ -552,6 +560,10 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     SCLOCK_HILOGI("SetScreenLockAuthState authState=%{public}d ,userId=%{public}d", authState, userId);
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     std::lock_guard<std::mutex> lock(mutex);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
@@ -569,6 +581,10 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
     if (iter != authStateInfo.end()) {
         authState = iter->second;
         return E_SCREENLOCK_OK;
+    }
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
     }
     authState = static_cast<int32_t>(AuthState::UNAUTH);
     SCLOCK_HILOGI("The authentication status is not set. userId=%{public}d", userId);
