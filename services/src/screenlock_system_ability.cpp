@@ -594,6 +594,10 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
 int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
     SCLOCK_HILOGI("RequestStrongAuth reasonFlag=%{public}d ,userId=%{public}d", reasonFlag, userId);
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     StrongAuthChanged(userId, reasonFlag);
     return E_SCREENLOCK_OK;
