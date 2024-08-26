@@ -66,6 +66,7 @@ void CommeventMgr::SubscribeEvent()
     EventFwk::MatchingSkills matchingSkills;
     matchingSkills.AddEvent(USER_CREDENTIAL_UPDATED_EVENT);
     EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
+    subscribeInfo.SetPermission("ohos.permission.MANAGE_USER_IDM");
     subscriber_ = std::make_shared<CommEventSubscriber>(subscribeInfo, *this);
 
     bool subscribeResult = EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber_);
