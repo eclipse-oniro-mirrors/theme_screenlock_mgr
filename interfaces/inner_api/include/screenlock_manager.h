@@ -50,6 +50,7 @@ public:
     SCREENLOCK_API bool IsScreenLocked();
     SCREENLOCK_API bool GetSecure();
     SCREENLOCK_API int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API int32_t RequestStrongAuth(int reasonFlag, int32_t userId);
     int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
 private:
     class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {
