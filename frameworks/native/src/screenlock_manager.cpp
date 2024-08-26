@@ -128,6 +128,7 @@ int32_t ScreenLockManager::Lock(int32_t userId)
 
 int32_t ScreenLockManager::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
+    SCLOCK_HILOGI("ScreenLockManager::RequestStrongAuth, reasonFlag=%{public}d, userId=%{public}d", reasonFlag, userId);
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("RequestStrongAuth quit because GetProxy failed.");
