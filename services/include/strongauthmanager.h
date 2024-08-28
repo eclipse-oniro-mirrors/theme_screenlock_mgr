@@ -82,7 +82,6 @@ private:
     std::map<int32_t, int32_t> strongAuthStateInfo;
     std::map<int32_t, uint64_t> strongAuthTimerInfo;
     sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
-    std::mutex strongAuthMutex_;
 };
 } // namespace OHOS
 } // namespace ScreenLock
