@@ -646,7 +646,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest032, TestSize.Level0)
     int fd = 1;
     std::vector<std::u16string> args = { u"arg1", u"arg2" };
 
-    int result = ScreenLockSystemAbility::GetInstance()->->Dump(fd, args);
+    int result = ScreenLockSystemAbility::GetInstance()->Dump(fd, args);
     EXPECT_EQ(result, ERR_OK);
 }
 
