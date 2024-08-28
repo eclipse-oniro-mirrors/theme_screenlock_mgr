@@ -287,10 +287,10 @@ HWTEST_F(ScreenLockClientTest, LockTest0013, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test SetScreenLockDisabled.");
     int32_t userId = 0;
-    int32_t result = ScreenLockAppManager::GetInstance()->->SetScreenLockDisabled(false, userId);
+    int32_t result = ScreenLockAppManager::GetInstance()->SetScreenLockDisabled(false, userId);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
     bool isDisabled = true;
-    result = ScreenLockAppManager::GetInstance()->->IsScreenLockDisabled(userId, isDisabled);
+    result = ScreenLockAppManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
 }
 
@@ -307,10 +307,10 @@ HWTEST_F(ScreenLockClientTest, LockTest0014, TestSize.Level0)
     SCLOCK_HILOGD("Test SetScreenLockAuthState.");
     int32_t userId = 0;
     std::string authtoken = "test";
-    int32_t result = ScreenLockAppManager::GetInstance()->->SetScreenLockAuthState(1, userId, authtoken);
+    int32_t result = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(1, userId, authtoken);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
     int32_t authState = 0;
-    result = ScreenLockAppManager::GetInstance()->->GetScreenLockAuthState(userId, authState);
+    result = ScreenLockAppManager::GetInstance()->GetScreenLockAuthState(userId, authState);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
 }
 
