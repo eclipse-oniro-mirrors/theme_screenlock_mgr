@@ -37,6 +37,21 @@ ohos_shared_library("screenlock_utils") {
 
     public_configs = [ ":screenlock_utils_config" ]
 
+    cflags = [
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fno-asynchronous-unwind-tables",
+        "-fno-unwind-tables",
+        "-fstack-protector-strong",
+        "-fstack-protector-all",
+        "-D_FORTIFY_SOURCE=2",
+        "-fno-merge-all-constants",
+        "-flto",
+        "-Os"
+    ]
+
+    version_script  = "lib_utils.map.txt"
+
     external_deps = [
       "access_token:libaccesstoken_sdk",
       "hilog:libhilog",
