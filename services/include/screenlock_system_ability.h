@@ -216,6 +216,7 @@ private:
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<ffrt::queue> queue_;
     std::shared_ptr<AccountSubscriber> accountSubscriber_;
+    std::mutex accountSubscriberMutex_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
@@ -226,6 +227,7 @@ private:
     StateValue stateValue_;
     std::atomic<bool> systemReady_ = false;
     std::map<int32_t, int32_t> authStateInfo;
+    std::mutex authStateMutex_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
