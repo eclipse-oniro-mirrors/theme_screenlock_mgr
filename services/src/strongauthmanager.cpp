@@ -229,7 +229,7 @@ void StrongAuthManger::DestroyStrongAuthTimer(int32_t userId)
 
 void StrongAuthManger::SetStrongAuthStat(int32_t userId, int32_t reasonFlag)
 {
-    std::lock_guard<std::mutex> lock(strongAuthMutex_);
+    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
     auto iter = strongAuthStateInfo.find(userId);
     if (iter != strongAuthStateInfo.end()) {
         iter->second = reasonFlag;
@@ -242,7 +242,7 @@ void StrongAuthManger::SetStrongAuthStat(int32_t userId, int32_t reasonFlag)
 
 int32_t StrongAuthManger::GetStrongAuthStat(int32_t userId)
 {
-    std::lock_guard<std::mutex> lock(strongAuthMutex_);
+    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT);
     auto iter = strongAuthStateInfo.find(userId);
     if (iter != strongAuthStateInfo.end()) {
