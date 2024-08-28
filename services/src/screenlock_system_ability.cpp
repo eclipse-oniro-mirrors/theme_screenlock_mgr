@@ -580,7 +580,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
 int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &authState)
 {
     SCLOCK_HILOGD("GetScreenLockAuthState userId=%{public}d", userId);
-    std::lock_guard<std::mutex> lock(authStateMutex_);
+    std::lock_guard<std::mutex> lck(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         authState = iter->second;
