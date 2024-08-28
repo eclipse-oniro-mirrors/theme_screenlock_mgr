@@ -205,6 +205,7 @@ void ScreenLockSystemAbility::InitServiceHandler()
 
 void ScreenLockSystemAbility::InitUserId()
 {
+    std::lock_guard<std::mutex> lock(accountSubscriberMutex_);
     OsAccountSubscribeInfo subscribeInfo;
     subscribeInfo.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVED);
     accountSubscriber_ = std::make_shared<AccountSubscriber>(subscribeInfo);
@@ -485,8 +486,9 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::lock_guard<std::mutex> lck(listenerMutex_);
+    listenerMutex_.lock();
     systemEventListener_ = listener;
+    listenerMutex_.unlock();
     stateValue_.Reset();
     auto callback = [this]() { OnSystemReady(); };
     queue_->submit(callback);
@@ -560,6 +562,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     SCLOCK_HILOGI("SetScreenLockAuthState authState=%{public}d ,userId=%{public}d", authState, userId);
+    std::lock_guard<std::mutex> lock(authStateMutex_);
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
@@ -577,6 +580,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
 int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &authState)
 {
     SCLOCK_HILOGD("GetScreenLockAuthState userId=%{public}d", userId);
+    std::lock_guard<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         authState = iter->second;
