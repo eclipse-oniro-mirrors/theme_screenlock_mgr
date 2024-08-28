@@ -562,12 +562,11 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     SCLOCK_HILOGI("SetScreenLockAuthState authState=%{public}d ,userId=%{public}d", authState, userId);
-    std::lock_guard<std::mutex> lock(authStateMutex_);
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         iter->second = authState;
@@ -580,7 +579,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
 int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &authState)
 {
     SCLOCK_HILOGD("GetScreenLockAuthState userId=%{public}d", userId);
-    std::lock_guard<std::mutex> lck(authStateMutex_);
+    std::lock_guard<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         authState = iter->second;
