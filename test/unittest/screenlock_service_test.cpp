@@ -641,5 +641,22 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest031, TestSize.Level0)
     EXPECT_EQ(reasonFlag, 1);
 }
 
+/**
+* @tc.name: ScreenLockTest032
+* @tc.desc: Test RequestStrongAuth.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockServiceTest, ScreenLockTest032, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test RequestStrongAuth.");
+    int fd = 1;
+    std::vector<std::u16string> args = { u"arg1", u"arg2" };
+
+    int result = ScreenLockSystemAbility::GetInstance()->->Dump(fd, args);
+    EXPECT_EQ(result, ERR_OK);
+}
+
 } // namespace ScreenLock
 } // namespace OHOS

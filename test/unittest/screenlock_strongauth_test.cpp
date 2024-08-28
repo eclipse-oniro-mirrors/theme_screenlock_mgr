@@ -71,6 +71,16 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     authmanager->DestroyAllStrongAuthTimer();
     authmanager->UnRegistUserAuthSuccessEventListener();
 
+    authmanager->SetStrongAuthStat(userId, 1);
+    authmanager->GetStrongAuthStat(userId);
+
+    auto callback = [](int userId) {
+        EXPECT_EQ(userId, 100);
+    };
+    authmanager->setUserId(userId);
+    authmanager->setCallback(callback);
+    authmanager->authTimer->OnTrigger();
+
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
     Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
     return;
