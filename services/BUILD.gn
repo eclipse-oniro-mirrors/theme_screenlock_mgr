@@ -62,6 +62,8 @@ ohos_shared_library("screenlock_server") {
 
   deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
 
+  shlib_type = "sa"
+
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
