@@ -257,5 +257,81 @@ HWTEST_F(ScreenLockClientTest, LockTest0011, TestSize.Level0)
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
 }
 
+/**
+* @tc.name: LockTest0012
+* @tc.desc: Test SetScreenLockAuthState.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0012, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test RequestStrongAuth.");
+    int32_t userId = 0;
+    std::string authtoken = "test";
+    int32_t result = ScreenLockAppManager::GetInstance()->RequestStrongAuth(1, userId);
+    SCLOCK_HILOGD("RequestStrongAuth.[result]:%{public}d", result);
+    int32_t reasonFlag = 0;
+    result = ScreenLockAppManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
+    SCLOCK_HILOGD("GetStrongAuth.[result]:%{public}d", result);
+}
+
+/**
+* @tc.name: LockTest013
+* @tc.desc: Test SetScreenLockDisabled.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0013, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test SetScreenLockDisabled.");
+    int32_t userId = 0;
+    int32_t result = ScreenLockAppManager::GetInstance()->SetScreenLockDisabled(false, userId);
+    SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
+    bool isDisabled = true;
+    result = ScreenLockAppManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
+    SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
+}
+
+
+/**
+* @tc.name: LockTest0014
+* @tc.desc: Test SetScreenLockAuthState.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0014, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test SetScreenLockAuthState.");
+    int32_t userId = 0;
+    std::string authtoken = "test";
+    int32_t result = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(1, userId, authtoken);
+    SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
+    int32_t authState = 0;
+    result = ScreenLockAppManager::GetInstance()->GetScreenLockAuthState(userId, authState);
+    SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
+}
+
+/**
+* @tc.name: LockTest0015
+* @tc.desc: Test RequestStrongAuth.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0015, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test SetScreenLockAuthState.");
+    auto proxy = ScreenLockAppManager::GetInstance()->GetProxy();
+    int32_t userId = 0;
+    int32_t result = proxy->RequestStrongAuth(1, userId);
+    SCLOCK_HILOGD("RequestStrongAuth.[result]:%{public}d", result);
+    int32_t reasonFlag = 0;
+    result = proxy->GetStrongAuth(userId, reasonFlag);
+    SCLOCK_HILOGD("GetStrongAuth.[result]:%{public}d", result);
+}
+
 } // namespace ScreenLock
 } // namespace OHOS

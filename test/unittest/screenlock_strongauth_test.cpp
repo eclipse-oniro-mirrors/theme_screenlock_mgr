@@ -70,12 +70,20 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     authmanager->DestroyStrongAuthTimer(userId);
     authmanager->DestroyAllStrongAuthTimer();
     authmanager->UnRegistUserAuthSuccessEventListener();
+    authmanager->SetStrongAuthStat(userId, 1);
+    authmanager->GetStrongAuthStat(userId);
 
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
     Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
     return;
 }
 
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest002, TestSize.Level0)
+{
+    StrongAuthManger::authTimer timer(true, 1000, true, true);
+    EXPECT_EQ(timer.repeat, true);
+    EXPECT_EQ(timer.interval, 1000);
+}
 
 } // namespace ScreenLock
 } // namespace OHOS
