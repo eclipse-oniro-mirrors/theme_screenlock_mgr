@@ -64,6 +64,7 @@ ohos_unittest("ScreenLockServiceTest") {
     "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
     "${screenlock_mgr_path}/services:screenlock_server_static",
     "${screenlock_mgr_path}/utils:screenlock_utils",
+    "//third_party/googletest:gmock",
     "//third_party/googletest:gtest_main",
   ]
 
