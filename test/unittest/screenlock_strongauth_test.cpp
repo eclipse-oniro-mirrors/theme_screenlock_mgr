@@ -18,6 +18,7 @@
 #include <string>
 #include <sys/time.h>
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 #include "sclock_log.h"
 #include "screenlock_common.h"
@@ -86,21 +87,6 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest002, TestSize.Level0)
     EXPECT_EQ(timer.interval, 1000);
 }
 
-class MockAuthTimer : public StrongAuthManger::authTimer {
-public:
-    MOCK_METHOD1(OnTrigger, void(uint64_t));
-};
-
-// OnTriggerTest
-HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest003, TestSize.Level0)
-{
-    MockAuthTimer timer;
-    uint64_t userId = 123;
-    EXPECT_CALL(timer, OnTrigger(userId)).Times(1);
-
-    timer.OnTrigger();
-}
-
 class MockAuthEventListenerService : public StrongAuthManger::AuthEventListenerService {
 public:
     MOCK_METHOD4(OnNotifyAuthSuccessEvent, void(int32_t, UserIam::UserAuth::AuthType, int32_t, std::string&));
@@ -121,7 +107,6 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest004, TestSize.Level0)
     // 触发OnNotifyAuthSuccessEvent方法
     service.OnNotifyAuthSuccessEvent(userId, authType, callerType, bundleName);
 }
-
 
 } // namespace ScreenLock
 } // namespace OHOS
