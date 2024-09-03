@@ -212,10 +212,6 @@ static void CompleteAsyncWork(napi_env env, napi_status status, void *data)
     if (eventListener->work != nullptr) {
         napi_delete_async_work(env, eventListener->work);
     }
-    if (eventListener->callbackRef != nullptr) {
-        napi_delete_reference(env, eventListener->callbackRef);
-        eventListener->callbackRef = nullptr;
-    }
     delete eventListener;
 }
 
