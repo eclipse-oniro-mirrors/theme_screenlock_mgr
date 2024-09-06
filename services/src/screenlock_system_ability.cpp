@@ -486,9 +486,8 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    listenerMutex_.lock();
+    std::lock_guard<std::mutex> lck(listenerMutex_);
     systemEventListener_ = listener;
-    listenerMutex_.unlock();
     stateValue_.Reset();
     auto callback = [this]() { OnSystemReady(); };
     queue_->submit(callback);
@@ -715,9 +714,12 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
 {
     SCLOCK_HILOGI("eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
         systemEvent.params_.c_str());
-    if (systemEventListener_ == nullptr) {
-        SCLOCK_HILOGE("systemEventListener_ is nullptr.");
-        return;
+    {
+        std::lock_guard<std::mutex> lck(listenerMutex_);
+        if (systemEventListener_ == nullptr) {
+            SCLOCK_HILOGE("systemEventListener_ is nullptr.");
+            return;
+        }
     }
     auto callback = [this, systemEvent, traceTaskId]() {
         if (traceTaskId != HITRACE_BUTT) {
