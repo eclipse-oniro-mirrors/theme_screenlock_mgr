@@ -331,7 +331,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest013, TestSize.Level0)
     SCLOCK_HILOGD("Test hidumper of showhelp");
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD1, result);
-    SCLOCK_HILOGD("ret=%{public}d", ret);
+    EXPECT_TRUE(ret);
 }
 
 /**
@@ -346,7 +346,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest014, TestSize.Level0)
     SCLOCK_HILOGD("Test hidumper of -h");
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD2, result);
-    SCLOCK_HILOGD("ret=%{public}d", ret);
+    EXPECT_TRUE(ret);
 }
 
 /**
@@ -361,7 +361,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockDumperTest015, TestSize.Level0)
     SCLOCK_HILOGD("Test hidumper of -all");
     std::string result;
     auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
-    SCLOCK_HILOGD("ret=%{public}d", ret);
+    EXPECT_TRUE(ret);
 }
 
 /**
