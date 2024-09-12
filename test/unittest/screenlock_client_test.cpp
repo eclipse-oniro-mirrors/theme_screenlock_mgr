@@ -107,7 +107,6 @@ HWTEST_F(ScreenLockClientTest, LockTest003, TestSize.Level0)
     result = ScreenLockManager::GetInstance()->Lock(100);
     result = ScreenLockManager::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    result = ScreenLockManager::GetInstance()->IsLocked(false);
     result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCK, listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     result = ScreenLockManager::GetInstance()->Unlock(Action::UNLOCKSCREEN, listener);
@@ -253,7 +252,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0011, TestSize.Level0)
     int32_t userId = 0;
     std::string authtoken = "test";
     int32_t result = proxy->SetScreenLockAuthState(1, userId, authtoken);
-    int32_t result = proxy->SetScreenLockAuthState(1, userId, authtoken);
+    result = proxy->SetScreenLockAuthState(1, userId, authtoken);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
     int32_t authState = 0;
     result = proxy->GetScreenLockAuthState(userId, authState);
@@ -273,7 +272,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0012, TestSize.Level0)
     int32_t userId = 0;
     std::string authtoken = "test";
     int32_t result = ScreenLockManager::GetInstance()->RequestStrongAuth(1, userId);
-    int32_t result = ScreenLockAppManager::GetInstance()->RequestStrongAuth(1, userId);
+    result = ScreenLockAppManager::GetInstance()->RequestStrongAuth(1, userId);
     SCLOCK_HILOGD("RequestStrongAuth.[result]:%{public}d", result);
     int32_t reasonFlag = 0;
     result = ScreenLockAppManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
