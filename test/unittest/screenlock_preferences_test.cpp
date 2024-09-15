@@ -65,7 +65,6 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest001, TestSize.Level0)
     int result = preferencesUtil->SaveString(std::to_string(userId), defaulVal);
     std::string val = preferencesUtil->ObtainString(std::to_string(userId), defaulVal);
     SCLOCK_HILOGD("String.[result]:%{public}d, [val]:%{public}s", result, val.c_str());
-    preferencesUtil->IsExistKey(std::to_string(userId));
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 }
