@@ -490,7 +490,9 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     systemEventListener_ = listener;
     stateValue_.Reset();
     auto callback = [this]() { OnSystemReady(); };
-    queue_->submit(callback);
+    if (queue_ != nullptr) {
+        queue_->submit(callback);
+    }
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent end.");
     return E_SCREENLOCK_OK;
 }
