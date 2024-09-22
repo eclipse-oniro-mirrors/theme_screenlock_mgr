@@ -18,3 +18,10 @@ window_base_path = "//foundation/window/window_manager"
 graphic_base_path = "//foundation/graphic"
 
 resourceschedule_ffrt_path = "//foundation/resourceschedule/ffrt"
+
+screenlock_enable_user_auth_framework = false
+
+if (!defined(global_parts_info) ||
+    defined(global_parts_info.useriam_user_auth_framework)) {
+  screenlock_enable_user_auth_framework = true
+}

@@ -17,6 +17,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
+#ifdef SCREENLOCK_ENABLE_USER_AUTH_FRAMEWORK
 void ScreenLockGetInfoCallback::OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList)
 {
     SCLOCK_HILOGI("Start.");
@@ -29,5 +30,6 @@ bool ScreenLockGetInfoCallback::IsSecure() const
 {
     return isSecure_;
 }
+#endif
 } // namespace ScreenLock
 } // namespace OHOS

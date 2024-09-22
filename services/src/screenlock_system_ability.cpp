@@ -39,21 +39,26 @@
 #include "sclock_log.h"
 #include "screenlock_appinfo.h"
 #include "screenlock_common.h"
-#include "screenlock_get_info_callback.h"
 #include "system_ability.h"
 #include "system_ability_definition.h"
 #include "tokenid_kit.h"
-#include "user_idm_client.h"
 #include "want.h"
 #include "xcollie/watchdog.h"
 #include "window_manager.h"
+
+#ifdef SCREENLOCK_ENABLE_USER_AUTH_FRAMEWORK
+#include "screenlock_get_info_callback.h"
+#include "user_idm_client.h"
+#endif
 
 namespace OHOS {
 namespace ScreenLock {
 using namespace std;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Rosen;
+#ifdef SCREENLOCK_ENABLE_USER_AUTH_FRAMEWORK
 using namespace OHOS::UserIam::UserAuth;
+#endif
 using namespace OHOS::Security::AccessToken;
 REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, true);
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
@@ -364,6 +369,7 @@ bool ScreenLockSystemAbility::IsScreenLocked()
 
 bool ScreenLockSystemAbility::GetSecure()
 {
+#ifdef SCREENLOCK_ENABLE_USER_AUTH_FRAMEWORK
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGW("ScreenLockSystemAbility GetSecure restart.");
         OnStart();
@@ -385,6 +391,7 @@ bool ScreenLockSystemAbility::GetSecure()
     if (result == static_cast<int32_t>(ResultCode::SUCCESS) && getInfoCallback->IsSecure()) {
         return true;
     }
+#endif
     return false;
 }
 
