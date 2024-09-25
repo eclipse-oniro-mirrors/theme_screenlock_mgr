@@ -18,11 +18,14 @@
 
 #include <vector>
 
+#ifdef SCREENLOCK_ENABLE_USER_AUTH_FRAMEWORK
 #include "user_idm_client_callback.h"
 #include "user_idm_client_defines.h"
+#endif
 
 namespace OHOS {
 namespace ScreenLock {
+#ifdef SCREENLOCK_ENABLE_USER_AUTH_FRAMEWORK
 class ScreenLockGetInfoCallback final : public OHOS::UserIam::UserAuth::GetCredentialInfoCallback {
 public:
     /**
@@ -35,6 +38,7 @@ public:
 private:
     bool isSecure_ = false;
 };
+#endif
 } // namespace ScreenLock
 } // namespace OHOS
 #endif // SCREENLOCK_GET_INFO_CALLBACK_H
