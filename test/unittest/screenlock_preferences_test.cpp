@@ -67,6 +67,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest001, TestSize.Level0)
     SCLOCK_HILOGD("String.[result]:%{public}d, [val]:%{public}s", result, val.c_str());
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
+    EXPECT_EQ(defaulVal, val);
 }
 
 /**
@@ -91,6 +92,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest002, TestSize.Level0)
     SCLOCK_HILOGD("String.[result]:%{public}d, [val]:%{public}d", result, val);
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
+    EXPECT_EQ(defaulVal, val);
 }
 
 /**
@@ -115,6 +117,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest003, TestSize.Level0)
     SCLOCK_HILOGD("String.[result]:%{public}d, [val]:%{public}d", result, val);
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
+    EXPECT_EQ(defaulVal, val);
 }
 
 /**
@@ -135,9 +138,10 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest004, TestSize.Level0)
     int userId = 0;
     int64_t defaulVal = false;
     preferencesUtil->SaveLong(std::to_string(userId), defaulVal);
-    preferencesUtil->ObtainLong(std::to_string(userId), defaulVal);
+    int64_t val = preferencesUtil->ObtainLong(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
+    EXPECT_EQ(defaulVal, val);
 }
 
 /**
@@ -162,6 +166,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest005, TestSize.Level0)
     SCLOCK_HILOGD("String.[result]:%{public}d, [val]:%{public}f", result, val);
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
+    EXPECT_EQ(defaulVal, val);
 }
 
 /**
@@ -181,6 +186,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest006, TestSize.Level0)
     }
     preferencesUtil->RemoveAll();
     preferencesUtil->RefreshSync();
+    EXPECT_NE(preferencesUtil, nullptr);
 }
 
 
