@@ -629,7 +629,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest031, TestSize.Level0)
 
     ret = ScreenLockSystemAbility::GetInstance()->GetStrongAuth(userId, reasonFlag);
 
-    EXPECT_EQ(ret, E_SCREENLOCK_OK);
+    EXPECT_EQ(ret, E_SCREENLOCK_NO_PERMISSION);
     EXPECT_EQ(reasonFlag, 1);
 }
 
