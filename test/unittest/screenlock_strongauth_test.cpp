@@ -63,6 +63,7 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     }
 
     int32_t userId = 100;
+    int32_t defaulVal = 1;
     authmanager->RegistUserAuthSuccessEventListener();
     authmanager->StartStrongAuthTimer(userId);
     authmanager->GetTimerId(userId);
@@ -70,12 +71,12 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     authmanager->DestroyStrongAuthTimer(userId);
     authmanager->DestroyAllStrongAuthTimer();
     authmanager->UnRegistUserAuthSuccessEventListener();
-    authmanager->SetStrongAuthStat(userId, 1);
-    authmanager->GetStrongAuthStat(userId);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
 
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
     Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
-    return;
+    EXPECT_EQ(defaulVal, val);
 }
 
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest002, TestSize.Level0)
