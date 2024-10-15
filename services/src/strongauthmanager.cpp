@@ -19,12 +19,14 @@
 #include "screenlock_system_ability.h"
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
+#include "os_account_manager.h"
 
 namespace OHOS {
 namespace ScreenLock {
 std::mutex StrongAuthManger::instanceLock_;
 sptr<StrongAuthManger> StrongAuthManger::instance_;
 using namespace OHOS::UserIam::UserAuth;
+using namespace OHOS::AccountSA;
 
 // 强认证默认时间 3days
 const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
@@ -106,6 +108,18 @@ static void StrongAuthTimerCallback(int32_t userId)
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
     return;
+}
+
+static bool IsOsAccountUnlocked(int32_t osAccountId)
+{
+    bool isUnlocked = false;
+    OHOS::ErrCode res = OHOS::AccountSA::OsAccountManager::IsOsAccountVerified(osAccountId, isUnlocked);
+    if (res != OHOS::ERR_OK) {
+        SCLOCK_HILOGE(" Check account verify status failed, res: %d, accountId: %d", res, osAccountId);
+        return false;
+    }
+    SCLOCK_HILOGI(" account verified status: %d, accountId: %d", isUnlocked, osAccountId);
+    return isUnlocked;
 }
 
 sptr<StrongAuthManger> StrongAuthManger::GetInstance()
@@ -245,7 +259,7 @@ int32_t StrongAuthManger::GetStrongAuthStat(int32_t userId)
     std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT);
     auto iter = strongAuthStateInfo.find(userId);
-    if (iter != strongAuthStateInfo.end()) {
+    if (IsOsAccountUnlocked(userId) && iter != strongAuthStateInfo.end()) {
         reasonFlag = iter->second;
         SCLOCK_HILOGI("GetStrongAuthStat, reasonFlag:%{public}u", reasonFlag);
     }
