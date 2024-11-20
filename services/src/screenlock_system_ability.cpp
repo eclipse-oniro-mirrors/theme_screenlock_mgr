@@ -207,7 +207,7 @@ void ScreenLockSystemAbility::InitUserId()
 {
     std::lock_guard<std::mutex> lock(accountSubscriberMutex_);
     OsAccountSubscribeInfo subscribeInfo;
-    subscribeInfo.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVED);
+    subscribeInfo.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATED);
     accountSubscriber_ = std::make_shared<AccountSubscriber>(subscribeInfo);
 
     int32_t ret = OsAccountManager::SubscribeOsAccount(accountSubscriber_);
