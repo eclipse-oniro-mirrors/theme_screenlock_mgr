@@ -102,6 +102,19 @@ static int32_t GetCurrentActiveOsAccountId()
     return osAccountId;
 }
 
+static int32_t GetUserIdFromCallingUid()
+{
+    int callingUid = IPCSkeleton::GetCallingUid();
+    SCLOCK_HILOGD("callingUid=%{public}d", callingUid);
+    int userId = 0;
+    AccountSA::OsAccountManager::GetOsAccountLocalIdFromUid(callingUid, userId);
+    if (userId == 0) {
+        AccountSA::OsAccountManager::GetForegroundOsAccountLocalId(userId);
+    }
+    SCLOCK_HILOGD("userId=%{public}d", userId);
+    return userId;
+}
+
 ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSubscribeInfo &subscribeInfo)
     : OsAccountSubscriber(subscribeInfo)
 {}
@@ -671,6 +684,7 @@ void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction)
 {
     AAFwk::Want want;
     want.SetAction(eventAction);
+    want.SetParam("userId", GetUserIdFromCallingUid());
     EventFwk::CommonEventData commonData(want);
     bool ret = EventFwk::CommonEventManager::PublishCommonEvent(commonData);
     SCLOCK_HILOGD("Publish event result is:%{public}d", ret);
