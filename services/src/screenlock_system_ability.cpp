@@ -692,11 +692,10 @@ void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction)
 
 void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
 {
-    if (stateResult == ScreenChange::SCREEN_SUCC && !stateValue_.GetScreenlockedState()) {
-        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED);
+    SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
+    if (stateResult == ScreenChange::SCREEN_SUCC) {
         SetScreenlocked(true);
     }
-    SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
     std::lock_guard<std::mutex> autoLock(lockListenerMutex_);
     if (lockVecListeners_.size()) {
         auto callback = [this, stateResult]() {
@@ -707,6 +706,9 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
             lockVecListeners_.clear();
         };
         ffrt::submit(callback);
+    }
+    if (stateResult == ScreenChange::SCREEN_SUCC) {
+        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED);
     }
 }
 
