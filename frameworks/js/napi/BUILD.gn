@@ -32,10 +32,7 @@ ohos_shared_library("screenlock") {
       ubsan = true
     }
     branch_protector_ret = "pac_ret"
-    include_dirs = [
-      "${screenlock_mgr_path}/services/include",
-      "${screenlock_mgr_path}/utils/include",
-    ]
+    include_dirs = [ "${screenlock_mgr_path}/services/include" ]
 
     public_configs = [ ":screenlock_mgr_frameworks_js_napi_config" ]
 
@@ -79,10 +76,7 @@ ohos_static_library("screenlock_static") {
     }
     branch_protector_ret = "pac_ret"
     testonly = true
-    include_dirs = [
-      "${screenlock_mgr_path}/services/include",
-      "${screenlock_mgr_path}/utils/include",
-    ]
+    include_dirs = [ "${screenlock_mgr_path}/services/include" ]
 
     public_configs = [ ":screenlock_mgr_frameworks_js_napi_config" ]
 

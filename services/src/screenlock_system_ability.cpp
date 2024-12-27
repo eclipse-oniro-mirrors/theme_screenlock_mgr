@@ -28,10 +28,8 @@
 #include "ability_manager_client.h"
 #include "common_event_support.h"
 #include "accesstoken_kit.h"
-#include "command.h"
 #include "common_event_manager.h"
 #include "display_manager.h"
-#include "dump_helper.h"
 #include "hitrace_meter.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
@@ -45,12 +43,15 @@
 #include "tokenid_kit.h"
 #include "user_idm_client.h"
 #include "want.h"
-#include "xcollie/watchdog.h"
 #include "window_manager.h"
 #include "commeventsubscriber.h"
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
+#ifndef IS_SO_CROP_H
+#include "command.h"
+#include "dump_helper.h"
 #include "strongauthmanager.h"
+#endif // IS_SO_CROP_H
 
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
@@ -122,7 +123,9 @@ ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSub
 void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id)
 {
     SCLOCK_HILOGI("OnAccountsChanged.[osAccountId]:%{public}d, [lastId]:%{public}d", id, userId_);
+#ifndef IS_SO_CROP_H
     StrongAuthManger::GetInstance()->StartStrongAuthTimer(id);
+#endif // IS_SO_CROP_H
     userId_ = id;
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
@@ -185,9 +188,11 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     if (systemAbilityId == SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN) {
         InitUserId();
     }
+#ifndef IS_SO_CROP_H
     if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
         StrongAuthManger::GetInstance()->RegistUserAuthSuccessEventListener();
     }
+#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
@@ -253,8 +258,10 @@ void ScreenLockSystemAbility::OnStop()
     instance_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+#ifndef IS_SO_CROP_H
     StrongAuthManger::GetInstance()->UnRegistUserAuthSuccessEventListener();
     StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
+#endif // IS_SO_CROP_H
     int ret = OsAccountManager::UnsubscribeOsAccount(accountSubscriber_);
     if (ret != SUCCESS) {
         SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
@@ -610,6 +617,9 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
 
 int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
+#ifdef IS_SO_CROP_H
+    return E_SCREENLOCK_OK;
+#else
     SCLOCK_HILOGI("RequestStrongAuth reasonFlag=%{public}d ,userId=%{public}d", reasonFlag, userId);
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
@@ -618,13 +628,19 @@ int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userI
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     StrongAuthChanged(userId, reasonFlag);
     return E_SCREENLOCK_OK;
+#endif // IS_SO_CROP_H
 }
 
 int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 {
+#ifdef IS_SO_CROP_H
+    reasonFlag = 0;
+    return E_SCREENLOCK_OK;
+#else
     reasonFlag = StrongAuthManger::GetInstance()->GetStrongAuthStat(userId);
     SCLOCK_HILOGI("GetStrongAuth userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
     return E_SCREENLOCK_OK;
+#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
@@ -642,6 +658,9 @@ void StateValue::Reset()
 
 int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &args)
 {
+#ifdef IS_SO_CROP_H
+    return ERR_OK;
+#else
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     const int maxUid = 10000;
     if (uid > maxUid) {
@@ -655,10 +674,14 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 
     DumpHelper::GetInstance().Dispatch(fd, argsStr);
     return ERR_OK;
+#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::RegisterDumpCommand()
 {
+#ifdef IS_SO_CROP_H
+    return;
+#else
     auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "dump all screenlock information",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             bool screenLocked = stateValue_.GetScreenlockedState();
@@ -678,6 +701,7 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
+#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction)

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifndef IS_SO_CROP_H
 #include "strongauthmanager.h"
 #include "screenlock_common.h"
 #include "sclock_log.h"
@@ -115,10 +115,10 @@ static bool IsOsAccountUnlocked(int32_t osAccountId)
     bool isUnlocked = false;
     OHOS::ErrCode res = OHOS::AccountSA::OsAccountManager::IsOsAccountVerified(osAccountId, isUnlocked);
     if (res != OHOS::ERR_OK) {
-        SCLOCK_HILOGE(" Check account verify status failed, res: %d, accountId: %d", res, osAccountId);
+        SCLOCK_HILOGE(" Check account verify status failed, res: %{public}d, accountId: %{public}d", res, osAccountId);
         return false;
     }
-    SCLOCK_HILOGI(" account verified status: %d, accountId: %d", isUnlocked, osAccountId);
+    SCLOCK_HILOGI(" account verified status: %{public}d, accountId: %{public}d", isUnlocked, osAccountId);
     return isUnlocked;
 }
 
@@ -267,3 +267,4 @@ int32_t StrongAuthManger::GetStrongAuthStat(int32_t userId)
 }
 } // namespace ScreenLock
 } // namespace OHOS
+#endif // IS_SO_CROP_H

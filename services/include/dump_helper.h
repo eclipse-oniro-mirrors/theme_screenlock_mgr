@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef SCREENLOCK_DFX_DUMP_HELPER_H
 #define SCREENLOCK_DFX_DUMP_HELPER_H
 
+#ifndef IS_SO_CROP_H
 #include <map>
 #include <memory>
 #include <string>
@@ -37,4 +37,5 @@ private:
 } // namespace ScreenLock
 } // namespace OHOS
 
+#endif // IS_SO_CROP_H
 #endif // SCREENLOCK_DFX_DUMP_HELPER_H

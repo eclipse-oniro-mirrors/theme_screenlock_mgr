@@ -21,7 +21,9 @@
 #include "sclock_log.h"
 #include "screenlock_common.h"
 #include "securec.h"
+#ifndef IS_SO_CROP_H
 #include "strongauthmanager.h"
+#endif // IS_SO_CROP_H
 #include "commeventsubscriber.h"
 #include "screenlock_strongauth_test.h"
 
@@ -56,6 +58,7 @@ void ScreenLockStrongAuthTest::TearDown()
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
     auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
     if (authmanager == nullptr) {
         SCLOCK_HILOGE("authmanager is nullptr!");
@@ -77,13 +80,17 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
     Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
     EXPECT_EQ(defaulVal, val);
+#endif // IS_SO_CROP_H
+    return;
 }
 
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest002, TestSize.Level0)
 {
+#ifndef IS_SO_CROP_H
     StrongAuthManger::authTimer timer(true, 1000, true, true);
     EXPECT_EQ(timer.repeat, true);
     EXPECT_EQ(timer.interval, 1000);
+#endif // IS_SO_CROP_H
 }
 
 } // namespace ScreenLock

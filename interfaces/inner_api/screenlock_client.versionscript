@@ -21,7 +21,14 @@
       *OHOS::ScreenLock::ScreenLockManager::IsScreenLocked*;
       *OHOS::ScreenLock::ScreenLockManager::GetSecure*;
       *OHOS::ScreenLock::ScreenLockManager::Unlock*;
+      *OHOS::ScreenLock::ScreenLockManager::OnSystemEvent*;
+      *OHOS::ScreenLock::ScreenLockManager::SendScreenLockEvent*;
+      *OHOS::ScreenLock::ScreenLockManager::IsScreenLockDisabled*;
+      *OHOS::ScreenLock::ScreenLockManager::SetScreenLockDisabled*;
+      *OHOS::ScreenLock::ScreenLockManager::SetScreenLockAuthState*;
+      *OHOS::ScreenLock::ScreenLockManager::GetScreenLockAuthState*;
       *OHOS::ScreenLock::ScreenLockManager::RequestStrongAuth*;
+      *OHOS::ScreenLock::ScreenLockManager::GetStrongAuth*;
       *OHOS::ScreenLock::ScreenLockCallbackStub*;
     };
   local:

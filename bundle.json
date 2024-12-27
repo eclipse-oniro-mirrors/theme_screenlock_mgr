@@ -16,6 +16,7 @@
       "SystemCapability.MiscServices.ScreenLock"
     ],
     "features": [
+      "screenlock_mgr_so_crop"
     ],
     "adapted_system_type": [
       "standard"
@@ -36,7 +37,6 @@
         "ability_runtime",
         "hitrace",
         "access_token",
-        "hicollie",
         "init",
         "window_manager",
         "hilog",
@@ -54,8 +54,7 @@
         ],
         "fwk_group": [
           "//base/theme/screenlock_mgr/interfaces/inner_api:screenlock_client",
-          "//base/theme/screenlock_mgr/frameworks/js/napi:screenlock",
-          "//base/theme/screenlock_mgr/utils:screenlock_utils"
+          "//base/theme/screenlock_mgr/frameworks/js/napi:screenlock"
         ],
         "service_group": [
           "//base/theme/screenlock_mgr:screenlock_mgr_packages"
