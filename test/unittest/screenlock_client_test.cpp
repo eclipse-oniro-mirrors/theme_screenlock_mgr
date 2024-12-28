@@ -80,6 +80,8 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest001, TestSize.Level0)
 HWTEST_F(ScreenLockClientTest, GetSecureTest002, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test secure");
+    bool isLocked = false;
+    ScreenLockManager::GetInstance()->IsLocked(isLocked);
     bool result = ScreenLockManager::GetInstance()->GetSecure();
     SCLOCK_HILOGD(" result is-------->%{public}d", result);
     EXPECT_EQ(result, false);
