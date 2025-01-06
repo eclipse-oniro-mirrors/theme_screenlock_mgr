@@ -27,7 +27,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "unittest",
     "${screenlock_mgr_path}/frameworks/native/include",
     "${screenlock_mgr_path}/services/include",
-    "${screenlock_mgr_path}/utils/include",
   ]
 
   sources = [
@@ -65,7 +64,6 @@ ohos_unittest("ScreenLockServiceTest") {
   deps = [
     "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
     "${screenlock_mgr_path}/services:screenlock_server_static",
-    "${screenlock_mgr_path}/utils:screenlock_utils",
     "//third_party/googletest:gtest_main",
   ]
 

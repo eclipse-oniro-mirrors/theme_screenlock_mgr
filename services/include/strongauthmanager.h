@@ -14,6 +14,7 @@
  */
 #ifndef SCREENLOCK_STRONG_AUTH_MANAGER_H
 #define SCREENLOCK_STRONG_AUTH_MANAGER_H
+#ifndef IS_SO_CROP_H
 
 #include <mutex>
 #include <string>
@@ -85,4 +86,5 @@ private:
 };
 } // namespace OHOS
 } // namespace ScreenLock
+#endif // IS_SO_CROP_H
 #endif // SCREENLOCK_STRONG_AUTH_MANAGER_H

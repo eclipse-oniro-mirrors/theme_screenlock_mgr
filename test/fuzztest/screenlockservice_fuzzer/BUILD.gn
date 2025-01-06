@@ -146,7 +146,6 @@ foreach(item, screenlock_fuzztests) {
     include_dirs = [
       "${screenlock_mgr_path}/frameworks/js/napi/include",
       "${screenlock_mgr_path}/services/include",
-      "${screenlock_mgr_path}/utils/include",
       "${screenlock_mgr_path}/test/fuzztest/screenlockservice_fuzzer/common",
     ]
 
@@ -157,11 +156,14 @@ foreach(item, screenlock_fuzztests) {
       "-fno-omit-frame-pointer",
     ]
 
+    if (screenlock_mgr_so_crop == true) {
+      cflags += [ "-DIS_SO_CROP_H" ]
+    }
+
     deps = [
       "${screenlock_mgr_path}/frameworks/js/napi:screenlock_static",
       "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
       "${screenlock_mgr_path}/services:screenlock_server_static",
-      "${screenlock_mgr_path}/utils:screenlock_utils",
     ]
 
     external_deps = [

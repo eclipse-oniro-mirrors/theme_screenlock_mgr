@@ -16,3 +16,8 @@ screenlock_mgr_path = "//base/theme/screenlock_mgr"
 window_base_path = "//foundation/window/window_manager"
 
 graphic_base_path = "//foundation/graphic"
+
+declare_args() {
+  # Functional isolation, memory optimization
+  screenlock_mgr_so_crop = false
+}

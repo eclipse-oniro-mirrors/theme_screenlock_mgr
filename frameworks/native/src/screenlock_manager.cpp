@@ -27,6 +27,8 @@ namespace OHOS {
 namespace ScreenLock {
 std::mutex ScreenLockManager::instanceLock_;
 sptr<ScreenLockManager> ScreenLockManager::instance_;
+std::mutex ScreenLockManager::listenerLock_;
+sptr<ScreenLockSystemAbilityInterface> ScreenLockManager::systemEventListener_;
 ScreenLockManager::ScreenLockManager()
 {
 }
@@ -126,14 +128,115 @@ int32_t ScreenLockManager::Lock(int32_t userId)
     return proxy->Lock(userId);
 }
 
-int32_t ScreenLockManager::RequestStrongAuth(int reasonFlag, int32_t userId)
+int32_t ScreenLockManager::SendScreenLockEvent(const std::string &event, int param)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        SCLOCK_HILOGE("RequestStrongAuth quit because GetProxy failed.");
+        SCLOCK_HILOGE("ScreenLockManager::SendScreenLockEvent quit because redoing GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
-    return proxy->RequestStrongAuth(reasonFlag, userId);
+    int ret = proxy->SendScreenLockEvent(event, param);
+    SCLOCK_HILOGD("SendScreenLockEvent result = %{public}d", ret);
+    return ret;
+}
+
+int32_t ScreenLockManager::IsScreenLockDisabled(int userId, bool &isDisabled)
+{
+    SCLOCK_HILOGD("ScreenLockManager::IsScreenLockDisabled in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::IsScreenLockDisabled quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->IsScreenLockDisabled(userId, isDisabled);
+    SCLOCK_HILOGD("ScreenLockManager::IsScreenLockDisabled out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::SetScreenLockDisabled(bool disable, int userId)
+{
+    SCLOCK_HILOGD("ScreenLockManager::SetScreenLockDisabled in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::SetScreenLockDisabled quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->SetScreenLockDisabled(disable, userId);
+    SCLOCK_HILOGD("ScreenLockManager::SetScreenLockDisabled out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
+{
+    SCLOCK_HILOGD("ScreenLockManager::SetScreenLockAuthState in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::SetScreenLockAuthState quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->SetScreenLockAuthState(authState, userId, authToken);
+    SCLOCK_HILOGD("ScreenLockManager::SetScreenLockAuthState out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::GetScreenLockAuthState(int userId, int32_t &authState)
+{
+    SCLOCK_HILOGD("ScreenLockManager::GetScreenLockAuthState in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::GetScreenLockAuthState quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->GetScreenLockAuthState(userId, authState);
+    SCLOCK_HILOGD("ScreenLockManager::GetScreenLockAuthState out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::RequestStrongAuth(int reasonFlag, int32_t userId)
+{
+    SCLOCK_HILOGD("ScreenLockManager::RequestStrongAuth in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::RequestStrongAuth quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->RequestStrongAuth(reasonFlag, userId);
+    SCLOCK_HILOGD("ScreenLockManager::RequestStrongAuth out, status=%{public}d", status);
+    return status;
+    return 0;
+}
+
+int32_t ScreenLockManager::GetStrongAuth(int userId, int32_t &reasonFlag)
+{
+    SCLOCK_HILOGD("ScreenLockManager::GetStrongAuth in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::GetStrongAuth quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->GetStrongAuth(userId, reasonFlag);
+    SCLOCK_HILOGD("ScreenLockManager::GetStrongAuth out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
+{
+    SCLOCK_HILOGD("ScreenLockManager::OnSystemEvent in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::OnSystemEvent quit because redoing GetScreenLockManagerProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    listenerLock_.lock();
+    systemEventListener_ = listener;
+    listenerLock_.unlock();
+    int32_t status = proxy->OnSystemEvent(listener);
+    SCLOCK_HILOGD("ScreenLockManager::OnSystemEvent out, status=%{public}d", status);
+    return status;
 }
 
 sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()
@@ -162,16 +265,18 @@ sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()
 
 void ScreenLockManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
 {
+    SCLOCK_HILOGE("ScreenLockDeathRecipient on remote systemAbility died.");
     std::lock_guard<std::mutex> autoLock(managerProxyLock_);
     screenlockManagerProxy_ = GetScreenLockManagerProxy();
+    if (systemEventListener_ != nullptr) {
+        SystemEvent systemEvent(SERVICE_RESTART);
+        systemEventListener_->OnCallBack(systemEvent);
+    }
 }
 
 sptr<ScreenLockManagerInterface> ScreenLockManager::GetProxy()
 {
     std::lock_guard<std::mutex> autoLock(managerProxyLock_);
-    if (screenlockManagerProxy_ != nullptr) {
-        return screenlockManagerProxy_;
-    }
     if (screenlockManagerProxy_ == nullptr) {
         SCLOCK_HILOGW("Redo GetScreenLockManagerProxy");
         screenlockManagerProxy_ = GetScreenLockManagerProxy();

@@ -24,6 +24,7 @@
 #include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_manager_interface.h"
+#include "screenlock_system_ability_interface.h"
 #include "visibility.h"
 
 namespace OHOS {
@@ -50,8 +51,15 @@ public:
     SCREENLOCK_API bool IsScreenLocked();
     SCREENLOCK_API bool GetSecure();
     SCREENLOCK_API int32_t Unlock(Action action, const sptr<ScreenLockCallbackInterface> &listener);
-    SCREENLOCK_API int32_t RequestStrongAuth(int reasonFlag, int32_t userId);
     int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    SCREENLOCK_API int32_t SendScreenLockEvent(const std::string &event, int param);
+    SCREENLOCK_API int32_t IsScreenLockDisabled(int userId, bool &isDisabled);
+    SCREENLOCK_API int32_t SetScreenLockDisabled(bool disable, int userId);
+    SCREENLOCK_API int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken);
+    SCREENLOCK_API int32_t GetScreenLockAuthState(int userId, int32_t &authState);
+    SCREENLOCK_API int32_t RequestStrongAuth(int reasonFlag, int32_t userId);
+    SCREENLOCK_API int32_t GetStrongAuth(int userId, int32_t &reasonFlag);
 private:
     class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
@@ -71,6 +79,8 @@ private:
     sptr<ScreenLockManagerInterface> GetScreenLockManagerProxy();
     static std::mutex instanceLock_;
     static sptr<ScreenLockManager> instance_;
+    static std::mutex listenerLock_;
+    static sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     sptr<ScreenLockSaDeathRecipient> deathRecipient_;
     std::mutex managerProxyLock_;
     sptr<ScreenLockManagerInterface> screenlockManagerProxy_;

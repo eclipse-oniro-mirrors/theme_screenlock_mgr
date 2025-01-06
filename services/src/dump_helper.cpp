@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifndef IS_SO_CROP_H
 #include "dump_helper.h"
 
 #include <cstdio>
@@ -52,3 +52,4 @@ bool DumpHelper::Dispatch(int fd, const std::vector<std::string> &args)
 }
 } // namespace ScreenLock
 } // namespace OHOS
+#endif // IS_SO_CROP_H

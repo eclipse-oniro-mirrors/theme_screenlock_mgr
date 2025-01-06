@@ -20,7 +20,6 @@ config("screenlock_mgr_service_config") {
     "include",
     "${screenlock_mgr_path}/frameworks/native/include",
     "${screenlock_mgr_path}/interfaces/inner_api/include",
-    "${screenlock_mgr_path}/utils/include",
   ]
 }
 
@@ -42,6 +41,7 @@ ohos_shared_library("screenlock_server") {
     "src/command.cpp",
     "src/commeventsubscriber.cpp",
     "src/dump_helper.cpp",
+    "src/preferences_util.cpp",
     "src/screenlock_callback_proxy.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",
@@ -59,8 +59,6 @@ ohos_shared_library("screenlock_server") {
     "-Os",
   ]
 
-  deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
-
   shlib_type = "sa"
 
   external_deps = [
@@ -70,12 +68,9 @@ ohos_shared_library("screenlock_server") {
     "access_token:libtokenid_sdk",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
-    "eventhandler:libeventhandler",
     "ffrt:libffrt",
-    "hicollie:libhicollie",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
-    "init:libbegetutil",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "preferences:native_preferences",
@@ -85,6 +80,11 @@ ohos_shared_library("screenlock_server") {
     "window_manager:libdm",
     "window_manager:libwm",
   ]
+
+  if (screenlock_mgr_so_crop == true) {
+    cflags += [ "-DIS_SO_CROP_H" ]
+    external_deps -= [ "time_service:time_client" ]
+  }
 
   innerapi_tags = [ "platformsdk" ]
   subsystem_name = "theme"
@@ -105,6 +105,7 @@ ohos_static_library("screenlock_server_static") {
     "src/command.cpp",
     "src/commeventsubscriber.cpp",
     "src/dump_helper.cpp",
+    "src/preferences_util.cpp",
     "src/screenlock_callback_proxy.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",
@@ -120,8 +121,6 @@ ohos_static_library("screenlock_server_static") {
     "${screenlock_mgr_path}/utils/include",
   ]
 
-  deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
-
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
@@ -129,12 +128,9 @@ ohos_static_library("screenlock_server_static") {
     "access_token:libtokenid_sdk",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
-    "eventhandler:libeventhandler",
     "ffrt:libffrt",
-    "hicollie:libhicollie",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
-    "init:libbegetutil",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "preferences:native_preferences",
@@ -144,6 +140,10 @@ ohos_static_library("screenlock_server_static") {
     "window_manager:libdm",
     "window_manager:libwm",
   ]
+
+  if (screenlock_mgr_so_crop == true) {
+    external_deps -= [ "time_service:time_client" ]
+  }
 
   subsystem_name = "theme"
   part_name = "screenlock_mgr"

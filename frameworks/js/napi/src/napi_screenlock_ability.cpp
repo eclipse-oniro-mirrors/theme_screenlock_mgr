@@ -24,7 +24,6 @@
 #include "event_listener.h"
 #include "ipc_skeleton.h"
 #include "sclock_log.h"
-#include "screenlock_app_manager.h"
 #include "screenlock_callback.h"
 #include "screenlock_common.h"
 #include "screenlock_js_util.h"
@@ -445,7 +444,7 @@ napi_value NAPI_OnSystemEvent(napi_env env, napi_callback_info info)
     sptr<ScreenlockSystemAbilityCallback> listener = new (std::nothrow) ScreenlockSystemAbilityCallback(eventListener);
     if (listener != nullptr) {
         ScreenlockSystemAbilityCallback::GetEventHandler();
-        int32_t retCode = ScreenLockAppManager::GetInstance()->OnSystemEvent(listener);
+        int32_t retCode = ScreenLockManager::GetInstance()->OnSystemEvent(listener);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;
             errInfo.errorCode_ = static_cast<uint32_t>(retCode);
@@ -496,7 +495,7 @@ napi_value NAPI_ScreenLockSendEvent(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        int32_t retCode = ScreenLockAppManager::GetInstance()->SendScreenLockEvent(context->eventInfo, context->param);
+        int32_t retCode = ScreenLockManager::GetInstance()->SendScreenLockEvent(context->eventInfo, context->param);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;
             errInfo.errorCode_ = static_cast<uint32_t>(retCode);
@@ -535,7 +534,7 @@ napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info)
     }
     napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
     bool isDisabled = false;
-    int32_t status = ScreenLockAppManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
+    int32_t status = ScreenLockManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
     if (status != E_SCREENLOCK_OK) {
         ErrorInfo errInfo;
         errInfo.errorCode_ = static_cast<uint32_t>(status);
@@ -578,7 +577,7 @@ napi_value NAPI_SetScreenLockDisabled(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        int32_t retCode = ScreenLockAppManager::GetInstance()->SetScreenLockDisabled(context->disable, context->userId);
+        int32_t retCode = ScreenLockManager::GetInstance()->SetScreenLockDisabled(context->disable, context->userId);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;
             errInfo.errorCode_ = static_cast<uint32_t>(retCode);
@@ -632,7 +631,7 @@ napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        int32_t retCode = ScreenLockAppManager::GetInstance()->SetScreenLockAuthState(context->authState,
+        int32_t retCode = ScreenLockManager::GetInstance()->SetScreenLockAuthState(context->authState,
             context->userId, context->authToken);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;
@@ -670,7 +669,7 @@ napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info)
     }
     napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
     int32_t authState = -1;
-    int32_t status = ScreenLockAppManager::GetInstance()->GetScreenLockAuthState(userId, authState);
+    int32_t status = ScreenLockManager::GetInstance()->GetScreenLockAuthState(userId, authState);
     if (status != E_SCREENLOCK_OK) {
         ErrorInfo errInfo;
         errInfo.errorCode_ = static_cast<uint32_t>(status);
@@ -710,7 +709,7 @@ napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        int32_t retCode = ScreenLockAppManager::GetInstance()->RequestStrongAuth(context->reasonFlag,
+        int32_t retCode = ScreenLockManager::GetInstance()->RequestStrongAuth(context->reasonFlag,
             context->userId);
         if (retCode != E_SCREENLOCK_OK) {
             ErrorInfo errInfo;
@@ -748,7 +747,7 @@ napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info)
     }
     napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
     int32_t reasonFlag = -1;
-    int32_t status = ScreenLockAppManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
+    int32_t status = ScreenLockManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
     if (status != E_SCREENLOCK_OK) {
         ErrorInfo errInfo;
         errInfo.errorCode_ = static_cast<uint32_t>(status);

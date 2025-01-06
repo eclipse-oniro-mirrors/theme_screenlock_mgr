@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#ifndef IS_SO_CROP_H
 #include "command.h"
 
 namespace OHOS {
@@ -52,3 +52,4 @@ std::string Command::GetFormat()
 }
 } // namespace ScreenLock
 } // namespace OHOS
+#endif // IS_SO_CROP_H

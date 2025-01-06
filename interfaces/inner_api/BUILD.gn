@@ -19,7 +19,6 @@ config("screenlock_mgr_frameworks_native_config") {
   include_dirs = [
     "include",
     "${screenlock_mgr_path}/frameworks/native/include",
-    "${screenlock_mgr_path}/utils/include",
     "${screenlock_mgr_path}/services/include",
   ]
 
@@ -38,7 +37,6 @@ ohos_shared_library("screenlock_client") {
     }
     branch_protector_ret = "pac_ret"
     sources = [
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
@@ -60,8 +58,6 @@ ohos_shared_library("screenlock_client") {
       "include",
       "${screenlock_mgr_path}/frameworks/native/include",
     ]
-
-    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
 
     external_deps = [
       "c_utils:utils",
@@ -90,7 +86,6 @@ ohos_static_library("screenlock_client_static") {
     }
     branch_protector_ret = "pac_ret"
     sources = [
-      "${screenlock_mgr_path}/frameworks/native/src/screenlock_app_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_callback_stub.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
@@ -103,8 +98,6 @@ ohos_static_library("screenlock_client_static") {
       "include",
       "${screenlock_mgr_path}/frameworks/native/include",
     ]
-
-    deps = [ "${screenlock_mgr_path}/utils:screenlock_utils" ]
 
     external_deps = [
       "c_utils:utils",

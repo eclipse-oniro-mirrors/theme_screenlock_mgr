@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef IS_SO_CROP_H
 #include "screenlock_command_test.h"
 
 #include <memory>
@@ -118,3 +119,4 @@ HWTEST_F(ScreenLockCommandTest, SetScreenLockCommandTest004, TestSize.Level0)
 
 } // namespace ScreenLock
 } // namespace OHOS
+#endif // IS_SO_CROP_H

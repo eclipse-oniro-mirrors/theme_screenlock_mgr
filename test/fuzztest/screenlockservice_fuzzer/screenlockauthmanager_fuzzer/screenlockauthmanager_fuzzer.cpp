@@ -18,9 +18,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <string_ex.h>
+#ifndef IS_SO_CROP_H
 #include "strongauthmanager.h"
 
 using namespace OHOS::ScreenLock;
+#else
+using namespace OHOS;
+#endif // IS_SO_CROP_H
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
@@ -32,6 +36,7 @@ bool FuzzScreenlockAuthManager(const uint8_t *rawData, size_t size)
         return true;
     }
 
+#ifndef IS_SO_CROP_H
     auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
     if (authmanager == nullptr) {
         return false;
@@ -45,6 +50,7 @@ bool FuzzScreenlockAuthManager(const uint8_t *rawData, size_t size)
     authmanager->DestroyStrongAuthTimer(userId);
     authmanager->DestroyAllStrongAuthTimer();
     authmanager->UnRegistUserAuthSuccessEventListener();
+#endif // IS_SO_CROP_H
     return true;
 }
 
