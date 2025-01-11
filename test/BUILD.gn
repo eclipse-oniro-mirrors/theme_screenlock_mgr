@@ -67,6 +67,10 @@ ohos_unittest("ScreenLockServiceTest") {
     "//third_party/googletest:gtest_main",
   ]
 
+  if (screenlock_mgr_so_crop == true) {
+    cflags = [ "-DIS_SO_CROP_H" ]
+  }
+
   defines = []
 }
 
