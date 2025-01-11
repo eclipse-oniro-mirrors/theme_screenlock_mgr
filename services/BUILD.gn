@@ -83,7 +83,6 @@ ohos_shared_library("screenlock_server") {
 
   if (screenlock_mgr_so_crop == true) {
     cflags += [ "-DIS_SO_CROP_H" ]
-    external_deps -= [ "time_service:time_client" ]
   }
 
   innerapi_tags = [ "platformsdk" ]
@@ -142,7 +141,7 @@ ohos_static_library("screenlock_server_static") {
   ]
 
   if (screenlock_mgr_so_crop == true) {
-    external_deps -= [ "time_service:time_client" ]
+    cflags = [ "-DIS_SO_CROP_H" ]
   }
 
   subsystem_name = "theme"
