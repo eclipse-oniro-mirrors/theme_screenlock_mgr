@@ -235,6 +235,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0010, TestSize.Level0)
     bool isDisabled = true;
     result = proxy->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 
@@ -256,6 +257,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0011, TestSize.Level0)
     int32_t authState = 0;
     result = proxy->GetScreenLockAuthState(userId, authState);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -275,6 +277,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0012, TestSize.Level0)
     int32_t reasonFlag = 0;
     result = ScreenLockManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
     SCLOCK_HILOGD("GetStrongAuth.[result]:%{public}d", result);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -293,6 +296,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0013, TestSize.Level0)
     bool isDisabled = true;
     result = ScreenLockManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 
@@ -313,6 +317,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0014, TestSize.Level0)
     int32_t authState = 0;
     result = ScreenLockManager::GetInstance()->GetScreenLockAuthState(userId, authState);
     SCLOCK_HILOGD("SetScreenLockAuthState.[result]:%{public}d", result);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -332,6 +337,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0015, TestSize.Level0)
     int32_t reasonFlag = 0;
     result = proxy->GetStrongAuth(userId, reasonFlag);
     SCLOCK_HILOGD("GetStrongAuth.[result]:%{public}d", result);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 } // namespace ScreenLock

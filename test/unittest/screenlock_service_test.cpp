@@ -588,8 +588,9 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest029, TestSize.Level0)
     int userId = 0;
     int32_t ret = ScreenLockSystemAbility::GetInstance()->SetScreenLockDisabled(false, userId);
     bool disable = true;
-    ScreenLockSystemAbility::GetInstance()->IsScreenLockDisabled(userId, disable);
+    int32_t result = ScreenLockSystemAbility::GetInstance()->IsScreenLockDisabled(userId, disable);
     SCLOCK_HILOGD("SetScreenLockDisabled.[ret]:%{public}d, [disable]:%{public}d", ret, disable);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -609,7 +610,8 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
     SCLOCK_HILOGD("SetScreenLockAuthState.[ret]:%{public}d", ret);
 
     int32_t authState = 0;
-    ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
+    int32_t result = ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
