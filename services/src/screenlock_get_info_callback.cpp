@@ -17,9 +17,11 @@
 
 namespace OHOS {
 namespace ScreenLock {
-void ScreenLockGetInfoCallback::OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList)
+void ScreenLockGetInfoCallback::OnCredentialInfo(int32_t result,
+    const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList)
 {
     SCLOCK_HILOGI("Start.");
+    static_cast<void>(result);
     if (infoList.size() > 0) {
         SCLOCK_HILOGD("infoList.size() = %{public}zu", infoList.size());
         isSecure_ = true;
