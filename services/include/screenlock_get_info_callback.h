@@ -30,7 +30,8 @@ public:
      * @param info.
      * @return void.
      */
-    void OnCredentialInfo(const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList) override;
+    void OnCredentialInfo(int32_t result,
+        const std::vector<OHOS::UserIam::UserAuth::CredentialInfo> &infoList) override;
     bool IsSecure() const;
 private:
     bool isSecure_ = false;
