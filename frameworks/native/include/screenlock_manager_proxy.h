@@ -46,6 +46,7 @@ public:
     int32_t GetScreenLockAuthState(int userId, int32_t &authState) override;
     int32_t RequestStrongAuth(int reasonFlag, int32_t userId) override;
     int32_t GetStrongAuth(int userId, int32_t &reasonFlag) override;
+    int32_t IsDeviceLocked(int userId, bool &isDeviceLocked) override;
 private:
     int32_t UnlockInner(MessageParcel &reply, int32_t command, const sptr<ScreenLockCallbackInterface> &listener);
     int32_t IsScreenLockedInner(MessageParcel &reply, uint32_t command);

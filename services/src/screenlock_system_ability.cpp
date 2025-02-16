@@ -600,15 +600,15 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
 int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &authState)
 {
     SCLOCK_HILOGD("GetScreenLockAuthState userId=%{public}d", userId);
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     std::lock_guard<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         authState = iter->second;
         return E_SCREENLOCK_OK;
-    }
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
-        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
-        return E_SCREENLOCK_NO_PERMISSION;
     }
     authState = static_cast<int32_t>(AuthState::UNAUTH);
     SCLOCK_HILOGI("The authentication status is not set. userId=%{public}d", userId);
@@ -647,6 +647,26 @@ void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked state:%{public}d.", isScreenlocked);
     stateValue_.SetScreenlocked(isScreenlocked);
+}
+
+int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked)
+{
+    if (!IsSystemApp()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+
+    std::lock_guard<std::mutex> lock(authStateMutex_);
+    auto iter = authStateInfo.find(userId);
+    if (iter != authStateInfo.end()) {
+        int32_t authState = iter->second;
+        isDeviceLocked = getDeviceLockedStateByAuth(authState);
+        SCLOCK_HILOGI("The userId is not set. userId=%{public}d, isDeviceLocked=%{public}d", userId, isDeviceLocked);
+        return E_SCREENLOCK_OK;
+    } else {
+        isDeviceLocked = true;
+        return E_SCREENLOCK_USER_ID_INVALID;
+    }
 }
 
 void StateValue::Reset()
@@ -698,6 +718,15 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
                 .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
                 "\t\tscreen interaction status\n");
+
+            for (auto iter = authStateInfo.begin(); iter != authStateInfo.end(); iter++) {
+                int32_t userId = iter->first;
+                bool deviceLocked = getDeviceLockedStateByAuth(iter->second);
+                string temp_deviceLocked = "";
+                deviceLocked ? temp_deviceLocked = "true" : temp_deviceLocked = "false";
+                string temp_userId = std::to_string(static_cast<int>(userId));
+                output.append(" * deviceLocked  \t\t" + temp_deviceLocked + "\t\t" + temp_userId + "\n");
+            }
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
@@ -837,6 +866,15 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
     int result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
     if (result != PERMISSION_GRANTED) {
         SCLOCK_HILOGE("check permission failed.");
+        return false;
+    }
+    return true;
+}
+
+bool ScreenLockSystemAbility::getDeviceLockedStateByAuth(int32_t authState)
+{
+    int32_t authBoundary = static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL);
+    if (authState >= authBoundary) {
         return false;
     }
     return true;

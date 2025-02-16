@@ -109,6 +109,7 @@ napi_value NAPI_SetScreenLockAuthState(napi_env env, napi_callback_info info);
 napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info);
 napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info);
 napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info);
+napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info);
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_ABILITY_H

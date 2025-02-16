@@ -42,6 +42,8 @@ constexpr const char *SERVICE_IS_ABNORMAL = "The screenlock management service i
 constexpr const char *ILLEGAL_USE = "Invalid use.";
 constexpr const char *NON_SYSTEM_APP = "Permission verification failed, application which is not a system application "
                                        "uses system API.";
+constexpr const char *USER_ID_INVALID = "The userId is not same as the caller, and is not allowed for the caller.";
+
 const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
     { E_SCREENLOCK_NO_PERMISSION, JsErrorCode::ERR_NO_PERMISSION },
     { E_SCREENLOCK_PARAMETERS_INVALID, JsErrorCode::ERR_INVALID_PARAMS },
@@ -50,6 +52,7 @@ const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
     { E_SCREENLOCK_SENDREQUEST_FAILED, JsErrorCode::ERR_SERVICE_ABNORMAL },
     { E_SCREENLOCK_NOT_FOCUS_APP, JsErrorCode::ERR_ILLEGAL_USE },
     { E_SCREENLOCK_NOT_SYSTEM_APP, JsErrorCode::ERR_NOT_SYSTEM_APP },
+    { E_SCREENLOCK_USER_ID_INVALID, JsErrorCode::ERR_USER_ID_INVALID },
 };
 const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
     { JsErrorCode::ERR_NO_PERMISSION, PERMISSION_VALIDATION_FAILED },
@@ -58,6 +61,7 @@ const std::map<uint32_t, std::string> ERROR_INFO_MAP = {
     { JsErrorCode::ERR_SERVICE_ABNORMAL, SERVICE_IS_ABNORMAL },
     { JsErrorCode::ERR_ILLEGAL_USE, ILLEGAL_USE },
     { JsErrorCode::ERR_NOT_SYSTEM_APP, NON_SYSTEM_APP },
+    { JsErrorCode::ERR_USER_ID_INVALID, USER_ID_INVALID },
 };
 
 napi_status Init(napi_env env, napi_value exports)
@@ -77,6 +81,7 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getScreenLockAuthState", OHOS::ScreenLock::NAPI_GetScreenLockAuthState),
         DECLARE_NAPI_FUNCTION("requestStrongAuth", OHOS::ScreenLock::NAPI_RequestStrongAuth),
         DECLARE_NAPI_FUNCTION("getStrongAuth", OHOS::ScreenLock::NAPI_GetStrongAuth),
+        DECLARE_NAPI_FUNCTION("isDeviceLocked", OHOS::ScreenLock::NAPI_IsDeviceLocked),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
@@ -757,6 +762,39 @@ napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info)
     }
     SCLOCK_HILOGI("NAPI_GetStrongAuth [reasonFlag]=%{public}d", reasonFlag);
     napi_create_int32(env, reasonFlag, &result);
+    return result;
+}
+
+napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_IsDeviceLocked in");
+    napi_value result = nullptr;
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    int userId = static_cast<int>(SpecialUserId::USER_CURRENT);
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    bool isDeviceLoced = true;
+    int32_t status = ScreenLockManager::GetInstance()->IsDeviceLocked(userId, isDeviceLoced);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ThrowError(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    SCLOCK_HILOGI("NAPI_IsDeviceLocked [isDeviceLoced]=%{public}d", isDeviceLoced);
+    napi_get_boolean(env, isDeviceLoced, &result);
     return result;
 }
 

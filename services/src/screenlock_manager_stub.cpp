@@ -63,6 +63,8 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnRequestStrongAuth;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_STRONG_AUTHSTATE)] =
         &ScreenLockManagerStub::OnGetStrongAuth;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_DEVICE_LOCKED)] =
+        &ScreenLockManagerStub::OnIsDeviceLocked;
 }
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -266,6 +268,19 @@ int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &
     int32_t useId = data.ReadInt32();
     int32_t retCode = Lock(useId);
     reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnIsDeviceLocked(MessageParcel &data, MessageParcel &reply)
+{
+    bool isDeviceLocked = false;
+    int32_t userId = data.ReadInt32();
+    SCLOCK_HILOGD("userId=%{public}d", userId);
+    int32_t retCode = IsDeviceLocked(userId, isDeviceLocked);
+    reply.WriteInt32(retCode);
+    if (retCode == E_SCREENLOCK_OK) {
+        reply.WriteBool(isDeviceLocked);
+    }
     return ERR_NONE;
 }
 } // namespace ScreenLock

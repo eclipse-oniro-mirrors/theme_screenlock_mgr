@@ -69,6 +69,7 @@ enum ScreenLockError {
     E_SCREENLOCK_SENDREQUEST_FAILED,
     E_SCREENLOCK_NOT_SYSTEM_APP,
     E_SCREENLOCK_NOT_FOCUS_APP,
+    E_SCREENLOCK_USER_ID_INVALID,
 };
 
 enum TraceTaskId : int32_t {
@@ -90,6 +91,7 @@ enum JsErrorCode : uint32_t {
     ERR_CANCEL_UNLOCK = 13200001,
     ERR_SERVICE_ABNORMAL = 13200002,
     ERR_ILLEGAL_USE = 13200003,
+    ERR_USER_ID_INVALID = 13200004,
 };
 
 enum class Action : uint8_t {
@@ -104,6 +106,12 @@ enum class StrongAuthReasonFlags : int32_t {
     AFTER_TIMEOUT = 0x00000002,
     ACTIVE_REQUEST = 0x00000004,
     DPM_RESTRICT = 0x00000008,
+};
+
+enum class SpecialUserId : int32_t {
+    USER_ALL = -1,
+    USER_CURRENT = -2,
+    USER_UNDEFINED = -10000,
 };
 
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
