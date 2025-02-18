@@ -50,6 +50,7 @@ private:
     int32_t OnGetScreenLockAuthState(MessageParcel &data, MessageParcel &reply);
     int32_t OnRequestStrongAuth(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetStrongAuth(MessageParcel &data, MessageParcel &reply);
+    int32_t OnIsDeviceLocked(MessageParcel &data, MessageParcel &reply);
 
 private:
     HandleFuncMap handleFuncMap;

@@ -38,6 +38,7 @@ enum class ScreenLockServerIpcInterfaceCode {
     GET_SCREENLOCK_AUTHSTATE,
     REQUEST_STRONG_AUTHSTATE,
     GET_STRONG_AUTHSTATE,
+    IS_DEVICE_LOCKED,
 };
 } // namespace ScreenLock
 } // namespace OHOS

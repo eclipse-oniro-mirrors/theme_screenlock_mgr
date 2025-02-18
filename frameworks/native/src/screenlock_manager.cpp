@@ -219,6 +219,19 @@ int32_t ScreenLockManager::GetStrongAuth(int userId, int32_t &reasonFlag)
     return status;
 }
 
+int32_t ScreenLockManager::IsDeviceLocked(int userId, bool &isDeviceLocked)
+{
+    SCLOCK_HILOGD("ScreenLockManager::IsDeviceLocked in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::IsDeviceLocked quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->IsDeviceLocked(userId, isDeviceLocked);
+    SCLOCK_HILOGD("ScreenLockManager::IsDeviceLocked out, status=%{public}d", status);
+    return status;
+}
+
 int32_t ScreenLockManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockManager::OnSystemEvent in");

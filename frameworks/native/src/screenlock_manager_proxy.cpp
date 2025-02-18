@@ -358,5 +358,25 @@ int32_t ScreenLockManagerProxy::GetStrongAuth(int userId, int32_t &reasonFlag)
     SCLOCK_HILOGD("GetStrongAuth end retCode is %{public}d, %{public}d.", retCode, reasonFlag);
     return retCode;
 }
+
+int32_t ScreenLockManagerProxy::IsDeviceLocked(int userId, bool &isDeviceLocked)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_DEVICE_LOCKED), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy IsDeviceLocked, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    isDeviceLocked = reply.ReadBool();
+    SCLOCK_HILOGD("IsDeviceLocked end retCode is %{public}d, %{public}d.", retCode, isDeviceLocked);
+    return retCode;
+}
 } // namespace ScreenLock
 } // namespace OHOS

@@ -130,9 +130,11 @@ enum class InteractiveState : int32_t {
 enum class AuthState : int32_t {
     UNAUTH = 0,
     PRE_AUTHED_BY_CREDENTIAL = 1,
-    PRE_AUTHED_BY_BIOMIETRIC = 2,
-    AUTHED_BY_CREDENTIAL = 3,
-    AUTHED_BY_BIOMIETRIC = 4,
+    PRE_AUTHED_BY_FINGERPRINT = 2,
+    PRE_AUTHED_BY_FACE = 3,
+    AUTHED_BY_CREDENTIAL = 4,
+    AUTHED_BY_FINGERPRINT = 5,
+    AUTHED_BY_FACE = 6,
 };
 
 class ScreenLockSystemAbility : public SystemAbility, public ScreenLockManagerStub {
@@ -158,6 +160,7 @@ public:
     int32_t GetScreenLockAuthState(int userId, int32_t &authState) override;
     int32_t RequestStrongAuth(int reasonFlag, int32_t userId) override;
     int32_t GetStrongAuth(int userId, int32_t &reasonFlag) override;
+    int32_t IsDeviceLocked(int userId, bool &isDeviceLocked) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);
@@ -210,6 +213,7 @@ private:
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
     void NotifyDisplayEvent(Rosen::DisplayEvent event);
+    bool getDeviceLockedStateByAuth(int authState);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
