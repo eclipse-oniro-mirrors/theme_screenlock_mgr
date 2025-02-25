@@ -51,6 +51,7 @@
 #include "command.h"
 #include "dump_helper.h"
 #include "strongauthmanager.h"
+#include "strongauthlistenermanager.h"
 #endif // IS_SO_CROP_H
 
 using namespace OHOS;
@@ -627,6 +628,7 @@ int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userI
     }
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     StrongAuthChanged(userId, reasonFlag);
+    StrongAuthListenerManager::GetInstance().OnStrongAuthChanged(userId, reasonFlag);
     return E_SCREENLOCK_OK;
 #endif // IS_SO_CROP_H
 }
@@ -641,6 +643,30 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
     SCLOCK_HILOGI("GetStrongAuth userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
     return E_SCREENLOCK_OK;
 #endif // IS_SO_CROP_H
+}
+
+int32_t ScreenLockSystemAbility::RegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+{
+    if (!IsSystemApp()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+    return StrongAuthListenerManager::GetInstance().RegisterStrongAuthListener(userId, listener);
+}
+
+int32_t ScreenLockSystemAbility::UnRegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+{
+    if (!IsSystemApp()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+    return StrongAuthListenerManager::GetInstance().UnRegisterStrongAuthListener(listener);
 }
 
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)

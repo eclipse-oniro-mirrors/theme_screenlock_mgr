@@ -65,6 +65,10 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnGetStrongAuth;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_DEVICE_LOCKED)] =
         &ScreenLockManagerStub::OnIsDeviceLocked;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_STRONGAUTH_LISTENER)] =
+        &ScreenLockManagerStub::OnRegistStrongAuthListener;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_STRONGAUTH_LISTENER)] =
+        &ScreenLockManagerStub::OnUnRegistStrongAuthListener;
 }
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -260,6 +264,42 @@ int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParce
     if (retCode == E_SCREENLOCK_OK) {
         reply.WriteInt32(reasonFlag);
     }
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnRegistStrongAuthListener(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t userId = data.ReadInt32();
+    sptr<IRemoteObject> remote = data.ReadRemoteObject();
+    if (remote == nullptr) {
+        SCLOCK_HILOGE("remote is nullptr");
+        return ERR_INVALID_DATA;
+    }
+    sptr<StrongAuthListenerInterface> listener = iface_cast<StrongAuthListenerInterface>(remote);
+    if (listener.GetRefPtr() == nullptr) {
+        SCLOCK_HILOGE("listener is null");
+        return ERR_INVALID_DATA;
+    }
+    int32_t retCode = RegisterStrongAuthListener(userId, listener);
+    reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnUnRegistStrongAuthListener(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t userId = data.ReadInt32();
+    sptr<IRemoteObject> remote = data.ReadRemoteObject();
+    if (remote == nullptr) {
+        SCLOCK_HILOGE("remote is nullptr");
+        return ERR_INVALID_DATA;
+    }
+    sptr<StrongAuthListenerInterface> listener = iface_cast<StrongAuthListenerInterface>(remote);
+    if (listener.GetRefPtr() == nullptr) {
+        SCLOCK_HILOGE("listener is null");
+        return ERR_INVALID_DATA;
+    }
+    int32_t retCode = UnRegisterStrongAuthListener(userId, listener);
+    reply.WriteInt32(retCode);
     return ERR_NONE;
 }
 
