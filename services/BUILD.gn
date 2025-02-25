@@ -45,11 +45,11 @@ ohos_shared_library("screenlock_server") {
     "src/screenlock_callback_proxy.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",
+    "src/screenlock_strongauth_listener_proxy.cpp",
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
-    "src/strongauthmanager.cpp",
     "src/strongauthlistenermanager.cpp",
-    "src/screenlock_strongauth_listener_proxy.cpp"
+    "src/strongauthmanager.cpp",
   ]
 
   public_configs = [ ":screenlock_mgr_service_config" ]
@@ -110,11 +110,11 @@ ohos_static_library("screenlock_server_static") {
     "src/screenlock_callback_proxy.cpp",
     "src/screenlock_get_info_callback.cpp",
     "src/screenlock_manager_stub.cpp",
+    "src/screenlock_strongauth_listener_proxy.cpp",
     "src/screenlock_system_ability.cpp",
     "src/screenlock_system_ability_proxy.cpp",
-    "src/strongauthmanager.cpp",
     "src/strongauthlistenermanager.cpp",
-    "src/screenlock_strongauth_listener_proxy.cpp"
+    "src/strongauthmanager.cpp",
   ]
 
   public_configs = [ ":screenlock_mgr_service_config" ]
