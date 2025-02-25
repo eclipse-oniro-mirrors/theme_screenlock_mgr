@@ -336,7 +336,6 @@ int32_t ScreenLockManagerProxy::RequestStrongAuth(int reasonFlag, int32_t userId
     int32_t retCode = reply.ReadInt32();
     SCLOCK_HILOGD("ScreenLockManagerProxy RequestStrongAuth end retCode is %{public}d.", retCode);
     return retCode;
-    return 0;
 }
 
 int32_t ScreenLockManagerProxy::GetStrongAuth(int userId, int32_t &reasonFlag)
@@ -376,6 +375,62 @@ int32_t ScreenLockManagerProxy::IsDeviceLocked(int userId, bool &isDeviceLocked)
     int32_t retCode = reply.ReadInt32();
     isDeviceLocked = reply.ReadBool();
     SCLOCK_HILOGD("IsDeviceLocked end retCode is %{public}d, %{public}d.", retCode, isDeviceLocked);
+    return retCode;
+}
+
+int32_t ScreenLockManagerProxy::RegisterStrongAuthListener(const int32_t userId,
+                                                           const sptr<StrongAuthListenerInterface>& listener)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    SCLOCK_HILOGD("RegisterStrongAuthListener started.");
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
+        SCLOCK_HILOGE("write parcel failed.");
+        return E_SCREENLOCK_WRITE_PARCEL_ERROR;
+    }
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_STRONGAUTH_LISTENER), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("RegisterStrongAuthListener, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("RegisterStrongAuthListener end retCode is %{public}d.", retCode);
+    return retCode;
+}
+
+int32_t ScreenLockManagerProxy::UnRegisterStrongAuthListener(const int32_t userId,
+                                                             const sptr<StrongAuthListenerInterface>& listener)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    SCLOCK_HILOGD("UnRegisterStrongAuthListener started.");
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
+        SCLOCK_HILOGE("write parcel failed.");
+        return E_SCREENLOCK_WRITE_PARCEL_ERROR;
+    }
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_STRONGAUTH_LISTENER), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("UnRegisterStrongAuthListener, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("UnRegisterStrongAuthListener end retCode is %{public}d.", retCode);
     return retCode;
 }
 } // namespace ScreenLock
