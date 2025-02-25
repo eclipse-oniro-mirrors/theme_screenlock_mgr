@@ -30,6 +30,8 @@
       *OHOS::ScreenLock::ScreenLockManager::RequestStrongAuth*;
       *OHOS::ScreenLock::ScreenLockManager::GetStrongAuth*;
       *OHOS::ScreenLock::ScreenLockCallbackStub*;
+      *OHOS::ScreenLock::ScreenLockStrongAuthListenerStub*;
+      *OHOS::ScreenLock::StrongAuthListenerWrapper*;
     };
   local:
     *;

@@ -22,6 +22,7 @@
 #include "screenlock_callback_interface.h"
 #include "screenlock_common.h"
 #include "screenlock_system_ability_interface.h"
+#include "screenlock_strongauth_listener_interface.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -44,6 +45,8 @@ public:
     virtual int32_t RequestStrongAuth(int reasonFlag, int32_t userId) = 0;
     virtual int32_t GetStrongAuth(int32_t userId, int32_t &reasonFlag) = 0;
     virtual int32_t IsDeviceLocked(int userId, bool &isDeviceLocked) = 0;
+    virtual int32_t RegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener) = 0;
+    virtual int32_t UnRegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener) = 0;
 };
 } // namespace ScreenLock
 } // namespace OHOS

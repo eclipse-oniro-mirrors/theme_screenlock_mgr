@@ -41,6 +41,8 @@ ohos_shared_library("screenlock_client") {
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_system_ability_stub.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_strongauth_wapper.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_strongauth_listener_stub.cpp",
     ]
 
     cflags = [
@@ -61,6 +63,7 @@ ohos_shared_library("screenlock_client") {
 
     external_deps = [
       "c_utils:utils",
+      "eventhandler:libeventhandler",
       "hilog:libhilog",
       "hitrace:hitrace_meter",
       "ipc:ipc_single",
@@ -90,6 +93,8 @@ ohos_static_library("screenlock_client_static") {
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_manager_proxy.cpp",
       "${screenlock_mgr_path}/frameworks/native/src/screenlock_system_ability_stub.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_strongauth_wapper.cpp",
+      "${screenlock_mgr_path}/frameworks/native/src/screenlock_strongauth_listener_stub.cpp",
     ]
 
     public_configs = [ ":screenlock_mgr_frameworks_native_config" ]
@@ -101,6 +106,7 @@ ohos_static_library("screenlock_client_static") {
 
     external_deps = [
       "c_utils:utils",
+      "eventhandler:libeventhandler",
       "hilog:libhilog",
       "hitrace:hitrace_meter",
       "ipc:ipc_single",
