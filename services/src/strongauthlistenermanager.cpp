@@ -21,13 +21,6 @@ namespace ScreenLock {
 using DeathRecipient = IRemoteObject::DeathRecipient;
 const std::int64_t SUCCESS = 0;
 
-static inline void if_false_loge_and_return_val(bool cond, int retVal) {
-    if (!cond) {
-        SCLOCK_HILOGE("( %s ) check fail, return", (char *)#, retVal);
-        return (retVal);
-    }
-}
-
 StrongAuthListenerManager& StrongAuthListenerManager::GetInstance()
 {
     static StrongAuthListenerManager strongAuthListenerManager;
@@ -37,9 +30,11 @@ StrongAuthListenerManager& StrongAuthListenerManager::GetInstance()
 int32_t StrongAuthListenerManager::RegisterStrongAuthListener(const int32_t userId,
                                                               const sptr<StrongAuthListenerInterface>& listener)
 {
-    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
-
     std::lock_guard<std::recursive_mutex> lock(mutex_);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
     int32_t result = AddDeathRecipient(listener);
     if (result != SUCCESS) {
         SCLOCK_HILOGE("AddDeathRecipient fail");
@@ -53,8 +48,11 @@ int32_t StrongAuthListenerManager::RegisterStrongAuthListener(const int32_t user
 
 int32_t StrongAuthListenerManager::UnRegisterStrongAuthListener(const sptr<StrongAuthListenerInterface>& listener)
 {
-    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
     std::lock_guard<std::recursive_mutex> lock(mutex_);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
     int32_t result = RemoveDeathRecipient(listener);
     if (result != SUCCESS) {
         SCLOCK_HILOGE("RemoveDeathRecipient fail");
@@ -119,7 +117,10 @@ void StrongAuthListenerManager::OnStrongAuthChanged(int32_t userId, int32_t stro
 int32_t StrongAuthListenerManager::AddDeathRecipient(const sptr<StrongAuthListenerInterface>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
 
     auto obj = listener->AsObject();
     if (obj == nullptr) {
@@ -147,7 +148,10 @@ int32_t StrongAuthListenerManager::AddDeathRecipient(const sptr<StrongAuthListen
 int32_t StrongAuthListenerManager::RemoveDeathRecipient(const sptr<StrongAuthListenerInterface>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
 
     auto obj = listener->AsObject();
     if (obj == nullptr) {

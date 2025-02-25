@@ -28,11 +28,11 @@ namespace OHOS {
 namespace ScreenLock {
 class ScreenLockStrongAuthListenerStub : public IRemoteStub<StrongAuthListenerInterface> {
 public:
-    SCREENLOCK_API ScreenLockStrongAuthListenerStub() = default;
-    SCREENLOCK_API ~ScreenLockStrongAuthListenerStub() override;
-    SCREENLOCK_API int32_t OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply,
+    ScreenLockStrongAuthListenerStub() = default;
+    ~ScreenLockStrongAuthListenerStub() override;
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply,
                                            MessageOption& option) override;
-    SCREENLOCK_API void OnStrongAuthChanged(int32_t userId, int32_t authenticated) override;
+    void OnStrongAuthChanged(int32_t userId, int32_t authenticated) override;
 
 private:
     int32_t OnStrongAuthChangedStub(MessageParcel &data, MessageParcel &reply);
