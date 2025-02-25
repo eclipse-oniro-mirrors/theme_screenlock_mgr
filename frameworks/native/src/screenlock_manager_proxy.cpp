@@ -378,7 +378,8 @@ int32_t ScreenLockManagerProxy::IsDeviceLocked(int userId, bool &isDeviceLocked)
     return retCode;
 }
 
-int32_t ScreenLockManagerProxy::RegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+int32_t ScreenLockManagerProxy::RegisterStrongAuthListener(const int32_t userId,
+                                                           const sptr<StrongAuthListenerInterface>& listener)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -405,7 +406,8 @@ int32_t ScreenLockManagerProxy::RegisterStrongAuthListener(const int32_t userId,
     return retCode;
 }
 
-int32_t ScreenLockManagerProxy::UnRegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+int32_t ScreenLockManagerProxy::UnRegisterStrongAuthListener(const int32_t userId,
+                                                             const sptr<StrongAuthListenerInterface>& listener)
 {
     MessageParcel data;
     MessageParcel reply;

@@ -16,6 +16,9 @@
 #ifndef SCREENLOCK_STRONGAUTH_LISTENER_STUB_H
 #define SCREENLOCK_STRONGAUTH_LISTENER_STUB_H
 
+#include <cstdint>
+#include <string>
+
 #include "visibility.h"
 #include "iremote_stub.h"
 #include "message_parcel.h"
@@ -27,7 +30,8 @@ class ScreenLockStrongAuthListenerStub : public IRemoteStub<StrongAuthListenerIn
 public:
     SCREENLOCK_API ScreenLockStrongAuthListenerStub() = default;
     SCREENLOCK_API ~ScreenLockStrongAuthListenerStub() override;
-    SCREENLOCK_API int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    SCREENLOCK_API int32_t OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply,
+                                           MessageOption& option) override;
     SCREENLOCK_API void OnStrongAuthChanged(int32_t userId, int32_t authenticated) override;
 
 private:

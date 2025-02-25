@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef SCREENLOCK_STRONGAUTH_WAPPER_H
+#define SCREENLOCK_STRONGAUTH_WAPPER_H
+
 #include "event_handler.h"
 #include "screenlock_strongauth_listener.h"
 #include "screenlock_strongauth_listener_stub.h"
@@ -29,5 +32,7 @@ private:
     sptr<StrongAuthListener> listener_;
     static std::shared_ptr<AppExecFwk::EventHandler> handler_;
 };
-}
-}
+} // namespace ScreenLock
+} // namespace OHOS
+
+#endif // SCREENLOCK_STRONGAUTH_WAPPER_H

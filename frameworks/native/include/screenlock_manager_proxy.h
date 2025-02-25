@@ -48,8 +48,10 @@ public:
     int32_t RequestStrongAuth(int reasonFlag, int32_t userId) override;
     int32_t GetStrongAuth(int userId, int32_t &reasonFlag) override;
     int32_t IsDeviceLocked(int userId, bool &isDeviceLocked) override;
-    int32_t RegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener) override;
-    int32_t UnRegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener) override;
+    int32_t RegisterStrongAuthListener(const int32_t userId,
+                                       const sptr<StrongAuthListenerInterface>& listener) override;
+    int32_t UnRegisterStrongAuthListener(const int32_t userId,
+                                         const sptr<StrongAuthListenerInterface>& listener) override;
 private:
     int32_t UnlockInner(MessageParcel &reply, int32_t command, const sptr<ScreenLockCallbackInterface> &listener);
     int32_t IsScreenLockedInner(MessageParcel &reply, uint32_t command);

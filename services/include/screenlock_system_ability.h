@@ -161,8 +161,10 @@ public:
     int32_t RequestStrongAuth(int reasonFlag, int32_t userId) override;
     int32_t GetStrongAuth(int userId, int32_t &reasonFlag) override;
     int32_t IsDeviceLocked(int userId, bool &isDeviceLocked) override;
-    int32_t RegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener) override;
-    int32_t UnRegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener) override;
+    int32_t RegisterStrongAuthListener(const int32_t userId,
+                                       const sptr<StrongAuthListenerInterface>& listener) override;
+    int32_t UnRegisterStrongAuthListener(const int32_t userId,
+                                         const sptr<StrongAuthListenerInterface>& listener) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked);
     void RegisterDisplayPowerEventListener(int32_t times);

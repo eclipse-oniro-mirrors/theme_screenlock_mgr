@@ -21,24 +21,23 @@ namespace ScreenLock {
 using DeathRecipient = IRemoteObject::DeathRecipient;
 const std::int64_t SUCCESS = 0;
 
-#define IF_FALSE_LOGE_AND_RETURN_VAL(cond, retVal)      \
-    do {                                                \
-        if (!(cond)) {                                  \
-            SCLOCK_HILOGE("(" #cond ") check fail, return"); \
-            return (retVal);                            \
-        }                                               \
-    } while (0)
+static inline void if_false_loge_and_return_val(bool cond, int retVal) {
+    if (!cond) {
+        SCLOCK_HILOGE("( %s ) check fail, return", (char *)#, retVal);
+        return (retVal);
+    }
+}
 
-StrongAuthListenerManager &StrongAuthListenerManager::GetInstance()
+StrongAuthListenerManager& StrongAuthListenerManager::GetInstance()
 {
     static StrongAuthListenerManager strongAuthListenerManager;
     return strongAuthListenerManager;
 }
 
 int32_t StrongAuthListenerManager::RegisterStrongAuthListener(const int32_t userId,
-    const sptr<StrongAuthListenerInterface> &listener)
+                                                              const sptr<StrongAuthListenerInterface>& listener)
 {
-    IF_FALSE_LOGE_AND_RETURN_VAL(listener != nullptr, E_SCREENLOCK_NULLPTR);
+    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
 
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     int32_t result = AddDeathRecipient(listener);
@@ -52,9 +51,9 @@ int32_t StrongAuthListenerManager::RegisterStrongAuthListener(const int32_t user
     return SUCCESS;
 }
 
-int32_t StrongAuthListenerManager::UnRegisterStrongAuthListener(const sptr<StrongAuthListenerInterface> &listener)
+int32_t StrongAuthListenerManager::UnRegisterStrongAuthListener(const sptr<StrongAuthListenerInterface>& listener)
 {
-    IF_FALSE_LOGE_AND_RETURN_VAL(listener != nullptr, E_SCREENLOCK_NULLPTR);
+    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     int32_t result = RemoveDeathRecipient(listener);
     if (result != SUCCESS) {
@@ -62,20 +61,20 @@ int32_t StrongAuthListenerManager::UnRegisterStrongAuthListener(const sptr<Stron
         return result;
     }
     // Remove the listener from the map
-    for (auto &pair : eventListenerMap_) {
+    for (auto& pair : eventListenerMap_) {
         RemoveStrongAuthListener(pair.first, listener);
     }
-    
+
     SCLOCK_HILOGI("UnRegistUserAuthSuccessEventListener success");
     return SUCCESS;
 }
 
-void StrongAuthListenerManager::AddStrongAuthListener(int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+void StrongAuthListenerManager::AddStrongAuthListener(int32_t userId, const sptr<StrongAuthListenerInterface>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     SCLOCK_HILOGI("AddStrongAuthListener, userId:%{public}d", static_cast<int32_t>(userId));
     auto iter = std::find_if(eventListenerMap_[userId].begin(), eventListenerMap_[userId].end(),
-        FinderSet(listener->AsObject()));
+                             FinderSet(listener->AsObject()));
     if (iter != eventListenerMap_[userId].end()) {
         SCLOCK_HILOGE("listener is already registed");
         return;
@@ -83,12 +82,13 @@ void StrongAuthListenerManager::AddStrongAuthListener(int32_t userId, const sptr
     eventListenerMap_[userId].insert(listener);
 }
 
-void StrongAuthListenerManager::RemoveStrongAuthListener(int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+void StrongAuthListenerManager::RemoveStrongAuthListener(int32_t userId,
+                                                         const sptr<StrongAuthListenerInterface>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     SCLOCK_HILOGI("RemoveStrongAuthListener, userId:%{public}d", static_cast<int32_t>(userId));
     auto iter = std::find_if(eventListenerMap_[userId].begin(), eventListenerMap_[userId].end(),
-        FinderSet(listener->AsObject()));
+                             FinderSet(listener->AsObject()));
     if (iter == eventListenerMap_[userId].end()) {
         SCLOCK_HILOGE("listener is not registed");
         return;
@@ -108,7 +108,7 @@ void StrongAuthListenerManager::OnStrongAuthChanged(int32_t userId, int32_t stro
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     SCLOCK_HILOGI("OnStrongAuthChanged enter.");
     std::set<sptr<StrongAuthListenerInterface>> listenerSetTemp = GetListenerSet(userId);
-    for (auto &iter : listenerSetTemp) {
+    for (auto& iter : listenerSetTemp) {
         if (iter != nullptr) {
             iter->OnStrongAuthChanged(userId, strongAuth);
             SCLOCK_HILOGI("OnStrongAuthChanged, userId: %{public}d, strongAuth: %{public}d", userId, strongAuth);
@@ -116,10 +116,10 @@ void StrongAuthListenerManager::OnStrongAuthChanged(int32_t userId, int32_t stro
     }
 }
 
-int32_t StrongAuthListenerManager::AddDeathRecipient(const sptr<StrongAuthListenerInterface> &listener)
+int32_t StrongAuthListenerManager::AddDeathRecipient(const sptr<StrongAuthListenerInterface>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    IF_FALSE_LOGE_AND_RETURN_VAL(listener != nullptr, E_SCREENLOCK_NULLPTR);
+    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
 
     auto obj = listener->AsObject();
     if (obj == nullptr) {
@@ -144,10 +144,10 @@ int32_t StrongAuthListenerManager::AddDeathRecipient(const sptr<StrongAuthListen
     return SUCCESS;
 }
 
-int32_t StrongAuthListenerManager::RemoveDeathRecipient(const sptr<StrongAuthListenerInterface> &listener)
+int32_t StrongAuthListenerManager::RemoveDeathRecipient(const sptr<StrongAuthListenerInterface>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    IF_FALSE_LOGE_AND_RETURN_VAL(listener != nullptr, E_SCREENLOCK_NULLPTR);
+    if_false_loge_and_return_val(listener != nullptr, E_SCREENLOCK_NULLPTR);
 
     auto obj = listener->AsObject();
     if (obj == nullptr) {
@@ -179,7 +179,7 @@ std::map<sptr<StrongAuthListenerInterface>, sptr<DeathRecipient>> StrongAuthList
     return deathRecipientMap_;
 }
 
-void StrongAuthListenerManager::StrongAuthListenerDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
+void StrongAuthListenerManager::StrongAuthListenerDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
 {
     SCLOCK_HILOGI("start");
     if (remote == nullptr) {
@@ -189,7 +189,7 @@ void StrongAuthListenerManager::StrongAuthListenerDeathRecipient::OnRemoteDied(c
 
     std::map<sptr<StrongAuthListenerInterface>, sptr<DeathRecipient>> deathRecipientMap =
         StrongAuthListenerManager::GetInstance().GetDeathRecipientMap();
-    for (auto &iter : deathRecipientMap) {
+    for (auto& iter : deathRecipientMap) {
         if (iter.first != nullptr && remote == iter.first->AsObject()) {
             int32_t result = StrongAuthListenerManager::GetInstance().UnRegisterStrongAuthListener(iter.first);
             if (result != SUCCESS) {
@@ -200,5 +200,5 @@ void StrongAuthListenerManager::StrongAuthListenerDeathRecipient::OnRemoteDied(c
     }
 }
 
-} // namespace OHOS
-} // namespace ScreenLock
+}  // namespace ScreenLock
+}  // namespace OHOS

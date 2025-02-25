@@ -645,7 +645,8 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 #endif // IS_SO_CROP_H
 }
 
-int32_t ScreenLockSystemAbility::RegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+int32_t ScreenLockSystemAbility::RegisterStrongAuthListener(const int32_t userId,
+                                                            const sptr<StrongAuthListenerInterface>& listener)
 {
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
@@ -657,7 +658,8 @@ int32_t ScreenLockSystemAbility::RegisterStrongAuthListener(const int32_t userId
     return StrongAuthListenerManager::GetInstance().RegisterStrongAuthListener(userId, listener);
 }
 
-int32_t ScreenLockSystemAbility::UnRegisterStrongAuthListener(const int32_t userId, const sptr<StrongAuthListenerInterface> &listener)
+int32_t ScreenLockSystemAbility::UnRegisterStrongAuthListener(const int32_t userId,
+                                                              const sptr<StrongAuthListenerInterface>& listener)
 {
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
