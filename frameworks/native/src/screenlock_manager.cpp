@@ -232,6 +232,58 @@ int32_t ScreenLockManager::IsDeviceLocked(int userId, bool &isDeviceLocked)
     return status;
 }
 
+int32_t ScreenLockManager::RegisterStrongAuthListener(const sptr<StrongAuthListener> &listener)
+{
+    SCLOCK_HILOGD("RegisterStrongAuthListener in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("RegisterStrongAuthListener quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    sptr<StrongAuthListenerWrapper> wrapper = new (std::nothrow) StrongAuthListenerWrapper(listener);
+    if (wrapper == nullptr) {
+        SCLOCK_HILOGE("Failed to create StrongAuthListenerWrapper.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    std::lock_guard<std::mutex> lock(mWrapperMapMutex);
+    // 检查是否已经存在对应的Wrapper
+    if (mWrapperMap.find(listener) != mWrapperMap.end()) {
+        SCLOCK_HILOGW("Wrapper already exists for this listener.");
+        delete wrapper;
+        return E_SCREENLOCK_NULLPTR;
+    }
+    mWrapperMap[listener] = wrapper;
+    int32_t userId = listener->GetUserId();
+    int32_t status = proxy->RegisterStrongAuthListener(userId, wrapper);
+    SCLOCK_HILOGD("RegisterStrongAuthListener out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::UnRegisterStrongAuthListener(const sptr<StrongAuthListener> &listener)
+{
+    SCLOCK_HILOGD("UnRegisterStrongAuthListener in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("UnRegisterStrongAuthListener quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    std::lock_guard<std::mutex> lock(mWrapperMapMutex);
+    auto it = mWrapperMap.find(listener);
+    if (it == mWrapperMap.end()) {
+        SCLOCK_HILOGW("No wrapper found for this listener.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    sptr<StrongAuthListenerWrapper> wrapper = it->second;
+    int32_t userId = listener->GetUserId();
+    int32_t status = proxy->UnRegisterStrongAuthListener(userId, wrapper);
+    SCLOCK_HILOGD("UnRegisterStrongAuthListener out, status=%{public}d", status);
+    // 移除Wrapper对象
+    mWrapperMap.erase(it);
+    return status;
+}
+
 int32_t ScreenLockManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
     SCLOCK_HILOGD("ScreenLockManager::OnSystemEvent in");
