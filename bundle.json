@@ -44,7 +44,8 @@
         "c_utils",
         "ffrt",
         "preferences",
-        "time_service"
+        "time_service",
+        "runtime_core"
       ],
       "third_party": []
     },
@@ -55,6 +56,7 @@
         "fwk_group": [
           "//base/theme/screenlock_mgr/interfaces/inner_api:screenlock_client",
           "//base/theme/screenlock_mgr/frameworks/js/napi:screenlock",
+          "//base/theme/screenlock_mgr/frameworks/ani:ani_screenlock_packages",
           "//base/theme/screenlock_mgr/utils:screenlock_utils"
         ],
         "service_group": [
