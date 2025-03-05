@@ -20,3 +20,4 @@ group("ani_screenlock_packages") {
     "${screenlock_mgr_path}/frameworks/ani/screenlock:screenlock_abc",
   ]
 }
+
