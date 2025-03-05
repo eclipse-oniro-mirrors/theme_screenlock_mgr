@@ -11,9 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//build/config/components/ets_frontend/ets2abc_config.gni")
 import("//build/ohos.gni")
 import("../../../screenlock.gni")
-import("//build/config/components/ets_frontend/ets2abc_config.gni")
 
 config("screenlock_mgr_frameworks_js_ani_config") {
   visibility = [ ":*" ]
@@ -37,9 +37,7 @@ ohos_shared_library("ani_screenlock") {
 
     public_configs = [ ":screenlock_mgr_frameworks_js_ani_config" ]
 
-    sources = [
-      "src/ani_screenlock_ability.cpp"
-    ]
+    sources = [ "src/ani_screenlock_ability.cpp" ]
 
     deps = [
       "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
@@ -65,7 +63,7 @@ generate_static_abc("screenlock_abc") {
       "${screenlock_mgr_path}/frameworks/ani/screenlock/screenlock_config.json"
   dst_file = "$target_out_dir/screenlock.abc"
   out_puts = [ "$target_out_dir/screenlock.abc" ]
- 
+
   #is_boot_abc = "True"
   #device_dst_file = "system/framework/screenlock.abc"
 }
@@ -86,9 +84,7 @@ ohos_static_library("screenlock_static") {
 
     public_configs = [ ":screenlock_mgr_frameworks_js_ani_config" ]
 
-    sources = [
-      "src/sts_screenlock_ability.cpp"
-    ]
+    sources = [ "src/sts_screenlock_ability.cpp" ]
 
     deps = [
       "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
