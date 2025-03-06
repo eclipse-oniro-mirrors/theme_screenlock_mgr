@@ -107,7 +107,8 @@ void StrongAuthListenerManager::OnStrongAuthChanged(int32_t userId, int32_t stro
     SCLOCK_HILOGI("OnStrongAuthChanged enter.");
 
     std::set<sptr<StrongAuthListenerInterface>> currentListeners = GetListenerSet(userId);
-    std::set<sptr<StrongAuthListenerInterface>> globalListeners = GetListenerSet(static_cast<int32_t>(SpecialUserId::USER_ALL));
+    std::set<sptr<StrongAuthListenerInterface>> globalListeners =
+        GetListenerSet(static_cast<int32_t>(SpecialUserId::USER_ALL));
 
     // 通知当前userId对应的监听器
     for (auto& listener : currentListeners) {
