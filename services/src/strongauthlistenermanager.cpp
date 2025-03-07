@@ -105,10 +105,23 @@ void StrongAuthListenerManager::OnStrongAuthChanged(int32_t userId, int32_t stro
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     SCLOCK_HILOGI("OnStrongAuthChanged enter.");
-    std::set<sptr<StrongAuthListenerInterface>> listenerSetTemp = GetListenerSet(userId);
-    for (auto& iter : listenerSetTemp) {
-        if (iter != nullptr) {
-            iter->OnStrongAuthChanged(userId, strongAuth);
+
+    std::set<sptr<StrongAuthListenerInterface>> currentListeners = GetListenerSet(userId);
+    std::set<sptr<StrongAuthListenerInterface>> globalListeners =
+        GetListenerSet(static_cast<int32_t>(SpecialUserId::USER_ALL));
+
+    // 通知当前userId对应的监听器
+    for (auto& listener : currentListeners) {
+        if (listener != nullptr) {
+            listener->OnStrongAuthChanged(userId, strongAuth);
+            SCLOCK_HILOGI("OnStrongAuthChanged, userId: %{public}d, strongAuth: %{public}d", userId, strongAuth);
+        }
+    }
+
+    // 通知全局监听器
+    for (auto& listener : globalListeners) {
+        if (listener != nullptr) {
+            listener->OnStrongAuthChanged(userId, strongAuth);
             SCLOCK_HILOGI("OnStrongAuthChanged, userId: %{public}d, strongAuth: %{public}d", userId, strongAuth);
         }
     }
