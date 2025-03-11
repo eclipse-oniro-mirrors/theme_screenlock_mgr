@@ -29,11 +29,15 @@
       *OHOS::ScreenLock::ScreenLockManager::GetScreenLockAuthState*;
       *OHOS::ScreenLock::ScreenLockManager::RequestStrongAuth*;
       *OHOS::ScreenLock::ScreenLockManager::GetStrongAuth*;
+      *OHOS::ScreenLock::ScreenLockManager::IsDeviceLocked*;
+      *OHOS::ScreenLock::ScreenLockManager::IsLockedWithUserId*;
       *OHOS::ScreenLock::ScreenLockManager::RegisterStrongAuthListener*;
       *OHOS::ScreenLock::ScreenLockManager::UnRegisterStrongAuthListener*;
+      *OHOS::ScreenLock::ScreenLockManager::RegisterDeviceLockedListener*;
+      *OHOS::ScreenLock::ScreenLockManager::UnRegisterDeviceLockedListener*;
       *OHOS::ScreenLock::ScreenLockCallbackStub*;
-      *OHOS::ScreenLock::ScreenLockStrongAuthListenerStub*;
-      *OHOS::ScreenLock::StrongAuthListenerWrapper*;
+      *OHOS::ScreenLock::ScreenLockInnerListenerStub*;
+      *OHOS::ScreenLock::InnerListenerWrapper*;
     };
   local:
     *;

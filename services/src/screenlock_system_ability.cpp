@@ -51,7 +51,8 @@
 #include "command.h"
 #include "dump_helper.h"
 #include "strongauthmanager.h"
-#include "strongauthlistenermanager.h"
+#include "innerlistenermanager.h"
+#include "common_helper.h"
 #endif // IS_SO_CROP_H
 
 using namespace OHOS;
@@ -104,19 +105,6 @@ static int32_t GetCurrentActiveOsAccountId()
     return osAccountId;
 }
 
-static int32_t GetUserIdFromCallingUid()
-{
-    int callingUid = IPCSkeleton::GetCallingUid();
-    SCLOCK_HILOGD("callingUid=%{public}d", callingUid);
-    int userId = 0;
-    AccountSA::OsAccountManager::GetOsAccountLocalIdFromUid(callingUid, userId);
-    if (userId == 0) {
-        AccountSA::OsAccountManager::GetForegroundOsAccountLocalId(userId);
-    }
-    SCLOCK_HILOGD("userId=%{public}d", userId);
-    return userId;
-}
-
 ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSubscribeInfo &subscribeInfo)
     : OsAccountSubscriber(subscribeInfo)
 {}
@@ -128,6 +116,7 @@ void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id
     StrongAuthManger::GetInstance()->StartStrongAuthTimer(id);
 #endif // IS_SO_CROP_H
     userId_ = id;
+    ScreenLockSystemAbility::GetInstance()->authStateInit(userId_);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
@@ -139,6 +128,37 @@ void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id
     preferencesUtil->SaveBool(std::to_string(id), false);
     preferencesUtil->Refresh();
     return;
+}
+
+ScreenLockSystemAbility::AccountRemoveSubscriber::AccountRemoveSubscriber(const OsAccountSubscribeInfo &subscribeInfo)
+    : OsAccountSubscriber(subscribeInfo)
+{}
+
+void ScreenLockSystemAbility::AccountRemoveSubscriber::OnAccountsChanged(const int &id)
+{
+    SCLOCK_HILOGI("AccountRemoveSubscriber OnAccountsChanged remove user: %{public}d", id);
+    ScreenLockSystemAbility::GetInstance()->onRemoveUser(id);
+}
+
+void ScreenLockSystemAbility::onRemoveUser(const int32_t userId)
+{
+    std::unique_lock<std::mutex> authLock(authStateMutex_);
+    auto authIter = authStateInfo.find(userId);
+    if (authIter != authStateInfo.end()) {
+        authStateInfo.erase(authIter);
+    } else {
+        SCLOCK_HILOGI("onRemoveUser authStateInfo user not exit, userId: %{public}d", userId);
+    }
+    authLock.unlock();
+
+    std::unique_lock<std::mutex> screenStateLock(screenLockMutex_);
+    auto lockIter = isScreenlockedMap_.find(userId);
+    if (lockIter != isScreenlockedMap_.end()) {
+        isScreenlockedMap_.erase(lockIter);
+    } else {
+        SCLOCK_HILOGI("onRemoveUser screenStateLock user not exit, userId: %{public}d", userId);
+    }
+    screenStateLock.unlock();
 }
 
 int32_t ScreenLockSystemAbility::Init()
@@ -224,15 +244,7 @@ void ScreenLockSystemAbility::InitServiceHandler()
 
 void ScreenLockSystemAbility::InitUserId()
 {
-    std::lock_guard<std::mutex> lock(accountSubscriberMutex_);
-    OsAccountSubscribeInfo subscribeInfo;
-    subscribeInfo.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATED);
-    accountSubscriber_ = std::make_shared<AccountSubscriber>(subscribeInfo);
-
-    int32_t ret = OsAccountManager::SubscribeOsAccount(accountSubscriber_);
-    if (ret != ERR_OK) {
-        SCLOCK_HILOGE("SubscribeOsAccount failed.[ret]:%{public}d", ret);
-    }
+    subscribeAcccount();
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
 
     int userId = GetCurrentActiveOsAccountId();
@@ -267,7 +279,37 @@ void ScreenLockSystemAbility::OnStop()
     if (ret != SUCCESS) {
         SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
     }
+
+    ret = OsAccountManager::UnsubscribeOsAccount(accountRemoveSubscriber_);
+    if (ret != SUCCESS) {
+        SCLOCK_HILOGE("unsubscribe remove account failed, code=%{public}d", ret);
+    }
     SCLOCK_HILOGI("OnStop end.");
+}
+
+void ScreenLockSystemAbility::subscribeAcccount()
+{
+    std::unique_lock<std::mutex> lock(accountSubscriberMutex_);
+    OsAccountSubscribeInfo subscribeInfoActivate;
+    subscribeInfoActivate.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATED);
+    accountSubscriber_ = std::make_shared<AccountSubscriber>(subscribeInfoActivate);
+
+    int32_t ret = OsAccountManager::SubscribeOsAccount(accountSubscriber_);
+    if (ret != ERR_OK) {
+        SCLOCK_HILOGE("SubscribeOsAccount activate failed.[ret]:%{public}d", ret);
+    }
+    lock.unlock();
+
+    std::unique_lock<std::mutex> removeLock(accounRemovetSubscriberMutex_);
+    OsAccountSubscribeInfo subscribeInfoRemove;
+    subscribeInfoRemove.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED);
+    accountRemoveSubscriber_ = std::make_shared<AccountRemoveSubscriber>(subscribeInfoRemove);
+
+    ret = OsAccountManager::SubscribeOsAccount(accountRemoveSubscriber_);
+    if (ret != ERR_OK) {
+        SCLOCK_HILOGE("SubscribeOsAccount remove failed.[ret]:%{public}d", ret);
+    }
+    removeLock.unlock();
 }
 
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
@@ -430,7 +472,7 @@ int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &l
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    if (stateValue_.GetScreenlockedState()) {
+    if (IsScreenLocked()) {
         SCLOCK_HILOGI("Currently in a locked screen state");
     }
     lockListenerMutex_.lock();
@@ -447,7 +489,7 @@ int32_t ScreenLockSystemAbility::Lock(int32_t userId)
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    if (stateValue_.GetScreenlockedState()) {
+    if (IsScreenLocked()) {
         SCLOCK_HILOGI("Currently in a locked screen state");
     }
     SystemEvent systemEvent(LOCKSCREEN);
@@ -472,7 +514,34 @@ bool ScreenLockSystemAbility::IsScreenLocked()
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGI("IsScreenLocked restart.");
     }
-    return stateValue_.GetScreenlockedState();
+
+    int32_t userId = GetUserIdFromCallingUid();
+    std::unique_lock<std::mutex> slm(screenLockMutex_);
+    auto iter = isScreenlockedMap_.find(userId);
+    if (iter != isScreenlockedMap_.end()) {
+        return iter->second;
+    } else {
+        SCLOCK_HILOGE("The IsScreenLocked is not set. userId=%{public}d, default screenLocked: true", userId);
+        return true;
+    }
+}
+
+int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLocked)
+{
+    if (!IsSystemApp()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    std::unique_lock<std::mutex> slm(screenLockMutex_);
+    auto iter = isScreenlockedMap_.find(userId);
+    if (iter != isScreenlockedMap_.end()) {
+        isLocked = iter->second;
+        return E_SCREENLOCK_OK;
+    } else {
+        isLocked = true;
+        SCLOCK_HILOGE("IsLockedWithUserId userId is not set. userId=%{public}d, default screenLocked: true", userId);
+        return E_SCREENLOCK_USER_ID_INVALID;
+    }
 }
 
 bool ScreenLockSystemAbility::GetSecure()
@@ -514,6 +583,8 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     if (queue_ != nullptr) {
         queue_->submit(callback);
     }
+    int32_t userId = GetUserIdFromCallingUid();
+    stateValue_.SetCurrentUser(userId);
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent end.");
     return E_SCREENLOCK_OK;
 }
@@ -588,9 +659,14 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::lock_guard<std::mutex> lock(authStateMutex_);
+    std::unique_lock<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
+        bool nextState = getDeviceLockedStateByAuth(authState);
+        bool curState = getDeviceLockedStateByAuth(iter->second);
+        if (nextState != curState) {
+            InnerListenerManager::GetInstance()->OnDeviceLockStateChanged(userId, static_cast<int32_t>(nextState));
+        }
         iter->second = authState;
         return E_SCREENLOCK_OK;
     }
@@ -605,7 +681,7 @@ int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &aut
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::lock_guard<std::mutex> lock(authStateMutex_);
+    std::unique_lock<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         authState = iter->second;
@@ -628,7 +704,7 @@ int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userI
     }
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     StrongAuthChanged(userId, reasonFlag);
-    StrongAuthListenerManager::GetInstance().OnStrongAuthChanged(userId, reasonFlag);
+    InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
     return E_SCREENLOCK_OK;
 #endif // IS_SO_CROP_H
 }
@@ -645,36 +721,46 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 #endif // IS_SO_CROP_H
 }
 
-int32_t ScreenLockSystemAbility::RegisterStrongAuthListener(const int32_t userId,
-                                                            const sptr<StrongAuthListenerInterface>& listener)
+int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, const ListenType listenType,
+                                                       const sptr<InnerListenerIf>& listener)
 {
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+
+    if (listenType == ListenType::STRONG_AUTH && !CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    return StrongAuthListenerManager::GetInstance().RegisterStrongAuthListener(userId, listener);
+    
+    return InnerListenerManager::GetInstance()->RegisterInnerListener(userId, listenType, listener);
 }
 
-int32_t ScreenLockSystemAbility::UnRegisterStrongAuthListener(const int32_t userId,
-                                                              const sptr<StrongAuthListenerInterface>& listener)
+int32_t ScreenLockSystemAbility::UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
+                                                         const sptr<InnerListenerIf>& listener)
 {
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+
+    if (listenType == ListenType::STRONG_AUTH && !CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    return StrongAuthListenerManager::GetInstance().UnRegisterStrongAuthListener(listener);
+
+    return InnerListenerManager::GetInstance()->UnRegisterInnerListener(listenType, listener);
 }
 
-void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked)
+void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked, const int32_t userId)
 {
-    SCLOCK_HILOGI("ScreenLockSystemAbility SetScreenlocked state:%{public}d.", isScreenlocked);
-    stateValue_.SetScreenlocked(isScreenlocked);
+    SCLOCK_HILOGI("SetScreenlocked state:%{public}d, userId:%{public}d", isScreenlocked, userId);
+    std::unique_lock<std::mutex> slm(screenLockMutex_);
+    auto iter = isScreenlockedMap_.find(userId);
+    if (iter != isScreenlockedMap_.end()) {
+        iter->second = isScreenlocked;
+    } else {
+        isScreenlockedMap_.insert(std::make_pair(userId, isScreenlocked));
+    }
 }
 
 int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked)
@@ -684,22 +770,22 @@ int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
 
-    std::lock_guard<std::mutex> lock(authStateMutex_);
+    std::unique_lock<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         int32_t authState = iter->second;
         isDeviceLocked = getDeviceLockedStateByAuth(authState);
-        SCLOCK_HILOGI("The userId is not set. userId=%{public}d, isDeviceLocked=%{public}d", userId, isDeviceLocked);
+        SCLOCK_HILOGI("IsDeviceLocked. userId=%{public}d, isDeviceLocked=%{public}d", userId, isDeviceLocked);
         return E_SCREENLOCK_OK;
     } else {
         isDeviceLocked = true;
+        SCLOCK_HILOGI("user not set. userId=%{public}d, isDeviceLocked=%{public}d", userId, isDeviceLocked);
         return E_SCREENLOCK_USER_ID_INVALID;
     }
 }
 
 void StateValue::Reset()
 {
-    isScreenlocked_ = false;
     screenlockEnabled_ = true;
     currentUser_ = USER_NULL;
 }
@@ -732,40 +818,51 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
 #else
     auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "dump all screenlock information",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
-            bool screenLocked = stateValue_.GetScreenlockedState();
             bool screenState = stateValue_.GetScreenState();
             int32_t offReason = stateValue_.GetOffReason();
             int32_t interactiveState = stateValue_.GetInteractiveState();
-            string temp_screenLocked = "";
-            screenLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
             string temp_screenState = "";
             screenState ? temp_screenState = "true" : temp_screenState = "false";
             output.append("\n Screenlock system state\\tValue\\t\\tDescription\n")
-                .append(" * screenLocked  \t\t" + temp_screenLocked + "\t\twhether there is lock screen status\n")
                 .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
                 .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
                 .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
                 "\t\tscreen interaction status\n");
 
+            std::unique_lock<std::mutex> authStateLock(authStateMutex_);
             for (auto iter = authStateInfo.begin(); iter != authStateInfo.end(); iter++) {
                 int32_t userId = iter->first;
                 bool deviceLocked = getDeviceLockedStateByAuth(iter->second);
                 string temp_deviceLocked = "";
                 deviceLocked ? temp_deviceLocked = "true" : temp_deviceLocked = "false";
                 string temp_userId = std::to_string(static_cast<int>(userId));
+                string temp_authState = std::to_string(static_cast<int>(iter->second));
                 output.append(" * deviceLocked  \t\t" + temp_deviceLocked + "\t\t" + temp_userId + "\n");
+                output.append(" * authState  \t\t" + temp_authState + "\t\t" + temp_userId + "\n");
             }
+            authStateLock.unlock();
+
+            std::unique_lock<std::mutex> screenLockedLock(screenLockMutex_);
+            for (auto iter = isScreenlockedMap_.begin(); iter != isScreenlockedMap_.end(); iter++) {
+                int32_t userId = iter->first;
+                bool isLocked = iter->second;
+                string temp_screenLocked = "";
+                isLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
+                string temp_userId = std::to_string(static_cast<int>(userId));
+                output.append(" * screenLocked  \t\t" + temp_screenLocked + "\t\t" + temp_userId + "\n");
+            }
+            screenLockedLock.unlock();
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
 #endif // IS_SO_CROP_H
 }
 
-void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction)
+void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction, const int32_t userId)
 {
     AAFwk::Want want;
     want.SetAction(eventAction);
-    want.SetParam("userId", GetUserIdFromCallingUid());
+    want.SetParam("userId", userId);
     EventFwk::CommonEventData commonData(want);
     bool ret = EventFwk::CommonEventManager::PublishCommonEvent(commonData);
     SCLOCK_HILOGD("Publish event result is:%{public}d", ret);
@@ -774,8 +871,10 @@ void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction)
 void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
 {
     SCLOCK_HILOGD("ScreenLockSystemAbility LockScreenEvent stateResult:%{public}d", stateResult);
+    int32_t userId = 0;
     if (stateResult == ScreenChange::SCREEN_SUCC) {
-        SetScreenlocked(true);
+        userId = GetUserIdFromCallingUid();
+        SetScreenlocked(true, userId);
     }
     std::lock_guard<std::mutex> autoLock(lockListenerMutex_);
     if (lockVecListeners_.size()) {
@@ -789,7 +888,7 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
         ffrt::submit(callback);
     }
     if (stateResult == ScreenChange::SCREEN_SUCC) {
-        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED);
+        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_LOCKED, userId);
     }
 }
 
@@ -797,9 +896,10 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 {
     SCLOCK_HILOGD("ScreenLockSystemAbility UnlockScreenEvent stateResult:%{public}d", stateResult);
     if (stateResult == ScreenChange::SCREEN_SUCC) {
-        SetScreenlocked(false);
+        int32_t userId = GetUserIdFromCallingUid();
+        SetScreenlocked(false, userId);
         NotifyDisplayEvent(DisplayEvent::UNLOCK);
-        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_UNLOCKED);
+        PublishEvent(EventFwk::CommonEventSupport::COMMON_EVENT_SCREEN_UNLOCKED, userId);
     }
 
     if (stateResult != ScreenChange::SCREEN_FAIL) {
@@ -906,6 +1006,23 @@ bool ScreenLockSystemAbility::getDeviceLockedStateByAuth(int32_t authState)
         return false;
     }
     return true;
+}
+
+void ScreenLockSystemAbility::authStateInit(const int32_t userId)
+{
+    std::unique_lock<std::mutex> authLock(authStateMutex_);
+    auto authIter = authStateInfo.find(userId);
+    if (authIter == authStateInfo.end()) {
+        authStateInfo.insert(std::make_pair(userId, static_cast<int32_t>(AuthState::UNAUTH)));
+    }
+    authLock.unlock();
+
+    std::unique_lock<std::mutex> screenStateLock(screenLockMutex_);
+    auto lockIter = isScreenlockedMap_.find(userId);
+    if (lockIter == isScreenlockedMap_.end()) {
+        isScreenlockedMap_.insert(std::make_pair(userId, true));
+    }
+    screenStateLock.unlock();
 }
 } // namespace ScreenLock
 } // namespace OHOS

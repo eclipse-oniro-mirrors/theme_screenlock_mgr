@@ -378,12 +378,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
     sptr<ScreenLockCallbackInterface> listener = new (std::nothrow) ScreenlockCallbackTest(g_unlockTestListener);
     ASSERT_NE(listener, nullptr);
 
-    ScreenLockSystemAbility::GetInstance()->stateValue_.SetScreenlocked(true);
+    int32_t userId = ScreenLockSystemAbility::GetInstance()->GetState().GetCurrentUser();
+    ScreenLockSystemAbility::GetInstance()->SetScreenlocked(true, userId);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     EXPECT_EQ(isLocked, true);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
-    ScreenLockSystemAbility::GetInstance()->stateValue_.SetScreenlocked(false);
+    ScreenLockSystemAbility::GetInstance()->SetScreenlocked(false, userId);
     result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
 }

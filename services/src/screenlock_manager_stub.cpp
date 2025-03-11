@@ -65,10 +65,12 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnGetStrongAuth;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_DEVICE_LOCKED)] =
         &ScreenLockManagerStub::OnIsDeviceLocked;
-    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_STRONGAUTH_LISTENER)] =
-        &ScreenLockManagerStub::OnRegistStrongAuthListener;
-    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_STRONGAUTH_LISTENER)] =
-        &ScreenLockManagerStub::OnUnRegistStrongAuthListener;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_INNER_LISTENER)] =
+        &ScreenLockManagerStub::OnRegistInnerListener;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_INNER_LISTENER)] =
+        &ScreenLockManagerStub::OnUnRegistInnerListener;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_USER_SCREEN_LOCKED)] =
+        &ScreenLockManagerStub::OnIsLockedWithUserId;
 }
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -267,38 +269,41 @@ int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParce
     return ERR_NONE;
 }
 
-int32_t ScreenLockManagerStub::OnRegistStrongAuthListener(MessageParcel &data, MessageParcel &reply)
+int32_t ScreenLockManagerStub::OnRegistInnerListener(MessageParcel &data, MessageParcel &reply)
 {
     int32_t userId = data.ReadInt32();
+    int32_t listenType = data.ReadInt32();
+
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
         SCLOCK_HILOGE("remote is nullptr");
         return ERR_INVALID_DATA;
     }
-    sptr<StrongAuthListenerInterface> listener = iface_cast<StrongAuthListenerInterface>(remote);
+    sptr<InnerListenerIf> listener = iface_cast<InnerListenerIf>(remote);
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGE("listener is null");
         return ERR_INVALID_DATA;
     }
-    int32_t retCode = RegisterStrongAuthListener(userId, listener);
+    int32_t retCode = RegisterInnerListener(userId, static_cast<ListenType>(listenType), listener);
     reply.WriteInt32(retCode);
     return ERR_NONE;
 }
 
-int32_t ScreenLockManagerStub::OnUnRegistStrongAuthListener(MessageParcel &data, MessageParcel &reply)
+int32_t ScreenLockManagerStub::OnUnRegistInnerListener(MessageParcel &data, MessageParcel &reply)
 {
     int32_t userId = data.ReadInt32();
+    ListenType listenType = static_cast<ListenType>(data.ReadInt32());
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
         SCLOCK_HILOGE("remote is nullptr");
         return ERR_INVALID_DATA;
     }
-    sptr<StrongAuthListenerInterface> listener = iface_cast<StrongAuthListenerInterface>(remote);
+    sptr<InnerListenerIf> listener = iface_cast<InnerListenerIf>(remote);
     if (listener.GetRefPtr() == nullptr) {
         SCLOCK_HILOGE("listener is null");
         return ERR_INVALID_DATA;
     }
-    int32_t retCode = UnRegisterStrongAuthListener(userId, listener);
+    int32_t retCode = UnRegisterInnerListener(userId, listenType, listener);
     reply.WriteInt32(retCode);
     return ERR_NONE;
 }
@@ -320,6 +325,19 @@ int32_t ScreenLockManagerStub::OnIsDeviceLocked(MessageParcel &data, MessageParc
     reply.WriteInt32(retCode);
     if (retCode == E_SCREENLOCK_OK) {
         reply.WriteBool(isDeviceLocked);
+    }
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, MessageParcel &reply)
+{
+    bool isLocked = true;
+    int32_t userId = data.ReadInt32();
+    SCLOCK_HILOGD("userId=%{public}d", userId);
+    int32_t retCode = IsLockedWithUserId(userId, isLocked);
+    reply.WriteInt32(retCode);
+    if (retCode == E_SCREENLOCK_OK) {
+        reply.WriteBool(isLocked);
     }
     return ERR_NONE;
 }

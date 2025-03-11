@@ -44,11 +44,6 @@ public:
 
     void Reset();
 
-    void SetScreenlocked(bool isScreenlocked)
-    {
-        isScreenlocked_ = isScreenlocked;
-    };
-
     void SetScreenlockEnabled(bool screenlockEnabled)
     {
         screenlockEnabled_ = screenlockEnabled;
@@ -72,11 +67,6 @@ public:
     void SetInteractiveState(int32_t interactiveState)
     {
         interactiveState_ = interactiveState;
-    };
-
-    bool GetScreenlockedState()
-    {
-        return isScreenlocked_;
     };
 
     bool GetScreenlockEnabled()
@@ -105,7 +95,6 @@ public:
     };
 
 private:
-    std::atomic<bool> isScreenlocked_ { false };
     std::atomic<bool> screenlockEnabled_ { false };
     std::atomic<int32_t> offReason_ {0};
     std::atomic<int32_t> currentUser_ {0};
@@ -148,6 +137,7 @@ public:
     SCREENLOCK_API static sptr<ScreenLockSystemAbility> GetInstance();
     int32_t IsLocked(bool &isLocked) override;
     bool IsScreenLocked() override;
+    int32_t IsLockedWithUserId(int32_t userId, bool &isLocked) override;
     bool GetSecure() override;
     int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener) override;
     int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener) override;
@@ -161,12 +151,12 @@ public:
     int32_t RequestStrongAuth(int reasonFlag, int32_t userId) override;
     int32_t GetStrongAuth(int userId, int32_t &reasonFlag) override;
     int32_t IsDeviceLocked(int userId, bool &isDeviceLocked) override;
-    int32_t RegisterStrongAuthListener(const int32_t userId,
-                                       const sptr<StrongAuthListenerInterface>& listener) override;
-    int32_t UnRegisterStrongAuthListener(const int32_t userId,
-                                         const sptr<StrongAuthListenerInterface>& listener) override;
+    int32_t RegisterInnerListener(const int32_t userId, const ListenType listenType,
+                                  const sptr<InnerListenerIf>& listener) override;
+    int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
+                                         const sptr<InnerListenerIf>& listener) override;
     int Dump(int fd, const std::vector<std::u16string> &args) override;
-    void SetScreenlocked(bool isScreenlocked);
+    void SetScreenlocked(bool isScreenlocked, const int32_t userId);
     void RegisterDisplayPowerEventListener(int32_t times);
     void ResetFfrtQueue();
     void StrongAuthChanged(int32_t userId, int32_t reasonFlag);
@@ -191,6 +181,13 @@ public:
         int userId_{-1};
     };
 
+    class AccountRemoveSubscriber : public AccountSA::OsAccountSubscriber {
+    public:
+        explicit AccountRemoveSubscriber(const AccountSA::OsAccountSubscribeInfo &subscribeInfo);
+        ~AccountRemoveSubscriber() override = default;
+        void OnAccountsChanged(const int &id) override;
+    };
+
 protected:
     void OnStart() override;
     void OnStop() override;
@@ -211,13 +208,16 @@ private:
     void UnlockScreenEvent(int stateResult);
     void SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId = HITRACE_BUTT);
     int32_t UnlockInner(const sptr<ScreenLockCallbackInterface> &listener);
-    void PublishEvent(const std::string &eventAction);
+    void PublishEvent(const std::string &eventAction, const int32_t userId);
     bool IsAppInForeground(int32_t callingPid, uint32_t callingTokenId);
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
     void NotifyDisplayEvent(Rosen::DisplayEvent event);
     bool getDeviceLockedStateByAuth(int authState);
+    void onRemoveUser(const int userId);
+    void subscribeAcccount();
+    void authStateInit(const int userId);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
@@ -225,6 +225,8 @@ private:
     static std::shared_ptr<ffrt::queue> queue_;
     std::shared_ptr<AccountSubscriber> accountSubscriber_;
     std::mutex accountSubscriberMutex_;
+    std::shared_ptr<AccountRemoveSubscriber> accountRemoveSubscriber_;
+    std::mutex accounRemovetSubscriberMutex_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
@@ -236,6 +238,8 @@ private:
     std::atomic<bool> systemReady_ = false;
     std::map<int32_t, int32_t> authStateInfo;
     std::mutex authStateMutex_;
+    std::map<int32_t, bool> isScreenlockedMap_;
+    std::mutex screenLockMutex_;
 };
 } // namespace ScreenLock
 } // namespace OHOS

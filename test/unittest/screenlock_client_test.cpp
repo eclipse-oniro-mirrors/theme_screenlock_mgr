@@ -64,7 +64,8 @@ void ScreenLockClientTest::TearDown()
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest001, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test IsScreenLocked state");
-    ScreenLockSystemAbility::GetInstance()->SetScreenlocked(true);
+    int32_t userId = ScreenLockSystemAbility::GetInstance()->GetState().GetCurrentUser();
+    ScreenLockSystemAbility::GetInstance()->SetScreenlocked(true, userId);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     EXPECT_EQ(isLocked, true);
 }
