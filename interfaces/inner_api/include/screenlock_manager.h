@@ -25,8 +25,8 @@
 #include "screenlock_common.h"
 #include "screenlock_manager_interface.h"
 #include "screenlock_system_ability_interface.h"
-#include "screenlock_strongauth_listener.h"
-#include "screenlock_strongauth_wapper.h"
+#include "screenlock_inner_listener.h"
+#include "screenlock_inner_listener_wapper.h"
 #include "visibility.h"
 
 namespace OHOS {
@@ -65,6 +65,9 @@ public:
     SCREENLOCK_API int32_t IsDeviceLocked(int userId, bool &isDeviceLocked);
     SCREENLOCK_API int32_t RegisterStrongAuthListener(const sptr<StrongAuthListener> &listener);
     SCREENLOCK_API int32_t UnRegisterStrongAuthListener(const sptr<StrongAuthListener> &listener);
+    SCREENLOCK_API int32_t IsLockedWithUserId(int userId, bool &isLocked);
+    SCREENLOCK_API int32_t RegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener);
+    SCREENLOCK_API int32_t UnRegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener);
 private:
     class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {
     public:
@@ -89,8 +92,10 @@ private:
     sptr<ScreenLockSaDeathRecipient> deathRecipient_;
     std::mutex managerProxyLock_;
     sptr<ScreenLockManagerInterface> screenlockManagerProxy_;
-    std::mutex mWrapperMapMutex;
-    std::map<sptr<StrongAuthListener>, sptr<StrongAuthListenerWrapper>> mWrapperMap;
+    std::mutex ListenerWrapperMapMutex;
+    std::map<sptr<InnerListener>, sptr<InnerListenerWrapper>> InnerListenerWrapperMap;
+    int32_t RegisterListenerInner(const ListenType listenType, const sptr<InnerListener>& listener);
+    int32_t UnRegisterListenerInner(const ListenType listenType, const sptr<InnerListener>& listener);
 };
 } // namespace ScreenLock
 } // namespace OHOS

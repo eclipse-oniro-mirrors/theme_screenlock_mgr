@@ -22,6 +22,7 @@
 #include "sclock_log.h"
 #include "screenlock_common.h"
 #include "system_ability_definition.h"
+#include "screenlock_inner_listener.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -68,6 +69,19 @@ bool ScreenLockManager::IsScreenLocked()
         return false;
     }
     return proxy->IsScreenLocked();
+}
+
+int32_t ScreenLockManager::IsLockedWithUserId(int userId, bool &isLocked)
+{
+    SCLOCK_HILOGD("ScreenLockManager::IsLockedWithUserId in");
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("ScreenLockManager::IsLockedWithUserId quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->IsLockedWithUserId(userId, isLocked);
+    SCLOCK_HILOGD("ScreenLockManager::IsLockedWithUserId out, status=%{public}d", status);
+    return status;
 }
 
 bool ScreenLockManager::GetSecure()
@@ -240,47 +254,104 @@ int32_t ScreenLockManager::RegisterStrongAuthListener(const sptr<StrongAuthListe
         SCLOCK_HILOGE("RegisterStrongAuthListener quit because redoing GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
-    sptr<StrongAuthListenerWrapper> wrapper = new (std::nothrow) StrongAuthListenerWrapper(listener);
-    if (wrapper == nullptr) {
-        SCLOCK_HILOGE("Failed to create StrongAuthListenerWrapper.");
-        return E_SCREENLOCK_NULLPTR;
-    }
 
-    std::lock_guard<std::mutex> lock(mWrapperMapMutex);
-    // 检查是否已经存在对应的Wrapper
-    if (mWrapperMap.find(listener) != mWrapperMap.end()) {
-        SCLOCK_HILOGW("Wrapper already exists for this listener.");
-        delete wrapper;
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("RegisterStrongAuthListener quit because listener is null.");
         return E_SCREENLOCK_NULLPTR;
     }
-    mWrapperMap[listener] = wrapper;
-    int32_t userId = listener->GetUserId();
-    int32_t status = proxy->RegisterStrongAuthListener(userId, wrapper);
-    SCLOCK_HILOGD("RegisterStrongAuthListener out, status=%{public}d", status);
-    return status;
+    
+    return RegisterListenerInner(ListenType::STRONG_AUTH, listener);
 }
 
 int32_t ScreenLockManager::UnRegisterStrongAuthListener(const sptr<StrongAuthListener> &listener)
 {
-    SCLOCK_HILOGD("UnRegisterStrongAuthListener in");
+    SCLOCK_HILOGD("UnRegisterInnerListener in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        SCLOCK_HILOGE("UnRegisterStrongAuthListener quit because redoing GetProxy failed.");
+        SCLOCK_HILOGE("UnRegisterInnerListener quit because redoing GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
 
-    std::lock_guard<std::mutex> lock(mWrapperMapMutex);
-    auto it = mWrapperMap.find(listener);
-    if (it == mWrapperMap.end()) {
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("RegisterStrongAuthListener quit because listener is null.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    return UnRegisterListenerInner(ListenType::STRONG_AUTH, listener);
+}
+
+int32_t ScreenLockManager::RegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener)
+{
+    SCLOCK_HILOGD("RegisterDeviceLockedListener in");
+
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("RegisterDeviceLockedListener quit because listener is null.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    
+    return RegisterListenerInner(ListenType::DEVICE_LOCK, listener);
+}
+int32_t ScreenLockManager::UnRegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener)
+{
+    SCLOCK_HILOGD("UnRegisterDeviceLockedListener in");
+
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("UnRegisterDeviceLockedListener quit because listener is null.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    return UnRegisterListenerInner(ListenType::DEVICE_LOCK, listener);
+}
+
+int32_t ScreenLockManager::RegisterListenerInner(const ListenType listenType, const sptr<InnerListener>& listener)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("RegisterDeviceLockedListener quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    sptr<InnerListenerWrapper> wrapper = new (std::nothrow) InnerListenerWrapper(listener);
+    if (wrapper == nullptr) {
+        SCLOCK_HILOGE("Failed to create InnerListenerWrapper.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    std::lock_guard<std::mutex> lock(ListenerWrapperMapMutex);
+    // 检查是否已经存在对应的Wrapper
+    if (InnerListenerWrapperMap.find(listener) != InnerListenerWrapperMap.end()) {
+        SCLOCK_HILOGW("Wrapper already exists for this listener.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    InnerListenerWrapperMap[listener] = wrapper;
+    int32_t userId = listener->GetUserId();
+    int32_t status = proxy->RegisterInnerListener(userId, listenType, wrapper);
+    SCLOCK_HILOGI("RegisterInnerListener out, listenType=%{public}d, status=%{public}d", listenType, status);
+    return status;
+}
+
+int32_t ScreenLockManager::UnRegisterListenerInner(const ListenType listenType,
+                                                   const sptr<InnerListener>& listener)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("UnRegisterDeviceLockedListener quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+
+    std::lock_guard<std::mutex> lock(ListenerWrapperMapMutex);
+    auto it = InnerListenerWrapperMap.find(listener);
+    if (it == InnerListenerWrapperMap.end()) {
         SCLOCK_HILOGW("No wrapper found for this listener.");
         return E_SCREENLOCK_NULLPTR;
     }
-    sptr<StrongAuthListenerWrapper> wrapper = it->second;
+    sptr<InnerListenerWrapper> wrapper = it->second;
     int32_t userId = listener->GetUserId();
-    int32_t status = proxy->UnRegisterStrongAuthListener(userId, wrapper);
-    SCLOCK_HILOGD("UnRegisterStrongAuthListener out, status=%{public}d", status);
+    int32_t status = proxy->UnRegisterInnerListener(userId, listenType, wrapper);
+    SCLOCK_HILOGI("UnRegisterInnerListener out, listenType=%{public}d, status=%{public}d", listenType, status);
     // 移除Wrapper对象
-    mWrapperMap.erase(it);
+    InnerListenerWrapperMap.erase(it);
     return status;
 }
 

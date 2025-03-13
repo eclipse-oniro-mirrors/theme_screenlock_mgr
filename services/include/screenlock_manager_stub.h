@@ -51,8 +51,9 @@ private:
     int32_t OnRequestStrongAuth(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetStrongAuth(MessageParcel &data, MessageParcel &reply);
     int32_t OnIsDeviceLocked(MessageParcel &data, MessageParcel &reply);
-    int32_t OnRegistStrongAuthListener(MessageParcel &data, MessageParcel &reply);
-    int32_t OnUnRegistStrongAuthListener(MessageParcel &data, MessageParcel &reply);
+    int32_t OnRegistInnerListener(MessageParcel &data, MessageParcel &reply);
+    int32_t OnUnRegistInnerListener(MessageParcel &data, MessageParcel &reply);
+    int32_t OnIsLockedWithUserId(MessageParcel &data, MessageParcel &reply);
 
 private:
     HandleFuncMap handleFuncMap;

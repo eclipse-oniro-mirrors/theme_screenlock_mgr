@@ -114,6 +114,12 @@ enum class SpecialUserId : int32_t {
     USER_UNDEFINED = -10000,
 };
 
+enum class ListenType : int32_t {
+    STRONG_AUTH,
+    DEVICE_LOCK,
+    LISTEN_TYPE_BUT,
+};
+
 constexpr int BEGIN_SLEEP_DEVICE_ADMIN_REASON = 1;
 constexpr int BEGIN_SLEEP_USER_REASON = 2;
 constexpr int BEGIN_SLEEP_LONG_TIME_UNOPERATOR = 3;

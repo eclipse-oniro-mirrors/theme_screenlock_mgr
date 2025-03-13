@@ -20,7 +20,7 @@
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
 #include "os_account_manager.h"
-#include "strongauthlistenermanager.h"
+#include "innerlistenermanager.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -108,7 +108,7 @@ static void StrongAuthTimerCallback(int32_t userId)
     StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
-    StrongAuthListenerManager::GetInstance().OnStrongAuthChanged(userId, reasonFlag);
+    InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
     return;
 }
 
