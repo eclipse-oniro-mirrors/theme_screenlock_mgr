@@ -13,7 +13,7 @@
 
 import("//build/test.gni")
 
-module_output_path = "theme/screenlockJsTest"
+module_output_path = "screenlock_mgr/screenlock_mgr/screenlockJsTest"
 
 ohos_js_unittest("ScreenlockJsTest") {
   module_out_path = module_output_path
