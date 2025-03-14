@@ -14,7 +14,7 @@
 import("//build/test.gni")
 import("../screenlock.gni")
 
-module_output_path = "screenlock/screenlock_service"
+module_output_path = "screenlock_mgr/screenlock_mgr/screenlock_service"
 
 ohos_unittest("ScreenLockServiceTest") {
   sanitize = {
