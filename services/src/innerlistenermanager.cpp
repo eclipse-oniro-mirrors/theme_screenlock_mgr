@@ -21,7 +21,6 @@
 namespace OHOS {
 namespace ScreenLock {
 using DeathRecipient = IRemoteObject::DeathRecipient;
-const std::int64_t SUCCESS = 0;
 std::mutex InnerListenerManager::instanceLock_;
 sptr<InnerListenerManager> InnerListenerManager::instance_;
 
@@ -47,7 +46,7 @@ int32_t InnerListenerManager::RegisterInnerListener(int32_t userId, const Listen
     }
 
     int32_t result = AddDeathRecipient(listenType, listener);
-    if (result != SUCCESS) {
+    if (result != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("AddDeathRecipient fail");
         return result;
     }
@@ -57,13 +56,13 @@ int32_t InnerListenerManager::RegisterInnerListener(int32_t userId, const Listen
     }
 
     result = AddInnerListener(userId, listenType, listener);
-    if (result != SUCCESS) {
+    if (result != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("RegisterInnerListener fail");
         return result;
     }
 
     SCLOCK_HILOGI("RegisterInnerListener success");
-    return SUCCESS;
+    return E_SCREENLOCK_OK;
 }
 
 int32_t InnerListenerManager::UnRegisterInnerListener(const ListenType listenType,
@@ -75,19 +74,19 @@ int32_t InnerListenerManager::UnRegisterInnerListener(const ListenType listenTyp
         return E_SCREENLOCK_NULLPTR;
     }
     int32_t result = RemoveDeathRecipient(listener);
-    if (result != SUCCESS) {
+    if (result != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("RemoveDeathRecipient fail");
         return result;
     }
     // Remove the listener from the map
     result = RemoveInnerListener(listenType, listener);
-    if (result != SUCCESS) {
+    if (result != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("RemoveInnerListener fail");
         return result;
     }
 
     SCLOCK_HILOGI("UnRegisterInnerListener success");
-    return SUCCESS;
+    return E_SCREENLOCK_OK;
 }
 
 int32_t InnerListenerManager::AddInnerListener(int32_t userId, const ListenType listenType,
@@ -110,10 +109,10 @@ int32_t InnerListenerManager::AddInnerListener(int32_t userId, const ListenType 
                              FinderSet(listener->AsObject()));
     if (iter != innerListenMap_[listenType][userId].end()) {
         SCLOCK_HILOGE("listener is already registed");
-        return SUCCESS;
+        return E_SCREENLOCK_OK;
     }
     innerListenMap_[listenType][userId].insert(listener);
-    return SUCCESS;
+    return E_SCREENLOCK_OK;
 }
 
 int32_t InnerListenerManager::RemoveInnerListener(const ListenType listenType,
@@ -123,7 +122,7 @@ int32_t InnerListenerManager::RemoveInnerListener(const ListenType listenType,
     auto listenMapIter = innerListenMap_.find(listenType);
     if (listenMapIter == innerListenMap_.end()) {
         SCLOCK_HILOGE("RemoveInnerListener listenType not exit in innerListenMap_");
-        return SUCCESS;
+        return E_SCREENLOCK_OK;
     }
 
     for (auto& pair : innerListenMap_[listenType]) {
@@ -134,12 +133,12 @@ int32_t InnerListenerManager::RemoveInnerListener(const ListenType listenType,
             innerListenMap_[listenType][userId].erase(iter);
             auto length = static_cast<int>(innerListenMap_[listenType][userId].size());
             SCLOCK_HILOGI("Remove userId:%{public}d, length=%{public}d", static_cast<int32_t>(userId), length);
-            return SUCCESS;
+            return E_SCREENLOCK_OK;
         }
     }
 
     SCLOCK_HILOGI("listener not exit");
-    return SUCCESS;
+    return E_SCREENLOCK_OK;
 }
 
 bool InnerListenerManager::HasListenerSet(int32_t userId, ListenType listenType)
@@ -212,7 +211,7 @@ int32_t InnerListenerManager::AddDeathRecipient(const ListenType listenType,
     auto iter = std::find_if(deathRecipientMap_.begin(), deathRecipientMap_.end(), FinderMap(listener->AsObject()));
     if (iter != deathRecipientMap_.end()) {
         SCLOCK_HILOGE("deathRecipient is already registed");
-        return SUCCESS;
+        return E_SCREENLOCK_OK;
     }
 
     sptr<DeathRecipient> dr(new (std::nothrow) InnerListenerDeathRecipient());
@@ -223,7 +222,7 @@ int32_t InnerListenerManager::AddDeathRecipient(const ListenType listenType,
 
     deathRecipientMap_.emplace(listener, std::make_pair(listenType, dr));
     SCLOCK_HILOGI("AddDeathRecipient success length=%{public}d", static_cast<int>(deathRecipientMap_.size()));
-    return SUCCESS;
+    return E_SCREENLOCK_OK;
 }
 
 int32_t InnerListenerManager::RemoveDeathRecipient(const sptr<InnerListenerIf>& listener)
@@ -243,7 +242,7 @@ int32_t InnerListenerManager::RemoveDeathRecipient(const sptr<InnerListenerIf>& 
     auto iter = std::find_if(deathRecipientMap_.begin(), deathRecipientMap_.end(), FinderMap(listener->AsObject()));
     if (iter == deathRecipientMap_.end()) {
         SCLOCK_HILOGE("deathRecipient is not registed");
-        return SUCCESS;
+        return E_SCREENLOCK_OK;
     }
 
     sptr<DeathRecipient> deathRecipient = iter->second.second;
@@ -255,7 +254,7 @@ int32_t InnerListenerManager::RemoveDeathRecipient(const sptr<InnerListenerIf>& 
     obj->RemoveDeathRecipient(deathRecipient);
     deathRecipientMap_.erase(iter);
     SCLOCK_HILOGE("RemoveDeathRecipient success length=%{public}d", static_cast<int>(deathRecipientMap_.size()));
-    return SUCCESS;
+    return E_SCREENLOCK_OK;
 }
 
 std::map<sptr<InnerListenerIf>, std::pair<ListenType, sptr<DeathRecipient>>> InnerListenerManager::GetDeathRecipient()
@@ -278,7 +277,7 @@ void InnerListenerManager::InnerListenerDeathRecipient::OnRemoteDied(const wptr<
         if (iter.first != nullptr && remote == iter.first->AsObject()) {
             SCLOCK_HILOGD("OnRemoteDied success");
             auto result = InnerListenerManager::GetInstance()->UnRegisterInnerListener(iter.second.first, iter.first);
-            if (result != SUCCESS) {
+            if (result != E_SCREENLOCK_OK) {
                 SCLOCK_HILOGE("UnRegisterInnerListener fail");
                 return;
             }
