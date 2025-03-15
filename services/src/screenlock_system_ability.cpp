@@ -528,6 +528,8 @@ bool ScreenLockSystemAbility::IsScreenLocked()
 
 int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLocked)
 {
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
     if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
