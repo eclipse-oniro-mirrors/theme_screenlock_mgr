@@ -39,20 +39,21 @@ void InnerListenerWrapper::OnStateChanged(int userId, int state)
         SCLOCK_HILOGE("eventHandler is nullptr");
         return;
     }
-    // 避免了 this 指针带来的潜在问题, 捕获必要的成员变量
-    sptr<InnerListener> localListener = listener_;
-    int localUserId = userId;
-    int localState = state;
-
-    auto task = [localListener, localUserId, localState]() {
-        localListener->OnStateChanged(localUserId, localState);
-    };
 
     auto ptrTemp = GetEventHandler();
     if (ptrTemp == nullptr) {
-        SCLOCK_HILOGE("EventHandler nullptr");
+        SCLOCK_HILOGI("EventHandler nullptr");
+        listener_->OnStateChanged(userId, state);
     } else {
-        GetEventHandler()->PostTask(task, "InnerListenerWrapper");
+        // 避免了 this 指针带来的潜在问题, 捕获必要的成员变量
+        sptr<InnerListener> localListener = listener_;
+        int localUserId = userId;
+        int localState = state;
+
+        auto task = [localListener, localUserId, localState]() {
+            localListener->OnStateChanged(localUserId, localState);
+        };
+        ptrTemp->PostTask(task, "InnerListenerWrapper");
     }
 
     SCLOCK_HILOGD("OnStateChanged end");

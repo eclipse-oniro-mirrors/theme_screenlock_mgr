@@ -29,7 +29,7 @@ public:
     int32_t GetUserId() { return userId_; }
     virtual void OnStateChanged(int32_t userId, int32_t state) = 0;
 private:
-    int32_t userId_ = -10000;
+    int32_t userId_ = static_cast<int32_t>(SpecialUserId::USER_UNDEFINED);
 };
 
 

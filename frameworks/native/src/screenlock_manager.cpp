@@ -321,7 +321,7 @@ int32_t ScreenLockManager::RegisterListenerInner(const ListenType listenType, co
     // 检查是否已经存在对应的Wrapper
     if (InnerListenerWrapperMap.find(listener) != InnerListenerWrapperMap.end()) {
         SCLOCK_HILOGW("Wrapper already exists for this listener.");
-        return E_SCREENLOCK_NULLPTR;
+        return E_SCREENLOCK_PARAMETERS_INVALID;
     }
 
     InnerListenerWrapperMap[listener] = wrapper;

@@ -300,7 +300,7 @@ void ScreenLockSystemAbility::subscribeAcccount()
     }
     lock.unlock();
 
-    std::unique_lock<std::mutex> removeLock(accounRemovetSubscriberMutex_);
+    std::unique_lock<std::mutex> removeLock(accountRemoveSubscriberMutex_);
     OsAccountSubscribeInfo subscribeInfoRemove;
     subscribeInfoRemove.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED);
     accountRemoveSubscriber_ = std::make_shared<AccountRemoveSubscriber>(subscribeInfoRemove);
@@ -724,7 +724,7 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, const ListenType listenType,
                                                        const sptr<InnerListenerIf>& listener)
 {
-    if (!IsSystemApp()) {
+    if (listenType != ListenType::STRONG_AUTH && !IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -739,7 +739,7 @@ int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, con
 int32_t ScreenLockSystemAbility::UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                                          const sptr<InnerListenerIf>& listener)
 {
-    if (!IsSystemApp()) {
+    if (listenType != ListenType::STRONG_AUTH && !IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
