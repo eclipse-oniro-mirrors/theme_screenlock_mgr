@@ -82,7 +82,7 @@ int32_t InnerListenerManager::UnRegisterInnerListener(const ListenType listenTyp
     // Remove the listener from the map
     result = RemoveInnerListener(listenType, listener);
     if (result != SUCCESS) {
-        SCLOCK_HILOGE("RemoveDeathRecipient fail");
+        SCLOCK_HILOGE("RemoveInnerListener fail");
         return result;
     }
 

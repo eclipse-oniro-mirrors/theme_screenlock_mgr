@@ -300,7 +300,7 @@ void ScreenLockSystemAbility::subscribeAcccount()
     }
     lock.unlock();
 
-    std::unique_lock<std::mutex> removeLock(accounRemovetSubscriberMutex_);
+    std::unique_lock<std::mutex> removeLock(accountRemoveSubscriberMutex_);
     OsAccountSubscribeInfo subscribeInfoRemove;
     subscribeInfoRemove.SetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED);
     accountRemoveSubscriber_ = std::make_shared<AccountRemoveSubscriber>(subscribeInfoRemove);

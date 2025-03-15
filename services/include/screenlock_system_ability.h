@@ -226,7 +226,7 @@ private:
     std::shared_ptr<AccountSubscriber> accountSubscriber_;
     std::mutex accountSubscriberMutex_;
     std::shared_ptr<AccountRemoveSubscriber> accountRemoveSubscriber_;
-    std::mutex accounRemovetSubscriberMutex_;
+    std::mutex accountRemoveSubscriberMutex_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
