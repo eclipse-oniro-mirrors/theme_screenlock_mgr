@@ -528,7 +528,9 @@ bool ScreenLockSystemAbility::IsScreenLocked()
 
 int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLocked)
 {
-    if (!IsSystemApp()) {
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -724,7 +726,9 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, const ListenType listenType,
                                                        const sptr<InnerListenerIf>& listener)
 {
-    if (listenType != ListenType::STRONG_AUTH && !IsSystemApp()) {
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -739,7 +743,9 @@ int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, con
 int32_t ScreenLockSystemAbility::UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                                          const sptr<InnerListenerIf>& listener)
 {
-    if (listenType != ListenType::STRONG_AUTH && !IsSystemApp()) {
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
