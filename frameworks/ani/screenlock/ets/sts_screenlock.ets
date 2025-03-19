@@ -13,12 +13,7 @@
  * limitations under the License.
  */
 
-export class BusinessError<T = void> {
-    code: number;
-    data: T;
-}
-
-type AsyncCallback<T, E = void> = (err: BusinessError<E>, data: T) => void;
+import { BusinessError, AsyncCallback } from '@ohos.base';
 
 namespace ScreenLock {
     export native function islocked():boolean;
