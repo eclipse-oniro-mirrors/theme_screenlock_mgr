@@ -317,6 +317,10 @@ void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowe
 {
     SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
         static_cast<int>(status));
+    if (instance_ == nullptr) {
+        SCLOCK_HILOGE("ScreenLockDisplayPowerEventListener instance_ nullptr");
+        return;
+    }
     switch (event) {
         case DisplayPowerEvent::WAKE_UP:
             instance_->OnWakeUp(status);

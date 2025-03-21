@@ -31,6 +31,8 @@
 #include "screenlock_notify_test_instance.h"
 #include "screenlock_system_ability.h"
 #include "securec.h"
+#include "screenlock_inner_listener.h"
+#include "inner_listener_test.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -341,5 +343,98 @@ HWTEST_F(ScreenLockClientTest, LockTest0015, TestSize.Level0)
     EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
+
+/**
+* @tc.name: LockTest0016
+* @tc.desc: Test IsDeviceLocked.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0016, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test IsDeviceLocked.");
+    int userId = 100;
+    bool isDeviceLocked = false;
+    int32_t retCode = 0;
+    retCode = ScreenLockManager::GetInstance()->IsDeviceLocked(userId, isDeviceLocked);
+    SCLOCK_HILOGI("LockTest0016.[retCode]:%{public}d", retCode);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
+}
+
+/**
+* @tc.name: LockTest0017
+* @tc.desc: Test StrongAuthListener.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0017, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test StrongAuthListener.");
+    int userId = 100;
+    int32_t retCode = 0;
+    sptr<StrongAuthListener> StrongAuthListenerTest1 = nullptr;
+    retCode = ScreenLockManager::GetInstance()->RegisterStrongAuthListener(StrongAuthListenerTest1);
+    SCLOCK_HILOGI("LockTest0017.[retCode]:%{public}d", retCode);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NULLPTR);
+
+    retCode = ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NULLPTR);
+
+    StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(userId);
+    retCode = ScreenLockManager::GetInstance()->RegisterStrongAuthListener(StrongAuthListenerTest1);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
+
+    retCode = ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
+}
+
+/**
+* @tc.name: LockTest0018
+* @tc.desc: Test StrongAuthListener.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0018, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test DeviceLockedListener");
+    int userId = 100;
+    int32_t retCode = 0;
+    sptr<DeviceLockedListener> DeviceLockedListenerTest1 = nullptr;
+    retCode = ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    SCLOCK_HILOGI("LockTest0018.[retCode]:%{public}d", retCode);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NULLPTR);
+
+    retCode = ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NULLPTR);
+
+    DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(userId);
+    retCode = ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
+
+    retCode = ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
+}
+
+/**
+* @tc.name: LockTest0019
+* @tc.desc: Test IsLockedWithUserId.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0019, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test IsDeviceLocked.");
+    int userId = 100;
+    bool isLocked = false;
+    int32_t retCode = 0;
+    bool isDeviceLocked = false;
+    retCode = ScreenLockManager::GetInstance()->IsLockedWithUserId(userId, isDeviceLocked);
+    SCLOCK_HILOGI("LockTest0019.[retCode]:%{public}d", retCode);
+    EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
+}
 } // namespace ScreenLock
 } // namespace OHOS
