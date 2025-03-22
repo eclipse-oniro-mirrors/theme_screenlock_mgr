@@ -46,7 +46,6 @@ public:
     int32_t GetStrongAuthStat(int32_t userId);
     void RegistIamEventListener();
     void UnRegistIamEventListener();
-    int64_t RefreshStrongAuthTimeOutPeriod(int32_t userId);
 
 public:
 
@@ -87,15 +86,21 @@ public:
 
 private:
     void StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
-    int64_t SetStrongAuthTimeOutPeriod(int32_t userId);
-    int64_t GetStrongAuthTimeOutPeriod(int32_t userId);
+    int64_t SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod);
+    int64_t GetStrongAuthTriggerPeriod(int32_t userId);
     uint64_t GetTimerId(int32_t userId);
+
+    struct TimerInfo {
+        uint64_t timeId{0};
+        int64_t triggerPeriod{-1};
+        int64_t timerStartStamp{-1};
+    };
 
     std::mutex strongAuthTimerMutex;
     static std::mutex instanceLock_;
     static sptr<StrongAuthManger> instance_;
     std::map<int32_t, int32_t> strongAuthStateInfo;
-    std::map<int32_t, std::pair<uint64_t, int64_t>> strongAuthTimerInfo;
+    std::map<int32_t, TimerInfo> strongAuthTimerInfo;
     std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> authSuccessListener_;
     std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> credChangeListener_;
 };

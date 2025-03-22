@@ -31,10 +31,10 @@ using namespace OHOS::AccountSA;
 
 // 强认证默认时间 3days
 const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
-// 变更口令后，第一次强认证时间为4h，且不会因认证刷新计时器
+// 变更口令后，第一次强认证时间为4h
 const std::int64_t CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS = 4 * 60 * 60 * 1000;
-// 变更口令后，第二次强认证时间为24h，且不会因认证刷新计时器
-const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 20 * 60 * 60 * 1000;
+// 变更口令后，第二次强认证时间为24h
+const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 StrongAuthManger::StrongAuthManger() {}
 
@@ -108,10 +108,6 @@ static void StrongAuthTimerCallback(int32_t userId)
 {
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
-    int64_t triggerPeriod = StrongAuthManger::GetInstance()->RefreshStrongAuthTimeOutPeriod(userId);
-    if (triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
-    }
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
     InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
@@ -147,7 +143,7 @@ uint64_t StrongAuthManger::GetTimerId(int32_t userId)
     uint64_t timerId = 0;
     auto iter = strongAuthTimerInfo.find(userId);
     if (iter != strongAuthTimerInfo.end()) {
-        timerId = iter->second.first;
+        timerId = iter->second.timerId;
     }
     return timerId;
 }
@@ -187,13 +183,8 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_
         static_cast<int32_t>(authType), bundleName.c_str(), callerType);
     if (authType == AuthType::PIN) {
         StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
-        int64_t triggerPeriod = StrongAuthManger::GetInstance()->GetStrongAuthTimeOutPeriod(userId);
-        if (triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS ||
-            triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-            SCLOCK_HILOGD("credChangeTime should not reset by auth, %{public}ld", triggerPeriod);
-            return;
-        }
-        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+        int64_t triggerPeriod = StrongAuthManger::GetInstance()->GetStrongAuthTriggerPeriod(userId);
+        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
     }
     return;
 }
@@ -205,7 +196,8 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
         static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(credentialId));
     if (authType == AuthType::PIN) {
         StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
-        int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetStrongAuthTimeOutPeriod(userId);
+        int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetCredChangeTriggerPeriod(userId,
+            CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
         StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
     }
     return;
@@ -248,7 +240,12 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
     timerId = MiscServices::TimeServiceClient::GetInstance()->CreateTimer(timer);
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + triggerPeriod);
-    strongAuthTimerInfo.insert(std::make_pair(userId, std::make_pair(timerId, triggerPeriod)));
+    TimerInfo timerInfo = {
+        .timerId = timerId;
+        .triggerPeriod = triggerPeriod,
+        .timerStartStamp = currentTime,
+    };
+    strongAuthTimerInfo.insert(std::make_pair(userId, std::make_pair(timerId, timerInfo)));
     return;
 }
 
@@ -266,30 +263,35 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPerio
     return;
 }
 
-int64_t StrongAuthManger::SetStrongAuthTimeOutPeriod(int32_t userId)
+int64_t StrongAuthManger::SetCredChangetriggerPeriod(int32_t userId, int64_t triggerPeriod)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    strongAuthTimerInfo[userId].second = CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS;
-    return strongAuthTimerInfo[userId].second;
+    strongAuthTimerInfo[userId].triggerPeriod = CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS;
+    strongAuthTimerInfo[userId].timerStartStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
+    return strongAuthTimerInfo[userId].triggerPeriod;
 }
 
-int64_t StrongAuthManger::GetStrongAuthTimeOutPeriod(int32_t userId)
+int64_t StrongAuthManger::RefreshStrongAuthtriggerPeriod(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    return strongAuthTimerInfo[userId].second;
-}
-
-int64_t StrongAuthManger::RefreshStrongAuthTimeOutPeriod(int32_t userId)
-{
-    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    if (strongAuthTimerInfo[userId].second == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
-        strongAuthTimerInfo[userId].second = CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS;
-    } else if (strongAuthTimerInfo[userId].second == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-        strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
-    } else {
-        strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+    int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
+    if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].timerStartStamp > CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+            strongAuthTimerInfo[userId].triggerPeriod = CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS;
+            strongAuthTimerInfo[userId].timerStartStamp = currentTime;
+            return strongAuthTimerInfo[userId].triggerPeriod;
+        }
+        return strongAuthTimerInfo[userId].triggerPeriod;
     }
-    return strongAuthTimerInfo[userId].second;
+
+    if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].timerStartStamp > CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
+            strongAuthTimerInfo[userId].triggerPeriod = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+            return strongAuthTimerInfo[userId].triggerPeriod;
+        }
+        return strongAuthTimerInfo[userId].triggerPeriod;
+    }
+    return strongAuthTimerInfo[userId].triggerPeriod;
 }
 
 void StrongAuthManger::DestroyAllStrongAuthTimer()
