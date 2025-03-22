@@ -43,13 +43,13 @@ bool FuzzScreenlockAuthManager(const uint8_t *rawData, size_t size)
     }
 
     int32_t userId = 100;
-    authmanager->RegistUserAuthSuccessEventListener();
+    authmanager->RegistIamEventListener();
     authmanager->StartStrongAuthTimer(userId);
     authmanager->GetTimerId(userId);
     authmanager->ResetStrongAuthTimer(userId);
     authmanager->DestroyStrongAuthTimer(userId);
     authmanager->DestroyAllStrongAuthTimer();
-    authmanager->UnRegistUserAuthSuccessEventListener();
+    authmanager->UnRegistIamEventListener();
 #endif // IS_SO_CROP_H
     return true;
 }

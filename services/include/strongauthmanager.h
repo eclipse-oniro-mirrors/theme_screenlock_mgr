@@ -26,7 +26,8 @@
 #include "visibility.h"
 #include "time_service_client.h"
 #include "itimer_info.h"
-#include "user_auth_event_listener_stub.h"
+#include "user_auth_client.h"
+#include "user_idm_client.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -37,24 +38,31 @@ public:
     StrongAuthManger();
     ~StrongAuthManger() override;
 
-    uint64_t GetTimerId(int32_t userId);
     void StartStrongAuthTimer(int32_t userId);
     void DestroyStrongAuthTimer(int32_t userId);
     void DestroyAllStrongAuthTimer();
-    void ResetStrongAuthTimer(int32_t userId);
     void SetStrongAuthStat(int32_t userId, int32_t reasonFlag);
     int32_t GetStrongAuthStat(int32_t userId);
-    void RegistUserAuthSuccessEventListener();
-    void UnRegistUserAuthSuccessEventListener();
+    void RegistIamEventListener();
+    void UnRegistIamEventListener();
+    void RefreshStrongAuthTimeOutPeriod(int32_t userId);
 
 public:
 
-    class AuthEventListenerService : public UserIam::UserAuth::AuthEventListenerStub {
+    class AuthEventListenerService : public UserIam::UserAuth::AuthSuccessEventListener {
     public:
         AuthEventListenerService() = default;
-        ~AuthEventListenerService() = default;
+        virtual ~AuthEventListenerService() = default;
         void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType, int32_t callerType,
-                                   std::string &bundleName) override;
+            std::string &bundleName) override;
+    };
+
+    class CredChangeListenerService : public UserIam::UserAuth::CredChangeEventListener {
+    public:
+        CredChangeListenerService() = default;
+        virtual ~CredChangeListenerService() = default;
+        void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
+            UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId) override;
     };
 
     class authTimer : public MiscServices::ITimerInfo {
@@ -77,12 +85,20 @@ public:
     };
 
 private:
+    void StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
+    void ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
+    int64_t SetCredChangeTimeOutPeriod(int32_t userId);
+    int64_t GetStrongAuthTimeOutPeriod(int32_t userId);
+    uint64_t GetTimerId(int32_t userId);
+
+
     std::mutex strongAuthTimerMutex;
     static std::mutex instanceLock_;
     static sptr<StrongAuthManger> instance_;
     std::map<int32_t, int32_t> strongAuthStateInfo;
-    std::map<int32_t, uint64_t> strongAuthTimerInfo;
-    sptr<UserIam::UserAuth::AuthEventListenerInterface> listener_;
+    std::map<int32_t, std::pair<uint64_t, int64_t>> strongAuthTimerInfo;
+    std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> authSuccessListener_;
+    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> credChangeListener_;
 };
 } // namespace OHOS
 } // namespace ScreenLock

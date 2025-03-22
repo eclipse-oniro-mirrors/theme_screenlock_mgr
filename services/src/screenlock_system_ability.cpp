@@ -211,9 +211,18 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     }
 #ifndef IS_SO_CROP_H
     if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
-        StrongAuthManger::GetInstance()->RegistUserAuthSuccessEventListener();
+        StrongAuthManger::GetInstance()->RegistIamEventListener();
     }
 #endif // IS_SO_CROP_H
+}
+
+void ScreenLockSystemAbility::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string &deviceId)
+{
+#ifndef IS_SO_CROP_H
+    if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
+        StrongAuthManger::GetInstance()->UnRegistIamEventListener();
+    }
+#endif // IS_SO_CROP_H 
 }
 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
@@ -272,7 +281,7 @@ void ScreenLockSystemAbility::OnStop()
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
 #ifndef IS_SO_CROP_H
-    StrongAuthManger::GetInstance()->UnRegistUserAuthSuccessEventListener();
+    StrongAuthManger::GetInstance()->UnRegistIamEventListener();
     StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
 #endif // IS_SO_CROP_H
     int ret = OsAccountManager::UnsubscribeOsAccount(accountSubscriber_);
