@@ -39,13 +39,14 @@ public:
     ~StrongAuthManger() override;
 
     void StartStrongAuthTimer(int32_t userId);
+    void ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
     void DestroyStrongAuthTimer(int32_t userId);
     void DestroyAllStrongAuthTimer();
     void SetStrongAuthStat(int32_t userId, int32_t reasonFlag);
     int32_t GetStrongAuthStat(int32_t userId);
     void RegistIamEventListener();
     void UnRegistIamEventListener();
-    void RefreshStrongAuthTimeOutPeriod(int32_t userId);
+    int64_t RefreshStrongAuthTimeOutPeriod(int32_t userId);
 
 public:
 
@@ -86,8 +87,7 @@ public:
 
 private:
     void StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
-    void ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
-    int64_t SetCredChangeTimeOutPeriod(int32_t userId);
+    int64_t SetStrongAuthTimeOutPeriod(int32_t userId);
     int64_t GetStrongAuthTimeOutPeriod(int32_t userId);
     uint64_t GetTimerId(int32_t userId);
 

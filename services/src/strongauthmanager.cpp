@@ -108,7 +108,10 @@ static void StrongAuthTimerCallback(int32_t userId)
 {
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
-    StrongAuthManger::GetInstance()->RefreshStrongAuthTimeOutPeriod(userId);
+    int64_t triggerPeriod = StrongAuthManger::GetInstance()->RefreshStrongAuthTimeOutPeriod(userId);
+    if (triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
+    }
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
     InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
@@ -187,10 +190,10 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_
         int64_t triggerPeriod = StrongAuthManger::GetInstance()->GetStrongAuthTimeOutPeriod(userId);
         if (triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS ||
             triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-            SCLOCK_HILOGD("credChangeTime should not reset by auth");
+            SCLOCK_HILOGD("credChangeTime should not reset by auth, %{public}ld", triggerPeriod);
             return;
         }
-        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
+        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
     }
     return;
 }
@@ -202,7 +205,7 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
         static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(credentialId));
     if (authType == AuthType::PIN) {
         StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
-        int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetCredChangeTimeOutPeriod(userId);
+        int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetStrongAuthTimeOutPeriod(userId);
         StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
     }
     return;
@@ -263,31 +266,30 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPerio
     return;
 }
 
-int64_t SetCredChangeTimeOutPeriod(int32_t userId)
+int64_t StrongAuthManger::SetStrongAuthTimeOutPeriod(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     strongAuthTimerInfo[userId].second = CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS;
     return strongAuthTimerInfo[userId].second;
 }
 
-int64_t GetStrongAuthTimeOutPeriod(int32_t userId)
+int64_t StrongAuthManger::GetStrongAuthTimeOutPeriod(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     return strongAuthTimerInfo[userId].second;
 }
 
-void RefreshStrongAuthTimeOutPeriod(int32_t userId)
+int64_t StrongAuthManger::RefreshStrongAuthTimeOutPeriod(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     if (strongAuthTimerInfo[userId].second == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
         strongAuthTimerInfo[userId].second = CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS;
     } else if (strongAuthTimerInfo[userId].second == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
         strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
-    } else if (strongAuthTimerInfo[userId].second == DEFAULT_STRONG_AUTH_TIMEOUT_MS) {
-        strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
     } else {
         strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
     }
+    return strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;;
 }
 
 void StrongAuthManger::DestroyAllStrongAuthTimer()
