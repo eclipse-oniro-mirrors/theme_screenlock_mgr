@@ -91,7 +91,7 @@ private:
     uint64_t GetTimerId(int32_t userId);
 
     struct TimerInfo {
-        uint64_t timeId{0};
+        uint64_t timerId{0};
         int64_t triggerPeriod{-1};
         int64_t timerStartStamp{-1};
     };

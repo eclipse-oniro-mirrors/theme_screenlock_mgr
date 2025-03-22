@@ -241,11 +241,11 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + triggerPeriod);
     TimerInfo timerInfo = {
-        .timerId = timerId;
+        .timerId = timerId,
         .triggerPeriod = triggerPeriod,
         .timerStartStamp = currentTime,
     };
-    strongAuthTimerInfo.insert(std::make_pair(userId, std::make_pair(timerId, timerInfo)));
+    strongAuthTimerInfo.insert(std::make_pair(userId, timerInfo));
     return;
 }
 
@@ -263,15 +263,15 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPerio
     return;
 }
 
-int64_t StrongAuthManger::SetCredChangetriggerPeriod(int32_t userId, int64_t triggerPeriod)
+int64_t StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    strongAuthTimerInfo[userId].triggerPeriod = CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS;
+    strongAuthTimerInfo[userId].triggerPeriod = triggerPeriod;
     strongAuthTimerInfo[userId].timerStartStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     return strongAuthTimerInfo[userId].triggerPeriod;
 }
 
-int64_t StrongAuthManger::RefreshStrongAuthtriggerPeriod(int32_t userId)
+int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
