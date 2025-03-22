@@ -289,7 +289,7 @@ int64_t StrongAuthManger::RefreshStrongAuthTimeOutPeriod(int32_t userId)
     } else {
         strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
     }
-    return strongAuthTimerInfo[userId].second = DEFAULT_STRONG_AUTH_TIMEOUT_MS;;
+    return strongAuthTimerInfo[userId].second;
 }
 
 void StrongAuthManger::DestroyAllStrongAuthTimer()
