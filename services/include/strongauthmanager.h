@@ -91,7 +91,6 @@ private:
     int64_t GetStrongAuthTimeOutPeriod(int32_t userId);
     uint64_t GetTimerId(int32_t userId);
 
-
     std::mutex strongAuthTimerMutex;
     static std::mutex instanceLock_;
     static sptr<StrongAuthManger> instance_;

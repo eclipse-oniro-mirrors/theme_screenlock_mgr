@@ -109,7 +109,7 @@ static void StrongAuthTimerCallback(int32_t userId)
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
     int64_t triggerPeriod = StrongAuthManger::GetInstance()->RefreshStrongAuthTimeOutPeriod(userId);
-    if (triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+    if (triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
         StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
     }
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
