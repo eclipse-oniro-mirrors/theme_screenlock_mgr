@@ -929,6 +929,10 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         }
     }
     auto callback = [this, systemEvent, traceTaskId]() {
+        if (systemEventListener_ == nullptr) {
+            SCLOCK_HILOGE("auto systemEventListener_ is nullptr.");
+            return;
+        }
         if (traceTaskId != HITRACE_BUTT) {
             StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback",
                 traceTaskId);
