@@ -18,7 +18,6 @@
 #include "sclock_log.h"
 #include "screenlock_system_ability.h"
 #include "user_auth_client_callback.h"
-#include "user_auth_client_impl.h"
 #include "os_account_manager.h"
 #include "syspara/parameters.h"
 #include "innerlistenermanager.h"
@@ -36,7 +35,6 @@ const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
 const std::int64_t CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS = 4 * 60 * 60 * 1000;
 // 变更口令后，第二次强认证时间为24h，且不会因认证刷新计时器
 const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 20 * 60 * 60 * 1000;
-
 
 StrongAuthManger::StrongAuthManger() {}
 
@@ -153,7 +151,7 @@ uint64_t StrongAuthManger::GetTimerId(int32_t userId)
 
 void StrongAuthManger::RegistIamEventListener()
 {
-    SCLOCK_HILOGD("RegistIamEventListener start");
+    SCLOCK_HILOGD("RegistEventListener start");
     std::vector<UserIam::UserAuth::AuthType> authTypeList;
     authTypeList.emplace_back(AuthType::PIN);
     authTypeList.emplace_back(AuthType::FACE);
@@ -161,7 +159,7 @@ void StrongAuthManger::RegistIamEventListener()
 
     if (authSuccessListener_ == nullptr) {
         authSuccessListener_ = std::make_shared<AuthEventListenerService>();
-        int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistUserAuthSuccessEventListener(
+        int32_t ret = UserIam::UserAuth::UserAuthClient::GetInstance().RegistUserAuthSuccessEventListener(
             authTypeList, authSuccessListener_);
         SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
     }
@@ -173,7 +171,7 @@ void StrongAuthManger::RegistIamEventListener()
 
     if (credChangeListener_ == nullptr) {
         credChangeListener_ = std::make_shared<CredChangeListenerService>();
-        int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistCredChangeEventListener(
+        int32_t ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
             authTypeList, credChangeListener_);
         SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
     }
@@ -197,7 +195,7 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_
     return;
 }
 
-void StrongAuthManger::AuthEventListenerService::OnNotifyCredChangeEvent(int32_t userId,
+void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_t userId,
     UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId)
 {
     SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
@@ -213,14 +211,14 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyCredChangeEvent(int32_t
 void StrongAuthManger::UnRegistIamEventListener()
 {
     if (authSuccessListener_ != nullptr) {
-        int32_t ret =
-            UserIam::UserAuth::UserAuthClientImpl::GetInstance().UnRegistUserAuthSuccessEventListener(authSuccessListener_);
+        int32_t ret = UserIam::UserAuth::
+            UserAuthClient::GetInstance().UnRegistUserAuthSuccessEventListener(authSuccessListener_);
         authSuccessListener_ = nullptr;
         SCLOCK_HILOGI("UnRegistUserAuthSuccessEventListener ret: %{public}d", ret);
     }
     if (credChangeListener_ != nullptr) {
-        int32_t ret =
-            UserIam::UserAuth::UserAuthClientImpl::GetInstance().UnRegistCredChangeEventListener(credChangeListener_);
+        int32_t ret = UserIam::UserAuth::
+            UserIdmClient::GetInstance().UnRegistCredChangeEventListener(credChangeListener_);
         credChangeListener_ = nullptr;
         SCLOCK_HILOGI("UnRegistCredChangeEventListener ret: %{public}d", ret);
     }
