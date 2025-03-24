@@ -93,7 +93,7 @@ private:
     struct TimerInfo {
         uint64_t timerId{0};
         int64_t triggerPeriod{-1};
-        int64_t timerStartStamp{-1};
+        int64_t credChangeTimerStamp{-1};
     };
 
     std::mutex strongAuthTimerMutex;

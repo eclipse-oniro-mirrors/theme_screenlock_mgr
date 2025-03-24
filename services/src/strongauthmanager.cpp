@@ -243,7 +243,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
     TimerInfo timerInfo = {
         .timerId = timerId,
         .triggerPeriod = triggerPeriod,
-        .timerStartStamp = currentTime,
+        .credChangeTimerStamp = currentTime,
     };
     strongAuthTimerInfo.insert(std::make_pair(userId, timerInfo));
     return;
@@ -267,7 +267,7 @@ int64_t StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t tri
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     strongAuthTimerInfo[userId].triggerPeriod = triggerPeriod;
-    strongAuthTimerInfo[userId].timerStartStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
+    strongAuthTimerInfo[userId].credChangeTimerStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     return strongAuthTimerInfo[userId].triggerPeriod;
 }
 
@@ -276,16 +276,16 @@ int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
-        if (currentTime - strongAuthTimerInfo[userId].timerStartStamp > CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp > CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
             strongAuthTimerInfo[userId].triggerPeriod = CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS;
-            strongAuthTimerInfo[userId].timerStartStamp = currentTime;
+            strongAuthTimerInfo[userId].credChangeTimerStamp = currentTime;
             return strongAuthTimerInfo[userId].triggerPeriod;
         }
         return strongAuthTimerInfo[userId].triggerPeriod;
     }
 
     if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-        if (currentTime - strongAuthTimerInfo[userId].timerStartStamp > CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp > CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
             strongAuthTimerInfo[userId].triggerPeriod = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
             return strongAuthTimerInfo[userId].triggerPeriod;
         }
