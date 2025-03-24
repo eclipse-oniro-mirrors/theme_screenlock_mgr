@@ -81,6 +81,7 @@ ohos_shared_library("screenlock_server") {
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
+    "samgr:samgr_proxy",
   ]
 
   if (screenlock_mgr_so_crop == true) {
@@ -142,6 +143,7 @@ ohos_static_library("screenlock_server_static") {
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
+    "samgr:samgr_proxy",
   ]
 
   if (screenlock_mgr_so_crop == true) {
