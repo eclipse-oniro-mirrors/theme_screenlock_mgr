@@ -38,6 +38,7 @@ public:
     StrongAuthManger();
     ~StrongAuthManger() override;
 
+    uint64_t GetTimerId(int32_t userId);
     void StartStrongAuthTimer(int32_t userId);
     void ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
     void DestroyStrongAuthTimer(int32_t userId);
@@ -88,7 +89,6 @@ private:
     void StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
     int64_t SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod);
     int64_t GetStrongAuthTriggerPeriod(int32_t userId);
-    uint64_t GetTimerId(int32_t userId);
 
     struct TimerInfo {
         uint64_t timerId{0};
