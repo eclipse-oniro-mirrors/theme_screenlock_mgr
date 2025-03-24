@@ -59,6 +59,8 @@ ohos_unittest("ScreenLockServiceTest") {
     "time_service:time_client",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
+    "preferences:native_preferences",
+    "safwk:system_ability_fwk",
   ]
 
   deps = [
