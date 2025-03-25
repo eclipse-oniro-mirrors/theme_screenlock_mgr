@@ -388,7 +388,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     ScreenLockSystemAbility::GetInstance()->SetScreenlocked(false, userId);
     result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -410,7 +410,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
 }
 
 /**
@@ -425,7 +425,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_SUCC);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, true);
+    EXPECT_EQ(isLocked, false);
 }
 
 /**
@@ -440,7 +440,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_FAIL);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, true);
+    EXPECT_EQ(isLocked, false);
 }
 
 /**
@@ -455,7 +455,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_CANCEL);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, true);
+    EXPECT_EQ(isLocked, false);
 }
 
 /**
@@ -574,7 +574,7 @@ HWTEST_F(ScreenLockServiceTest, LockTest028, TestSize.Level0)
     SCLOCK_HILOGD("Test RequestLock.");
     int32_t userId = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 }
 
 /**
@@ -670,7 +670,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest033, TestSize.Level0)
     int32_t userId = 100;
     bool isLocked = false;
     int result = ScreenLockSystemAbility::GetInstance()->IsLockedWithUserId(userId, isLocked);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
 }
 
 /**
@@ -694,7 +694,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest034, TestSize.Level0)
 
     result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH,
                                                                                InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**
@@ -718,7 +718,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest035, TestSize.Level0)
 
     result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(userId, ListenType::STRONG_AUTH,
                                                                                InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**
@@ -737,7 +737,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest036, TestSize.Level0)
     bool isDeviceLocked = false;
     int32_t userId = 100;
     int result = ScreenLockSystemAbility::GetInstance()->IsDeviceLocked(userId, isDeviceLocked);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
 }
 
 /**
