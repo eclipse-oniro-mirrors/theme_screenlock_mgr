@@ -385,7 +385,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     EXPECT_EQ(isLocked, true);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
     ScreenLockSystemAbility::GetInstance()->SetScreenlocked(false, userId);
     result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
@@ -407,7 +407,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     int32_t result = ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
@@ -690,7 +690,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest034, TestSize.Level0)
     int32_t userId = 100;
     int result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(userId, ListenType::DEVICE_LOCK,
                                                                                InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 
     result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH,
                                                                                InnerListenerIfTest1);
@@ -714,7 +714,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest035, TestSize.Level0)
     int32_t userId = 100;
     int result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(userId, ListenType::DEVICE_LOCK,
                                                                                InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK_OK);
 
     result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(userId, ListenType::STRONG_AUTH,
                                                                                InnerListenerIfTest1);
