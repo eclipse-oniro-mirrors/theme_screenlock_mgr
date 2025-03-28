@@ -929,16 +929,14 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
         }
     }
     auto callback = [this, systemEvent, traceTaskId]() {
-        if (systemEventListener_ == nullptr) {
-            SCLOCK_HILOGE("auto systemEventListener_ is nullptr.");
-            return;
-        }
         if (traceTaskId != HITRACE_BUTT) {
             StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback",
                 traceTaskId);
         }
         std::lock_guard<std::mutex> lck(listenerMutex_);
-        systemEventListener_->OnCallBack(systemEvent);
+        if (systemEventListener_ != nullptr) {
+            systemEventListener_->OnCallBack(systemEvent);
+        }
         if (traceTaskId != HITRACE_BUTT) {
             FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback",
                 traceTaskId);
