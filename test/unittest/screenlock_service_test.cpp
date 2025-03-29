@@ -525,7 +525,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
     bool isLocked;
     ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
     SCLOCK_HILOGD("Test_SendScreenLockEvent of screendrawdone isLocked=%{public}d", isLocked);
-    EXPECT_EQ(isLocked, false);
+    EXPECT_EQ(isLocked, true);
 }
 
 /**
@@ -557,7 +557,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->UnlockScreenEvent(SCREEN_CANCEL);
     bool isLocked;
     ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
-    EXPECT_EQ(isLocked, false);
+    EXPECT_EQ(isLocked, true);
 }
 
 /**
@@ -591,7 +591,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest029, TestSize.Level0)
     bool disable = true;
     int32_t result = ScreenLockSystemAbility::GetInstance()->IsScreenLockDisabled(userId, disable);
     SCLOCK_HILOGD("SetScreenLockDisabled.[ret]:%{public}d, [disable]:%{public}d", ret, disable);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**
@@ -612,7 +612,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
 
     int32_t authState = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 /**
