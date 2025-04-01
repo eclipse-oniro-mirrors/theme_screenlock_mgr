@@ -460,6 +460,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     }
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);
+    unlockVecUserIds_.push_back(GetUserIdFromCallingUid());
     unlockListenerMutex_.unlock();
     SystemEvent systemEvent(UNLOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
@@ -949,14 +950,17 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
 
 void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResult)
 {
+    int curUserId = GetUserIdFromCallingUid();
     std::lock_guard<std::mutex> autoLock(unlockListenerMutex_);
     if (unlockVecListeners_.size()) {
-        auto callback = [this, screenLockResult]() {
+        auto callback = [this, screenLockResult, curUserId]() {
             std::lock_guard<std::mutex> guard(unlockListenerMutex_);
             for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                unlockVecListeners_[i]->OnCallBack(screenLockResult);
+                unlockVecListeners_[i]->OnCallBack(unlockVecUserIds_[i] == curUserId ? screenLockResult :
+                    ScreenChange::SCREEN_FAIL);
             }
             unlockVecListeners_.clear();
+            unlockVecUserIds_.clear();
         };
         ffrt::submit(callback);
     }
