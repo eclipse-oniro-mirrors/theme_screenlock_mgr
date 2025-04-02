@@ -60,7 +60,10 @@ ohos_fuzztest("ScreenlockManagerFuzzTest") {
     "safwk:system_ability_fwk",
   ]
 
-  sources = [ "screenlockmanager_fuzzer.cpp" ]
+  sources = [
+    "innerListener_fuzz_utils.cpp",
+    "screenlockmanager_fuzzer.cpp"
+  ]
 }
 
 ###############################################################################
