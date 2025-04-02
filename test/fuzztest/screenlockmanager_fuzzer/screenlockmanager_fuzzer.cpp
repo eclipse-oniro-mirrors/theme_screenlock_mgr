@@ -189,7 +189,7 @@ bool FuzzRegisterDeviceLockedListener(const uint8_t *rawData, size_t size)
     if (size < LENGTH) {
         return true;
     }
-    ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    int32_t ret = ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
     ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
     return ret == E_SCREENLOCK_OK;
 }
