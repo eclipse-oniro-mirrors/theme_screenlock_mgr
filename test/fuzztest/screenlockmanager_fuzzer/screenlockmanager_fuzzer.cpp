@@ -36,6 +36,8 @@ constexpr size_t RANDNUM_ZERO = 0;
 constexpr size_t RANDNUM_ONE = 1;
 constexpr size_t RANDNUM_TWO = 2;
 constexpr size_t DEFAULT_USER = 100;
+sptr<StrongAuthListener> StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(100);
+sptr<DeviceLockedListener> DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(100);
 
 uint32_t ConvertToUint32(const uint8_t *ptr)
 {
@@ -177,20 +179,8 @@ bool FuzzRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
     if (size < LENGTH) {
         return true;
     }
-    int32_t userId = rawData[0];
-    sptr<StrongAuthListener> StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(userId);
     int32_t ret = ScreenLockManager::GetInstance()->RegisterStrongAuthListener(StrongAuthListenerTest1);
-    return ret == E_SCREENLOCK_OK;
-}
-
-bool FuzzUnRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
-    }
-    int32_t userId = rawData[0];
-    sptr<StrongAuthListener> StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(userId);
-    int32_t ret = ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
+    ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
     return ret == E_SCREENLOCK_OK;
 }
 
@@ -199,20 +189,8 @@ bool FuzzRegisterDeviceLockedListener(const uint8_t *rawData, size_t size)
     if (size < LENGTH) {
         return true;
     }
-    int32_t userId = rawData[0];
-    sptr<DeviceLockedListener> DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(userId);
-    int32_t ret = ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
-    return ret == E_SCREENLOCK_OK;
-}
-
-bool FuzzUnRegisterDeviceLockedListener(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
-    }
-    int32_t userId = rawData[0];
-    sptr<DeviceLockedListener> DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(userId);
-    int32_t ret = ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
     return ret == E_SCREENLOCK_OK;
 }
 
@@ -267,9 +245,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzScreenlockRequestStrongAuth(data, size);
     OHOS::FuzzScreenlockGetStrongAuth(data, size);
     OHOS::FuzzRegisterStrongAuthListener(data, size);
-    OHOS::FuzzUnRegisterStrongAuthListener(data, size);
     OHOS::FuzzRegisterDeviceLockedListener(data, size);
-    OHOS::FuzzUnRegisterDeviceLockedListener(data, size);
     OHOS::FuzzIsDeviceLocked(data, size);
     OHOS::FuzzIsLockedWithUserId(data, size);
     return 0;
