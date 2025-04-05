@@ -177,7 +177,7 @@ void StrongAuthManger::RegistIamEventListener()
 }
 
 void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
-    UserIam::UserAuth::AuthType authType, int32_t callerType, std::string &bundleName)
+    UserIam::UserAuth::AuthType authType, int32_t callerType, const std::string &bundleName)
 {
     SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, callerType: %{public}d", userId,
         static_cast<int32_t>(authType), bundleName.c_str(), callerType);
