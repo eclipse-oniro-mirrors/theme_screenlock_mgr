@@ -194,7 +194,7 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
 {
     SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
         static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(credentialId));
-    if (authType == AuthType::PIN) {
+    if (authType == AuthType::PIN && (eventType == ADD_CRED || eventType == UPDATE_CRED)) {
         StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
         int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetCredChangeTriggerPeriod(userId,
             CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
