@@ -222,7 +222,7 @@ void ScreenLockSystemAbility::OnRemoveSystemAbility(int32_t systemAbilityId, con
     if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
         StrongAuthManger::GetInstance()->UnRegistIamEventListener();
     }
-#endif // IS_SO_CROP_H 
+#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
