@@ -285,7 +285,8 @@ int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
     }
 
     if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-        if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp > CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp >
+            CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
             strongAuthTimerInfo[userId].triggerPeriod = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
             return strongAuthTimerInfo[userId].triggerPeriod;
         }
