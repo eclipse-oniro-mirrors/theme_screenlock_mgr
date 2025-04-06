@@ -226,7 +226,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
 
 void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
-    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}ld", triggerPeriod);
+    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     uint64_t timerId = GetTimerId(userId);
     if (timerId != 0) {
@@ -251,7 +251,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
 
 void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
-    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}ld", triggerPeriod);
+    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
     uint64_t timerId = GetTimerId(userId);
     if (timerId == 0) {
         StartStrongAuthTimer(userId, triggerPeriod);
