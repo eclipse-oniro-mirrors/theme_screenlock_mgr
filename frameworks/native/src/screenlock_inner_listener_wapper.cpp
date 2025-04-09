@@ -14,15 +14,13 @@
  */
 #include "screenlock_inner_listener_wapper.h"
 
+#include "event_handler.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
 
 
 namespace OHOS {
 namespace ScreenLock {
-std::shared_ptr<AppExecFwk::EventHandler> InnerListenerWrapper::handler_{ nullptr };
-
-
 InnerListenerWrapper::InnerListenerWrapper(const sptr<InnerListener>& listener)
     : listener_(listener)
 {
@@ -40,7 +38,7 @@ void InnerListenerWrapper::OnStateChanged(int userId, int state)
         return;
     }
 
-    auto ptrTemp = GetEventHandler();
+    auto ptrTemp = AppExecFwk::EventHandler::Current();
     if (ptrTemp == nullptr) {
         SCLOCK_HILOGI("EventHandler nullptr");
         listener_->OnStateChanged(userId, state);
@@ -58,14 +56,6 @@ void InnerListenerWrapper::OnStateChanged(int userId, int state)
 
     SCLOCK_HILOGD("OnStateChanged end");
     return;
-}
-
-std::shared_ptr<AppExecFwk::EventHandler> InnerListenerWrapper::GetEventHandler()
-{
-    if (handler_ == nullptr) {
-        handler_ = AppExecFwk::EventHandler::Current();
-    }
-    return handler_;
 }
 }
 }
