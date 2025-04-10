@@ -54,11 +54,16 @@ ohos_fuzztest("ScreenlockManagerFuzzTest") {
     "ipc:ipc_single",
     "napi:ace_napi",
     "os_account:os_account_innerkits",
+    "preferences:native_preferences",
+    "safwk:system_ability_fwk",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
   ]
 
-  sources = [ "screenlockmanager_fuzzer.cpp" ]
+  sources = [
+    "innerListener_fuzz_utils.cpp",
+    "screenlockmanager_fuzzer.cpp",
+  ]
 }
 
 ###############################################################################

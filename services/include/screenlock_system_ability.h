@@ -233,6 +233,7 @@ private:
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
     std::mutex unlockListenerMutex_;
     std::vector<sptr<ScreenLockCallbackInterface>> unlockVecListeners_;
+    std::vector<int> unlockVecUserIds_;
     std::mutex lockListenerMutex_;
     std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
     StateValue stateValue_;
