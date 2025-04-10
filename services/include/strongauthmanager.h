@@ -26,8 +26,7 @@
 #include "visibility.h"
 #include "time_service_client.h"
 #include "itimer_info.h"
-#include "user_auth_client.h"
-#include "user_idm_client.h"
+#include "user_auth_event_listener_stub.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -50,18 +49,18 @@ public:
 
 public:
 
-    class AuthEventListenerService : public UserIam::UserAuth::AuthSuccessEventListener {
+    class AuthEventListenerService : public UserIam::UserAuth::AuthEventListenerStub {
     public:
         AuthEventListenerService() = default;
-        virtual ~AuthEventListenerService() = default;
+        ~AuthEventListenerService() = default;
         void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType, int32_t callerType,
-            const std::string &bundleName) override;
+            std::string &bundleName) override;
     };
 
-    class CredChangeListenerService : public UserIam::UserAuth::CredChangeEventListener {
+    class CredChangeListenerService : public UserIam::UserAuth::CredChangeListenerStub {
     public:
         CredChangeListenerService() = default;
-        virtual ~CredChangeListenerService() = default;
+        ~CredChangeListenerService() = default;
         void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
             UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId) override;
     };
@@ -101,8 +100,8 @@ private:
     static sptr<StrongAuthManger> instance_;
     std::map<int32_t, int32_t> strongAuthStateInfo;
     std::map<int32_t, TimerInfo> strongAuthTimerInfo;
-    std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> authSuccessListener_;
-    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> credChangeListener_;
+    sptr<UserIam::UserAuth::AuthEventListenerInterface> authSuccessListener_;
+    sptr<UserIam::UserAuth::CredChangeListenerInterface> credChangeListener_;
 };
 } // namespace OHOS
 } // namespace ScreenLock
