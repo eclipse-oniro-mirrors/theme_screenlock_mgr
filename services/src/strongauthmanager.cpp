@@ -18,9 +18,11 @@
 #include "sclock_log.h"
 #include "screenlock_system_ability.h"
 #include "user_auth_client_callback.h"
+#include "user_auth_client.h"
+#include "user_idm_client.h"
 #include "os_account_manager.h"
-#include "syspara/parameters.h"
 #include "innerlistenermanager.h"
+#include "syspara/parameters.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -137,7 +139,6 @@ sptr<StrongAuthManger> StrongAuthManger::GetInstance()
     return instance_;
 }
 
-
 uint64_t StrongAuthManger::GetTimerId(int32_t userId)
 {
     uint64_t timerId = 0;
@@ -157,10 +158,12 @@ void StrongAuthManger::RegistIamEventListener()
     authTypeList.emplace_back(AuthType::FINGERPRINT);
 
     if (authSuccessListener_ == nullptr) {
-        authSuccessListener_ = std::make_shared<AuthEventListenerService>();
-        int32_t ret = UserIam::UserAuth::UserAuthClient::GetInstance().RegistUserAuthSuccessEventListener(
-            authTypeList, authSuccessListener_);
-        SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
+       sptr<UserIam::UserAuth::AuthEventListenerInterface> wrapper(new (std::nothrow) AuthEventListenerService());
+        if (wrapper == nullptr) {
+            SCLOCK_HILOGE("get listener failed");
+            return;
+        }
+        authSuccessListener_ = wrapper;
     }
 
     if (OHOS::system::GetDeviceType() == "2in1") {
@@ -169,7 +172,12 @@ void StrongAuthManger::RegistIamEventListener()
     }
 
     if (credChangeListener_ == nullptr) {
-        credChangeListener_ = std::make_shared<CredChangeListenerService>();
+       sptr<UserIam::UserAuth::CredChangeListenerInterface> wrapper(new (std::nothrow) CredChangeListenerService());
+        if (wrapper == nullptr) {
+            SCLOCK_HILOGE("get listener failed");
+            return;
+        }
+        credChangeListener_ = wrapper;
         int32_t ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
             authTypeList, credChangeListener_);
         SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
@@ -226,7 +234,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
 
 void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
-    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
+    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}ld", triggerPeriod);
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     uint64_t timerId = GetTimerId(userId);
     if (timerId != 0) {
@@ -251,7 +259,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
 
 void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
-    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
+    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}ld", triggerPeriod);
     uint64_t timerId = GetTimerId(userId);
     if (timerId == 0) {
         StartStrongAuthTimer(userId, triggerPeriod);
