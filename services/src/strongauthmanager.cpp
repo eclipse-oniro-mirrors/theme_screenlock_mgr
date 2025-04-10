@@ -165,7 +165,7 @@ void StrongAuthManger::RegistIamEventListener()
         }
         authSuccessListener_ = wrapper;
         int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistUserAuthSuccessEventListener(
-            authTypeList, listener_);
+            authTypeList, authSuccessListener_);
         SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
     }
 
