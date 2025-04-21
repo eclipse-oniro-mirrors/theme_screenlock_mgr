@@ -49,7 +49,6 @@ public:
     void UnRegistIamEventListener();
 
 public:
-
     class AuthEventListenerService : public UserIam::UserAuth::AuthSuccessEventListener {
     public:
         AuthEventListenerService() = default;
@@ -61,7 +60,7 @@ public:
     class CredChangeListenerService : public UserIam::UserAuth::CredChangeEventListener {
     public:
         CredChangeListenerService() = default;
-        ~CredChangeListenerService() = default;
+        virtual ~CredChangeListenerService() = default;
         void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
             UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId) override;
     };
