@@ -78,11 +78,11 @@ ohos_shared_library("screenlock_server") {
     "os_account:os_account_innerkits",
     "preferences:native_preferences",
     "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
     "time_service:time_client",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
-    "samgr:samgr_proxy",
   ]
 
   if (screenlock_mgr_so_crop == true) {
@@ -141,11 +141,11 @@ ohos_static_library("screenlock_server_static") {
     "os_account:os_account_innerkits",
     "preferences:native_preferences",
     "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
     "time_service:time_client",
     "user_auth_framework:userauth_client",
     "window_manager:libdm",
     "window_manager:libwm",
-    "samgr:samgr_proxy",
   ]
 
   if (screenlock_mgr_so_crop == true) {
