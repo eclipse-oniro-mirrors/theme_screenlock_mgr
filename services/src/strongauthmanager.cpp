@@ -18,9 +18,10 @@
 #include "sclock_log.h"
 #include "screenlock_system_ability.h"
 #include "user_auth_client_callback.h"
-#include "user_auth_client_impl.h"
+#include "user_idm_client.h"
 #include "os_account_manager.h"
 #include "innerlistenermanager.h"
+#include "syspara/parameters.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -31,6 +32,10 @@ using namespace OHOS::AccountSA;
 
 // 强认证默认时间 3days
 const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
+// 变更口令后，第一次强认证时间为4h
+const std::int64_t CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS = 4 * 60 * 60 * 1000;
+// 变更口令后，第二次强认证时间为24h
+const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 StrongAuthManger::StrongAuthManger() {}
 
@@ -103,9 +108,7 @@ void StrongAuthManger::authTimer::SetUserId(int32_t userId)
 static void StrongAuthTimerCallback(int32_t userId)
 {
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
-    uint64_t timerId = StrongAuthManger::GetInstance()->GetTimerId(userId);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
-    StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
     InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
@@ -135,63 +138,95 @@ sptr<StrongAuthManger> StrongAuthManger::GetInstance()
     return instance_;
 }
 
-
 uint64_t StrongAuthManger::GetTimerId(int32_t userId)
 {
     uint64_t timerId = 0;
     auto iter = strongAuthTimerInfo.find(userId);
     if (iter != strongAuthTimerInfo.end()) {
-        timerId = iter->second;
+        timerId = iter->second.timerId;
     }
     return timerId;
 }
 
-void StrongAuthManger::RegistUserAuthSuccessEventListener()
+void StrongAuthManger::RegistIamEventListener()
 {
-    SCLOCK_HILOGD("RegistUserAuthSuccessEventListener start");
+    SCLOCK_HILOGD("RegistEventListener start");
     std::vector<UserIam::UserAuth::AuthType> authTypeList;
     authTypeList.emplace_back(AuthType::PIN);
     authTypeList.emplace_back(AuthType::FACE);
     authTypeList.emplace_back(AuthType::FINGERPRINT);
 
-    if (listener_ == nullptr) {
-        sptr<UserIam::UserAuth::AuthEventListenerInterface> wrapper(new (std::nothrow) AuthEventListenerService());
-        if (wrapper == nullptr) {
-            SCLOCK_HILOGE("get listener failed");
-            return;
-        }
-        listener_ = wrapper;
-        int32_t ret = UserIam::UserAuth::UserAuthClientImpl::GetInstance().RegistUserAuthSuccessEventListener(
-            authTypeList, listener_);
-        SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
+    if (authSuccessListener_ == nullptr) {
+        authSuccessListener_ = std::make_shared<AuthEventListenerService>();
+    }
+    int32_t ret = UserIam::UserAuth::UserAuthClient::GetInstance().RegistUserAuthSuccessEventListener(
+        authTypeList, authSuccessListener_);
+    SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
+
+    if (OHOS::system::GetDeviceType() == "2in1") {
+        SCLOCK_HILOGD("2in1 device no need to registCredChangeListener");
+        return;
     }
 
-    return;
+    if (credChangeListener_ == nullptr) {
+        credChangeListener_ = std::make_shared<CredChangeListenerService>();
+    }
+    ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
+        authTypeList, credChangeListener_);
+    SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
 }
 
 void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
-    UserIam::UserAuth::AuthType authType, int32_t callerType, std::string &bundleName)
+    UserIam::UserAuth::AuthType authType, int32_t callerType, const std::string &bundleName)
 {
     SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, callerType: %{public}d", userId,
         static_cast<int32_t>(authType), bundleName.c_str(), callerType);
     if (authType == AuthType::PIN) {
         StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
-        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId);
+        int64_t triggerPeriod = StrongAuthManger::GetInstance()->GetStrongAuthTriggerPeriod(userId);
+        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
     }
     return;
 }
 
-void StrongAuthManger::UnRegistUserAuthSuccessEventListener()
+void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_t userId,
+    UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId)
 {
-    if (listener_ != nullptr) {
-        int32_t ret =
-            UserIam::UserAuth::UserAuthClientImpl::GetInstance().UnRegistUserAuthSuccessEventListener(listener_);
+    SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
+        static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(credentialId));
+    if (authType == AuthType::PIN && (eventType == ADD_CRED || eventType == UPDATE_CRED)) {
+        StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
+        int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetCredChangeTriggerPeriod(userId,
+            CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
+        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
+    }
+    return;
+}
+
+void StrongAuthManger::UnRegistIamEventListener()
+{
+    if (authSuccessListener_ != nullptr) {
+        int32_t ret = UserIam::UserAuth::
+            UserAuthClient::GetInstance().UnRegistUserAuthSuccessEventListener(authSuccessListener_);
+        authSuccessListener_ = nullptr;
         SCLOCK_HILOGI("UnRegistUserAuthSuccessEventListener ret: %{public}d", ret);
+    }
+    if (credChangeListener_ != nullptr) {
+        int32_t ret = UserIam::UserAuth::
+            UserIdmClient::GetInstance().UnRegistCredChangeEventListener(credChangeListener_);
+        credChangeListener_ = nullptr;
+        SCLOCK_HILOGI("UnRegistCredChangeEventListener ret: %{public}d", ret);
     }
 }
 
 void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
 {
+    StartStrongAuthTimer(userId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+}
+
+void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
+{
+    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     uint64_t timerId = GetTimerId(userId);
     if (timerId != 0) {
@@ -204,22 +239,60 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
     timer->SetUserId(userId);
     timerId = MiscServices::TimeServiceClient::GetInstance()->CreateTimer(timer);
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
-    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
-    strongAuthTimerInfo.insert(std::make_pair(userId, timerId));
+    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + triggerPeriod);
+    TimerInfo timerInfo = {
+        .timerId = timerId,
+        .triggerPeriod = triggerPeriod,
+        .credChangeTimerStamp = currentTime,
+    };
+    strongAuthTimerInfo.insert(std::make_pair(userId, timerInfo));
     return;
 }
 
-void StrongAuthManger::ResetStrongAuthTimer(int32_t userId)
+void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
+    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
     uint64_t timerId = GetTimerId(userId);
     if (timerId == 0) {
-        StartStrongAuthTimer(userId);
+        StartStrongAuthTimer(userId, triggerPeriod);
         return;
     }
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     MiscServices::TimeServiceClient::GetInstance()->StopTimer(timerId);
-    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+    MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + triggerPeriod);
     return;
+}
+
+int64_t StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod)
+{
+    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    strongAuthTimerInfo[userId].triggerPeriod = triggerPeriod;
+    strongAuthTimerInfo[userId].credChangeTimerStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
+    return strongAuthTimerInfo[userId].triggerPeriod;
+}
+
+int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
+{
+    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
+    if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp > CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
+            strongAuthTimerInfo[userId].triggerPeriod = CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS;
+            strongAuthTimerInfo[userId].credChangeTimerStamp = currentTime;
+            return strongAuthTimerInfo[userId].triggerPeriod;
+        }
+        return strongAuthTimerInfo[userId].triggerPeriod;
+    }
+
+    if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
+        if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp >
+            CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
+            strongAuthTimerInfo[userId].triggerPeriod = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+            return strongAuthTimerInfo[userId].triggerPeriod;
+        }
+        return strongAuthTimerInfo[userId].triggerPeriod;
+    }
+    return strongAuthTimerInfo[userId].triggerPeriod;
 }
 
 void StrongAuthManger::DestroyAllStrongAuthTimer()

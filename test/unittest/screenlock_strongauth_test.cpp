@@ -67,13 +67,14 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
 
     int32_t userId = 100;
     int32_t defaulVal = 1;
-    authmanager->RegistUserAuthSuccessEventListener();
+    int64_t timerInterval = 1;
+    authmanager->RegistIamEventListener();
     authmanager->StartStrongAuthTimer(userId);
     authmanager->GetTimerId(userId);
-    authmanager->ResetStrongAuthTimer(userId);
+    authmanager->ResetStrongAuthTimer(userId, timerInterval);
     authmanager->DestroyStrongAuthTimer(userId);
     authmanager->DestroyAllStrongAuthTimer();
-    authmanager->UnRegistUserAuthSuccessEventListener();
+    authmanager->UnRegistIamEventListener();
     authmanager->SetStrongAuthStat(userId, defaulVal);
     int32_t val = authmanager->GetStrongAuthStat(userId);
 
