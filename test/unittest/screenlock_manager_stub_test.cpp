@@ -38,7 +38,6 @@
 #include "screenlock_callback_interface.h"
 #include "screenlock_server_ipc_interface_code.h"
 
-
 namespace OHOS {
 namespace ScreenLock {
 using namespace testing::ext;
@@ -46,29 +45,24 @@ const std::u16string SLMGRSTUB_INTERFACE_TOKEN = u"ohos.screenlock.ScreenLockMan
 const std::u16string SLMGRSTUB_INTERFACE_BAD_TOKEN = u"ohos.screenlock.ScreenLockManagerInterfaceA";
 const int ERR_INVALID_DATA = 305;
 void ScreenLockManagerStubWrapTest::SetUpTestCase()
-{
-}
+{}
 
 void ScreenLockManagerStubWrapTest::TearDownTestCase()
-{
-}
+{}
 
 void ScreenLockManagerStubWrapTest::SetUp()
-{
-}
+{}
 
 void ScreenLockManagerStubWrapTest::TearDown()
-{
-}
-
+{}
 
 /**
-* @tc.name: ScreenLockManagerStubTest
-* @tc.desc: OnRemoteRequest.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
+ * @tc.name: ScreenLockManagerStubTest
+ * @tc.desc: OnRemoteRequest.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:
+ */
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap001, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap001");
@@ -81,18 +75,19 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap001, TestSize.L
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_BAD_TOKEN);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrap001, result = %{public}d", result);
     EXPECT_EQ(result, ERR_INVALID_DATA);
 }
 
 /**
-* @tc.name: ScreenLockTest003
-* @tc.desc: beginSleep event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
+ * @tc.name: ScreenLockTest003
+ * @tc.desc: beginSleep event.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:
+ */
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap002, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap002");
@@ -105,18 +100,19 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap002, TestSize.L
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrap002, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
 
 /**
-* @tc.name: ScreenLockTest004
-* @tc.desc: beginScreenOn event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
+ * @tc.name: ScreenLockTest004
+ * @tc.desc: beginScreenOn event.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:
+ */
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap003, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap003");
@@ -129,18 +125,19 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap003, TestSize.L
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREEN_LOCKED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREEN_LOCKED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrap003, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
 
 /**
-* @tc.name: ScreenLockTest005
-* @tc.desc: beginScreenOff event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
+ * @tc.name: ScreenLockTest005
+ * @tc.desc: beginScreenOff event.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:
+ */
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest004, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest004");
@@ -153,18 +150,19 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest004, TestSi
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest004, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
 
 /**
-* @tc.name: ScreenLockTest005
-* @tc.desc: beginScreenOff event.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
+ * @tc.name: ScreenLockTest005
+ * @tc.desc: beginScreenOff event.
+ * @tc.type: FUNC
+ * @tc.require:
+ * @tc.author:
+ */
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest005, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest005");
@@ -178,11 +176,11 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest005, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(nullptr);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK), data, reply, option);    
+    int result =
+        instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest005, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
-
 
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest006, TestSize.Level0)
 {
@@ -199,7 +197,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest006, TestSi
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     sptr<ScreenlockCallbackTest> callback = new ScreenlockCallbackTest(eventListener);
     data.WriteRemoteObject(callback->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK), data, reply, option);    
+    int result =
+        instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK), data, reply, option);
     SCLOCK_HILOGE("ScreenLockManagerStubWrapTest006, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -217,7 +216,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest007, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(instance->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK), data, reply, option);    
+    int result =
+        instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest007, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -235,11 +235,11 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest008, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(nullptr);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest008, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
-
 
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest009, TestSize.Level0)
 {
@@ -256,7 +256,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest009, TestSi
     EventListenerTest eventListener;
     sptr<ScreenlockCallbackTest> callback = new ScreenlockCallbackTest(eventListener);
     data.WriteRemoteObject(callback->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest009, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -274,7 +275,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest010, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(instance->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_SCREEN), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest010, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -292,7 +294,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest011, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(nullptr);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);    
+    int result =
+        instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest011, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -312,11 +315,11 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest012, TestSi
     EventListenerTest eventListener;
     sptr<ScreenlockCallbackTest> callback = new ScreenlockCallbackTest(eventListener);
     data.WriteRemoteObject(callback->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);    
+    int result =
+        instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest012, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
-
 
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest013, TestSize.Level0)
 {
@@ -331,7 +334,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest013, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(instance->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);    
+    int result =
+        instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest013, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -350,7 +354,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest014, TestSi
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteString("{invalid json}");
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SEND_SCREENLOCK_EVENT), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SEND_SCREENLOCK_EVENT), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest014, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -368,11 +373,11 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest015, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(nullptr);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest015, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
-
 
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest0151, TestSize.Level0)
 {
@@ -387,7 +392,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest0151, TestS
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteRemoteObject(instance->AsObject());
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest0151, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -405,7 +411,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest016, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest016, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -423,7 +430,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest017, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREENLOCK_DISABLED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREENLOCK_DISABLED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest017, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -442,7 +450,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest018, TestSi
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteBool(true);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest018, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -462,7 +471,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest019, TestSi
     data.WriteInt32(0);
     data.WriteInt32(0);
     data.WriteString("{invalid json}");
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_AUTHSTATE), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_AUTHSTATE), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest019, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -480,7 +490,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest020, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_SCREENLOCK_AUTHSTATE), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_SCREENLOCK_AUTHSTATE), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest020, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -499,7 +510,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest021, TestSi
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REQUEST_STRONG_AUTHSTATE), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REQUEST_STRONG_AUTHSTATE), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest021, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -517,7 +529,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest022, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_STRONG_AUTHSTATE), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_STRONG_AUTHSTATE), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest022, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -535,7 +548,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest023, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_DEVICE_LOCKED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_DEVICE_LOCKED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest023, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -555,7 +569,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest024, TestSi
     data.WriteInt32(0);
     data.WriteInt32(0);
     data.WriteRemoteObject(nullptr);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_INNER_LISTENER), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_INNER_LISTENER), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest024, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -575,7 +590,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest025, TestSi
     data.WriteInt32(0);
     data.WriteInt32(0);
     data.WriteRemoteObject(nullptr);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_INNER_LISTENER), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_INNER_LISTENER), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest025, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -593,7 +609,8 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest026, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_USER_SCREEN_LOCKED), data, reply, option);    
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_USER_SCREEN_LOCKED), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest026, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
@@ -611,10 +628,10 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest027, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(20, data, reply, option);    
+    int result = instance->OnRemoteRequest(20, data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest027, result = %{public}d  %{public}d", result, ERR_INVALID_DATA);
     EXPECT_EQ(result, ERR_INVALID_DATA);
 }
 
-} // namespace ScreenLock
-} // namespace OHOS
+}  // namespace ScreenLock
+}  // namespace OHOS
