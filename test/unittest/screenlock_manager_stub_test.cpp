@@ -12,11 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define private public
-#define protected public
-#include "screenlock_system_ability.h"
-#undef private
-#undef protected
 
 #include <cstdint>
 #include <list>
