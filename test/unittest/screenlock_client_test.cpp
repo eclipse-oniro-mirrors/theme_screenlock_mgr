@@ -436,5 +436,25 @@ HWTEST_F(ScreenLockClientTest, LockTest0019, TestSize.Level0)
     SCLOCK_HILOGI("LockTest0019.[retCode]:%{public}d", retCode);
     EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
 }
+
+/**
+* @tc.name: LockTest0020
+* @tc.desc: Test SetScreenLockAuthState.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(ScreenLockClientTest, LockTest0020, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test SetScreenLockAuthState.");
+    int userId = 0;
+    int state = 0;
+    sptr<StrongAuthListener> listener = nullptr;
+    sptr<InnerListenerWrapper> wrapper = new (std::nothrow) InnerListenerWrapper(listener);
+    wrapper->OnStateChanged(userId, state);
+    listener = new (std::nothrow) StrongAuthListenerTest(userId);
+    wrapper->OnStateChanged(userId, state);
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
