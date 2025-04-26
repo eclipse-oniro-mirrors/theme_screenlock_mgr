@@ -18,6 +18,8 @@
 #include "screenlock_callback_stub.h"
 #include "screenlock_common.h"
 #include "screenlock_event_list_test.h"
+#include "screenlock_callback_interface.h"
+#include "screenlock_manager_stub.h"
 #include "screenlock_system_ability_stub.h"
 
 namespace OHOS {
@@ -35,6 +37,38 @@ public:
     virtual ~ScreenlockCallbackTest();
     void OnCallBack(const int32_t screenLockResult) override;
 };
+
+class ScreenLockManagerStubTest : public ScreenLockManagerStub {
+public:
+    ScreenLockManagerStubTest() : ScreenLockManagerStub() {
+    };
+    virtual ~ScreenLockManagerStubTest() {
+    };
+
+    virtual int32_t IsLocked(bool &isLocked);
+    virtual bool IsScreenLocked();
+    virtual bool GetSecure();
+    virtual int32_t Unlock(const sptr<ScreenLockCallbackInterface> &listener);
+    virtual int32_t UnlockScreen(const sptr<ScreenLockCallbackInterface> &listener);
+    virtual int32_t Lock(const sptr<ScreenLockCallbackInterface> &listener);
+    virtual int32_t Lock(int32_t userId);
+    virtual int32_t OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener);
+    virtual int32_t SendScreenLockEvent(const std::string &event, int param);
+    virtual int32_t IsScreenLockDisabled(int userId, bool &isDisabled);
+    virtual int32_t SetScreenLockDisabled(bool disable, int userId);
+    virtual int32_t SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken);
+    virtual int32_t GetScreenLockAuthState(int userId, int32_t &authState);
+    virtual int32_t RequestStrongAuth(int reasonFlag, int32_t userId);
+    virtual int32_t GetStrongAuth(int32_t userId, int32_t &reasonFlag);
+    virtual int32_t IsDeviceLocked(int userId, bool &isDeviceLocked);
+    virtual int32_t IsLockedWithUserId(int userId, bool &isLocked);
+    virtual int32_t RegisterInnerListener(const int32_t userId, const ListenType listenType,
+                                          const sptr<InnerListenerIf> &listener);
+    virtual int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
+                                            const sptr<InnerListenerIf> &listener);
+};
+
+
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  NAPI_SCREENLOCK_CALL_BACK_TEST_H
