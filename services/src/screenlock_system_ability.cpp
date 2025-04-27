@@ -1069,13 +1069,13 @@ void ScreenLockSystemAbility::authStateInit(const int32_t userId)
     screenStateLock.unlock();
 }
 
-void ScreenLockSystemAbility::SubscribeUserIamReady()
+void ScreenLockSystemAbility::subscribeUserIamReady()
 {
     int ret = WatchParameter(IAM_EVENT_KEY, UserIamReadyCallback, nullptr);
     SCLOCK_HILOGW("SubscribeUserIamReady WatchParameter ret=%{public}d", ret);
 }
 
-void ScreenLockSystemAbility::RemoveSubscribeUserIamReady()
+void ScreenLockSystemAbility::removeSubscribeUserIamReady()
 {
     int ret = RemoveParameterWatcher(IAM_EVENT_KEY, UserIamReadyCallback, nullptr);
     SCLOCK_HILOGW("RemoveParameterWatcher ret=%{public}d", ret);

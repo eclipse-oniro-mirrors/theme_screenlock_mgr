@@ -220,8 +220,8 @@ private:
     void onRemoveUser(const int userId);
     void subscribeAcccount();
     void authStateInit(const int userId);
-    void SubscribeUserIamReady();
-    void RemoveSubscribeUserIamReady();
+    void subscribeUserIamReady();
+    void removeSubscribeUserIamReady();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
