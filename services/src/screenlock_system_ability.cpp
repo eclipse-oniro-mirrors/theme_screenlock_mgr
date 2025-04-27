@@ -272,7 +272,7 @@ void ScreenLockSystemAbility::InitUserId()
 {
     subscribeAcccount();
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
-    SubscribeUserIamReady();
+    subscribeUserIamReady();
 
     int userId = GetCurrentActiveOsAccountId();
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
@@ -307,7 +307,7 @@ void ScreenLockSystemAbility::OnStop()
         SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
     }
 
-    RemoveSubscribeUserIamReady();
+    removeSubscribeUserIamReady();
     ret = OsAccountManager::UnsubscribeOsAccount(accountRemoveSubscriber_);
     if (ret != SUCCESS) {
         SCLOCK_HILOGE("unsubscribe remove account failed, code=%{public}d", ret);
