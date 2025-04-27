@@ -70,10 +70,27 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, tr
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
+const char IAM_EVENT_KEY[] = "bootevent.useriam.fwkready";
 std::mutex ScreenLockSystemAbility::instanceLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 constexpr int32_t MAX_RETRY_TIMES = 20;
 std::shared_ptr<ffrt::queue> ScreenLockSystemAbility::queue_;
+
+void UserIamReadyCallback(const char *key, const char *value, void *context)
+{
+    if (key == nullptr || value == nullptr) {
+        SCLOCK_HILOGE("SubscribeUserIamReady key or value is nullptr");
+        return;
+    }
+
+    if (strcmp(key, IAM_EVENT_KEY) != 0) {
+        SCLOCK_HILOGE("event key mismatch");
+        return;
+    }
+
+    ScreenLockSystemAbility::GetInstance()->UserIamReadyNotify(value);
+}
+
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
     : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
 {}
@@ -255,6 +272,7 @@ void ScreenLockSystemAbility::InitUserId()
 {
     subscribeAcccount();
     Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
+    SubscribeUserIamReady();
 
     int userId = GetCurrentActiveOsAccountId();
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
@@ -289,6 +307,7 @@ void ScreenLockSystemAbility::OnStop()
         SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d", ret);
     }
 
+    RemoveSubscribeUserIamReady();
     ret = OsAccountManager::UnsubscribeOsAccount(accountRemoveSubscriber_);
     if (ret != SUCCESS) {
         SCLOCK_HILOGE("unsubscribe remove account failed, code=%{public}d", ret);
@@ -1048,6 +1067,26 @@ void ScreenLockSystemAbility::authStateInit(const int32_t userId)
         isScreenlockedMap_.insert(std::make_pair(userId, true));
     }
     screenStateLock.unlock();
+}
+
+void ScreenLockSystemAbility::SubscribeUserIamReady()
+{
+    int ret = WatchParameter(IAM_EVENT_KEY, UserIamReadyCallback, nullptr);
+    SCLOCK_HILOGW("SubscribeUserIamReady WatchParameter ret=%{public}d", ret);
+}
+
+void ScreenLockSystemAbility::RemoveSubscribeUserIamReady()
+{
+    int ret = RemoveParameterWatcher(IAM_EVENT_KEY, UserIamReadyCallback, nullptr);
+    SCLOCK_HILOGW("RemoveParameterWatcher ret=%{public}d", ret);
+}
+
+void ScreenLockSystemAbility::UserIamReadyNotify(const char *value)
+{
+    SCLOCK_HILOGW("SubscribeUserIamReady state=%{public}s", value);
+    SystemEvent systemEvent(USERIAM_READY);
+    systemEvent.params_ = value;
+    SystemEventCallBack(systemEvent);
 }
 } // namespace ScreenLock
 } // namespace OHOS

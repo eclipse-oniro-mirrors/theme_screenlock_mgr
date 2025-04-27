@@ -161,6 +161,7 @@ public:
     void ResetFfrtQueue();
     void StrongAuthChanged(int32_t userId, int32_t reasonFlag);
     int32_t Lock(int32_t userId) override;
+    void UserIamReadyNotify(const char *value);
     StateValue &GetState()
     {
         return stateValue_;
@@ -219,6 +220,8 @@ private:
     void onRemoveUser(const int userId);
     void subscribeAcccount();
     void authStateInit(const int userId);
+    void SubscribeUserIamReady();
+    void RemoveSubscribeUserIamReady();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;

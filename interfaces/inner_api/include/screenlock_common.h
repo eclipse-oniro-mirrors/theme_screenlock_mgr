@@ -46,6 +46,7 @@ const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
 const std::string SCREEN_DRAWDONE = "screenDrawDone";
 const std::string SYSTEM_READY = "systemReady";
 const std::string SERVICE_RESTART = "serviceRestart";
+const std::string USERIAM_READY = "useriamReady";
 const int USER_NULL = -10000;
 enum ScreenLockModule {
     SCREENLOCK_MODULE_SERVICE_ID = 0x04,
