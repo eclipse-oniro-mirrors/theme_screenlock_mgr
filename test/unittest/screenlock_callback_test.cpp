@@ -60,8 +60,7 @@ ScreenLockManagerStubTest:: ~ScreenLockManagerStubTest() {
 
 int32_t ScreenLockManagerStubTest::IsLocked(bool &isLocked)
 {
-    if (mFlag)
-    {
+    if (mFlag) {
         return E_SCREENLOCK_OK;
     }
     return E_SCREENLOCK_OK + 1;
@@ -109,8 +108,7 @@ int32_t ScreenLockManagerStubTest::SendScreenLockEvent(const std::string &event,
 
 int32_t ScreenLockManagerStubTest::IsScreenLockDisabled(int userId, bool &isDisabled)
 {
-    if (mFlag)
-    {
+    if (mFlag) {
         return E_SCREENLOCK_OK;
     }
     return E_SCREENLOCK_OK + 1;
@@ -128,8 +126,7 @@ int32_t ScreenLockManagerStubTest::SetScreenLockAuthState(int authState, int32_t
 
 int32_t ScreenLockManagerStubTest::GetScreenLockAuthState(int userId, int32_t &authState)
 {
-    if (mFlag)
-    {
+    if (mFlag) {
         return E_SCREENLOCK_OK;
     }
     return E_SCREENLOCK_OK + 1;
@@ -142,8 +139,7 @@ int32_t ScreenLockManagerStubTest::RequestStrongAuth(int reasonFlag, int32_t use
 
 int32_t ScreenLockManagerStubTest::GetStrongAuth(int32_t userId, int32_t &reasonFlag)
 {
-    if (mFlag)
-    {
+    if (mFlag) {
         return E_SCREENLOCK_OK;
     }
     return E_SCREENLOCK_OK + 1;
@@ -151,8 +147,7 @@ int32_t ScreenLockManagerStubTest::GetStrongAuth(int32_t userId, int32_t &reason
 
 int32_t ScreenLockManagerStubTest::IsDeviceLocked(int userId, bool &isDeviceLocked)
 {
-    if (mFlag)
-    {
+    if (mFlag) {
         return E_SCREENLOCK_OK;
     }
     return E_SCREENLOCK_OK + 1;
@@ -160,8 +155,7 @@ int32_t ScreenLockManagerStubTest::IsDeviceLocked(int userId, bool &isDeviceLock
 
 int32_t ScreenLockManagerStubTest::IsLockedWithUserId(int userId, bool &isLocked)
 {
-    if (mFlag)
-    {
+    if (mFlag) {
         return E_SCREENLOCK_OK;
     }
     return E_SCREENLOCK_OK + 1;
