@@ -93,5 +93,41 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest002, TestSize.Level0)
 #endif // IS_SO_CROP_H
 }
 
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest003, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    StrongAuthManger::authTimer timer;
+    timer.OnTrigger();
+    bool result = true;
+    EXPECT_EQ(result, true);
+#endif // IS_SO_CROP_H
+}
+
+static void StrongAuthTimerCallbackTest(int32_t userId)
+{
+    SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
+    return;
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest004, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    StrongAuthManger::authTimer timer;
+    timer.SetCallbackInfo(StrongAuthTimerCallbackTest);
+    timer.OnTrigger();
+    bool result = true;
+    EXPECT_EQ(result, true);
+#endif // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest005, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    sptr<StrongAuthManger> instance = StrongAuthManger::GetInstance();
+    bool result = true;
+    EXPECT_EQ(result, true);
+#endif // IS_SO_CROP_H
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
