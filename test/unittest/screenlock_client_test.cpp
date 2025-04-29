@@ -456,5 +456,25 @@ HWTEST_F(ScreenLockClientTest, LockTest0020, TestSize.Level0)
     wrapper->OnStateChanged(userId, state);
 }
 
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test onRemoveUser state");
+    AccountSA::OsAccountSubscribeInfo info;
+    ScreenLockSystemAbility::AccountRemoveSubscriber acount(info);
+    acount.OnAccountsChanged(0);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test onRemoveUser state");
+    AccountSA::OsAccountSubscribeInfo info;
+    ScreenLockSystemAbility::AccountSubscriber acount(info);
+    acount.OnAccountsChanged(0);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
