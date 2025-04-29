@@ -40,11 +40,9 @@ public:
 
 class ScreenLockManagerStubTest : public ScreenLockManagerStub {
 public:
-    ScreenLockManagerStubTest() : ScreenLockManagerStub() {
-    };
-    virtual ~ScreenLockManagerStubTest() {
-    };
-
+    ScreenLockManagerStubTest();
+    ScreenLockManagerStubTest(bool flag);
+    virtual ~ScreenLockManagerStubTest();
     virtual int32_t IsLocked(bool &isLocked);
     virtual bool IsScreenLocked();
     virtual bool GetSecure();
@@ -66,8 +64,9 @@ public:
                                           const sptr<InnerListenerIf> &listener);
     virtual int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                             const sptr<InnerListenerIf> &listener);
+private:
+    bool mFlag = false;
 };
-
 
 } // namespace ScreenLock
 } // namespace OHOS
