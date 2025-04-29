@@ -41,7 +41,7 @@ public:
 class ScreenLockManagerStubTest : public ScreenLockManagerStub {
 public:
     ScreenLockManagerStubTest();
-    ScreenLockManagerStubTest(bool flag);
+    explicit ScreenLockManagerStubTest(bool flag);
     virtual ~ScreenLockManagerStubTest();
     virtual int32_t IsLocked(bool &isLocked);
     virtual bool IsScreenLocked();
