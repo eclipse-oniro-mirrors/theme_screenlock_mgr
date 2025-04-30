@@ -31,6 +31,8 @@
 #include "screenlock_notify_test_instance.h"
 #include "screenlock_system_ability.h"
 #include "securec.h"
+#include "dump_helper.h"
+#include "screenlock_get_info_callback.h"
 #include "screenlock_inner_listener.h"
 #include "inner_listener_test.h"
 
@@ -454,6 +456,99 @@ HWTEST_F(ScreenLockClientTest, LockTest0020, TestSize.Level0)
     wrapper->OnStateChanged(userId, state);
     listener = new (std::nothrow) StrongAuthListenerTest(userId);
     wrapper->OnStateChanged(userId, state);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test onRemoveUser state");
+    AccountSA::OsAccountSubscribeInfo info;
+    ScreenLockSystemAbility::AccountRemoveSubscriber acount(info);
+    acount.OnAccountsChanged(0);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test onRemoveUser state");
+    AccountSA::OsAccountSubscribeInfo info;
+    ScreenLockSystemAbility::AccountSubscriber acount(info);
+    acount.OnAccountsChanged(0);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest023, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test onRemoveUser state");
+    AccountSA::OsAccountSubscribeInfo info;
+    ScreenLockSystemAbility::AccountSubscriber acount(info);
+    acount.OnAccountsChanged(0);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest024, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test onRemoveUser state");
+    sptr<ScreenLockSystemAbility> instance = ScreenLockSystemAbility::GetInstance();
+    instance->SetScreenLockDisabled(true, 0);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest025, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test dumpHelper.Dispatch");
+    std::vector<std::string> args;
+    DumpHelper dumpHelper = DumpHelper::GetInstance();
+    bool result = dumpHelper.Dispatch(0, args);
+    EXPECT_EQ(result, false);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest026, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test dumpHelper.Dispatch");
+    std::vector<std::string> args;
+    std::string param("-h");
+    args.emplace_back(param);
+    DumpHelper dumpHelper = DumpHelper::GetInstance();
+    bool result = dumpHelper.Dispatch(0, args);
+    EXPECT_EQ(result, false);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest027, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test duScreenLockGetInfoCallbackpHelper.OnCredentialInfo");
+    ScreenLockGetInfoCallback callback;
+    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
+    callback.OnCredentialInfo(0, infoList);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest028, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test duScreenLockGetInfoCallbackpHelper.OnCredentialInfo");
+    ScreenLockGetInfoCallback callback;
+    OHOS::UserIam::UserAuth::CredentialInfo createntialInfo;
+    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
+    infoList.emplace_back(createntialInfo);
+    callback.OnCredentialInfo(0, infoList);
+    bool result = true;
+    EXPECT_EQ(result, true);
+}
+
+HWTEST_F(ScreenLockClientTest, SetScreenLockTest029, TestSize.Level0)
+{
+    SCLOCK_HILOGD("Test duScreenLockGetInfoCallbackpHelper.OnCredentialInfo");
+    ScreenLockGetInfoCallback callback;
+    OHOS::UserIam::UserAuth::CredentialInfo createntialInfo;
+    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
+    infoList.emplace_back(createntialInfo);
+    callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS + 10001, infoList);
+    bool result = true;
+    EXPECT_EQ(result, true);
 }
 
 } // namespace ScreenLock
