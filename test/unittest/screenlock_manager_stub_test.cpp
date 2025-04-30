@@ -472,6 +472,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest017_1, Test
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest017_1, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
+
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest018, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest018");
@@ -571,6 +572,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest021_1, Test
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest021_1, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
+
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest022, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest022");
@@ -608,6 +610,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest022_1, Test
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest022_1, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
+
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest023, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest023");
@@ -645,6 +648,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest023_1, Test
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest023_1, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
+
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest024, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest024");
@@ -666,6 +670,27 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest024, TestSi
     EXPECT_EQ(result, ERR_NONE);
 }
 
+HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest024_1, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockManagerStubWrapTest024_1");
+    sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
+    if (instance == nullptr) {
+        SCLOCK_HILOGE("instance is nullptr!");
+        return;
+    }
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
+    data.WriteInt32(0);
+    data.WriteInt32(0);
+    data.WriteRemoteObject(instance->AsObject());
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::REGISTER_INNER_LISTENER), data, reply, option);
+    SCLOCK_HILOGI("ScreenLockManagerStubWrapTest024_1, result = %{public}d  %{public}d", result, ERR_NONE);
+    EXPECT_EQ(result, ERR_NONE);
+}
+
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest025, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest025");
@@ -684,6 +709,27 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest025, TestSi
     int result = instance->OnRemoteRequest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_INNER_LISTENER), data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest025, result = %{public}d  %{public}d", result, ERR_NONE);
+    EXPECT_EQ(result, ERR_NONE);
+}
+
+HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest025_1, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockManagerStubWrapTest025_1");
+    sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
+    if (instance == nullptr) {
+        SCLOCK_HILOGE("instance is nullptr!");
+        return;
+    }
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
+    data.WriteInt32(0);
+    data.WriteInt32(0);
+    data.WriteRemoteObject(instance->AsObject());
+    int result = instance->OnRemoteRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNREGISTER_INNER_LISTENER), data, reply, option);
+    SCLOCK_HILOGI("ScreenLockManagerStubWrapTest025_1, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
 
@@ -724,6 +770,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest026_1, Test
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest026_1, result = %{public}d  %{public}d", result, ERR_NONE);
     EXPECT_EQ(result, ERR_NONE);
 }
+
 HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest027, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest027");
@@ -737,7 +784,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest027, TestSi
     MessageOption option;
     data.WriteInterfaceToken(SLMGRSTUB_INTERFACE_TOKEN);
     data.WriteInt32(0);
-    int result = instance->OnRemoteRequest(20, data, reply, option);
+    int result = instance->OnRemoteRequest(100, data, reply, option);
     SCLOCK_HILOGI("ScreenLockManagerStubWrapTest027, result = %{public}d  %{public}d", result, ERR_INVALID_DATA);
     EXPECT_EQ(result, ERR_INVALID_DATA);
 }
