@@ -123,7 +123,49 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest004, TestSize.Level0)
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest005, TestSize.Level0)
 {
 #ifndef IS_SO_CROP_H
-    sptr<StrongAuthManger> instance = StrongAuthManger::GetInstance();
+    AAFwk::Want want;
+    std::string USER_CREDENTIAL_UPDATED_EVENT = "USER_CREDENTIAL_UPDATED_EVENT";
+    want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
+    std::string HAS_CREDENTIAL = "1";
+    std::string AUTH_PIN = "1";
+    want.SetParam("userId", 0);
+    want.SetParam("authType", AUTH_PIN);
+    want.SetParam("credentialCount", HAS_CREDENTIAL);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+    bool result = true;
+    EXPECT_EQ(result, true);
+#endif // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest006, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    std::string USER_CREDENTIAL_UPDATED_EVENT = "USER_CREDENTIAL_UPDATED_EVENT";
+    std::string HAS_CREDENTIAL = "1";
+    std::string AUTH_PIN = "1";
+    AAFwk::Want want;
+    want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
+    want.SetParam("userId", 0);
+    want.SetParam("authType", AUTH_PIN);
+    want.SetParam("credentialCount", HAS_CREDENTIAL);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+    bool result = true;
+    EXPECT_EQ(result, true);
+#endif // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest007, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    AAFwk::Want want;
+    std::string USER_CREDENTIAL_UPDATED_EVENT = "USER_CREDENTIAL_UPDATED_EVENT";
+    std::string HAS_CREDENTIAL = "1";
+    std::string NO_AUTH_PIN = "0";
+    want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
+    want.SetParam("userId", 0);
+    want.SetParam("authType", NO_AUTH_PIN);
+    want.SetParam("credentialCount", HAS_CREDENTIAL);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
     bool result = true;
     EXPECT_EQ(result, true);
 #endif // IS_SO_CROP_H
