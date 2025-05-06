@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #ifndef IS_SO_CROP_H
+#include <cinttypes>
 #include "strongauthmanager.h"
 #include "screenlock_common.h"
 #include "sclock_log.h"
@@ -226,7 +227,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId)
 
 void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
-    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
+    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}" PRId64, triggerPeriod);
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     uint64_t timerId = GetTimerId(userId);
     if (timerId != 0) {
@@ -251,7 +252,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
 
 void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPeriod)
 {
-    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
+    SCLOCK_HILOGI("ResetStrongAuthTimer triggerPeriod:%{public}" PRId64, triggerPeriod);
     uint64_t timerId = GetTimerId(userId);
     if (timerId == 0) {
         StartStrongAuthTimer(userId, triggerPeriod);
