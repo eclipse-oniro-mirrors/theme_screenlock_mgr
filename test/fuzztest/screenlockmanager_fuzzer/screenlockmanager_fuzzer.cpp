@@ -180,7 +180,7 @@ bool FuzzRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
         return true;
     }
     if (StrongAuthListenerTest1 == nullptr) {
-        StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(100);
+        StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(DEFAULT_USER);
     }
     int32_t ret = ScreenLockManager::GetInstance()->RegisterStrongAuthListener(StrongAuthListenerTest1);
     ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
@@ -193,7 +193,7 @@ bool FuzzRegisterDeviceLockedListener(const uint8_t *rawData, size_t size)
         return true;
     }
     if (DeviceLockedListenerTest1 == nullptr) {
-        DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(100);
+        DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(DEFAULT_USER);
     }
     int32_t ret = ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
     ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
