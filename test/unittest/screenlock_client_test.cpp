@@ -464,8 +464,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
     AccountSA::OsAccountSubscribeInfo info;
     ScreenLockSystemAbility::AccountRemoveSubscriber acount(info);
     acount.OnAccountsChanged(0);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
@@ -474,8 +475,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
     AccountSA::OsAccountSubscribeInfo info;
     ScreenLockSystemAbility::AccountSubscriber acount(info);
     acount.OnAccountsChanged(0);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest023, TestSize.Level0)
@@ -484,8 +486,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest023, TestSize.Level0)
     AccountSA::OsAccountSubscribeInfo info;
     ScreenLockSystemAbility::AccountSubscriber acount(info);
     acount.OnAccountsChanged(0);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest024, TestSize.Level0)
@@ -493,8 +496,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest024, TestSize.Level0)
     SCLOCK_HILOGD("Test onRemoveUser state");
     sptr<ScreenLockSystemAbility> instance = ScreenLockSystemAbility::GetInstance();
     instance->SetScreenLockDisabled(true, 0);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest025, TestSize.Level0)
@@ -523,8 +527,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest027, TestSize.Level0)
     ScreenLockGetInfoCallback callback;
     std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
     callback.OnCredentialInfo(0, infoList);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest028, TestSize.Level0)
@@ -535,8 +540,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest028, TestSize.Level0)
     std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
     infoList.emplace_back(createntialInfo);
     callback.OnCredentialInfo(0, infoList);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest029, TestSize.Level0)
@@ -547,8 +553,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest029, TestSize.Level0)
     std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
     infoList.emplace_back(createntialInfo);
     callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS + 10001, infoList);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    sptr<ScreenLockCallbackInterface> listener = nullptr;
+    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
+    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
 } // namespace ScreenLock
