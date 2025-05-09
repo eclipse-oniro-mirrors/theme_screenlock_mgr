@@ -104,8 +104,9 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest003, TestSize.Level0)
 #ifndef IS_SO_CROP_H
     StrongAuthManger::authTimer timer;
     timer.OnTrigger();
-    bool result = true;
-    EXPECT_EQ(result, true);
+    StrongAuthManger::authTimer timer1(true, 1000, true, true);
+    EXPECT_EQ(timer1.repeat, true);
+    EXPECT_EQ(timer1.interval, 1000);
 #endif // IS_SO_CROP_H
 }
 
@@ -121,8 +122,9 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest004, TestSize.Level0)
     StrongAuthManger::authTimer timer;
     timer.SetCallbackInfo(StrongAuthTimerCallbackTest);
     timer.OnTrigger();
-    bool result = true;
-    EXPECT_EQ(result, true);
+    StrongAuthManger::authTimer timer1(true, 1000, true, true);
+    EXPECT_EQ(timer1.repeat, true);
+    EXPECT_EQ(timer1.interval, 1000);
 #endif // IS_SO_CROP_H
 }
 
@@ -135,8 +137,9 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest005, TestSize.Level0)
     want.SetParam("authType", AUTH_PIN);
     want.SetParam("credentialCount", HAS_CREDENTIAL);
     Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    StrongAuthManger::authTimer timer(true, 1000, true, true);
+    EXPECT_EQ(timer.repeat, true);
+    EXPECT_EQ(timer.interval, 1000);
 #endif // IS_SO_CROP_H
 }
 
@@ -149,8 +152,9 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest006, TestSize.Level0)
     want.SetParam("authType", AUTH_PIN);
     want.SetParam("credentialCount", HAS_CREDENTIAL);
     Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    StrongAuthManger::authTimer timer(true, 1000, true, true);
+    EXPECT_EQ(timer.repeat, true);
+    EXPECT_EQ(timer.interval, 1000);
 #endif // IS_SO_CROP_H
 }
 
@@ -163,8 +167,9 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest007, TestSize.Level0)
     want.SetParam("authType", NO_AUTH_PIN);
     want.SetParam("credentialCount", HAS_CREDENTIAL);
     Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
-    bool result = true;
-    EXPECT_EQ(result, true);
+    StrongAuthManger::authTimer timer(true, 1000, true, true);
+    EXPECT_EQ(timer.repeat, true);
+    EXPECT_EQ(timer.interval, 1000);
 #endif // IS_SO_CROP_H
 }
 
