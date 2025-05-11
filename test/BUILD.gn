@@ -41,6 +41,11 @@ ohos_unittest("ScreenLockServiceTest") {
     "unittest/screenlock_strongauth_test.cpp",
   ]
 
+  deps = [
+    "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
+    "${screenlock_mgr_path}/services:screenlock_server_static",
+  ]
+
   external_deps = [
     "ability_base:base",
     "ability_base:want",
@@ -64,11 +69,6 @@ ohos_unittest("ScreenLockServiceTest") {
     "window_manager:libdm",
     "preferences:native_preferences",
     "safwk:system_ability_fwk",
-  ]
-
-  deps = [
-    "${screenlock_mgr_path}/interfaces/inner_api:screenlock_client_static",
-    "${screenlock_mgr_path}/services:screenlock_server_static",
   ]
 
   if (screenlock_mgr_so_crop == true) {
