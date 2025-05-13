@@ -67,10 +67,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap001, TestSize.L
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap001");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -92,10 +89,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap002, TestSize.L
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap002");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -110,10 +104,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap002_1, TestSize
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap002_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest(true);
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -135,10 +126,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrap003, TestSize.L
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrap003");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -160,10 +148,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest004, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest004");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -185,10 +170,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest005, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest005");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -204,10 +186,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest006, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest006");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -225,10 +204,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest007, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest007");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -244,10 +220,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest008, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest008");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -263,10 +236,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest009, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest009");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -284,10 +254,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest010, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest010");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -303,10 +270,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest011, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest011");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -322,10 +286,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest012, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest012");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -343,10 +304,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest013, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest013");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -362,10 +320,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest014, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest014");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -382,10 +337,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest015, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest015");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -401,10 +353,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest0151, TestS
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest0151");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -420,10 +369,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest016, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest016");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -439,10 +385,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest017, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest017");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -458,10 +401,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest017_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest017_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest(true);
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -477,10 +417,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest018, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest018");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -497,10 +434,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest019, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest019");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -518,10 +452,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest020, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest020");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -537,10 +468,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest021, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest021");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -557,10 +485,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest021_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest021_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest(true);
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -577,10 +502,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest022, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest022");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -596,10 +518,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest022_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest022_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest(true);
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -615,10 +534,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest023, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest023");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -634,10 +550,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest023_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest023_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest(true);
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -653,10 +566,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest024, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest024");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -674,10 +584,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest024_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest024_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -695,10 +602,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest025, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest025");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -716,10 +620,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest025_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest025_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -737,10 +638,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest026, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest026");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -756,10 +654,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest026_1, Test
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest026_1");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest(true);
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -775,10 +670,7 @@ HWTEST_F(ScreenLockManagerStubWrapTest, ScreenLockManagerStubWrapTest027, TestSi
 {
     SCLOCK_HILOGD("ScreenLockManagerStubWrapTest027");
     sptr<ScreenLockManagerStubTest> instance = new ScreenLockManagerStubTest();
-    if (instance == nullptr) {
-        SCLOCK_HILOGE("instance is nullptr!");
-        return;
-    }
+    ASSERT_NE(instance, nullptr);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
