@@ -56,10 +56,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest001, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockPreferenceTest String");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return;
-    }
+    ASSERT_NE(preferencesUtil, nullptr);
     int userId = 0;
     std::string defaulVal = "test";
     int result = preferencesUtil->SaveString(std::to_string(userId), defaulVal);
@@ -81,10 +78,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest002, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockPreferenceTest Int");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return;
-    }
+    ASSERT_NE(preferencesUtil, nullptr);
     int userId = 0;
     int defaulVal = 0;
     int result = preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
@@ -106,10 +100,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest003, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockPreferenceTest Bool");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return;
-    }
+    ASSERT_NE(preferencesUtil, nullptr);
     int userId = 0;
     bool defaulVal = false;
     int result = preferencesUtil->SaveBool(std::to_string(userId), defaulVal);
@@ -131,10 +122,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest004, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockPreferenceTest Long");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return;
-    }
+    ASSERT_NE(preferencesUtil, nullptr);
     int userId = 0;
     int64_t defaulVal = false;
     preferencesUtil->SaveLong(std::to_string(userId), defaulVal);
@@ -155,10 +143,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest005, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockPreferenceTest Float");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return;
-    }
+    ASSERT_NE(preferencesUtil, nullptr);
     int userId = 0;
     float defaulVal = 1.0;
     int result = preferencesUtil->SaveFloat(std::to_string(userId), defaulVal);
@@ -180,10 +165,7 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest006, TestSize.Level0)
 {
     SCLOCK_HILOGD("ScreenLockPreferenceTest RmvAll");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return;
-    }
+    ASSERT_NE(preferencesUtil, nullptr);
     preferencesUtil->RemoveAll();
     preferencesUtil->RefreshSync();
     EXPECT_NE(preferencesUtil, nullptr);

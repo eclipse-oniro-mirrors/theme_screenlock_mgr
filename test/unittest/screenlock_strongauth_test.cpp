@@ -65,10 +65,7 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     SCLOCK_HILOGD("ScreenLockStrongAuthTest");
 #ifndef IS_SO_CROP_H
     auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
-    if (authmanager == nullptr) {
-        SCLOCK_HILOGE("authmanager is nullptr!");
-        return;
-    }
+    ASSERT_NE(authmanager, nullptr);
 
     int32_t userId = 100;
     int32_t defaulVal = 1;
