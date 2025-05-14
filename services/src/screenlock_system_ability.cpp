@@ -479,7 +479,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     AccessTokenID callerTokenId = IPCSkeleton::GetCallingTokenID();
     // check whether the page of app request unlock is the focus page
     bool hasPermission = CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
-    SCLOCK_HILOGE("hasPermission: {public}%d.", hasPermission);
+    SCLOCK_HILOGE("hasPermission: %{public}d.", hasPermission);
     if (AccessTokenKit::GetTokenTypeFlag(callerTokenId) != TOKEN_NATIVE &&
         !IsAppInForeground(IPCSkeleton::GetCallingPid(), callerTokenId) && !hasPermission) {
         FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end, Unfocused", HITRACE_UNLOCKSCREEN);
