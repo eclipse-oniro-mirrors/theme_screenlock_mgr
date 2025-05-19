@@ -37,7 +37,7 @@ sptr<InnerListenerManager> InnerListenerManager::GetInstance()
 }
 
 int32_t InnerListenerManager::RegisterInnerListener(int32_t userId, const ListenType listenType,
-                                                    const sptr<InnerListenerIf> &listener)
+                                                    const sptr<InnerListenerIf>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (listener == nullptr) {
@@ -66,20 +66,18 @@ int32_t InnerListenerManager::RegisterInnerListener(int32_t userId, const Listen
 }
 
 int32_t InnerListenerManager::UnRegisterInnerListener(const ListenType listenType,
-                                                      const sptr<InnerListenerIf> &listener)
+                                                      const sptr<InnerListenerIf>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr");
         return E_SCREENLOCK_NULLPTR;
     }
-
     int32_t result = RemoveDeathRecipient(listener);
     if (result != E_SCREENLOCK_OK) {
         SCLOCK_HILOGE("RemoveDeathRecipient fail");
         return result;
     }
-
     // Remove the listener from the map
     result = RemoveInnerListener(listenType, listener);
     if (result != E_SCREENLOCK_OK) {
@@ -92,12 +90,11 @@ int32_t InnerListenerManager::UnRegisterInnerListener(const ListenType listenTyp
 }
 
 int32_t InnerListenerManager::AddInnerListener(int32_t userId, const ListenType listenType,
-                                               const sptr<InnerListenerIf> &listener)
+                                               const sptr<InnerListenerIf>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    SCLOCK_HILOGI("AddInnerListener, userId:%{public}d, listenType:%{public}d", userId,
-                  static_cast<int32_t>(listenType));
-
+    SCLOCK_HILOGI("AddInnerListener, userId:%{public}d, listenType:%{public}d",
+                  userId, static_cast<int32_t>(listenType));
     if (innerListenMap_.find(listenType) == innerListenMap_.end()) {
         std::map<int32_t, std::set<sptr<InnerListenerIf>>> eventListenerMap;
         innerListenMap_.emplace(listenType, eventListenerMap);
@@ -114,12 +111,12 @@ int32_t InnerListenerManager::AddInnerListener(int32_t userId, const ListenType 
         SCLOCK_HILOGE("listener is already registed");
         return E_SCREENLOCK_OK;
     }
-    
     innerListenMap_[listenType][userId].insert(listener);
     return E_SCREENLOCK_OK;
 }
 
-int32_t InnerListenerManager::RemoveInnerListener(const ListenType listenType, const sptr<InnerListenerIf> &listener)
+int32_t InnerListenerManager::RemoveInnerListener(const ListenType listenType,
+                                                  const sptr<InnerListenerIf>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto listenMapIter = innerListenMap_.find(listenType);
@@ -128,7 +125,7 @@ int32_t InnerListenerManager::RemoveInnerListener(const ListenType listenType, c
         return E_SCREENLOCK_OK;
     }
 
-    for (auto &pair : innerListenMap_[listenType]) {
+    for (auto& pair : innerListenMap_[listenType]) {
         int32_t userId = pair.first;
         auto iter = std::find_if(innerListenMap_[listenType][userId].begin(), innerListenMap_[listenType][userId].end(),
                                  FinderSet(listener->AsObject()));
@@ -205,7 +202,8 @@ void InnerListenerManager::OnStateChanged(int32_t userId, int32_t state, ListenT
     }
 }
 
-int32_t InnerListenerManager::AddDeathRecipient(const ListenType listenType, const sptr<InnerListenerIf> &listener)
+int32_t InnerListenerManager::AddDeathRecipient(const ListenType listenType,
+                                                const sptr<InnerListenerIf>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (listener == nullptr) {
@@ -236,7 +234,7 @@ int32_t InnerListenerManager::AddDeathRecipient(const ListenType listenType, con
     return E_SCREENLOCK_OK;
 }
 
-int32_t InnerListenerManager::RemoveDeathRecipient(const sptr<InnerListenerIf> &listener)
+int32_t InnerListenerManager::RemoveDeathRecipient(const sptr<InnerListenerIf>& listener)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (listener == nullptr) {
@@ -274,7 +272,7 @@ std::map<sptr<InnerListenerIf>, std::pair<ListenType, sptr<DeathRecipient>>> Inn
     return deathRecipientMap_;
 }
 
-void InnerListenerManager::InnerListenerDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
+void InnerListenerManager::InnerListenerDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
 {
     SCLOCK_HILOGI("start");
     if (remote == nullptr) {
@@ -284,7 +282,7 @@ void InnerListenerManager::InnerListenerDeathRecipient::OnRemoteDied(const wptr<
 
     std::map<sptr<InnerListenerIf>, std::pair<ListenType, sptr<DeathRecipient>>> deathRecipientMap =
         InnerListenerManager::GetInstance()->GetDeathRecipient();
-    for (auto &iter : deathRecipientMap) {
+    for (auto& iter : deathRecipientMap) {
         if (iter.first != nullptr && remote == iter.first->AsObject()) {
             SCLOCK_HILOGD("OnRemoteDied success");
             auto result = InnerListenerManager::GetInstance()->UnRegisterInnerListener(iter.second.first, iter.first);
