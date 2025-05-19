@@ -30,8 +30,7 @@ using DeathRecipient = IRemoteObject::DeathRecipient;
 class InnerListenerManager : public RefBase {
 public:
     static sptr<InnerListenerManager> GetInstance();
-    int32_t RegisterInnerListener(int32_t userId, const ListenType listenType,
-                                  const sptr<InnerListenerIf> &listener);
+    int32_t RegisterInnerListener(int32_t userId, const ListenType listenType, const sptr<InnerListenerIf> &listener);
     int32_t UnRegisterInnerListener(const ListenType listenType, const sptr<InnerListenerIf> &listener);
     int32_t AddDeathRecipient(const ListenType listenType, const sptr<InnerListenerIf> &listener);
     int32_t RemoveDeathRecipient(const sptr<InnerListenerIf> &listener);
@@ -60,27 +59,24 @@ protected:
 private:
     static std::mutex instanceLock_;
     static sptr<InnerListenerManager> instance_;
+    std::set<sptr<InnerListenerIf>> getListenerSet(int32_t userId, ListenType listenType);
     void OnStateChanged(int32_t userId, int32_t lockState, ListenType listenType);
     struct FinderSet {
-        explicit FinderSet(sptr<IRemoteObject> remoteObject) : remoteObject_(remoteObject)
-        {
-        }
+        explicit FinderSet(sptr<IRemoteObject> remoteObject) : remoteObject_(remoteObject) {}
         bool operator()(sptr<InnerListenerIf> listener)
         {
             return listener->AsObject() == remoteObject_;
         }
-        sptr<IRemoteObject> remoteObject_ {nullptr};
+        sptr<IRemoteObject> remoteObject_{nullptr};
     };
 
     struct FinderMap {
-        explicit FinderMap(sptr<IRemoteObject> remoteObject) : remoteObject_(remoteObject)
-        {
-        }
+        explicit FinderMap(sptr<IRemoteObject> remoteObject) : remoteObject_(remoteObject) {}
         bool operator()(std::map<sptr<InnerListenerIf>, std::pair<ListenType, sptr<DeathRecipient>>>::value_type &pair)
         {
             return pair.first->AsObject() == remoteObject_;
         }
-        sptr<IRemoteObject> remoteObject_ {nullptr};
+        sptr<IRemoteObject> remoteObject_{nullptr};
     };
 };
 }
