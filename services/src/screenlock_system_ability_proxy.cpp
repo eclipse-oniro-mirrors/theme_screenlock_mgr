@@ -30,6 +30,7 @@ void ScreenLockSystemAbilityProxy::OnCallBack(const SystemEvent &systemEvent)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
+    option.SetFlags(static_cast<int>(MessageOption::TF_ASYNC));
     if (!data.WriteInterfaceToken(ScreenLockSystemAbilityProxy::GetDescriptor())) {
         SCLOCK_HILOGE("write descriptor failed");
         return;

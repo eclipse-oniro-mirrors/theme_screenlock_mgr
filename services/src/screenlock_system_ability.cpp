@@ -957,22 +957,17 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
             return;
         }
     }
-    auto callback = [this, systemEvent, traceTaskId]() {
-        if (traceTaskId != HITRACE_BUTT) {
-            StartAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback",
-                traceTaskId);
-        }
-        std::lock_guard<std::mutex> lck(listenerMutex_);
-        if (systemEventListener_ != nullptr) {
-            systemEventListener_->OnCallBack(systemEvent);
-        }
-        if (traceTaskId != HITRACE_BUTT) {
-            FinishAsyncTrace(HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback",
-                traceTaskId);
-        }
-    };
-    if (queue_ != nullptr) {
-        queue_->submit(callback);
+    if (traceTaskId != HITRACE_BUTT) {
+        StartAsyncTrace(
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback", traceTaskId);
+    }
+    std::lock_guard<std::mutex> lck(listenerMutex_);
+    if (systemEventListener_ != nullptr) {
+        systemEventListener_->OnCallBack(systemEvent);
+    }
+    if (traceTaskId != HITRACE_BUTT) {
+        FinishAsyncTrace(
+            HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "end callback", traceTaskId);
     }
 }
 
