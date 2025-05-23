@@ -60,6 +60,7 @@ protected:
 private:
     static std::mutex instanceLock_;
     static sptr<InnerListenerManager> instance_;
+    std::set<sptr<InnerListenerIf>> getListenerSet(int32_t userId, ListenType listenType);
     void OnStateChanged(int32_t userId, int32_t lockState, ListenType listenType);
     struct FinderSet {
         explicit FinderSet(sptr<IRemoteObject> remoteObject) : remoteObject_(remoteObject)
