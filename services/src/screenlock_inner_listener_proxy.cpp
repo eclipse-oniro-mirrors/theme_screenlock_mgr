@@ -42,7 +42,6 @@ bool ScreenLockInnerListenerProxy::SendRequest(uint32_t code, MessageParcel &dat
 
 void ScreenLockInnerListenerProxy::OnStateChanged(int32_t userId, int32_t state)
 {
-    SCLOCK_HILOGI("ScreenLockInnerListenerProxy::OnStateChanged Start");
     MessageParcel data;
     MessageParcel reply;
     if (!data.WriteInterfaceToken(ScreenLockInnerListenerProxy::GetDescriptor())) {
