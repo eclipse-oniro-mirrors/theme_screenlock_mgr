@@ -73,7 +73,6 @@ bool ScreenLockManager::IsScreenLocked()
 
 int32_t ScreenLockManager::IsLockedWithUserId(int userId, bool &isLocked)
 {
-    SCLOCK_HILOGD("ScreenLockManager::IsLockedWithUserId in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::IsLockedWithUserId quit because redoing GetProxy failed.");
@@ -116,7 +115,6 @@ int32_t ScreenLockManager::Unlock(Action action, const sptr<ScreenLockCallbackIn
     return ret;
 }
 
-
 int32_t ScreenLockManager::Lock(const sptr<ScreenLockCallbackInterface> &listener)
 {
     auto proxy = GetProxy();
@@ -156,7 +154,6 @@ int32_t ScreenLockManager::SendScreenLockEvent(const std::string &event, int par
 
 int32_t ScreenLockManager::IsScreenLockDisabled(int userId, bool &isDisabled)
 {
-    SCLOCK_HILOGD("ScreenLockManager::IsScreenLockDisabled in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::IsScreenLockDisabled quit because redoing GetProxy failed.");
@@ -169,7 +166,6 @@ int32_t ScreenLockManager::IsScreenLockDisabled(int userId, bool &isDisabled)
 
 int32_t ScreenLockManager::SetScreenLockDisabled(bool disable, int userId)
 {
-    SCLOCK_HILOGD("ScreenLockManager::SetScreenLockDisabled in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::SetScreenLockDisabled quit because redoing GetProxy failed.");
@@ -182,7 +178,6 @@ int32_t ScreenLockManager::SetScreenLockDisabled(bool disable, int userId)
 
 int32_t ScreenLockManager::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
-    SCLOCK_HILOGD("ScreenLockManager::SetScreenLockAuthState in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::SetScreenLockAuthState quit because redoing GetProxy failed.");
@@ -195,7 +190,6 @@ int32_t ScreenLockManager::SetScreenLockAuthState(int authState, int32_t userId,
 
 int32_t ScreenLockManager::GetScreenLockAuthState(int userId, int32_t &authState)
 {
-    SCLOCK_HILOGD("ScreenLockManager::GetScreenLockAuthState in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::GetScreenLockAuthState quit because redoing GetProxy failed.");
@@ -208,7 +202,6 @@ int32_t ScreenLockManager::GetScreenLockAuthState(int userId, int32_t &authState
 
 int32_t ScreenLockManager::RequestStrongAuth(int reasonFlag, int32_t userId)
 {
-    SCLOCK_HILOGD("ScreenLockManager::RequestStrongAuth in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::RequestStrongAuth quit because redoing GetProxy failed.");
@@ -222,7 +215,6 @@ int32_t ScreenLockManager::RequestStrongAuth(int reasonFlag, int32_t userId)
 
 int32_t ScreenLockManager::GetStrongAuth(int userId, int32_t &reasonFlag)
 {
-    SCLOCK_HILOGD("ScreenLockManager::GetStrongAuth in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::GetStrongAuth quit because redoing GetProxy failed.");
@@ -235,7 +227,6 @@ int32_t ScreenLockManager::GetStrongAuth(int userId, int32_t &reasonFlag)
 
 int32_t ScreenLockManager::IsDeviceLocked(int userId, bool &isDeviceLocked)
 {
-    SCLOCK_HILOGD("ScreenLockManager::IsDeviceLocked in");
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("ScreenLockManager::IsDeviceLocked quit because redoing GetProxy failed.");
@@ -259,7 +250,7 @@ int32_t ScreenLockManager::RegisterStrongAuthListener(const sptr<StrongAuthListe
         SCLOCK_HILOGE("RegisterStrongAuthListener quit because listener is null.");
         return E_SCREENLOCK_NULLPTR;
     }
-    
+
     return RegisterListenerInner(ListenType::STRONG_AUTH, listener);
 }
 
@@ -282,19 +273,15 @@ int32_t ScreenLockManager::UnRegisterStrongAuthListener(const sptr<StrongAuthLis
 
 int32_t ScreenLockManager::RegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener)
 {
-    SCLOCK_HILOGD("RegisterDeviceLockedListener in");
-
     if (listener == nullptr) {
         SCLOCK_HILOGE("RegisterDeviceLockedListener quit because listener is null.");
         return E_SCREENLOCK_NULLPTR;
     }
-    
+
     return RegisterListenerInner(ListenType::DEVICE_LOCK, listener);
 }
 int32_t ScreenLockManager::UnRegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener)
 {
-    SCLOCK_HILOGD("UnRegisterDeviceLockedListener in");
-
     if (listener == nullptr) {
         SCLOCK_HILOGE("UnRegisterDeviceLockedListener quit because listener is null.");
         return E_SCREENLOCK_NULLPTR;
@@ -307,7 +294,7 @@ int32_t ScreenLockManager::RegisterListenerInner(const ListenType listenType, co
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        SCLOCK_HILOGE("RegisterDeviceLockedListener quit because redoing GetProxy failed.");
+        SCLOCK_HILOGE("RegisterListenerInner quit because redoing GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
 
@@ -336,7 +323,7 @@ int32_t ScreenLockManager::UnRegisterListenerInner(const ListenType listenType,
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
-        SCLOCK_HILOGE("UnRegisterDeviceLockedListener quit because redoing GetProxy failed.");
+        SCLOCK_HILOGE("UnRegisterListenerInner quit because redoing GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
 
