@@ -206,7 +206,6 @@ int32_t ScreenLockManagerProxy::Lock(int32_t userId)
 
 int32_t ScreenLockManagerProxy::OnSystemEvent(const sptr<ScreenLockSystemAbilityInterface> &listener)
 {
-    SCLOCK_HILOGD("ScreenLockManagerProxy::OnSystemEvent");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -239,7 +238,6 @@ int32_t ScreenLockManagerProxy::SendScreenLockEvent(const std::string &event, in
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
-    SCLOCK_HILOGD("ScreenLockManagerProxy SendScreenLockEvent started.");
     data.WriteString(event);
     data.WriteInt32(param);
     int32_t ret = Remote()->SendRequest(
@@ -260,7 +258,6 @@ int32_t ScreenLockManagerProxy::IsScreenLockDisabled(int userId, bool &isDisable
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
     data.WriteInt32(userId);
-    SCLOCK_HILOGD("ScreenLockManagerProxy IsScreenLockDisabled started.");
     int32_t ret = Remote()->SendRequest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SCREENLOCK_DISABLED), data, reply, option);
     if (ret != ERR_NONE) {
@@ -284,7 +281,6 @@ int32_t ScreenLockManagerProxy::SetScreenLockDisabled(bool disable, int userId)
     data.WriteInterfaceToken(GetDescriptor());
     data.WriteBool(disable);
     data.WriteInt32(userId);
-    SCLOCK_HILOGD("ScreenLockManagerProxy SetScreenLockDisabled started.");
     int32_t ret = Remote()->SendRequest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_SCREENLOCK_DISABLED), data, reply, option);
     if (ret != ERR_NONE) {
@@ -403,7 +399,6 @@ int32_t ScreenLockManagerProxy::RegisterInnerListener(const int32_t userId, cons
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    SCLOCK_HILOGD("RegisterInnerListener started.");
     data.WriteInterfaceToken(GetDescriptor());
     data.WriteInt32(userId);
     data.WriteInt32(static_cast<int32_t>(listenType));
@@ -432,7 +427,6 @@ int32_t ScreenLockManagerProxy::UnRegisterInnerListener(const int32_t userId, co
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    SCLOCK_HILOGD("UnRegisterInnerListener started.");
     data.WriteInterfaceToken(GetDescriptor());
     data.WriteInt32(userId);
     data.WriteInt32(static_cast<int32_t>(listenType));
