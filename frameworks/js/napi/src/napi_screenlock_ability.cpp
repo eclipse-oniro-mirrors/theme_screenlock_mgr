@@ -326,7 +326,6 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         napi_typeof(env, argv[ARGV_ZERO], &valueType);
         SCLOCK_HILOGD("NAPI_UnlockScreen callback");
         NAPI_ASSERT(env, valueType == napi_function, "callback is not a function");
-        SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
         napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
         eventListener = new (std::nothrow)
             EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef, .action = Action::UNLOCKSCREEN };
