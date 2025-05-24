@@ -130,7 +130,6 @@ napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber)
 
 void ThrowError(napi_env env, const uint32_t &code, const std::string &msg)
 {
-    SCLOCK_HILOGD("ThrowError start");
     napi_value message;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &message));
     napi_value error;
@@ -139,7 +138,7 @@ void ThrowError(napi_env env, const uint32_t &code, const std::string &msg)
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, code, &errorCode));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, error, "code", errorCode));
     NAPI_CALL_RETURN_VOID(env, napi_throw(env, error));
-    SCLOCK_HILOGD("ThrowError end");
+    SCLOCK_HILOGD("ThrowError");
 }
 
 void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo)
@@ -310,7 +309,6 @@ napi_value NAPI_Lock(napi_env env, napi_callback_info info)
 
 napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
 {
-    SCLOCK_HILOGD("NAPI_UnlockScreen begin");
     StartAsyncTrace(HITRACE_TAG_MISC, "NAPI_UnlockScreen start", HITRACE_UNLOCKSCREEN);
     napi_value ret = nullptr;
     size_t argc = ARGS_SIZE_ONE;
@@ -326,7 +324,6 @@ napi_value NAPI_UnlockScreen(napi_env env, napi_callback_info info)
         napi_typeof(env, argv[ARGV_ZERO], &valueType);
         SCLOCK_HILOGD("NAPI_UnlockScreen callback");
         NAPI_ASSERT(env, valueType == napi_function, "callback is not a function");
-        SCLOCK_HILOGD("NAPI_UnlockScreen create callback");
         napi_create_reference(env, argv[ARGV_ZERO], 1, &callbackRef);
         eventListener = new (std::nothrow)
             EventListener{ .env = env, .thisVar = thisVar, .callbackRef = callbackRef, .action = Action::UNLOCKSCREEN };

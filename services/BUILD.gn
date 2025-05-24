@@ -32,9 +32,10 @@ ohos_shared_library("screenlock_server") {
     cfi = true
     cfi_cross_dso = true
     debug = false
-    integer_overflow = true
-    boundary_sanitize = true
-    ubsan = true
+    integer_overflow = false
+    boundary_sanitize = false
+    cfi_vcall_icall_only = true
+    ubsan = false
   }
   branch_protector_ret = "pac_ret"
   sources = [
@@ -57,8 +58,15 @@ ohos_shared_library("screenlock_server") {
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
-    "-fvisibility=hidden",
     "-Os",
+    "-fno-merge-all-constants",
+  ]
+
+  cflags_cc = [
+     "-fvisibility-inlines-hidden",
+     "-fvisibility=hidden",
+     "-fno-asynchronous-unwind-tables",
+     "-fno-unwind-tables",
   ]
 
   shlib_type = "sa"

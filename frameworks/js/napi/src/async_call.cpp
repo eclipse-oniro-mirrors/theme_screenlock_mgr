@@ -21,11 +21,10 @@
 namespace OHOS::ScreenLock {
 AsyncCall::AsyncCall(napi_env env, napi_callback_info info, Context *context, size_t pos)
 {
-    SCLOCK_HILOGD("AsyncCall begin");
     context_ = new AsyncContext();
     context_->env = env;
     if (context_ == nullptr) {
-        SCLOCK_HILOGD("context_ is null");
+        SCLOCK_HILOGD("AsyncCall context_ is null");
         return;
     }
     size_t argc = 6;
@@ -42,13 +41,13 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, Context *context, si
         }
     }
     if (context == nullptr) {
-        SCLOCK_HILOGD("context is null");
+        SCLOCK_HILOGD("AsyncCall context is null");
         return;
     }
     NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
     context_->ctx = context;
     napi_create_reference(env, self, 1, &context_->self);
-    SCLOCK_HILOGD("AsyncCall end");
+    SCLOCK_HILOGD("AsyncCall");
 }
 
 AsyncCall::~AsyncCall()
@@ -69,7 +68,6 @@ napi_value AsyncCall::Call(const napi_env env, Context::ExecAction exec, const s
         SCLOCK_HILOGD("context_->ctx is null");
         return nullptr;
     }
-    SCLOCK_HILOGD("async call exec");
     context_->ctx->exec_ = std::move(exec);
     napi_value promise = nullptr;
     if (context_->callback == nullptr) {
@@ -117,7 +115,6 @@ void AsyncCall::OnExecute(const napi_env env, void *data)
 
 void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
 {
-    SCLOCK_HILOGD("run the js callback function");
     AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
     napi_value output = nullptr;
     napi_status runStatus = (*context->ctx)(env, &output);
@@ -136,7 +133,6 @@ void AsyncCall::OnComplete(const napi_env env, napi_status status, void *data)
         napi_get_undefined(env, &result[static_cast<uint32_t>(ARG_INFO::ARG_DATA)]);
         GenerateBusinessError(env, context->ctx->errorInfo_, &result[static_cast<uint32_t>(ARG_INFO::ARG_ERROR)]);
     }
-    SCLOCK_HILOGD("run the js callback function:(context->defer != nullptr)?[%{public}d]", context->defer != nullptr);
     if (context->defer != nullptr) {
         // promise
         SCLOCK_HILOGD("Promise to do!");

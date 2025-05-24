@@ -34,7 +34,6 @@ InnerListenerWrapper::~InnerListenerWrapper()
 
 void InnerListenerWrapper::OnStateChanged(int userId, int state)
 {
-    SCLOCK_HILOGD("OnStateChanged start");
     if (listener_ == nullptr) {
         SCLOCK_HILOGE("eventHandler is nullptr");
         return;
