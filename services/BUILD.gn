@@ -24,10 +24,6 @@ config("screenlock_mgr_service_config") {
 }
 
 ohos_shared_library("screenlock_server") {
-  if (factory == true) {
-    cflags_cc = [ "-DCONFIG_FACTORY_MODE" ]
-  }
-
   sanitize = {
     cfi = true
     cfi_cross_dso = true
@@ -68,6 +64,10 @@ ohos_shared_library("screenlock_server") {
      "-fno-asynchronous-unwind-tables",
      "-fno-unwind-tables",
   ]
+
+  if (factory == true) {
+    cflags_cc += [ "-DCONFIG_FACTORY_MODE" ]
+  }
 
   shlib_type = "sa"
 
