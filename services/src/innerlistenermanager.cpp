@@ -166,7 +166,7 @@ std::set<sptr<InnerListenerIf>> InnerListenerManager::getListenerSet(int32_t use
     if (itemList1 == innerListenMap_[listenType].end()) {
         return std::set<sptr<InnerListenerIf>>();
     }
-    return itemList1.second;
+    return itemList1->second;
 }
 
 void InnerListenerManager::OnStrongAuthChanged(int32_t userId, int32_t strongAuth)
