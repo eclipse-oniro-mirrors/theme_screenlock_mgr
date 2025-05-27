@@ -157,16 +157,16 @@ bool InnerListenerManager::HasListenerSet(int32_t userId, ListenType listenType)
 std::set<sptr<InnerListenerIf>> InnerListenerManager::getListenerSet(int32_t userId, ListenType listenType)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto itemList = innerListenMap_.find(listenType);
-    if (itemList == innerListenMap_.end()) {
+    auto itemListType = innerListenMap_.find(listenType);
+    if (itemListType == innerListenMap_.end()) {
         return std::set<sptr<InnerListenerIf>>();
     }
 
-    auto itemList1 = itemList->second.find(userId);
-    if (itemList1 == innerListenMap_[listenType].end()) {
+    auto itemListId = itemListType->second.find(userId);
+    if (itemListId == innerListenMap_[listenType].end()) {
         return std::set<sptr<InnerListenerIf>>();
     }
-    return itemList1->second;
+    return itemListId->second;
 }
 
 void InnerListenerManager::OnStrongAuthChanged(int32_t userId, int32_t strongAuth)
