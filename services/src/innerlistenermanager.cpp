@@ -163,7 +163,7 @@ std::set<sptr<InnerListenerIf>> InnerListenerManager::getListenerSet(int32_t use
     }
 
     auto itemListId = itemListType->second.find(userId);
-    if (itemListId == innerListenMap_[listenType].end()) {
+    if (itemListId == itemListType->second.end()) {
         return std::set<sptr<InnerListenerIf>>();
     }
     return itemListId->second;
