@@ -15,7 +15,6 @@
 #ifndef SCREENLOCK_INNER_LISTENER_WAPPER_H
 #define SCREENLOCK_INNER_LISTENER_WAPPER_H
 
-#include "event_handler.h"
 #include "screenlock_inner_listener.h"
 #include "screenlock_inner_listener_stub.h"
 
@@ -26,11 +25,9 @@ public:
     explicit InnerListenerWrapper(const sptr<InnerListener>& listener);
     virtual ~InnerListenerWrapper();
     void OnStateChanged(int userId, int state) override;
-    static std::shared_ptr<AppExecFwk::EventHandler> GetEventHandler();
 
 private:
     sptr<InnerListener> listener_;
-    static std::shared_ptr<AppExecFwk::EventHandler> handler_;
 };
 } // namespace ScreenLock
 } // namespace OHOS

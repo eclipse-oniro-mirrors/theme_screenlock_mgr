@@ -18,6 +18,7 @@
 
 #include <mutex>
 #include <string>
+#include <map>
 
 #include "iremote_object.h"
 #include "refbase.h"
