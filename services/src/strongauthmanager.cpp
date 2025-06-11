@@ -267,6 +267,11 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPerio
 int64_t StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthTimerInfo.find(userId);
+    if (iter == strongAuthTimerInfo.end()) {
+        SCLOCK_HILOGW("SetCredChangeTriggerPeriod userId:%{public}d not exit", userId);
+        return triggerPeriod;
+    }
     strongAuthTimerInfo[userId].triggerPeriod = triggerPeriod;
     strongAuthTimerInfo[userId].credChangeTimerStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     return strongAuthTimerInfo[userId].triggerPeriod;
@@ -275,6 +280,11 @@ int64_t StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t tri
 int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthTimerInfo.find(userId);
+    if (iter == strongAuthTimerInfo.end()) {
+        SCLOCK_HILOGI("GetStrongAuthTriggerPeriod userId:%{public}d not exit", userId);
+        return DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+    }
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     if (strongAuthTimerInfo[userId].triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
         if (currentTime - strongAuthTimerInfo[userId].credChangeTimerStamp > CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
