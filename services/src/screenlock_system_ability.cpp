@@ -561,9 +561,7 @@ bool ScreenLockSystemAbility::IsScreenLocked()
 
 int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLocked)
 {
-    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
+    if (checkSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -690,6 +688,11 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t userId, std::string &authToken)
 {
     SCLOCK_HILOGI("SetScreenLockAuthState authState=%{public}d ,userId=%{public}d", authState, userId);
+    if (checkSystemPermission()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
@@ -712,6 +715,11 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
 int32_t ScreenLockSystemAbility::GetScreenLockAuthState(int userId, int32_t &authState)
 {
     SCLOCK_HILOGD("GetScreenLockAuthState userId=%{public}d", userId);
+    if (checkSystemPermission()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
@@ -733,6 +741,11 @@ int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userI
     return E_SCREENLOCK_OK;
 #else
     SCLOCK_HILOGI("RequestStrongAuth reasonFlag=%{public}d ,userId=%{public}d", reasonFlag, userId);
+    if (checkSystemPermission()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
@@ -750,6 +763,15 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
     reasonFlag = 0;
     return E_SCREENLOCK_OK;
 #else
+    if (checkSystemPermission()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("GetStrongAuth no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     reasonFlag = StrongAuthManger::GetInstance()->GetStrongAuthStat(userId);
     SCLOCK_HILOGI("GetStrongAuth userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
     return E_SCREENLOCK_OK;
@@ -759,9 +781,7 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, const ListenType listenType,
                                                        const sptr<InnerListenerIf>& listener)
 {
-    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
+    if (checkSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -776,9 +796,7 @@ int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, con
 int32_t ScreenLockSystemAbility::UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                                          const sptr<InnerListenerIf>& listener)
 {
-    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (!IsSystemApp() && tokenType != TOKEN_NATIVE) {
+    if (checkSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -804,7 +822,7 @@ void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked, const int32_t
 
 int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked)
 {
-    if (!IsSystemApp()) {
+    if (checkSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
@@ -1082,6 +1100,12 @@ void ScreenLockSystemAbility::UserIamReadyNotify(const char *value)
     SystemEvent systemEvent(USERIAM_READY);
     systemEvent.params_ = value;
     SystemEventCallBack(systemEvent);
+}
+
+bool ScreenLockSystemAbility::checkSystemPermission() {
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    return !IsSystemApp() && tokenType != TOKEN_NATIVE;
 }
 } // namespace ScreenLock
 } // namespace OHOS
