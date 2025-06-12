@@ -249,7 +249,7 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest13, TestSize.Level0)
     std::shared_ptr<StrongAuthManger::CredChangeListenerService> creChangeListener =
         std::make_shared<StrongAuthManger::CredChangeListenerService>();
     CredChangeEventType eventType = CredChangeEventType::ADD_CRED;
-    creChangeListener->OnNotifyCredChangeEvent(1,  AuthType::FACE,eventType, 1);
+    creChangeListener->OnNotifyCredChangeEvent(1,  AuthType::FACE, eventType, 1);
     StrongAuthManger::authTimer timer(true, 1000, true, true);
     EXPECT_EQ(timer.repeat, true);
 #endif
