@@ -222,6 +222,7 @@ private:
     void authStateInit(const int userId);
     void subscribeUserIamReady();
     void removeSubscribeUserIamReady();
+    bool checkSystemPermission();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
