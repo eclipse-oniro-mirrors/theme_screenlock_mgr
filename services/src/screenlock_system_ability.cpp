@@ -1102,7 +1102,8 @@ void ScreenLockSystemAbility::UserIamReadyNotify(const char *value)
     SystemEventCallBack(systemEvent);
 }
 
-bool ScreenLockSystemAbility::checkSystemPermission() {
+bool ScreenLockSystemAbility::checkSystemPermission()
+{
     AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
     return !IsSystemApp() && tokenType != TOKEN_NATIVE;
