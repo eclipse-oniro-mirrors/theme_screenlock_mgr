@@ -154,6 +154,21 @@ bool InnerListenerManager::HasListenerSet(int32_t userId, ListenType listenType)
     return true;
 }
 
+std::set<sptr<InnerListenerIf>> InnerListenerManager::getListenerSet(int32_t userId, ListenType listenType)
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    auto itemListType = innerListenMap_.find(listenType);
+    if (itemListType == innerListenMap_.end()) {
+        return std::set<sptr<InnerListenerIf>>();
+    }
+ 
+    auto itemListId = itemListType->second.find(userId);
+    if (itemListId == innerListenMap_[listenType].end()) {
+        return std::set<sptr<InnerListenerIf>>();
+    }
+    return itemListId->second;
+}
+
 void InnerListenerManager::OnStrongAuthChanged(int32_t userId, int32_t strongAuth)
 {
     SCLOCK_HILOGI("OnStrongAuthChanged enter.");
@@ -169,26 +184,22 @@ void InnerListenerManager::OnDeviceLockStateChanged(int32_t userId, int32_t lock
 void InnerListenerManager::OnStateChanged(int32_t userId, int32_t state, ListenType listenType)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if (HasListenerSet(userId, listenType)) {
-        std::set<sptr<InnerListenerIf>> listenerSetTemp = innerListenMap_[listenType][userId];
-        SCLOCK_HILOGI("OnStateChanged, userId=%{public}d, listenType=%{public}d, length=%{public}d, State=%{public}d",
-            userId, static_cast<int>(listenType), static_cast<int>(listenerSetTemp.size()), state);
-        for (auto& iter : listenerSetTemp) {
-            if (iter != nullptr) {
-                iter->OnStateChanged(userId, state);
-            }
+    std::set<sptr<InnerListenerIf>> listenerSetTemp = getListenerSet(userId, listenType);
+    SCLOCK_HILOGI("OnStateChanged, userId=%{public}d, listenType=%{public}d, length=%{public}d, State=%{public}d",
+        userId, static_cast<int>(listenType), static_cast<int>(listenerSetTemp.size()), state);
+    for (auto &iter : listenerSetTemp) {
+        if (iter != nullptr) {
+            iter->OnStateChanged(userId, state);
         }
     }
 
     int32_t allUser = static_cast<int32_t>(SpecialUserId::USER_ALL);
-    if (HasListenerSet(allUser, listenType)) {
-        std::set<sptr<InnerListenerIf>> listenerSetTemp = innerListenMap_[listenType][allUser];
-        SCLOCK_HILOGI("OnStateChanged allUser, listenType=%{public}d, length=%{public}d, State=%{public}d",
-            static_cast<int>(listenType), static_cast<int>(listenerSetTemp.size()), state);
-        for (auto& iter : listenerSetTemp) {
-            if (iter != nullptr) {
-                iter->OnStateChanged(userId, state);
-            }
+    listenerSetTemp = getListenerSet(allUser, listenType);
+    SCLOCK_HILOGI("OnStateChanged allUser, listenType=%{public}d, length=%{public}d, State=%{public}d",
+        static_cast<int>(listenType), static_cast<int>(listenerSetTemp.size()), state);
+    for (auto &iter : listenerSetTemp) {
+        if (iter != nullptr) {
+            iter->OnStateChanged(userId, state);
         }
     }
 }
