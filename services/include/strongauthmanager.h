@@ -31,6 +31,14 @@
 
 namespace OHOS {
 namespace ScreenLock {
+    
+// 强认证默认时间 3days
+const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
+// 变更口令后，第一次强认证时间为4h
+const std::int64_t CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS = 4 * 60 * 60 * 1000;
+// 变更口令后，第二次强认证时间为24h
+const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 24 * 60 * 60 * 1000;
+
 class StrongAuthManger : public RefBase {
 public:
     SCREENLOCK_API static sptr<StrongAuthManger> GetInstance();
@@ -91,7 +99,7 @@ private:
 
     struct TimerInfo {
         uint64_t timerId{0};
-        int64_t triggerPeriod{-1};
+        int64_t triggerPeriod{DEFAULT_STRONG_AUTH_TIMEOUT_MS};
         int64_t credChangeTimerStamp{-1};
     };
 
