@@ -614,7 +614,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
 
     int32_t authState = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(result, E_SCREENLOCK NO PERMISSION);
 }
 
 /**
@@ -634,7 +634,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest031, TestSize.Level0)
 
     ret = ScreenLockSystemAbility::GetInstance()->GetStrongAuth(userId, reasonFlag);
 
-    EXPECT_EQ(ret, E_SCREENLOCK_NOT_SYSTEM_APP);
+    EXPECT_EQ(ret, E_SCREENLOCK NO PERMISSION);
 }
 
 /**
