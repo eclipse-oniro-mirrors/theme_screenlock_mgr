@@ -114,6 +114,26 @@ screenlocklockscreen_test = {
   configFuzzer = "screenlocklockscreen_fuzzer"
   source = "screenlocklockscreen_fuzzer/screenlocklockscreen_fuzzer.cpp"
 }
+screenlockisdevicelocked_test = {
+  targetName = "ScreenlockIsDeviceLockedFuzzTest"
+  configFuzzer = "screenlockisdevicelocked_fuzzer"
+  source = "screenlockisdevicelocked_fuzzer/screenlockisdevicelocked_fuzzer.cpp"
+}
+screenlockislockedwithuserid_test = {
+  targetName = "ScreenlockIsLockedWithUserIdFuzzTest"
+  configFuzzer = "screenlockislockedwithuserid_fuzzer"
+  source = "screenlockislockedwithuserid_fuzzer/screenlockislockedwithuserid_fuzzer.cpp"
+}
+screenlockregisterinnerlistener_test = {
+  targetName = "ScreenlockRegisterInnerListenerFuzzTest"
+  configFuzzer = "screenlockregisterinnerlistener_fuzzer"
+  source = "screenlockregisterinnerlistener_fuzzer/screenlockregisterinnerlistener_fuzzer.cpp"
+}
+screenlockunregisterinnerlistener_test = {
+  targetName = "ScreenlockUnregisterInnerListenerFuzzTest"
+  configFuzzer = "screenlockunregisterinnerlistener_fuzzer"
+  source = "screenlockunregisterinnerlistener_fuzzer/screenlockunregisterinnerlistener_fuzzer.cpp"
+}
 
 screenlock_fuzztests = [
   screenlockauthmanager_test,
@@ -135,6 +155,10 @@ screenlock_fuzztests = [
   screenlockunlockscreen_test,
   screenlockunlock_test,
   screenlocklockscreen_test,
+  screenlockisdevicelocked_test,
+  screenlockislockedwithuserid_test,
+  screenlockregisterinnerlistener_test,
+  screenlockunregisterinnerlistener_test,
 ]
 
 foreach(item, screenlock_fuzztests) {
@@ -179,10 +203,10 @@ foreach(item, screenlock_fuzztests) {
       "napi:ace_napi",
       "os_account:os_account_innerkits",
       "preferences:native_preferences",
+      "safwk:system_ability_fwk",
       "time_service:time_client",
       "user_auth_framework:userauth_client",
       "window_manager:libdm",
-      "safwk:system_ability_fwk",
     ]
 
     sources = [
@@ -203,6 +227,8 @@ group("fuzztest") {
     ":ScreenlockDumpFuzzTest",
     ":ScreenlockGetAuthstateFuzzTest",
     ":ScreenlockGetStrongStateFuzzTest",
+    ":ScreenlockIsDeviceLockedFuzzTest",
+    ":ScreenlockIsLockedWithUserIdFuzzTest",
     ":ScreenlockIsScreenlockedFuzzTest",
     ":ScreenlockIsSecureModeFuzzTest",
     ":ScreenlockIsdisabledFuzzTest",
@@ -210,12 +236,14 @@ group("fuzztest") {
     ":ScreenlockLockFuzzTest",
     ":ScreenlockLockScreenFuzzTest",
     ":ScreenlockOnSystemEventFuzzTest",
+    ":ScreenlockRegisterInnerListenerFuzzTest",
     ":ScreenlockRequestStrongFuzzTest",
     ":ScreenlockSendScreenlockEventFuzzTest",
     ":ScreenlockSetAuthstateFuzzTest",
     ":ScreenlockSetdisabledFuzzTest",
     ":ScreenlockUnlockFuzzTest",
     ":ScreenlockUnlockScreenFuzzTest",
+    ":ScreenlockUnregisterInnerListenerFuzzTest",
     ":ScreenlockUtilsFuzzTest",
   ]
 }
