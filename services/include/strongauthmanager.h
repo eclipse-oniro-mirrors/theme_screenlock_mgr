@@ -92,6 +92,11 @@ public:
         int32_t GetUserId();
         void SetUserId(int32_t userId);
 
+    private:
+        int32_t userId_ = 0;
+        std::function<void(int32_t)> callBack_ = nullptr;
+    };
+
     class StrongAuthGetSecurity : public UserIam::UserAuth::GetCredentialInfoCallback {
     public:
         explicit StrongAuthGetSecurity(int32_t userId) : userId_(userId)
@@ -101,11 +106,6 @@ public:
             int32_t result, const std::vector<UserIam::UserAuth::CredentialInfo> &infoList) override;
     private:
         int32_t userId_ = 100;
-    };
-
-    private:
-        int32_t userId_ = 0;
-        std::function<void(int32_t)> callBack_ = nullptr;
     };
 
 private:
