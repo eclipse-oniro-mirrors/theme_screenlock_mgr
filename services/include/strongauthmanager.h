@@ -55,6 +55,11 @@ public:
     int32_t GetStrongAuthStat(int32_t userId);
     void RegistIamEventListener();
     void UnRegistIamEventListener();
+    void InitStrongAuthStat(int32_t userId, int32_t reasonFlag);
+    void DestroyStrongAuthStateInfo(int32_t userId);
+    bool GetCredInfo(int32_t userId);
+    int32_t GetStrongAuthTimeTrigger(int32_t userId);
+    void AccountUnlocked(int32_t userId);
 
 public:
     class AuthEventListenerService : public UserIam::UserAuth::AuthSuccessEventListener {
@@ -87,6 +92,17 @@ public:
         int32_t GetUserId();
         void SetUserId(int32_t userId);
 
+    class StrongAuthGetSecurity : public UserIam::UserAuth::GetCredentialInfoCallback {
+    public:
+        explicit StrongAuthGetSecurity(int32_t userId) : userId_(userId)
+        {}
+        virtual ~StrongAuthGetSecurity() = default;
+        void OnCredentialInfo(
+            int32_t result, const std::vector<UserIam::UserAuth::CredentialInfo> &infoList) override;
+    private:
+        int32_t userId_ = 100;
+    };
+
     private:
         int32_t userId_ = 0;
         std::function<void(int32_t)> callBack_ = nullptr;
@@ -94,8 +110,11 @@ public:
 
 private:
     void StartStrongAuthTimer(int32_t userId, int64_t triggerPeriod);
-    int64_t SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod);
+    void SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod);
     int64_t GetStrongAuthTriggerPeriod(int32_t userId);
+    bool IsUserExitInStrongAuthInfo(int32_t userId);
+    bool IsUserHasStrongAuthTimer(int32_t userId);
+    void NotifyStrongAuthChange(int32_t userId, int32_t reasonFlag);
 
     struct TimerInfo {
         uint64_t timerId{0};

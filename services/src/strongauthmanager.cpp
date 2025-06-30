@@ -104,8 +104,6 @@ static void StrongAuthTimerCallback(int32_t userId)
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
     int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
-    ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
-    InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
     return;
 }
 
@@ -139,6 +137,7 @@ uint64_t StrongAuthManger::GetTimerId(int32_t userId)
     if (iter != strongAuthTimerInfo.end()) {
         timerId = iter->second.timerId;
     }
+    SCLOCK_HILOGI("GetTimerId, timerId: %{public}d", static_cast<int32_t>(timerId));
     return timerId;
 }
 
@@ -188,11 +187,30 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
 {
     SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
         static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(credentialId));
-    if (authType == AuthType::PIN && (eventType == ADD_CRED || eventType == UPDATE_CRED)) {
-        StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
-        int64_t triggerPeriod = StrongAuthManger::GetInstance()->SetCredChangeTriggerPeriod(userId,
-            CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
-        StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);
+    
+    if (OHOS::system::GetDeviceType() == "2in1") {
+        // PC只有无密码到有密码需要创建定时器
+        if (authType == AuthType::PIN && eventType == ADD_CRED &&
+            StrongAuthManger::GetInstance()->IsUserExitInStrongAuthInfo(userId) &&
+            !StrongAuthManger::GetInstance()->IsUserHasStrongAuthTimer(userId)) {
+            SCLOCK_HILOGD("2in1 device only deal add cred");
+            StrongAuthManger::GetInstance()->StartStrongAuthTimer(userId);
+        }
+        return;
+    }
+
+    //新用户应该走切换重启创建定时器
+    if (authType == AuthType::PIN && StrongAuthManger::GetInstance()->IsUserExitInStrongAuthInfo(userId)) {
+        if (eventType == ADD_CRED || eventType == UPDATE_CRED) {
+            StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
+        } else if (eventType == DEL_USER) {
+            StrongAuthManger::GetInstance()->SetStrongAuthStat(
+                userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
+            StrongAuthManger::GetInstance()->DestroyStrongAuthTimer(userId);
+        } else if (eventType == ENFORCE_DEL_USER) {
+            StrongAuthManger::GetInstance()->DestroyStrongAuthStateInfo(userId);
+            StrongAuthManger::GetInstance()->DestroyStrongAuthTimer(userId);
+        }
     }
     return;
 }
@@ -254,20 +272,21 @@ void StrongAuthManger::ResetStrongAuthTimer(int32_t userId, int64_t triggerPerio
     int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     MiscServices::TimeServiceClient::GetInstance()->StopTimer(timerId);
     MiscServices::TimeServiceClient::GetInstance()->StartTimer(timerId, currentTime + triggerPeriod);
+    SetCredChangeTriggerPeriod(userId, triggerPeriod);
     return;
 }
 
-int64_t StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod)
+void StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t triggerPeriod)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     auto iter = strongAuthTimerInfo.find(userId);
     if (iter == strongAuthTimerInfo.end()) {
-        SCLOCK_HILOGW("SetCredChangeTriggerPeriod userId:%{public}d not exit", userId);
-        return triggerPeriod;
+        SCLOCK_HILOGI("SetCredChangeTriggerPeriod userId:%{public}d not exit", userId);
+        return;
     }
     iter->second.triggerPeriod = triggerPeriod;
     iter->second.credChangeTimerStamp = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
-    return iter->second.triggerPeriod;
+    return;
 }
 
 int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
@@ -301,8 +320,16 @@ int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
 
 void StrongAuthManger::DestroyAllStrongAuthTimer()
 {
-    for (auto iter = strongAuthStateInfo.begin(); iter != strongAuthStateInfo.end(); ++iter) {
-        DestroyStrongAuthTimer(iter->first);
+    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    for (auto iter = strongAuthTimerInfo.begin(); iter != strongAuthTimerInfo.end();) {
+        uint64_t timerId = GetTimerId(iter->first);
+        if (timerId != 0) {
+            MiscServices::TimeServiceClient::GetInstance()->StopTimer(timerId);
+            MiscServices::TimeServiceClient::GetInstance()->DestroyTimer(timerId);
+            iter = strongAuthTimerInfo.erase(iter);
+        } else {
+            ++iter;
+        }
     }
     return;
 }
@@ -317,19 +344,34 @@ void StrongAuthManger::DestroyStrongAuthTimer(int32_t userId)
     MiscServices::TimeServiceClient::GetInstance()->StopTimer(timerId);
     MiscServices::TimeServiceClient::GetInstance()->DestroyTimer(timerId);
     strongAuthTimerInfo.erase(userId);
+    SCLOCK_HILOGW("DestroyStrongAuthTimer lenth: %{public}d", static_cast<int32_t>(strongAuthTimerInfo.size()));
     return;
 }
 
 void StrongAuthManger::SetStrongAuthStat(int32_t userId, int32_t reasonFlag)
 {
-    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
+    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     auto iter = strongAuthStateInfo.find(userId);
-    if (iter != strongAuthStateInfo.end()) {
-        iter->second = reasonFlag;
-        SCLOCK_HILOGI("SetStrongAuthStat, reasonFlag:%{public}u", reasonFlag);
+    if (iter == strongAuthStateInfo.end()) {
+        SCLOCK_HILOGI("SetStrongAuthStat fail, user not exit in strongAuthStateInfo");
+        strongAuthStateInfo.insert(std::make_pair(userId, reasonFlag));
+        NotifyStrongAuthChange(userId, reasonFlag);
         return;
     }
-    strongAuthStateInfo.insert(std::make_pair(userId, reasonFlag));
+
+    auto oldFlag = iter->second;
+    if (oldFlag == static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT) && reasonFlag != static_cast<int32_t>(StrongAuthReasonFlags::NONE)) {
+        // 重启强认证状态优先级最高
+        SCLOCK_HILOGE("still after_boot, oldFlag:%{public}u, reasonFlag:%{public}u", oldFlag, reasonFlag);
+        return;
+    }
+
+    iter->second = reasonFlag;
+    lock.unlock();
+    if (oldFlag != reasonFlag) {
+        NotifyStrongAuthChange(userId, reasonFlag);
+    }
+    SCLOCK_HILOGI("SetStrongAuthStat, oldFlag:%{public}u, reasonFlag:%{public}u", oldFlag, reasonFlag);
     return;
 }
 
@@ -343,6 +385,109 @@ int32_t StrongAuthManger::GetStrongAuthStat(int32_t userId)
         SCLOCK_HILOGI("GetStrongAuthStat, reasonFlag:%{public}u", reasonFlag);
     }
     return reasonFlag;
+}
+
+int32_t StrongAuthManger::GetStrongAuthTimeTrigger(int32_t userId)
+{
+    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthTimerInfo.find(userId);
+    if (iter != strongAuthTimerInfo.end()) {
+        return iter->second.triggerPeriod;
+    }
+    return 0;
+}
+
+void StrongAuthManger::AccountUnlocked(int32_t userId)
+{
+    NotifyStrongAuthChange(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
+}
+
+void StrongAuthManger::DestroyStrongAuthStateInfo(int32_t userId)
+{
+    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthStateInfo.find(userId);
+    if (iter != strongAuthStateInfo.end()) {
+        strongAuthStateInfo.erase(userId);
+    }
+    return;
+}
+
+void StrongAuthManger::InitStrongAuthStat(int32_t userId, int32_t reasonFlag)
+{
+    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthStateInfo.find(userId);
+    if (iter == strongAuthStateInfo.end()) {
+        strongAuthStateInfo.insert(std::make_pair(userId, reasonFlag));
+        SCLOCK_HILOGW("InitStrongAuthStat, userId:%{public}u, reasonFlag:%{public}u", userId, reasonFlag);
+        NotifyStrongAuthChange(userId, reasonFlag);
+    }
+    return;
+}
+
+bool StrongAuthManger::GetCredInfo(int32_t userId)
+{
+    std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    if (strongAuthStateInfo.find(userId) != strongAuthStateInfo.end()) {
+        return true;
+    }
+    lock.unlock();
+
+    auto getInfoCallback = std::make_shared<StrongAuthManger::StrongAuthGetSecurity>(userId);
+    int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
+    if (result != static_cast<int32_t>(ResultCode::SUCCESS)) {
+        SCLOCK_HILOGE("GetCredentialInfo AuthType::PIN result = %{public}d", result);
+    }
+    return result;
+}
+
+void StrongAuthManger::StrongAuthGetSecurity::OnCredentialInfo(
+    int32_t result, const std::vector<UserIam::UserAuth::CredentialInfo> &infoList)
+{
+    if (infoList.size() > 0 ||
+        (result != UserIam::UserAuth::SUCCESS && result != UserIam::UserAuth::NOT_ENROLLED)) {
+        SCLOCK_HILOGD("infoList.size() = %{public}zu", infoList.size());
+        int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT);
+        StrongAuthManger::GetInstance()->InitStrongAuthStat(userId_, reasonFlag);
+        // 重启后为72小时
+        StrongAuthManger::GetInstance()->StartStrongAuthTimer(userId_);
+    } else {
+        int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::NONE);
+        StrongAuthManger::GetInstance()->InitStrongAuthStat(userId_, reasonFlag);
+    }
+    return;
+}
+
+bool StrongAuthManger::IsUserExitInStrongAuthInfo(int32_t userId)
+{
+    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthStateInfo.find(userId);
+    if (iter != strongAuthStateInfo.end()) {
+        return true;
+    }
+    return false;
+}
+
+bool StrongAuthManger::IsUserHasStrongAuthTimer(int32_t userId)
+{
+    std::lock_guard<std::mutex> lock(strongAuthTimerMutex);
+    auto iter = strongAuthTimerInfo.find(userId);
+    if (iter != strongAuthTimerInfo.end()) {
+        return true;
+    }
+    return false;
+}
+
+void StrongAuthManger::NotifyStrongAuthChange(int32_t userId, int32_t reasonFlag)
+{
+    if (reasonFlag == static_cast<int32_t>(StrongAuthReasonFlags::NONE)) {
+        if (IsOsAccountUnlocked(userId)) {
+            ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
+            InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
+        }
+    } else {
+        ScreenLockSystemAbility::GetInstance()->StrongAuthChanged(userId, reasonFlag);
+        InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, reasonFlag);
+    }
 }
 } // namespace ScreenLock
 } // namespace OHOS
