@@ -360,7 +360,8 @@ void StrongAuthManger::SetStrongAuthStat(int32_t userId, int32_t reasonFlag)
     }
 
     auto oldFlag = iter->second;
-    if (oldFlag == static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT) && reasonFlag != static_cast<int32_t>(StrongAuthReasonFlags::NONE)) {
+    if (oldFlag == static_cast<int32_t>(StrongAuthReasonFlags::AFTER_BOOT) &&
+        reasonFlag != static_cast<int32_t>(StrongAuthReasonFlags::NONE)) {
         // 重启强认证状态优先级最高
         SCLOCK_HILOGE("still after_boot, oldFlag:%{public}u, reasonFlag:%{public}u", oldFlag, reasonFlag);
         return;

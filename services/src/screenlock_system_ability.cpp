@@ -145,10 +145,10 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::GetInstance()
     return instance_;
 }
 
-ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSubscribeInfo &subscribeInfo, const std::function<void(const int lastUser, const int targetUser)> &callback)
+ScreenLockSystemAbility::AccountSubscriber::AccountSubscriber(const OsAccountSubscribeInfo &subscribeInfo,
+    const std::function<void(const int lastUser, const int targetUser)> &callback)
     : OsAccountSubscriber(subscribeInfo), callback_(callback)
-{
-}
+{}
 
 void ScreenLockSystemAbility::AccountSubscriber::OnAccountsChanged(const int &id)
 {
@@ -298,7 +298,7 @@ void ScreenLockSystemAbility::InitUserId()
     accountSubscribers_[AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED] =
         SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED, AcccountRemove);
 #ifndef IS_SO_CROP_H
-    accountSubscribers_[AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::UNLOCKED] = 
+    accountSubscribers_[AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::UNLOCKED] =
         SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::UNLOCKED, AccountUnlocked);
 #endif // IS_SO_CROP_H
     lock.unlock();
@@ -338,7 +338,8 @@ void ScreenLockSystemAbility::OnStop()
     for (auto iter = accountSubscribers_.begin(); iter != accountSubscribers_.end(); ++iter) {
         int ret = OsAccountManager::UnsubscribeOsAccount(iter->second);
         if (ret != SUCCESS) {
-            SCLOCK_HILOGE("unsubscribe os account failed, code=%{public}d, type=%{public}d", ret, static_cast<int>(iter->first));
+            SCLOCK_HILOGE(
+                "unsubscribe os account failed, code=%{public}d, type=%{public}d", ret, static_cast<int>(iter->first));
         }
     }
     lock.unlock();
@@ -897,17 +898,7 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
 #else
     auto cmd = std::make_shared<Command>(std::vector<std::string>{ "-all" }, "dump all screenlock information",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
-            bool screenState = stateValue_.GetScreenState();
-            int32_t offReason = stateValue_.GetOffReason();
-            int32_t interactiveState = stateValue_.GetInteractiveState();
-            string temp_screenState = "";
-            screenState ? temp_screenState = "true" : temp_screenState = "false";
-            output.append("\n Screenlock system state\\tValue\\t\\tDescription\n")
-                .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
-                .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
-                .append(" * interactiveState \t\t" + std::to_string(interactiveState) +
-                "\t\tscreen interaction status\n");
-
+            AppendPrintOtherInfo(output);
             std::unique_lock<std::mutex> authStateLock(authStateMutex_);
             for (auto iter = authStateInfo.begin(); iter != authStateInfo.end(); iter++) {
                 int32_t userId = iter->first;
@@ -938,14 +929,28 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
                 auto reasonFlag = StrongAuthManger::GetInstance()->GetStrongAuthStat(*iter);
                 auto timeTrigger = StrongAuthManger::GetInstance()->GetStrongAuthTimeTrigger(*iter);
                 string temp_userId = std::to_string(static_cast<int>(*iter));
-                string  temp_reasonFlag= std::to_string(static_cast<int>(reasonFlag));
+                string  temp_reasonFlag = std::to_string(static_cast<int>(reasonFlag));
                 string temp_timerTrigger = std::to_string(static_cast<int>(timeTrigger));
-                output.append(" * strongAuth  \t\t" + temp_userId + "\t\t" + temp_reasonFlag + "\t\t" + temp_timerTrigger + "\n");
+                output.append(
+                    " * strongAuth  \t\t" + temp_userId + "\t\t" + temp_reasonFlag + "\t\t" + temp_timerTrigger + "\n");
             }
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
 #endif // IS_SO_CROP_H
+}
+
+void ScreenLockSystemAbility::AppendPrintOtherInfo(std::string &output)
+{
+    bool screenState = stateValue_.GetScreenState();
+    int32_t offReason = stateValue_.GetOffReason();
+    int32_t interactiveState = stateValue_.GetInteractiveState();
+    string temp_screenState = "";
+    screenState ? temp_screenState = "true" : temp_screenState = "false";
+    output.append("\n Screenlock system state\\tValue\\t\\tDescription\n")
+        .append(" * screenState  \t\t" + temp_screenState + "\t\tscreen on / off status\n")
+        .append(" * offReason  \t\t\t" + std::to_string(offReason) + "\t\tscreen failure reason\n")
+        .append(" * interactiveState \t\t" + std::to_string(interactiveState) + "\t\tscreen interaction status\n");
 }
 
 void ScreenLockSystemAbility::PublishEvent(const std::string &eventAction, const int32_t userId)

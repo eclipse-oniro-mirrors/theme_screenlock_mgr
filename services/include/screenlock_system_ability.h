@@ -219,6 +219,7 @@ private:
     void SubscribeUserIamReady();
     void RemoveSubscribeUserIamReady();
     bool CheckSystemPermission();
+    void AppendPrintOtherInfo(std::string &output);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
