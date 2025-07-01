@@ -70,7 +70,8 @@ public:
         CredChangeListenerService() = default;
         virtual ~CredChangeListenerService() = default;
         void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
-            UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId) override;
+            UserIam::UserAuth::CredChangeEventType eventType,
+            const UserIam::UserAuth::CredChangeEventInfo &changeInfo) override;
     };
 
     class authTimer : public MiscServices::ITimerInfo {
