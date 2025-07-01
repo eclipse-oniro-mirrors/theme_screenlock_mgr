@@ -162,6 +162,8 @@ public:
     void StrongAuthChanged(int32_t userId, int32_t reasonFlag);
     int32_t Lock(int32_t userId) override;
     void UserIamReadyNotify(const char *value);
+    void OnActiveUser(const int lastUser, const int targetUser);
+    void OnRemoveUser(const int userId);
     StateValue &GetState()
     {
         return stateValue_;
@@ -173,20 +175,14 @@ public:
 
     class AccountSubscriber : public AccountSA::OsAccountSubscriber {
     public:
-        explicit AccountSubscriber(const AccountSA::OsAccountSubscribeInfo &subscribeInfo);
+        explicit AccountSubscriber(const AccountSA::OsAccountSubscribeInfo &subscribeInfo,
+            const std::function<void(const int lastUser, const int targetUser)> &callback);
         ~AccountSubscriber() override = default;
-        int GetUserId() { return userId_; }
         void OnAccountsChanged(const int &id) override;
 
     private:
         int userId_{-1};
-    };
-
-    class AccountRemoveSubscriber : public AccountSA::OsAccountSubscriber {
-    public:
-        explicit AccountRemoveSubscriber(const AccountSA::OsAccountSubscribeInfo &subscribeInfo);
-        ~AccountRemoveSubscriber() override = default;
-        void OnAccountsChanged(const int &id) override;
+        std::function<void(const int lastUser, const int targetUser)> callback_;
     };
 
 protected:
@@ -216,22 +212,21 @@ private:
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
     void NotifyDisplayEvent(Rosen::DisplayEvent event);
-    bool getDeviceLockedStateByAuth(int authState);
-    void onRemoveUser(const int userId);
-    void subscribeAcccount();
-    void authStateInit(const int userId);
-    void subscribeUserIamReady();
-    void removeSubscribeUserIamReady();
-    bool checkSystemPermission();
+    bool GetDeviceLockedStateByAuth(int authState);
+    std::shared_ptr<AccountSubscriber> SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE subscribeType,
+        const std::function<void(const int lastUser, const int targetUser)> &callback);
+    void AuthStateInit(const int userId);
+    void SubscribeUserIamReady();
+    void RemoveSubscribeUserIamReady();
+    bool CheckSystemPermission();
+    void AppendPrintOtherInfo(std::string &output);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<ffrt::queue> queue_;
-    std::shared_ptr<AccountSubscriber> accountSubscriber_;
+    std::map<AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE, std::shared_ptr<AccountSubscriber>> accountSubscribers_;
     std::mutex accountSubscriberMutex_;
-    std::shared_ptr<AccountRemoveSubscriber> accountRemoveSubscriber_;
-    std::mutex accountRemoveSubscriberMutex_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
     std::mutex listenerMutex_;
     sptr<ScreenLockSystemAbilityInterface> systemEventListener_;
