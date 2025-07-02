@@ -202,7 +202,7 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
 
     //新用户应该走切换重启创建定时器
     if (authType == AuthType::PIN && StrongAuthManger::GetInstance()->IsUserExitInStrongAuthInfo(userId)) {
-        if (eventType == ADD_CRED || (eventType == UPDATE_CRED && !changeInfo.isSilentCredChange) {
+        if (eventType == ADD_CRED || (eventType == UPDATE_CRED && !changeInfo.isSilentCredChange)) {
             StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
         } else if (eventType == DEL_USER) {
             StrongAuthManger::GetInstance()->SetStrongAuthStat(
