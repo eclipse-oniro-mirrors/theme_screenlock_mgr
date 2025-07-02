@@ -460,10 +460,8 @@ HWTEST_F(ScreenLockClientTest, LockTest0020, TestSize.Level0)
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test onRemoveUser state");
+    SCLOCK_HILOGD("Test OnRemoveUser state");
     AccountSA::OsAccountSubscribeInfo info;
-    ScreenLockSystemAbility::AccountRemoveSubscriber acount(info);
-    acount.OnAccountsChanged(0);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
     int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
@@ -471,9 +469,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test onRemoveUser state");
+    SCLOCK_HILOGD("Test OnRemoveUser state");
     AccountSA::OsAccountSubscribeInfo info;
-    ScreenLockSystemAbility::AccountSubscriber acount(info);
+    ScreenLockSystemAbility::AccountSubscriber acount(info, [](const int lastUser, const int targetUser) { return; });
     acount.OnAccountsChanged(0);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
     int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
@@ -482,9 +480,9 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest023, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test onRemoveUser state");
+    SCLOCK_HILOGD("Test OnRemoveUser state");
     AccountSA::OsAccountSubscribeInfo info;
-    ScreenLockSystemAbility::AccountSubscriber acount(info);
+    ScreenLockSystemAbility::AccountSubscriber acount(info, [](const int lastUser, const int targetUser) { return; });
     acount.OnAccountsChanged(0);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
     int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
@@ -493,7 +491,7 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest023, TestSize.Level0)
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest024, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test onRemoveUser state");
+    SCLOCK_HILOGD("Test OnRemoveUser state");
     sptr<ScreenLockSystemAbility> instance = ScreenLockSystemAbility::GetInstance();
     instance->SetScreenLockDisabled(true, 0);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
