@@ -183,10 +183,11 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_
 }
 
 void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_t userId,
-    UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType, uint64_t credentialId)
+    UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType,
+    const UserIam::UserAuth::CredChangeEventInfo &changeInfo)
 {
     SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
-        static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(credentialId));
+        static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(changeInfo.isSilentCredChange));
     
     if (OHOS::system::GetDeviceType() == "2in1") {
         // PC只有无密码到有密码需要创建定时器
@@ -201,7 +202,7 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
 
     //新用户应该走切换重启创建定时器
     if (authType == AuthType::PIN && StrongAuthManger::GetInstance()->IsUserExitInStrongAuthInfo(userId)) {
-        if (eventType == ADD_CRED || eventType == UPDATE_CRED) {
+        if (eventType == ADD_CRED || (eventType == UPDATE_CRED && !changeInfo.isSilentCredChange)) {
             StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
         } else if (eventType == DEL_USER) {
             StrongAuthManger::GetInstance()->SetStrongAuthStat(
