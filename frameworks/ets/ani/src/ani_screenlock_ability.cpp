@@ -225,11 +225,17 @@ ani_boolean ANI_Lock(ani_env *env)
     return true;
 }
 
-ani_boolean ANI_OnSystemEvent(ani_env *env, ani_fn_object callback)
+ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback)
 {
     SCLOCK_HILOGD("ANI_OnSystemEvent begin");
     bool status = false;
-    ani_ref callbackRef = static_cast<ani_ref>(callback);
+
+    ani_ref callbackRef;
+    if (ANI_OK != env->GlobalReference_Create(callback, &callbackRef)) {
+        SCLOCK_HILOGE("GlobalReference_Create failed");
+        return status;
+    }
+
     EventListener eventListener{ .env = env, .callbackRef = callbackRef };
     sptr<ScreenlockSystemAbilityCallback> listener = new (std::nothrow) ScreenlockSystemAbilityCallback(eventListener);
     if (listener != nullptr) {
@@ -360,7 +366,7 @@ ani_double ANI_GetStrongAuth(ani_env *env, ani_double userId)
 } // namespace ScreenLock
 } // namespace OHOS
 
-ani_boolean BindMethods(ani_env *env)
+static ani_boolean BindMethods(ani_env *env)
 {
     const char *spaceName = "L@ohos/screenLock/screenLock;";
     ani_namespace spc;
@@ -394,8 +400,7 @@ ani_boolean BindMethods(ani_env *env)
             reinterpret_cast<void *>(OHOS::ScreenLock::ANI_SetScreenLockAuthState)},
         ani_native_function{
             "getScreenLockAuthState", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetScreenLockAuthState)},
-        ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)},
-    };
+        ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)}};
 
     if (env->Namespace_BindNativeFunctions(spc, methods.data(), methods.size()) != ANI_OK) {
         SCLOCK_HILOGE("Cannot bind native methods to %{public}s ", spaceName);

@@ -31,7 +31,7 @@ ani_boolean ANI_IsSecureMode(ani_env *env);
 void ANI_UnlockScreen(ani_env *env);
 ani_boolean ANI_Unlock(ani_env *env);
 ani_boolean ANI_Lock(ani_env *env);
-ani_boolean ANI_OnSystemEvent(ani_env *env, ani_fn_object callback);
+ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback);
 ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_double parameter);
 ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_double userId);
 ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_double userId);

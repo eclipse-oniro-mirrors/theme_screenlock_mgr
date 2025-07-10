@@ -17,6 +17,7 @@
 
 #include "ani_event_listener.h"
 #include "screenlock_callback_stub.h"
+#include "screenlock_system_ability_interface.h"
 #include "ani.h"
 
 namespace OHOS {
@@ -29,6 +30,15 @@ public:
 private:
     EventListener eventListener_;
     ErrorInfo errorInfo_;
+};
+
+struct ScreenlockOnCallBack {
+    ani_env *env;
+    ani_ref callbackRef;
+    SystemEvent systemEvent;
+    ErrorInfo errorInfo;
+    int32_t screenLockResult = -1;
+    Action action;
 };
 } // namespace ScreenLock
 } // namespace OHOS
