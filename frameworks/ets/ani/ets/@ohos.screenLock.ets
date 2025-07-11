@@ -48,6 +48,11 @@ export namespace screenLock {
     params: string;
   }
 
+  class SystemEventImpl implements SystemEvent {
+    eventType: EventType;
+    params: string;
+  }
+
   native function isScreenLocked_inner(): boolean;
 
   native function isSecureMode_inner(): boolean;

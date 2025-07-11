@@ -29,6 +29,7 @@ class ScreenlockSystemAbilityCallback : public ScreenLockSystemAbilityStub {
 public:
     explicit ScreenlockSystemAbilityCallback(const EventListener &eventListener);
     ~ScreenlockSystemAbilityCallback() override;
+    void OnCallBack(const SystemEvent &systemEvent) override;
     static std::shared_ptr<AppExecFwk::EventHandler> GetEventHandler();
 private:
     EventListener eventListener_;
