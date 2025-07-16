@@ -22,7 +22,11 @@
 #include "screenlock_common.h"
 #include "securec.h"
 #ifndef IS_SO_CROP_H
+#define private public
+#define protected public
 #include "strongauthmanager.h"
+#undef private
+#undef protected
 #endif // IS_SO_CROP_H
 #include "commeventsubscriber.h"
 #include "screenlock_strongauth_test.h"
@@ -74,8 +78,11 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     int32_t userId = 100;
     int32_t defaulVal = 1;
     int64_t timerInterval = 1;
+    int32_t reasonFlag = 0;
     authmanager->RegistIamEventListener();
     authmanager->StartStrongAuthTimer(userId);
+    authmanager->InitStrongAuthStat(userId, reasonFlag);
+    authmanager->GetCredInfo(userId);
     authmanager->GetTimerId(userId);
     authmanager->ResetStrongAuthTimer(userId, timerInterval);
     authmanager->DestroyStrongAuthTimer(userId);
@@ -270,5 +277,122 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest14, TestSize.Level0)
 #endif
 }
 
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest015, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->GetStrongAuthTimeTrigger(otherUserId);
+
+    authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->GetStrongAuthTimeTrigger(otherUserId);
+
+    authmanager->GetCredInfo(otherUserId);
+
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    authmanager->GetCredInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest016, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest017, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->GetStrongAuthTimeTrigger(otherUserId);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest018, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 1;
+
+    authmanager->SetStrongAuthStat(otherUserId, reasonFlag);
+
+    authmanager->SetStrongAuthStat(otherUserId, reasonFlag);
+
+    authmanager->SetStrongAuthStat(otherUserId, 2);
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    authmanager->SetStrongAuthStat(otherUserId, 2);
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
 } // namespace ScreenLock
 } // namespace OHOS
