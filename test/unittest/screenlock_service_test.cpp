@@ -36,6 +36,7 @@
 #include "securec.h"
 #include "token_setproc.h"
 #include "inner_listener_test.h"
+#include "system_ability_definition.h"
 
 
 namespace OHOS {
