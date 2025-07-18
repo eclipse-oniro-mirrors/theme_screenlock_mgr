@@ -36,16 +36,10 @@ ani_object GetSystemEventImpl(ani_env *env, std::string eventTypeStr, std::strin
         SCLOCK_HILOGE("env is nullptr %{public}s", __func__);
         return nullptr;
     }
-    ani_namespace ns;
-    const char *spaceName = "L@ohos/screenLock/screenLock;";
-    if (ANI_OK != env->FindNamespace(spaceName, &ns)) {
-        SCLOCK_HILOGE("Not found space name '%{public}s'", spaceName);
-        return nullptr;
-    }
 
     ani_class cls;
-    const char *className = "LSystemEventImpl;";
-    if (ANI_OK != env->Namespace_FindClass(ns, className, &cls)) {
+    const char *className = "@ohos.screenLock.screenLock.SystemEventImpl";
+    if (ANI_OK != env->FindClass(className, &cls)) {
         SCLOCK_HILOGE("Not found class name '%{public}s'", className);
         return nullptr;
     }
