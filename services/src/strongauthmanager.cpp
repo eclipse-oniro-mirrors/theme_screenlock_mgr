@@ -246,7 +246,7 @@ void StrongAuthManger::StartStrongAuthTimer(int32_t userId, int64_t triggerPerio
         return;
     }
 
-    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}lld", triggerPeriod);
+    SCLOCK_HILOGI("StartStrongAuthTimer triggerPeriod:%{public}" PRId64, triggerPeriod);
     std::shared_ptr<authTimer> timer = std::make_shared<authTimer>(true, DEFAULT_STRONG_AUTH_TIMEOUT_MS, true, false);
     timer->SetCallbackInfo(StrongAuthTimerCallback);
     timer->SetUserId(userId);
