@@ -164,7 +164,7 @@ void ANI_UnlockScreen(ani_env *env)
         }
     sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
     if (callback == nullptr) {
-            SCLOCK_HILOGE("NAPI_Lock create callback object fail");
+            SCLOCK_HILOGE("ANI_UnlockScreen create callback object fail");
             return;
         }
     int32_t status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
@@ -190,7 +190,7 @@ ani_boolean ANI_Unlock(ani_env *env)
         }
     sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
     if (callback == nullptr) {
-            SCLOCK_HILOGE("NAPI_Lock create callback object fail");
+            SCLOCK_HILOGE("ANI_Unlock create callback object fail");
             return;
         }
     int32_t status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
@@ -222,7 +222,7 @@ ani_boolean ANI_Lock(ani_env *env)
         }
     sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
     if (callback == nullptr) {
-            SCLOCK_HILOGE("NAPI_Lock create callback object fail");
+            SCLOCK_HILOGE("ANI_Lock create callback object fail");
             return;
         }
     int32_t status = ScreenLockManager::GetInstance()->Lock(callback);
