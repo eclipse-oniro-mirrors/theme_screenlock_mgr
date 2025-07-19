@@ -778,7 +778,7 @@ int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userI
     return E_SCREENLOCK_OK;
 #else
     SCLOCK_HILOGI("RequestStrongAuth reasonFlag=%{public}d ,userId=%{public}d", reasonFlag, userId);
-    printCallerPid("Lock userId");
+    printCallerPid("RequestStrongAuth");
     if (CheckSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
