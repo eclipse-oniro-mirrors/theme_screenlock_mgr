@@ -186,12 +186,12 @@ ani_boolean ANI_Unlock(ani_env *env)
     SCLOCK_HILOGD("ANI_Unlock begin");
     EventListener *eventListener = new (std::nothrow) EventListener{.env = env, .action = Action::UNLOCK};
     if (eventListener == nullptr) {
-            return;
+            return false;
         }
     sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
     if (callback == nullptr) {
             SCLOCK_HILOGE("ANI_Unlock create callback object fail");
-            return;
+            return false;
         }
     int32_t status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
     if (status != E_SCREENLOCK_OK) {
@@ -218,12 +218,12 @@ ani_boolean ANI_Lock(ani_env *env)
     SCLOCK_HILOGD("ANI_Lock begin");
     EventListener *eventListener = new (std::nothrow) EventListener{.env = env, .action = Action::LOCK};
     if (eventListener == nullptr) {
-            return;
+            return false;
         }
     sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
     if (callback == nullptr) {
             SCLOCK_HILOGE("ANI_Lock create callback object fail");
-            return;
+            return false;
         }
     int32_t status = ScreenLockManager::GetInstance()->Lock(callback);
     SCLOCK_HILOGD("ANI_Lock exec status = %{public}d ", status);
