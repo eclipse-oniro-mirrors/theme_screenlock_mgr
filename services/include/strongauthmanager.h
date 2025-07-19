@@ -55,6 +55,8 @@ public:
     int32_t GetStrongAuthStat(int32_t userId);
     void RegistIamEventListener();
     void UnRegistIamEventListener();
+    void RegistAuthEventListener();
+    void UnRegistAuthEventListener();
     void InitStrongAuthStat(int32_t userId, int32_t reasonFlag);
     void DestroyStrongAuthStateInfo(int32_t userId);
     bool GetCredInfo(int32_t userId);

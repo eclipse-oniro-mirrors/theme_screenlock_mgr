@@ -220,6 +220,7 @@ private:
     void RemoveSubscribeUserIamReady();
     bool CheckSystemPermission();
     void AppendPrintOtherInfo(std::string &output);
+    void printCallerPid(std::string invokeName);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
