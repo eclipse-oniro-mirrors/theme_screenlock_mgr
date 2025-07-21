@@ -188,6 +188,7 @@ void ScreenLockSystemAbility::OnStart()
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
     AddSystemAbilityListener(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN);
     AddSystemAbilityListener(SUBSYS_USERIAM_SYS_ABILITY_USERIDM);
+    AddSystemAbilityListener(SUBSYS_USERIAM_SYS_ABILITY_USERAUTH);
     RegisterDumpCommand();
     return;
 }
@@ -209,6 +210,10 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
         StrongAuthManger::GetInstance()->RegistIamEventListener();
     }
+
+    if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERAUTH) {
+        StrongAuthManger::GetInstance()->RegistAuthEventListener();
+    }
 #endif // IS_SO_CROP_H
 }
 
@@ -217,6 +222,10 @@ void ScreenLockSystemAbility::OnRemoveSystemAbility(int32_t systemAbilityId, con
 #ifndef IS_SO_CROP_H
     if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERIDM) {
         StrongAuthManger::GetInstance()->UnRegistIamEventListener();
+    }
+
+    if (systemAbilityId == SUBSYS_USERIAM_SYS_ABILITY_USERAUTH) {
+        StrongAuthManger::GetInstance()->UnRegistAuthEventListener();
     }
 #endif // IS_SO_CROP_H
 }
@@ -511,6 +520,7 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
         SCLOCK_HILOGE("UnlockScreen  Unfocused.");
         return E_SCREENLOCK_NOT_FOCUS_APP;
     }
+    printCallerPid("UnlockInner");
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);
     unlockVecUserIds_.push_back(GetUserIdFromCallingUid());
@@ -533,6 +543,7 @@ int32_t ScreenLockSystemAbility::Lock(const sptr<ScreenLockCallbackInterface> &l
     if (IsScreenLocked()) {
         SCLOCK_HILOGI("Currently in a locked screen state");
     }
+    printCallerPid("Lock listener");
     lockListenerMutex_.lock();
     lockVecListeners_.push_back(listener);
     lockListenerMutex_.unlock();
@@ -550,6 +561,7 @@ int32_t ScreenLockSystemAbility::Lock(int32_t userId)
     if (IsScreenLocked()) {
         SCLOCK_HILOGI("Currently in a locked screen state");
     }
+    printCallerPid("Lock userId");
     SystemEvent systemEvent(LOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_LOCKSCREEN);
     return E_SCREENLOCK_OK;
@@ -766,6 +778,7 @@ int32_t ScreenLockSystemAbility::RequestStrongAuth(int reasonFlag, int32_t userI
     return E_SCREENLOCK_OK;
 #else
     SCLOCK_HILOGI("RequestStrongAuth reasonFlag=%{public}d ,userId=%{public}d", reasonFlag, userId);
+    printCallerPid("RequestStrongAuth");
     if (CheckSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
@@ -1145,6 +1158,12 @@ bool ScreenLockSystemAbility::CheckSystemPermission()
     AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
     return !IsSystemApp() && tokenType != TOKEN_NATIVE;
+}
+
+void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
+{
+    auto callerPid = IPCSkeleton::GetCallingPid();
+    SCLOCK_HILOGI("%{public}s callerPid:%{public}d", invokeName.c_str(), callerPid);
 }
 } // namespace ScreenLock
 } // namespace OHOS
