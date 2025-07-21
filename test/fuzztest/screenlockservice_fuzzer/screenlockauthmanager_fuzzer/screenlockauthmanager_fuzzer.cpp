@@ -19,7 +19,11 @@
 #include <cstdint>
 #include <string_ex.h>
 #ifndef IS_SO_CROP_H
+#define private public
+#define protected public
 #include "strongauthmanager.h"
+#undef private
+#undef protected
 
 using namespace OHOS::ScreenLock;
 #else
@@ -54,6 +58,15 @@ bool FuzzScreenlockAuthManager(const uint8_t *rawData, size_t size)
     int32_t invalidUserId = 102;
     authmanager->SetStrongAuthStat(invalidUserId, 0);
     authmanager->GetStrongAuthStat(invalidUserId);
+    authmanager->DestroyStrongAuthStateInfo(invalidUserId);
+    authmanager->InitStrongAuthStat(invalidUserId, 0);
+    authmanager->IsUserExitInStrongAuthInfo(invalidUserId);
+    authmanager->ResetStrongAuthTimer(invalidUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
+    authmanager->IsUserHasStrongAuthTimer(invalidUserId);
+    authmanager->GetStrongAuthTimeTrigger(invalidUserId);
+    authmanager->GetStrongAuthTriggerPeriod(invalidUserId);
+    authmanager->DestroyStrongAuthStateInfo(invalidUserId);
+    authmanager->DestroyStrongAuthTimer(invalidUserId);
 #endif // IS_SO_CROP_H
     return true;
 }
