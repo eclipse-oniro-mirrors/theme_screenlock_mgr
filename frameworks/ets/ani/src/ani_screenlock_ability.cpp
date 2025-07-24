@@ -280,7 +280,7 @@ ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback)
     return status;
 }
 
-ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_double parameter)
+ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int parameter)
 {
     SCLOCK_HILOGD("ANI_SendScreenLockEvent begin");
     std::string stdEvent = ANIUtils_ANIStringToStdString(env, static_cast<ani_string>(event));
@@ -299,7 +299,26 @@ ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_double p
     return true;
 }
 
-ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_double userId)
+void ANI_RequestStrongAuth(ani_env *env, ani_enum_item reasonFlag, ani_int userId)
+{
+    SCLOCK_HILOGD("ANI_RequestStrongAuth begin");
+    ani_int reasonFlagInt;
+    ani_status status = env->EnumItem_GetValue_Int(reasonFlag, &reasonFlagInt);
+    if (status != ANI_OK) {
+        SCLOCK_HILOGE("EnumItem_GetValue_Int failed, status=%{public}d", status);
+        return;
+    }
+    SCLOCK_HILOGI("ANI_RequestStrongAuth [reasonFlagInt]=%{public}d", reasonFlagInt);
+    int32_t retCode = ScreenLockManager::GetInstance()->RequestStrongAuth(reasonFlagInt, userId);
+    if (retCode != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(retCode);
+        GetErrorInfo(retCode, errInfo);
+        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
+    }
+}
+
+ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_int userId)
 {
     SCLOCK_HILOGD("ANI_SetScreenLockDisabled begin");
     int32_t retCode = ScreenLockManager::GetInstance()->SetScreenLockDisabled(disable, userId);
@@ -313,7 +332,7 @@ ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_dou
     return true;
 }
 
-ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_double userId)
+ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_int userId)
 {
     SCLOCK_HILOGD("ANI_IsScreenLockDisabled begin");
     ani_boolean result = false;
@@ -331,7 +350,7 @@ ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_double userId)
     return result;
 }
 
-ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_double userId, ani_object authToken)
+ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_int userId, ani_object authToken)
 {
     SCLOCK_HILOGD("ANI_SetScreenLockAuthState begin");
     ani_int stateInt;
@@ -349,7 +368,7 @@ ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_do
     return true;
 }
 
-ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_double userId)
+ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_int userId)
 {
     SCLOCK_HILOGD("ANI_GetScreenLockAuthState begin");
     ani_enum enumType;
@@ -369,10 +388,9 @@ ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_double userId)
     return result;
 }
 
-ani_double ANI_GetStrongAuth(ani_env *env, ani_double userId)
+ani_int ANI_GetStrongAuth(ani_env *env, ani_int userId)
 {
     SCLOCK_HILOGD("ANI_GetStrongAuth begin");
-    ani_double result = 0;
     int32_t reasonFlag = -1;
     int32_t status = ScreenLockManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
     if (status != E_SCREENLOCK_OK) {
@@ -380,11 +398,25 @@ ani_double ANI_GetStrongAuth(ani_env *env, ani_double userId)
         errInfo.errorCode_ = static_cast<uint32_t>(status);
         GetErrorInfo(status, errInfo);
         ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
-        return result;
     }
     SCLOCK_HILOGI("ANI_GetStrongAuth [reasonFlag]=%{public}d", reasonFlag);
-    result = ani_double(reasonFlag);
-    return result;
+    return reasonFlag;
+}
+
+ani_boolean ANI_IsDeviceLocked(ani_env *env, ani_int userId)
+{
+    SCLOCK_HILOGD("ANI_IsDeviceLocked in");
+    bool isDeviceLocked = true;
+    int32_t status = ScreenLockManager::GetInstance()->IsDeviceLocked(userId, isDeviceLocked);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
+        return false;
+    }
+    SCLOCK_HILOGI("ANI_IsDeviceLocked [isDeviceLocked]=%{public}d", isDeviceLocked);
+    return isDeviceLocked;
 }
 
 } // namespace ScreenLock
@@ -414,6 +446,8 @@ static ani_boolean BindMethods(ani_env *env)
         ani_native_function{"onSystemEvent", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_OnSystemEvent)},
         ani_native_function{
             "sendScreenLockEvent_inner", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_SendScreenLockEvent)},
+        ani_native_function{
+            "requestStrongAuth_inner", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_RequestStrongAuth)},
         ani_native_function{"setScreenLockDisabled_inner",
             nullptr,
             reinterpret_cast<void *>(OHOS::ScreenLock::ANI_SetScreenLockDisabled)},
@@ -424,7 +458,8 @@ static ani_boolean BindMethods(ani_env *env)
             reinterpret_cast<void *>(OHOS::ScreenLock::ANI_SetScreenLockAuthState)},
         ani_native_function{
             "getScreenLockAuthState", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetScreenLockAuthState)},
-        ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)}};
+        ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)},
+        ani_native_function{"isDeviceLocked", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_IsDeviceLocked)}};
 
     if (env->Namespace_BindNativeFunctions(spc, methods.data(), methods.size()) != ANI_OK) {
         SCLOCK_HILOGE("Cannot bind native methods to %{public}s ", spaceName);

@@ -56,7 +56,8 @@
         "fwk_group": [
           "//base/theme/screenlock_mgr/interfaces/inner_api:screenlock_client",
           "//base/theme/screenlock_mgr/frameworks/js/napi:screenlock",
-          "//base/theme/screenlock_mgr/frameworks/ets/ani:screenlock_ani"
+          "//base/theme/screenlock_mgr/frameworks/ets/ani:screenlock_ani",
+          "//base/theme/screenlock_mgr/frameworks/ets/ani:screenLock_static_etc"
         ],
         "service_group": [
           "//base/theme/screenlock_mgr:screenlock_mgr_packages"

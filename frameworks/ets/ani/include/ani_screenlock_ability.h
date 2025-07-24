@@ -32,13 +32,14 @@ void ANI_UnlockScreen(ani_env *env);
 ani_boolean ANI_Unlock(ani_env *env);
 ani_boolean ANI_Lock(ani_env *env);
 ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback);
-ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_double parameter);
-ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_double userId);
-ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_double userId);
-ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_double userId, ani_object authToken);
-ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_double userId);
-ani_double ANI_GetStrongAuth(ani_env *env, ani_double userId);
-
+ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int parameter);
+void ANI_RequestStrongAuth(ani_env *env, ani_enum_item reasonFlag, ani_int userId);
+ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_int userId);
+ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_int userId);
+ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_int userId, ani_object authToken);
+ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_int userId);
+ani_int ANI_GetStrongAuth(ani_env *env, ani_int userId);
+ani_boolean ANI_IsDeviceLocked(ani_env *env, ani_int userId);
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  ANI_SCREENLOCK_ABILITY_H

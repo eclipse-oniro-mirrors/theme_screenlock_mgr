@@ -20,11 +20,13 @@ export namespace screenLock {
   loadLibrary("screenlock_ani.z");
 
   enum AuthState {
-    UNAUTH = 0,
+    NOT_AUTHED = 0,
     PRE_AUTHED_BY_CREDENTIAL = 1,
-    PRE_AUTHED_BY_BIOMIETRIC = 2,
-    AUTHED_BY_CREDENTIAL = 3,
-    AUTHED_BY_BIOMIETRIC = 4,
+    PRE_AUTHED_BY_FINGERPRINT = 2,
+    PRE_AUTHED_BY_FACE = 3,
+    AUTHED_BY_CREDENTIAL = 4,
+    AUTHED_BY_FINGERPRINT = 5,
+    AUTHED_BY_FACE = 6,
   }
 
   type EventType = 
@@ -42,6 +44,14 @@ export namespace screenLock {
     | 'changeUser'
     | 'screenlockEnabled'
     | 'serviceRestart';
+
+  enum StrongAuthReasonFlags {
+    NONE = 0x00000000,
+    AFTER_BOOT = 0x00000001,
+    AFTER_TIMEOUT = 0x00000002,
+    ACTIVE_REQUEST = 0x00000004,
+    POLICY_RESTRICTION = 0x00000008
+  }
 
   interface SystemEvent {
     eventType: EventType;
@@ -63,21 +73,25 @@ export namespace screenLock {
 
   native function lock_inner(): boolean;
 
-  native function sendScreenLockEvent_inner(event: string, parameter: number): boolean;
+  native function sendScreenLockEvent_inner(event: string, parameter: int): boolean;
 
-  native function setScreenLockDisabled_inner(disable: boolean, userId: number): boolean;
+  native function requestStrongAuth_inner(reasonFlag: StrongAuthReasonFlags, userId: int): void;
 
-  native function setScreenLockAuthState_inner(state: AuthState, userId: number, authToken: Uint8Array): boolean;
+  native function setScreenLockDisabled_inner(disable: boolean, userId: int): boolean;
+
+  native function setScreenLockAuthState_inner(state: AuthState, userId: int, authToken: Uint8Array): boolean;
 
   export native function isLocked(): boolean;
 
   export native function onSystemEvent(callback: Callback<SystemEvent>): boolean;
 
-  export native function isScreenLockDisabled(userId: number): boolean;
+  export native function isScreenLockDisabled(userId: int): boolean;
 
-  export native function getScreenLockAuthState(userId: number): AuthState;
+  export native function getScreenLockAuthState(userId: int): AuthState;
 
-  export native function getStrongAuth(userId: number): number;
+  export native function getStrongAuth(userId: int): int;
+
+  export native function isDeviceLocked(userId: int): boolean;
 
   export function isScreenLocked(callback: AsyncCallback<boolean>): void {
     taskpool.execute((): boolean => {
@@ -214,7 +228,7 @@ export namespace screenLock {
     })
   }
 
-  export function sendScreenLockEvent(event: string, parameter: number, callback: AsyncCallback<boolean>): void {
+  export function sendScreenLockEvent(event: string, parameter: int, callback: AsyncCallback<boolean>): void {
     taskpool.execute((): boolean => {
       return sendScreenLockEvent_inner(event, parameter);
     })
@@ -227,7 +241,7 @@ export namespace screenLock {
     });
   }
 
-  export function sendScreenLockEvent(event: string, parameter: number): Promise<boolean> {
+  export function sendScreenLockEvent(event: string, parameter: int): Promise<boolean> {
     return new Promise<boolean>((resolve, reject): void => {
       taskpool.execute((): boolean => {
         return sendScreenLockEvent_inner(event, parameter);
@@ -241,7 +255,21 @@ export namespace screenLock {
     })
   }
 
-  export function setScreenLockDisabled(disable: boolean, userId: number, callback: AsyncCallback<boolean>): void {
+  export function requestStrongAuth(reasonFlag: StrongAuthReasonFlags, userId: int): Promise<void> {
+    return new Promise<void>((resolve, reject): void => {
+      taskpool.execute((): void => {
+        return requestStrongAuth_inner(reasonFlag, userId);
+      })
+      .then((ret: NullishType): void => {
+        resolve(ret as undefined);
+      })
+      .catch((ret: NullishType): void => {
+        reject(ret as Error);
+      });
+    })
+  }
+
+  export function setScreenLockDisabled(disable: boolean, userId: int, callback: AsyncCallback<boolean>): void {
     taskpool.execute((): boolean => {
       return setScreenLockDisabled_inner(disable, userId);
     })
@@ -254,7 +282,7 @@ export namespace screenLock {
     });
   }
 
-  export function setScreenLockDisabled(disable: boolean, userId: number): Promise<boolean> {
+  export function setScreenLockDisabled(disable: boolean, userId: int): Promise<boolean> {
     return new Promise<boolean>((resolve, reject): void => {
       taskpool.execute((): boolean => {
         return setScreenLockDisabled_inner(disable, userId);
@@ -268,7 +296,7 @@ export namespace screenLock {
     })
   }
 
-  export function setScreenLockAuthState(state: AuthState, userId: number, authToken: Uint8Array): Promise<boolean> {
+  export function setScreenLockAuthState(state: AuthState, userId: int, authToken: Uint8Array): Promise<boolean> {
     return new Promise<boolean>((resolve, reject): void => {
       taskpool.execute((): boolean => {
         return setScreenLockAuthState_inner(state, userId, authToken);
