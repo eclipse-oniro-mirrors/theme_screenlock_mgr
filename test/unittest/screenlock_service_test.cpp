@@ -527,7 +527,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->OnRemoveSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnStart();
-    EXPECT_EQ(ScreenLockSystemAbility::GetInstance()->state_, ServiceRunningState::STATE_NOT_START);
+    EXPECT_EQ(ScreenLockSystemAbility::GetInstance()->state_, ServiceRunningState::STATE_RUNNING);
     int times = 0;
     ScreenLockSystemAbility::GetInstance()->RegisterDisplayPowerEventListener(times);
     bool isLocked;
