@@ -95,7 +95,6 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest001, TestSize.Level0)
     Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
     EXPECT_EQ(defaulVal, val);
 #endif // IS_SO_CROP_H
-    return;
 }
 
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest002, TestSize.Level0)
