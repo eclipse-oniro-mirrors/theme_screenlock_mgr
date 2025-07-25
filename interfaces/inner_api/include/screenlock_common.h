@@ -107,6 +107,7 @@ enum class StrongAuthReasonFlags : int32_t {
     AFTER_TIMEOUT = 0x00000002,
     ACTIVE_REQUEST = 0x00000004,
     DPM_RESTRICT = 0x00000008,
+    SECURITY_ENHANCEMENT = 0x00000016,
 };
 
 enum class SpecialUserId : int32_t {
