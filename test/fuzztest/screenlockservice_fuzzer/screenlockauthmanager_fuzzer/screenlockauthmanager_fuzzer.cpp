@@ -19,11 +19,7 @@
 #include <cstdint>
 #include <string_ex.h>
 #ifndef IS_SO_CROP_H
-#define private public
-#define protected public
 #include "strongauthmanager.h"
-#undef private
-#undef protected
 
 using namespace OHOS::ScreenLock;
 #else
@@ -48,6 +44,7 @@ bool FuzzScreenlockAuthManager(const uint8_t *rawData, size_t size)
 
     int32_t userId = 100;
     int64_t triggerPeriod = 1;
+    int64_t timeInterval = 1000;
     authmanager->RegistIamEventListener();
     authmanager->StartStrongAuthTimer(userId);
     authmanager->GetTimerId(userId);
@@ -57,14 +54,12 @@ bool FuzzScreenlockAuthManager(const uint8_t *rawData, size_t size)
     authmanager->UnRegistIamEventListener();
     int32_t invalidUserId = 102;
     authmanager->SetStrongAuthStat(invalidUserId, 0);
+    StrongAuthManger::authTimer timer(true, timeInterval, true, true);
     authmanager->GetStrongAuthStat(invalidUserId);
     authmanager->DestroyStrongAuthStateInfo(invalidUserId);
     authmanager->InitStrongAuthStat(invalidUserId, 0);
-    authmanager->IsUserExitInStrongAuthInfo(invalidUserId);
     authmanager->ResetStrongAuthTimer(invalidUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
-    authmanager->IsUserHasStrongAuthTimer(invalidUserId);
     authmanager->GetStrongAuthTimeTrigger(invalidUserId);
-    authmanager->GetStrongAuthTriggerPeriod(invalidUserId);
     authmanager->DestroyStrongAuthStateInfo(invalidUserId);
     authmanager->DestroyStrongAuthTimer(invalidUserId);
 #endif // IS_SO_CROP_H
