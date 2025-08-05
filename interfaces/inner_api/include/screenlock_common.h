@@ -83,6 +83,7 @@ enum ScreenChange {
     SCREEN_SUCC = 0,
     SCREEN_FAIL,
     SCREEN_CANCEL,
+    EARLY_SUCCESS,
 };
 
 enum JsErrorCode : uint32_t {

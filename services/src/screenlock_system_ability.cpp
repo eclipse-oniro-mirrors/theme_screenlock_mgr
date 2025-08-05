@@ -1003,6 +1003,11 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
 void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 {
     SCLOCK_HILOGD("ScreenLockSystemAbility UnlockScreenEvent stateResult:%{public}d", stateResult);
+    if (stateResult == ScreenChange::EARLY_SUCCESS) {
+        SetScreenlocked(false, GetUserIdFromCallingUid());
+        return;
+    }
+    
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         int32_t userId = GetUserIdFromCallingUid();
         SetScreenlocked(false, userId);
