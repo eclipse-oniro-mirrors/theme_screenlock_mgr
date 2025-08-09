@@ -525,6 +525,11 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     unlockVecListeners_.push_back(listener);
     unlockVecUserIds_.push_back(GetUserIdFromCallingUid());
     unlockListenerMutex_.unlock();
+    bool isDeviceLock = true;
+    IsDeviceLockedInner(GetUserIdFromCallingUid(), isDeviceLock);
+    if (!IsScreenLocked() && !isDeviceLock) {
+        NotifyUnlockListener(ScreenChange::SCREEN_SUCC);
+    }
     SystemEvent systemEvent(UNLOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
     FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end", HITRACE_UNLOCKSCREEN);
