@@ -867,7 +867,11 @@ int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
+    return IsDeviceLockedInner(userId, isDeviceLocked);
+}
 
+int32_t ScreenLockSystemAbility::IsDeviceLockedInner(int userId, bool &isDeviceLocked)
+{
     std::unique_lock<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {

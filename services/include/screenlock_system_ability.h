@@ -221,6 +221,7 @@ private:
     bool CheckSystemPermission();
     void AppendPrintOtherInfo(std::string &output);
     void printCallerPid(std::string invokeName);
+    int32_t IsDeviceLockedInner(int userId, bool &isDeviceLocked);
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
