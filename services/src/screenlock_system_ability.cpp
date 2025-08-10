@@ -525,11 +525,6 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     unlockVecListeners_.push_back(listener);
     unlockVecUserIds_.push_back(GetUserIdFromCallingUid());
     unlockListenerMutex_.unlock();
-    bool isDeviceLock = true;
-    IsDeviceLockedInner(GetUserIdFromCallingUid(), isDeviceLock);
-    if (!IsScreenLocked() && !isDeviceLock) {
-        NotifyUnlockListener(ScreenChange::SCREEN_SUCC);
-    }
     SystemEvent systemEvent(UNLOCKSCREEN);
     SystemEventCallBack(systemEvent, HITRACE_UNLOCKSCREEN);
     FinishAsyncTrace(HITRACE_TAG_MISC, "UnlockScreen end", HITRACE_UNLOCKSCREEN);
@@ -867,11 +862,6 @@ int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    return IsDeviceLockedInner(userId, isDeviceLocked);
-}
-
-int32_t ScreenLockSystemAbility::IsDeviceLockedInner(int userId, bool &isDeviceLocked)
-{
     std::unique_lock<std::mutex> lock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
@@ -1012,11 +1002,15 @@ void ScreenLockSystemAbility::LockScreenEvent(int stateResult)
 void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 {
     SCLOCK_HILOGD("ScreenLockSystemAbility UnlockScreenEvent stateResult:%{public}d", stateResult);
+    if (stateResult == ScreenChange::ALREADY_UNLOCKED) {
+        NotifyUnlockListener(ScreenChange::SCREEN_SUCC);
+        return;
+    }
     if (stateResult == ScreenChange::EARLY_SUCCESS) {
         SetScreenlocked(false, GetUserIdFromCallingUid());
         return;
     }
-    
+
     if (stateResult == ScreenChange::SCREEN_SUCC) {
         int32_t userId = GetUserIdFromCallingUid();
         SetScreenlocked(false, userId);
