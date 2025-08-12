@@ -459,8 +459,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
     if (!ret) {
-        bool result = true;
-        EXPECT_TRUE(result);
+        std::string result;
+        auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("ret=%{public}d", ret);
+        EXPECT_TRUE(ret);
     } else {
         EXPECT_EQ(isLocked, false);
     }
@@ -480,8 +482,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
     if (!ret) {
-        bool result = true;
-        EXPECT_TRUE(result);
+        std::string result;
+        auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("ret=%{public}d", ret);
+        EXPECT_TRUE(ret);
     } else {
         EXPECT_EQ(isLocked, false);
     }
@@ -501,8 +505,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
     if (!ret) {
-        bool result = true;
-        EXPECT_TRUE(result);
+        std::string result;
+        auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("ret=%{public}d", ret);
+        EXPECT_TRUE(ret);
     } else {
         EXPECT_EQ(isLocked, false);
     }
