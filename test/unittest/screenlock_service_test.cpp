@@ -460,9 +460,9 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
     bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
     if (!ret) {
         std::string result;
-        auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
-        SCLOCK_HILOGD("ret=%{public}d", ret);
-        EXPECT_TRUE(ret);
+        auto retcode = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("retcode=%{public}d", retcode);
+        EXPECT_TRUE(retcode);
     } else {
         EXPECT_EQ(isLocked, false);
     }
@@ -483,9 +483,9 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
     bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
     if (!ret) {
         std::string result;
-        auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
-        SCLOCK_HILOGD("ret=%{public}d", ret);
-        EXPECT_TRUE(ret);
+        auto retcode = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("retcode=%{public}d", retcode);
+        EXPECT_TRUE(retcode);
     } else {
         EXPECT_EQ(isLocked, false);
     }
@@ -506,9 +506,9 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
     bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
     if (!ret) {
         std::string result;
-        auto ret = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
-        SCLOCK_HILOGD("ret=%{public}d", ret);
-        EXPECT_TRUE(ret);
+        auto retcode = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("retcode=%{public}d", retcode);
+        EXPECT_TRUE(retcode);
     } else {
         EXPECT_EQ(isLocked, false);
     }
