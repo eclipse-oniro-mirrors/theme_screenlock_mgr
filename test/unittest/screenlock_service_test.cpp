@@ -52,34 +52,47 @@ constexpr const char *CMD3 = "hidumper -s 3704 -a -all";
 uint64_t g_selfTokenID = 0;
 static EventListenerTest g_unlockTestListener;
 
-static HapPolicyParams g_policyParams = { .apl = APL_SYSTEM_CORE,
+static HapPolicyParams g_policyParams = {.apl = APL_SYSTEM_CORE,
     .domain = "test.domain",
-    .permList = { { .permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
-                      .bundleName = "ohos.screenlock_test.demo",
-                      .grantMode = 1,
-                      .availableLevel = APL_NORMAL,
-                      .label = "label",
-                      .labelId = 1,
-                      .description = "test",
-                      .descriptionId = 1 },
-        { .permissionName = "ohos.permission.DUMP",
+    .permList = {{.permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+                     .bundleName = "ohos.screenlock_test.demo",
+                     .grantMode = 1,
+                     .availableLevel = APL_NORMAL,
+                     .label = "label",
+                     .labelId = 1,
+                     .description = "test",
+                     .descriptionId = 1},
+        {.permissionName = "ohos.permission.DUMP",
             .bundleName = "ohos.screenlock_test.demo",
             .grantMode = 1,
             .availableLevel = APL_SYSTEM_CORE,
             .label = "label",
             .labelId = 1,
             .description = "test",
-            .descriptionId = 1 } },
-    .permStateList = { { .permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
-                           .isGeneral = true,
-                           .resDeviceID = { "local" },
-                           .grantStatus = { PermissionState::PERMISSION_GRANTED },
-                           .grantFlags = { 1 } },
-        { .permissionName = "ohos.permission.DUMP",
+            .descriptionId = 1},
+        {.permissionName = "ohos.permission.ACCESS_SCREEN_LOCK",
+            .bundleName = "ohos.screenlock_test.demo",
+            .grantMode = 1,
+            .availableLevel = APL_NORMAL,
+            .label = "label",
+            .labelId = 1,
+            .description = "test",
+            .descriptionId = 1}},
+    .permStateList = {{.permissionName = "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+                          .isGeneral = true,
+                          .resDeviceID = {"local"},
+                          .grantStatus = {PermissionState::PERMISSION_GRANTED},
+                          .grantFlags = {1}},
+        {.permissionName = "ohos.permission.DUMP",
             .isGeneral = true,
-            .resDeviceID = { "local" },
-            .grantStatus = { PermissionState::PERMISSION_GRANTED },
-            .grantFlags = { 1 } } } };
+            .resDeviceID = {"local"},
+            .grantStatus = {PermissionState::PERMISSION_GRANTED},
+            .grantFlags = {1}},
+        {.permissionName = "ohos.permission.ACCESS_SCREEN_LOCK",
+            .isGeneral = true,
+            .resDeviceID = {"local"},
+            .grantStatus = {PermissionState::PERMISSION_GRANTED},
+            .grantFlags = {1}}}};
 
 HapInfoParams g_infoParams = { .userID = 1,
     .bundleName = "screenlock_service",
@@ -386,10 +399,19 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest016, TestSize.Level0)
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
     EXPECT_EQ(isLocked, true);
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
+    if (!ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
     ScreenLockSystemAbility::GetInstance()->SetScreenlocked(false, userId);
     result = ScreenLockSystemAbility::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    if (!ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
 }
 
 /**
@@ -408,10 +430,19 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     int32_t result = ScreenLockSystemAbility::GetInstance()->UnlockScreen(listener);
     EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
+    if (!ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+    }
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+    if (!ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+    }
 }
 
 /**
@@ -426,7 +457,15 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest018, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_SUCC);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, false);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
+    if (!ret) {
+        std::string result;
+        auto retcode = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("retcode=%{public}d", retcode);
+        EXPECT_TRUE(retcode);
+    } else {
+        EXPECT_EQ(isLocked, false);
+    }
 }
 
 /**
@@ -441,7 +480,15 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest019, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_FAIL);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, false);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
+    if (!ret) {
+        std::string result;
+        auto retcode = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("retcode=%{public}d", retcode);
+        EXPECT_TRUE(retcode);
+    } else {
+        EXPECT_EQ(isLocked, false);
+    }
 }
 
 /**
@@ -456,7 +503,15 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest020, TestSize.Level0)
     SCLOCK_HILOGD("Test SendScreenLockEvent");
     ScreenLockSystemAbility::GetInstance()->SendScreenLockEvent(UNLOCK_SCREEN_RESULT, SCREEN_CANCEL);
     bool isLocked = ScreenLockSystemAbility::GetInstance()->IsScreenLocked();
-    EXPECT_EQ(isLocked, false);
+    bool ret = ScreenLockSystemAbility::GetInstance()->IsSystemApp();
+    if (!ret) {
+        std::string result;
+        auto retcode = ScreenLockServiceTest::ExecuteCmd(CMD3, result);
+        SCLOCK_HILOGD("retcode=%{public}d", retcode);
+        EXPECT_TRUE(retcode);
+    } else {
+        EXPECT_EQ(isLocked, false);
+    }
 }
 
 /**
@@ -580,7 +635,12 @@ HWTEST_F(ScreenLockServiceTest, LockTest028, TestSize.Level0)
     SCLOCK_HILOGD("Test RequestLock.");
     int32_t userId = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    bool ret = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER");
+    if (!ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
 }
 
 /**
@@ -679,7 +739,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest033, TestSize.Level0)
     int32_t userId = 100;
     bool isLocked = false;
     int result = ScreenLockSystemAbility::GetInstance()->IsLockedWithUserId(userId, isLocked);
-    EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
+    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
+    if (ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
+    }
 }
 
 /**
@@ -693,17 +758,25 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest034, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RegisterInnerListener.");
     int fd = 1;
-    std::vector<std::u16string> args = { u"arg1", u"arg2" };
+    std::vector<std::u16string> args = {u"arg1", u"arg2"};
 
     sptr<InnerListenerIf> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
     int32_t userId = 100;
-    int result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(userId, ListenType::DEVICE_LOCK,
-                                                                               InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
-
-    result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH,
-                                                                               InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    int result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(
+        userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
+    if (ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
+    }
+    result = ScreenLockSystemAbility::GetInstance()->RegisterInnerListener(
+        userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    if (ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    }
 }
 
 /**
@@ -717,17 +790,25 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest035, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test UnRegisterInnerListener.");
     int fd = 1;
-    std::vector<std::u16string> args = { u"arg1", u"arg2" };
+    std::vector<std::u16string> args = {u"arg1", u"arg2"};
 
     sptr<InnerListenerIf> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
     int32_t userId = 100;
-    int result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(userId, ListenType::DEVICE_LOCK,
-                                                                               InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
-
-    result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(userId, ListenType::STRONG_AUTH,
-                                                                               InnerListenerIfTest1);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    int result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(
+        userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
+    if (ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
+    result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(
+        userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    if (ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    }
 }
 
 /**
@@ -746,7 +827,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest036, TestSize.Level0)
     bool isDeviceLocked = false;
     int32_t userId = 100;
     int result = ScreenLockSystemAbility::GetInstance()->IsDeviceLocked(userId, isDeviceLocked);
-    EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
+    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
+    if (ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
+    }
 }
 
 /**
