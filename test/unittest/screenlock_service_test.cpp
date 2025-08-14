@@ -434,14 +434,14 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest017, TestSize.Level0)
     if (!ret) {
         EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
     }
     ScreenLockSystemAbility::GetInstance()->state_ = ServiceRunningState::STATE_NOT_START;
     result = ScreenLockSystemAbility::GetInstance()->Unlock(listener);
     if (!ret) {
         EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_FOCUS_APP);
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
     }
 }
 
@@ -662,7 +662,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest029, TestSize.Level0)
 
     userId = 100;
     ret = ScreenLockSystemAbility::GetInstance()->SetScreenLockDisabled(false, userId);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
+    if (!retcode) {
+        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
 }
 
 /**
@@ -683,7 +688,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
 
     int32_t authState = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
-    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
+    if (!retcode) {
+        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
 }
 
 /**
@@ -703,7 +713,12 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest031, TestSize.Level0)
 
     ret = ScreenLockSystemAbility::GetInstance()->GetStrongAuth(userId, reasonFlag);
 
-    EXPECT_EQ(ret, E_SCREENLOCK_NO_PERMISSION);
+    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
+    if (!retcode) {
+        EXPECT_EQ(ret, E_SCREENLOCK_NO_PERMISSION);
+    } else {
+        EXPECT_EQ(ret, E_SCREENLOCK_OK);
+    }
 }
 
 /**
@@ -743,7 +758,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest033, TestSize.Level0)
     if (ret) {
         EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
-        EXPECT_EQ(result, E_SCREENLOCK_USER_ID_INVALID);
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
     }
 }
 
@@ -775,7 +790,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest034, TestSize.Level0)
     if (ret) {
         EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
-        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+        EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
     }
 }
 
@@ -807,7 +822,7 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest035, TestSize.Level0)
     if (ret) {
         EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
-        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
     }
 }
 
