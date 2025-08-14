@@ -688,9 +688,9 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest030, TestSize.Level0)
 
     int32_t authState = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->GetScreenLockAuthState(userId, authState);
-    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
-    if (!retcode) {
-        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
+    if (retcode) {
+        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
         EXPECT_EQ(result, E_SCREENLOCK_OK);
     }
@@ -713,9 +713,9 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest031, TestSize.Level0)
 
     ret = ScreenLockSystemAbility::GetInstance()->GetStrongAuth(userId, reasonFlag);
 
-    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK");
-    if (!retcode) {
-        EXPECT_EQ(ret, E_SCREENLOCK_NO_PERMISSION);
+    bool retcode = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
+    if (retcode) {
+        EXPECT_EQ(ret, E_SCREENLOCK_NOT_SYSTEM_APP);
     } else {
         EXPECT_EQ(ret, E_SCREENLOCK_OK);
     }
