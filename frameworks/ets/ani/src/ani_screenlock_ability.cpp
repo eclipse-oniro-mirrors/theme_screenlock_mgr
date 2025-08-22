@@ -372,7 +372,7 @@ ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_int userId)
 {
     SCLOCK_HILOGD("ANI_GetScreenLockAuthState begin");
     ani_enum enumType;
-    env->FindEnum("L@ohos/screenLock/screenLock/AuthState;", &enumType);
+    env->FindEnum("@ohos.screenLock.screenLock.AuthState", &enumType);
     ani_enum_item result = nullptr;
     int32_t authState = -1;
     int32_t status = ScreenLockManager::GetInstance()->GetScreenLockAuthState(userId, authState);
@@ -424,7 +424,7 @@ ani_boolean ANI_IsDeviceLocked(ani_env *env, ani_int userId)
 
 static ani_boolean BindMethods(ani_env *env)
 {
-    const char *spaceName = "L@ohos/screenLock/screenLock;";
+    const char *spaceName = "@ohos.screenLock.screenLock";
     ani_namespace spc;
 
     ani_status ret = env->FindNamespace(spaceName, &spc);
