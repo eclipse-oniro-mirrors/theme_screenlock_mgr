@@ -77,6 +77,7 @@ bool FuzzSaveInt(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
+    defaulVal = static_cast<bool>(rawData[0] % 2);
     preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
     preferencesUtil->ObtainInt(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -105,6 +106,7 @@ bool FuzzSaveBool(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
+    boolVal = static_cast<bool>(rawData[0] % 2);
     preferencesUtil->SaveBool(std::to_string(userId), boolVal);
     preferencesUtil->ObtainBool(std::to_string(userId), boolVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -133,6 +135,7 @@ bool FuzzSaveLong(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
+    longVal = static_cast<bool>(rawData[0] % 2);
     preferencesUtil->SaveLong(std::to_string(userId), longVal);
     preferencesUtil->ObtainLong(std::to_string(userId), longVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -161,6 +164,7 @@ bool FuzzSaveFloat(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
+    floatVal = static_cast<bool>(rawData[0] % 2);
     preferencesUtil->SaveFloat(std::to_string(userId), floatVal);
     preferencesUtil->ObtainFloat(std::to_string(userId), floatVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -192,6 +196,40 @@ bool FuzzScreenlockUtils(const uint8_t *rawData, size_t size)
     return true;
 }
 
+bool FuzzObtainBool(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        return false;
+    }
+
+    int userId = rawData[0];
+    // bool
+    bool boolVal = 0;
+    preferencesUtil->ObtainBool(std::to_string(userId), boolVal);
+    return true;
+}
+
+bool FuzzRemoveKey(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        return false;
+    }
+
+    int userId = rawData[0];
+    preferencesUtil->RemoveKey(std::to_string(userId));
+    return true;
+}
+
 }  // namespace OHOS
 
 /* Fuzzer entry point */
@@ -208,5 +246,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzSaveBool(data, size);
     OHOS::FuzzSaveLong(data, size);
     OHOS::FuzzSaveFloat(data, size);
+    OHOS::FuzzObtainBool(data, size);
+    OHOS::FuzzRemoveKey(data, size);
     return 0;
 }
