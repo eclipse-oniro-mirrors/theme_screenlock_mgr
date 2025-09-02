@@ -131,7 +131,8 @@ bool FuzzSaveBool(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    boolVal = static_cast<bool>(rawData[0] % 2);
+    const int rawValue = 2;
+    boolVal = static_cast<bool>(rawData[0] % rawValue);
     preferencesUtil->SaveBool(std::to_string(userId), boolVal);
     preferencesUtil->ObtainBool(std::to_string(userId), boolVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
