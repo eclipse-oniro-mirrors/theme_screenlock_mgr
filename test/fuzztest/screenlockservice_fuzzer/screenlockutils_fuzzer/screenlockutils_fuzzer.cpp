@@ -37,6 +37,14 @@ int32_t randNum(int32_t min, int32_t max)
     return randomNum(engine);
 }
 
+int32_t RandNum(int32_t min, int32_t max)
+{
+    std::random_device rd;
+    std::default_random_engine engine(rd());
+    std::uniform_int_distribution<int32_t> randomNum(min, max);
+    return randomNum(engine);
+}
+
 bool FuzzSaveString(const uint8_t *rawData, size_t size)
 {
     if (size < LENGTH) {
@@ -58,10 +66,11 @@ bool FuzzSaveString(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-
+    const int MIN_PRINTABLE_ASCII = 32;
+    const int MAX_PRINTABLE_ASCII = 126;
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(32, 126);  // 可打印ASCII字符范围
+    std::uniform_int_distribution<> dis(MIN_PRINTABLE_ASCII, MAX_PRINTABLE_ASCII);  // 可打印ASCII字符范围
 
     int length = dis(gen) % 10 + 1;  // 随机长度1到10
 
@@ -99,7 +108,9 @@ bool FuzzSaveInt(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    defaulVal = randNum(1, 100);
+    const int MIN_VALUE = 1;
+    const int MAX_VALUE = 100;
+    defaulVal = RandNum(MIN_VALUE, MAX_VALUE);
     preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
     preferencesUtil->ObtainInt(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -128,7 +139,7 @@ bool FuzzSaveBool(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    boolVal = static_cast<bool>(rawData[0] % 2);
+    boolVal = (rawData[0] % 2) == 1;
     preferencesUtil->SaveBool(std::to_string(userId), boolVal);
     preferencesUtil->ObtainBool(std::to_string(userId), boolVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -157,7 +168,9 @@ bool FuzzSaveLong(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    longVal = static_cast<int64_t>(randNum(1, 200));
+    const int MIN_RANDOM = 1;
+    const int MAX_RANDOM = 200;
+    longVal = static_cast<int64_t>(RandNum(MIN_RANDOM, MAX_RANDOM));
     preferencesUtil->SaveLong(std::to_string(userId), longVal);
     preferencesUtil->ObtainLong(std::to_string(userId), longVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -186,7 +199,9 @@ bool FuzzSaveFloat(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    floatVal = static_cast<float>(randNum(1, 100));
+    const int MIN_VALUE = 1;
+    const int MAX_VALUE = 100;
+    floatVal = static_cast<float>(RandNum(MIN_VALUE, MAX_VALUE));
     preferencesUtil->SaveFloat(std::to_string(userId), floatVal);
     preferencesUtil->ObtainFloat(std::to_string(userId), floatVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
