@@ -22,13 +22,20 @@
 #include "preferences_util.h"
 #include <random>
 #include <string>
-#include <iostream>
 
 using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr size_t LENGTH = 1;
+
+int32_t randNum(int32_t min, int32_t max)
+{
+    std::random_device rd;
+    std::default_random_engine engine(rd());
+    std::uniform_int_distribution<int32_t> randomNum(min, max);
+    return randomNum(engine);
+}
 
 bool FuzzSaveString(const uint8_t *rawData, size_t size)
 {
@@ -92,17 +99,7 @@ bool FuzzSaveInt(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    // 随机设备（提供随机种子）
-    std::random_device rd;
-    // 随机数引擎
-    std::mt19937 gen(rd());
-    // 定义均匀分布范围（例如 1 到 100）
-    std::uniform_int_distribution<int> dis(1, 100);
-
-    // 生成随机的 int 值
-    defaulVal = dis(gen);
-
-    std::cout << "随机的 int 值: " << defaulVal << std::endl;
+    defaulVal = randNum(1, 100);
     preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
     preferencesUtil->ObtainInt(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -160,16 +157,7 @@ bool FuzzSaveLong(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    std::random_device rd;
-    // 随机数引擎
-    std::mt19937 gen(rd());
-    // 定义均匀分布范围（例如 1 到 1000000000000）
-    std::uniform_int_distribution<int64_t> dis(1, 1000000000000);
-
-    // 生成随机的 int64_t 值
-    longVal = dis(gen);
-
-    std::cout << "随机的 int64_t 值: " << longVal << std::endl;
+    longVal = static_cast<int64_t>(randNum(1, 200));
     preferencesUtil->SaveLong(std::to_string(userId), longVal);
     preferencesUtil->ObtainLong(std::to_string(userId), longVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -198,15 +186,7 @@ bool FuzzSaveFloat(const uint8_t *rawData, size_t size)
     preferencesUtil->Refresh();
 
     userId = rawData[0];
-    std::random_device rd;
-    // 随机数引擎
-    std::mt19937 gen(rd());
-
-    // 如果需要生成特定范围的随机数，例如 0 到 100：
-    std::uniform_real_distribution<float> dis_range(0.0f, 100.0f);
-    floatVal = dis_range(gen);
-
-    std::cout << "随机数在 0 到 100 之间: " << floatVal << std::endl;
+    floatVal = static_cast<float>(randNum(1, 100));
     preferencesUtil->SaveFloat(std::to_string(userId), floatVal);
     preferencesUtil->ObtainFloat(std::to_string(userId), floatVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
