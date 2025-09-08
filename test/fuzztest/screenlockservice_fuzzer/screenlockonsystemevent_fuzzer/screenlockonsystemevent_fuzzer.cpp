@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
-#include "screenlockonsystemevent_fuzzer.h"
 #define private public
 #define protected public
 #include "screenlock_system_ability.h"
+#include "innerlistenermanager.h"
 #undef private
 #undef protected
+
+#include "screenlockonsystemevent_fuzzer.h"
 
 #include <cstddef>
 #include <cstdint>
