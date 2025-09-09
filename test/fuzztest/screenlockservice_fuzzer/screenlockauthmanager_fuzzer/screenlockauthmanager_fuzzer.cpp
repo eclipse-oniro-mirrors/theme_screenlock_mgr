@@ -28,7 +28,7 @@
 using namespace OHOS::ScreenLock;
 #else
 using namespace OHOS;
-#endif // IS_SO_CROP_H
+#endif  // IS_SO_CROP_H
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
@@ -138,24 +138,6 @@ bool FuzzDestroyAllStrongAuthTimer(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzSetStrongAuthStat(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
-    }
-
-#ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
-    if (authmanager == nullptr) {
-        return false;
-    }
-    int32_t invalidUserId = rawData[0];
-    authmanager->SetStrongAuthStat(invalidUserId, 0);
-    authmanager->UnRegistIamEventListener();
-#endif  // IS_SO_CROP_H
-    return true;
-}
-
 bool FuzzGetStrongAuthStat(const uint8_t *rawData, size_t size)
 {
     if (size < LENGTH) {
@@ -171,6 +153,7 @@ bool FuzzGetStrongAuthStat(const uint8_t *rawData, size_t size)
     int32_t invalidUserId = rawData[0];
     StrongAuthManger::authTimer timer(true, timeInterval, true, true);
     authmanager->GetStrongAuthStat(invalidUserId);
+    authmanager->UnRegistIamEventListener();
 #endif  // IS_SO_CROP_H
     return true;
 }
@@ -193,26 +176,6 @@ bool FuzzDestroyStrongAuthStateInfo(const uint8_t *rawData, size_t size)
     invalidUserId = rawData[0];
     StrongAuthManger::authTimer timer(true, timeInterval, true, true);
     authmanager->DestroyStrongAuthStateInfo(invalidUserId);
-#endif  // IS_SO_CROP_H
-    return true;
-}
-
-bool FuzzInitStrongAuthStat(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
-    }
-
-#ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
-    if (authmanager == nullptr) {
-        return false;
-    }
-
-    int64_t timeInterval = 1000;
-    int32_t invalidUserId = rawData[0];
-    StrongAuthManger::authTimer timer(true, timeInterval, true, true);
-    authmanager->InitStrongAuthStat(invalidUserId, 0);
 #endif  // IS_SO_CROP_H
     return true;
 }
@@ -332,10 +295,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzResetStrongAuthTimer(data, size);
     OHOS::FuzzDestroyStrongAuthTimer(data, size);
     OHOS::FuzzDestroyAllStrongAuthTimer(data, size);
-    OHOS::FuzzSetStrongAuthStat(data, size);
     OHOS::FuzzGetStrongAuthStat(data, size);
     OHOS::FuzzDestroyStrongAuthStateInfo(data, size);
-    OHOS::FuzzInitStrongAuthStat(data, size);
     OHOS::FuzzIsUserExitInStrongAuthInfo(data, size);
     OHOS::FuzzIsUserHasStrongAuthTimer(data, size);
     OHOS::FuzzGetStrongAuthTimeTrigger(data, size);
