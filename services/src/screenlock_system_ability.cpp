@@ -730,7 +730,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
     
-    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
     }
