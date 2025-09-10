@@ -28,7 +28,7 @@ namespace OHOS::ScreenLock {
     using namespace OHOS::HiviewDFX;
     constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LogType::LOG_CORE, 0xD001C30, "SclockKit"};
 
-    constexpr const char* BUSINESS_ERROR_CLASS = "L@ohos/base/BusinessError;";
+    constexpr const char* BUSINESS_ERROR_CLASS = "@ohos.base.BusinessError";
     class ErrorHandler {
     public:
         static ani_status Throw(ani_env *env, int32_t code, const string &errMsg)
