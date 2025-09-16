@@ -402,6 +402,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::ScreenlockServiceFuzzUtils::OnRemoteRequestTest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, size);
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
+    ScreenLockSystemAbility::GetInstance()->InitServiceHandler();
     OHOS::FuzzIsLocked(data, size);
     OHOS::FuzzIsLockedWithUserId(data, size);
     OHOS::FuzzSendScreenLockEvent(data, size);
