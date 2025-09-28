@@ -22,7 +22,7 @@
 namespace OHOS {
 namespace ScreenLock {
 struct AsyncScreenLockInfo : public AsyncCall::Context {
-    napi_status status;
+    napi_status status = napi_generic_failure;
     bool allowed;
     AsyncScreenLockInfo() : Context(nullptr, nullptr), allowed(false){};
     AsyncScreenLockInfo(InputAction input, OutputAction output)
