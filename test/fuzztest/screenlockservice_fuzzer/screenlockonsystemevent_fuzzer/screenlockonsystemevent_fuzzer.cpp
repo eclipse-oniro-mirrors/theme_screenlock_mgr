@@ -358,37 +358,6 @@ bool FuzzOnActiveUser(const uint8_t *rawData, size_t size)
     systemAbility->OnRemoveUser(otherUserId);
     return true;
 }
-
-bool FuzzOnAddSystemAbility(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
-    }
-
-    auto systemAbility = ScreenLockSystemAbility::GetInstance();
-    if (systemAbility == nullptr) {
-        return false;
-    }
-
-    systemAbility->state_ = ServiceRunningState::STATE_RUNNING;
-    systemAbility->OnStart();
-    std::string deviceId = "1";
-    systemAbility->OnAddSystemAbility(DISPLAY_MANAGER_SERVICE_SA_ID, deviceId);
-    systemAbility->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
-    systemAbility->OnAddSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, deviceId);
-    systemAbility->OnRemoveSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, deviceId);
-    systemAbility->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
-    systemAbility->OnStart();
-
-    int reasonFlag = rawData[0];
-    systemAbility->OnAddSystemAbility(DISPLAY_MANAGER_SERVICE_SA_ID, std::to_string(reasonFlag));
-    systemAbility->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, std::to_string(reasonFlag));
-    systemAbility->OnAddSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, std::to_string(reasonFlag));
-    systemAbility->OnRemoveSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, std::to_string(reasonFlag));
-    systemAbility->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, std::to_string(reasonFlag));
-    systemAbility->OnStart();
-    return true;
-}
 }  // namespace OHOS
 
 /* Fuzzer entry point */
@@ -402,7 +371,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::ScreenlockServiceFuzzUtils::OnRemoteRequestTest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, size);
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
-    ScreenLockSystemAbility::GetInstance()->InitServiceHandler();
     OHOS::FuzzIsLocked(data, size);
     OHOS::FuzzIsLockedWithUserId(data, size);
     OHOS::FuzzSendScreenLockEvent(data, size);
@@ -416,6 +384,5 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzStrongAuthChanged(data, size);
     OHOS::FuzzLock(data, size);
     OHOS::FuzzOnActiveUser(data, size);
-    OHOS::FuzzOnAddSystemAbility(data, size);
     return 0;
 }
