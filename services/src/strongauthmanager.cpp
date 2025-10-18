@@ -154,11 +154,16 @@ void StrongAuthManger::RegistIamEventListener()
     authTypeList.emplace_back(AuthType::FACE);
     authTypeList.emplace_back(AuthType::FINGERPRINT);
 
-    if (credChangeListener_ == nullptr) {
-        credChangeListener_ = std::make_shared<CredChangeListenerService>();
+    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> tmpListener;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (credChangeListener_ == nullptr) {
+            credChangeListener_ = std::make_shared<CredChangeListenerService>();
+        }
+        tmpListener = credChangeListener_;
     }
     int32_t ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
-        authTypeList, credChangeListener_);
+        authTypeList, tmpListener);
     SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
 }
 
@@ -170,11 +175,16 @@ void StrongAuthManger::RegistAuthEventListener()
     authTypeList.emplace_back(AuthType::FACE);
     authTypeList.emplace_back(AuthType::FINGERPRINT);
 
-    if (authSuccessListener_ == nullptr) {
-        authSuccessListener_ = std::make_shared<AuthEventListenerService>();
+    std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> tmpListener;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (authSuccessListener_ == nullptr) {
+            authSuccessListener_ = std::make_shared<AuthEventListenerService>();
+        }
+        tmpListener = authSuccessListener_;
     }
     int32_t ret = UserIam::UserAuth::UserAuthClient::GetInstance().RegistUserAuthSuccessEventListener(
-        authTypeList, authSuccessListener_);
+        authTypeList, tmpListener);
     SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
 }
 
@@ -227,20 +237,34 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
 
 void StrongAuthManger::UnRegistIamEventListener()
 {
-    if (credChangeListener_ != nullptr) {
+    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> tmpListener;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (credChangeListener_ != nullptr) {
+            tmpListener = credChangeListener_;
+            credChangeListener_ = nullptr;
+        }
+    }
+    if (tmpListener != nullptr) {
         int32_t ret = UserIam::UserAuth::
-            UserIdmClient::GetInstance().UnRegistCredChangeEventListener(credChangeListener_);
-        credChangeListener_ = nullptr;
+            UserIdmClient::GetInstance().UnRegistCredChangeEventListener(tmpListener);
         SCLOCK_HILOGI("UnRegistCredChangeEventListener ret: %{public}d", ret);
     }
 }
 
 void StrongAuthManger::UnRegistAuthEventListener()
 {
-    if (authSuccessListener_ != nullptr) {
+    std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> tmpListener;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (authSuccessListener_ != nullptr) {
+            tmpListener = authSuccessListener_;
+            authSuccessListener_ = nullptr;
+        }
+    }
+    if (tmpListener != nullptr) {
         int32_t ret = UserIam::UserAuth::
-            UserAuthClient::GetInstance().UnRegistUserAuthSuccessEventListener(authSuccessListener_);
-        authSuccessListener_ = nullptr;
+            UserAuthClient::GetInstance().UnRegistUserAuthSuccessEventListener(tmpListener);
         SCLOCK_HILOGI("UnRegistUserAuthSuccessEventListener ret: %{public}d", ret);
     }
 }
