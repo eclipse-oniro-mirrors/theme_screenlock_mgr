@@ -164,7 +164,7 @@ public:
     void UserIamReadyNotify(const char *value);
     void OnActiveUser(const int lastUser, const int targetUser);
     void OnRemoveUser(const int userId);
-    /*This function is only exposed to the test classes externally. 
+    /*This function is only exposed to the test classes externally.
       If it is used internally, the impact of multithreading needs to be considered.
     */
     StateValue &GetState()
