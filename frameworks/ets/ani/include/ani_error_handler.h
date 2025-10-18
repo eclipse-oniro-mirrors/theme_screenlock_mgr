@@ -81,7 +81,7 @@ namespace OHOS::ScreenLock {
                 return ANI_ERROR;
             }
             ani_method method;
-            if (ANI_OK != env->Class_FindMethod(cls, "<ctor>", "dC{escompat.Error}:", &method)) {
+            if (ANI_OK != env->Class_FindMethod(cls, "<ctor>", "iC{escompat.Error}:", &method)) {
                 HiLog::Error(LABEL, "Not found method of BusinessError");
                 return ANI_ERROR;
             }
@@ -91,8 +91,7 @@ namespace OHOS::ScreenLock {
                 return ANI_ERROR;
             }
             ani_object obj;
-            ani_double dCode(code);
-            if (env->Object_New(cls, method, &obj, dCode, error) != ANI_OK) {
+            if (env->Object_New(cls, method, &obj, code, error) != ANI_OK) {
                 HiLog::Error(LABEL, "Object_New error fail");
                 return ANI_ERROR;
             }

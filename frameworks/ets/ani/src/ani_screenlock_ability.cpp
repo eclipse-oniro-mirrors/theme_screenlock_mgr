@@ -113,14 +113,7 @@ ani_boolean ANI_IsScreenLocked(ani_env *env)
     SCLOCK_HILOGD("ANI_IsScreenLocked begin");
     int32_t status = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("ANI_IsScreenLocked exec status = %{public}d ", status);
-    if (status != E_SCREENLOCK_OK) {
-        ErrorInfo errInfo;
-        errInfo.errorCode_ = static_cast<uint32_t>(status);
-        GetErrorInfo(status, errInfo);
-        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
-        return false;
-    }
-    return true;
+    return status;
 }
 
 ani_boolean ANI_IsLocked(ani_env *env)
@@ -145,14 +138,7 @@ ani_boolean ANI_IsSecureMode(ani_env *env)
     SCLOCK_HILOGD("ANI_IsSecureMode begin");
     int32_t status = ScreenLockManager::GetInstance()->GetSecure();
     SCLOCK_HILOGD("ANI_IsSecureMode exec status = %{public}d ", status);
-    if (status != E_SCREENLOCK_OK) {
-        ErrorInfo errInfo;
-        errInfo.errorCode_ = static_cast<uint32_t>(status);
-        GetErrorInfo(status, errInfo);
-        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
-        return false;
-    }
-    return true;
+    return status;
 }
 
 void ANI_UnlockScreen(ani_env *env)
@@ -286,6 +272,13 @@ ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int para
     std::string stdEvent = ANIUtils_ANIStringToStdString(env, static_cast<ani_string>(event));
     if (stdEvent.empty()) {
         SCLOCK_HILOGE("ANIUtils_ANIStringToStdString convert failed");
+        return false;
+    }
+    if (!(stdEvent == UNLOCK_SCREEN_RESULT || stdEvent == SCREEN_DRAWDONE || stdEvent == LOCK_SCREEN_RESULT)) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(E_SCREENLOCK_PARAMETERS_INVALID);
+        GetErrorInfo(E_SCREENLOCK_PARAMETERS_INVALID, errInfo);
+        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
         return false;
     }
     int32_t retCode = ScreenLockManager::GetInstance()->SendScreenLockEvent(stdEvent, parameter);
