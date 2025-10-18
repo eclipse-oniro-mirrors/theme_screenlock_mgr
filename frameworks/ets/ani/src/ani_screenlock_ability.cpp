@@ -274,6 +274,13 @@ ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int para
         SCLOCK_HILOGE("ANIUtils_ANIStringToStdString convert failed");
         return false;
     }
+    if (!(stdEvent == UNLOCK_SCREEN_RESULT || stdEvent == SCREEN_DRAWDONE || stdEvent == LOCK_SCREEN_RESULT)) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(E_SCREENLOCK_PARAMETERS_INVALID);
+        GetErrorInfo(E_SCREENLOCK_PARAMETERS_INVALID, errInfo);
+        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
+        return false;
+    }
     int32_t retCode = ScreenLockManager::GetInstance()->SendScreenLockEvent(stdEvent, parameter);
     if (retCode != E_SCREENLOCK_OK) {
         ErrorInfo errInfo;
