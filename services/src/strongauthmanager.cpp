@@ -163,7 +163,7 @@ void StrongAuthManger::RegistIamEventListener()
         tmpListener = credChangeListener_;
     }
     int32_t ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
-        authTypeList, credChangeListener_);
+        authTypeList, tmpListener);
     SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
 }
 
@@ -184,7 +184,7 @@ void StrongAuthManger::RegistAuthEventListener()
         tmpListener = authSuccessListener_;
     }
     int32_t ret = UserIam::UserAuth::UserAuthClient::GetInstance().RegistUserAuthSuccessEventListener(
-        authTypeList, authSuccessListener_);
+        authTypeList, tmpListener);
     SCLOCK_HILOGI("RegistUserAuthSuccessEventListener ret: %{public}d", ret);
 }
 
