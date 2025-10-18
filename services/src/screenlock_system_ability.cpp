@@ -432,13 +432,15 @@ void ScreenLockSystemAbility::OnSystemReady()
     int tryTime = 50;
     int minTryTime = 0;
     while (!isExitFlag && (tryTime > minTryTime)) {
+        listenerMutex_.lock();
         if (systemEventListener_ != nullptr && systemReady_) {
             SCLOCK_HILOGI("ScreenLockSystemAbility OnSystemReady started1.");
-            std::lock_guard<std::mutex> lck(listenerMutex_);
             SystemEvent systemEvent(SYSTEM_READY);
             systemEventListener_->OnCallBack(systemEvent);
             isExitFlag = true;
+            listenerMutex_.unlock();
         } else {
+            listenerMutex_.unlock();
             SCLOCK_HILOGE("ScreenLockSystemAbility OnSystemReady type not found., tryTime = %{public}d", tryTime);
             sleep(1);
         }
