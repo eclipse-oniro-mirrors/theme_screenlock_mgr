@@ -358,6 +358,133 @@ bool FuzzOnActiveUser(const uint8_t *rawData, size_t size)
     systemAbility->OnRemoveUser(otherUserId);
     return true;
 }
+
+bool FuzzRegisterInnerListenerOne(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto InnerListener = InnerListenerManager::GetInstance();
+    if (InnerListener == nullptr) {
+        return false;
+    }
+
+    int32_t userId = 100;
+    sptr<InnerListenerIf> InnerListenerIfTest1 = nullptr;
+    InnerListener->RegisterInnerListener(userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListener->UnRegisterInnerListener(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+
+    InnerListener->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    InnerListener->UnRegisterInnerListener(ListenType::STRONG_AUTH, InnerListenerIfTest1);
+
+    userId = rawData[0];
+    InnerListener->RegisterInnerListener(userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListener->UnRegisterInnerListener(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+
+    InnerListener->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    InnerListener->UnRegisterInnerListener(ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    return true;
+}
+
+bool FuzzOnStrongAuthChanged(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto InnerListener = InnerListenerManager::GetInstance();
+    if (InnerListener == nullptr) {
+        return false;
+    }
+
+    int32_t userId = 100;
+    int32_t strongAuth = 2;
+    sptr<InnerListenerIf> InnerListenerIfTest1 = nullptr;
+    InnerListener->OnStrongAuthChanged(userId, strongAuth);
+    InnerListener->AddDeathRecipient(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListener->RemoveDeathRecipient(InnerListenerIfTest1);
+
+    InnerListener->AddDeathRecipient(ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    InnerListener->RemoveDeathRecipient(InnerListenerIfTest1);
+
+    userId = rawData[0];
+    InnerListener->OnStrongAuthChanged(userId, strongAuth);
+    InnerListener->AddDeathRecipient(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListener->RemoveDeathRecipient(InnerListenerIfTest1);
+
+    InnerListener->AddDeathRecipient(ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    InnerListener->RemoveDeathRecipient(InnerListenerIfTest1);
+    return true;
+}
+
+bool FuzzHasListenerSet(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto InnerListener = InnerListenerManager::GetInstance();
+    if (InnerListener == nullptr) {
+        return false;
+    }
+
+    int32_t userId = 100;
+    InnerListener->HasListenerSet(userId, ListenType::DEVICE_LOCK);
+
+    InnerListener->HasListenerSet(userId, ListenType::STRONG_AUTH);
+
+    userId = rawData[0];
+    InnerListener->HasListenerSet(userId, ListenType::DEVICE_LOCK);
+
+    InnerListener->HasListenerSet(userId, ListenType::STRONG_AUTH);
+    return true;
+}
+
+bool FuzzOnDeviceLockStateChanged(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto InnerListener = InnerListenerManager::GetInstance();
+    if (InnerListener == nullptr) {
+        return false;
+    }
+
+    int32_t userId = 100;
+    int32_t lockState = 1;
+    InnerListener->OnDeviceLockStateChanged(userId, lockState);
+
+    userId = rawData[0];
+    InnerListener->OnDeviceLockStateChanged(userId, lockState);
+
+    return true;
+}
+
+bool FuzzOnStateChanged(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    auto InnerListener = InnerListenerManager::GetInstance();
+    if (InnerListener == nullptr) {
+        return false;
+    }
+
+    int32_t userId = 100;
+    int32_t lockState = 1;
+    InnerListener->OnStateChanged(userId, lockState, ListenType::DEVICE_LOCK);
+
+    InnerListener->OnStateChanged(userId, lockState, ListenType::STRONG_AUTH);
+
+    userId = rawData[0];
+    InnerListener->OnStateChanged(userId, lockState, ListenType::DEVICE_LOCK);
+
+    InnerListener->OnStateChanged(userId, lockState, ListenType::STRONG_AUTH);
+    return true;
+}
 }  // namespace OHOS
 
 /* Fuzzer entry point */
@@ -384,5 +511,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzStrongAuthChanged(data, size);
     OHOS::FuzzLock(data, size);
     OHOS::FuzzOnActiveUser(data, size);
+    OHOS::FuzzRegisterInnerListenerOne(data, size);
+    OHOS::FuzzOnStrongAuthChanged(data, size);
+    OHOS::FuzzHasListenerSet(data, size);
+    OHOS::FuzzOnDeviceLockStateChanged(data, size);
+    OHOS::FuzzOnStateChanged(data, size);
     return 0;
 }
