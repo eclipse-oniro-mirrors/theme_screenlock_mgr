@@ -14,7 +14,6 @@
  */
 
 #include "screenlockmanager_fuzzer.h"
-
 #include <cstddef>
 #include <cstdint>
 
