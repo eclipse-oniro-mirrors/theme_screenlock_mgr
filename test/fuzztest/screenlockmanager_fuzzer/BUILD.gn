@@ -62,7 +62,6 @@ ohos_fuzztest("ScreenlockManagerFuzzTest") {
   ]
 
   sources = [
-    "innerListener_fuzz_utils.cpp",
     "screenlockmanager_fuzzer.cpp",
   ]
 }
