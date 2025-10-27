@@ -176,7 +176,7 @@ bool FuzzSetScreenLockAuthState(const uint8_t *rawData, size_t size)
     systemAbility->GetScreenLockAuthState(userId, authState);
 
     userId = rawData[0];
-    authState = userId;
+    authState = rawData[0] + 1;
     const int minValue = 32;
     const int maxValue = 126;
     std::random_device rd;
@@ -214,7 +214,7 @@ bool FuzzRequestStrongAuth(const uint8_t *rawData, size_t size)
     systemAbility->RequestStrongAuth(reasonFlag, userId);
 
     userId = rawData[0];
-    reasonFlag = userId;
+    reasonFlag = rawData[0] + 1;
     systemAbility->RequestStrongAuth(reasonFlag, userId);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
     systemAbility->UnlockScreen(listener);
@@ -352,7 +352,7 @@ bool FuzzOnActiveUser(const uint8_t *rawData, size_t size)
     systemAbility->OnRemoveUser(otherUserId);
 
     userId = rawData[0];
-    otherUserId = userId;
+    otherUserId = rawData[0] + 1;
     systemAbility->OnActiveUser(userId, otherUserId);
     systemAbility->OnRemoveUser(otherUserId);
     return true;
