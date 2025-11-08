@@ -16,7 +16,8 @@
       "SystemCapability.MiscServices.ScreenLock"
     ],
     "features": [
-      "screenlock_mgr_so_crop"
+      "screenlock_mgr_so_crop",
+      "screenlock_mgr_wearable_enable_payment_app"
     ],
     "adapted_system_type": [
       "standard"
@@ -45,7 +46,10 @@
         "ffrt",
         "preferences",
         "time_service",
-        "runtime_core"
+        "runtime_core",
+        "nfc",
+        "data_share",
+        "hisysevent"
       ],
       "third_party": []
     },

@@ -98,6 +98,11 @@ ohos_shared_library("screenlock_server") {
     cflags += [ "-DIS_SO_CROP_H" ]
   }
 
+  if (screenlock_mgr_wearable_enable_payment_app == true) {
+    defines = [ "SUPPORT_WEAR_PAYMENT_APP" ]
+    deps = [ "${screenlock_mgr_path}/watch:watch_screenlock_static" ]
+  }
+
   innerapi_tags = [ "platformsdk" ]
   subsystem_name = "theme"
   part_name = "screenlock_mgr"
@@ -160,6 +165,11 @@ ohos_static_library("screenlock_server_static") {
 
   if (screenlock_mgr_so_crop == true) {
     cflags = [ "-DIS_SO_CROP_H" ]
+  }
+
+  if (screenlock_mgr_wearable_enable_payment_app == true) {
+    defines = [ "SUPPORT_WEAR_PAYMENT_APP" ]
+    deps = [ "${screenlock_mgr_path}/watch:watch_screenlock_static" ]
   }
 
   subsystem_name = "theme"
