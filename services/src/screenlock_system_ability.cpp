@@ -54,6 +54,9 @@
 #include "innerlistenermanager.h"
 #include "common_helper.h"
 #endif // IS_SO_CROP_H
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+#include "watch_applock_manager.h"
+#endif // SUPPORT_WEAR_PAYMENT_APP
 
 using namespace OHOS;
 using namespace OHOS::ScreenLock;
@@ -522,6 +525,11 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
         SCLOCK_HILOGE("UnlockScreen  Unfocused.");
         return E_SCREENLOCK_NOT_FOCUS_APP;
     }
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    if (WatchAppLockManager::GetInstance().IsPaymentApp()) {
+        return WatchAppLockManager::GetInstance().unlockScreen(IsScreenLocked());
+    }
+#endif // SUPPORT_WEAR_PAYMENT_APP
     printCallerPid("UnlockInner");
     unlockListenerMutex_.lock();
     unlockVecListeners_.push_back(listener);
@@ -590,6 +598,12 @@ bool ScreenLockSystemAbility::IsScreenLocked()
     int32_t userId = GetUserIdFromCallingUid();
     std::unique_lock<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    if (WatchAppLockManager::GetInstance().IsPaymentApp()) {
+        bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
+        return WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
+    }
+#endif // SUPPORT_WEAR_PAYMENT_APP
     if (iter != isScreenlockedMap_.end()) {
         return iter->second;
     } else {
@@ -633,6 +647,11 @@ bool ScreenLockSystemAbility::GetSecure()
     auto getInfoCallback = std::make_shared<ScreenLockGetInfoCallback>();
     int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
     SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    if (WatchAppLockManager::GetInstance().IsPaymentApp()) {
+        return WatchAppLockManager::GetInstance().isSecureMode();
+    }
+#endif // SUPPORT_WEAR_PAYMENT_APP
     if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
         return true;
     }

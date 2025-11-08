@@ -20,4 +20,5 @@ graphic_base_path = "//foundation/graphic"
 declare_args() {
   # Functional isolation, memory optimization
   screenlock_mgr_so_crop = false
+  screenlock_mgr_wearable_enable_payment_app = false
 }

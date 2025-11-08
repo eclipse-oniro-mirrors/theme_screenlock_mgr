@@ -1,0 +1,110 @@
+# Copyright (C) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import("//build/ohos.gni")
+import("../screenlock.gni")
+
+config("screenlock_mgr_watch_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "include",
+    "${screenlock_mgr_path}/frameworks/native/include",
+    "${screenlock_mgr_path}/interfaces/inner_api/include"
+  ]
+}
+
+ohos_shared_library("watch_screenlock") {
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+    integer_overflow = false
+    boundary_sanitize = false
+    cfi_vcall_icall_only = true
+    ubsan = false
+  }
+
+  branch_protector_ret = "pac_ret"
+  sources = [
+    "src/setting_manager.cpp",
+    "src/watch_applock_manager.cpp",
+    "src/hisysevent_report.cpp"
+  ]
+
+  public_configs = [ ":screenlock_mgr_watch_config" ]
+
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+    "-fno-merge-all-constants"
+  ]
+
+  cflags_cc = [
+    "-fno-asynchronous-unwind-tables",
+    "-fno-unwind-tables",
+  ]
+
+  if (factory == true) {
+    cflags_cc += [ "-DCONFIG_FACTORY_MODE" ]
+  }
+
+  external_deps = [
+    "ffrt:libffrt",
+    "samgr:samgr_proxy",
+    "user_auth_framework:userauth_client",
+    "os_account:os_account_innerkits",
+    "ability_runtime:ability_manager",
+    "nfc:nfc_inner_kits_card_emulation",
+    "data_share:datashare_consumer",
+    "ability_runtime:app_manager",
+    "bundle_framework:appexecfwk_core",
+    "hisysevent:libhisysevent"
+  ]
+  subsystem_name = "theme"
+  part_name = "screenlock_mgr"
+}
+
+ohos_static_library("watch_screenlock_static") {
+  use_exceptions = true
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+  }
+  branch_protector_ret = "pac_ret"
+  sources = [
+    "src/setting_manager.cpp",
+    "src/watch_applock_manager.cpp",
+    "src/hisysevent_report.cpp"
+  ]
+
+  public_configs = [ ":screenlock_mgr_watch_config" ]
+
+  external_deps = [
+    "ffrt:libffrt",
+    "samgr:samgr_proxy",
+    "user_auth_framework:userauth_client",
+    "os_account:os_account_innerkits",
+    "ability_runtime:ability_manager",
+    "nfc:nfc_inner_kits_card_emulation",
+    "data_share:datashare_consumer",
+    "ability_runtime:app_manager",
+    "bundle_framework:appexecfwk_core",
+    "hisysevent:libhisysevent"
+  ]
+  subsystem_name = "theme"
+  part_name = "screenlock_mgr"
+}
