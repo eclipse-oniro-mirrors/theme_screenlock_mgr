@@ -60,6 +60,9 @@ bool FuzzRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
     int32_t ret = ScreenLockManager::GetInstance()->RegisterStrongAuthListener(StrongAuthListenerTest1);
     ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
     return ret == E_SCREENLOCK_OK;
+    StrongAuthListenerTest1 = nullptr;
+    ScreenLockManager::GetInstance()->RegisterStrongAuthListener(StrongAuthListenerTest1);
+    ScreenLockManager::GetInstance()->UnRegisterStrongAuthListener(StrongAuthListenerTest1);
 }
 
 bool FuzzRegisterDeviceLockedListener(const uint8_t *rawData, size_t size)
@@ -73,6 +76,9 @@ bool FuzzRegisterDeviceLockedListener(const uint8_t *rawData, size_t size)
     int32_t ret = ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
     ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
     return ret == E_SCREENLOCK_OK;
+    DeviceLockedListenerTest1 = nullptr;
+    ScreenLockManager::GetInstance()->RegisterDeviceLockedListener(DeviceLockedListenerTest1);
+    ScreenLockManager::GetInstance()->UnRegisterDeviceLockedListener(DeviceLockedListenerTest1);
 }
 
 bool FuzzRegisterInnerListenerOne(const uint8_t *rawData, size_t size)
