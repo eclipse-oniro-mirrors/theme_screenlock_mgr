@@ -25,6 +25,7 @@
 #undef private
 #undef protected
 
+#include "screenlock_common.h"
 using namespace OHOS::ScreenLock;
 #else
 using namespace OHOS;
@@ -317,6 +318,50 @@ bool FuzzGetCredInfo(const uint8_t *rawData, size_t size)
     return true;
 }
 
+bool FuzzAccountUnlocked(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    if (authmanager == nullptr) {
+        return false;
+    }
+    int32_t userId = 100;
+    authmanager->AccountUnlocked(userId);
+    userId = rawData[0];
+    authmanager->AccountUnlocked(userId);
+    authmanager->RegistAuthEventListener();
+    authmanager->UnRegistAuthEventListener();
+#endif  // IS_SO_CROP_H
+    return true;
+}
+
+bool FuzzNotifyStrongAuthChange(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    if (authmanager == nullptr) {
+        return false;
+    }
+
+    int64_t userId = 100;
+    int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::NONE);
+    authmanager->NotifyStrongAuthChange(userId, reasonFlag);
+    userId = rawData[0];
+    authmanager->NotifyStrongAuthChange(userId, reasonFlag);
+    reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::ACTIVE_REQUEST);
+    authmanager->NotifyStrongAuthChange(userId, reasonFlag);
+#endif  // IS_SO_CROP_H
+    return true;
+}
+
 }  // namespace OHOS
 
 /* Fuzzer entry point */
@@ -341,5 +386,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzGetStrongAuthTimeTrigger(data, size);
     OHOS::FuzzGetStrongAuthTriggerPeriod(data, size);
     OHOS::FuzzGetCredInfo(data, size);
+    OHOS::FuzzAccountUnlocked(data, size);
+    OHOS::FuzzNotifyStrongAuthChange(data, size);
     return 0;
 }
