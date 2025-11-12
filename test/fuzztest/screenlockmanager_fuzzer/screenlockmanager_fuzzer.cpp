@@ -59,6 +59,8 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
         sptr<ScreenlockCallback> listener_ = new ScreenlockCallback(eventListener);
         int32_t ret = ScreenLockManager::GetInstance()->Lock(listener_);
         return ret == E_SCREENLOCK_OK;
+        listener_ = nullptr;
+        ScreenLockManager::GetInstance()->Lock(listener_);
     }
     return true;
 }
@@ -72,6 +74,8 @@ bool UnlockFuzzTest(const uint8_t *rawData, size_t size)
     }
     int32_t ret = ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % 3), listener_);
     return ret == E_SCREENLOCK_OK;
+    listener_ = nullptr;
+    ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % 3), listener_);
 }
 
 bool IsLockedFuzzTest(const uint8_t *rawData, size_t size)
@@ -94,6 +98,8 @@ bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
         sptr<ScreenlockSystemAbilityCallback> listener_ = new ScreenlockSystemAbilityCallback(eventListener);
         int32_t ret = ScreenLockManager::GetInstance()->OnSystemEvent(listener_);
         return ret == E_SCREENLOCK_OK;
+        listener_ = nullptr;
+        ScreenLockManager::GetInstance()->OnSystemEvent(listener_);
     }
     if (code == RANDNUM_ONE) {
         int param = 0;
@@ -201,7 +207,24 @@ bool FuzzIsLockedWithUserId(const uint8_t *rawData, size_t size)
     }
 }
 
-} // namespace OHOS
+bool FuzzLock(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int32_t ret = ScreenLockManager::GetInstance()->Lock(userId);
+
+    userId = rawData[0];
+    ret = ScreenLockManager::GetInstance()->Lock(userId);
+    if (userId != DEFAULT_USER) {
+        return ret == E_SCREENLOCK_USER_ID_INVALID;
+    } else {
+        return ret == E_SCREENLOCK_OK;
+    }
+}
+
+}  // namespace OHOS
 
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
@@ -223,5 +246,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzScreenlockGetStrongAuth(data, size);
     OHOS::FuzzIsDeviceLocked(data, size);
     OHOS::FuzzIsLockedWithUserId(data, size);
+    OHOS::FuzzLock(data, size);
     return 0;
 }
