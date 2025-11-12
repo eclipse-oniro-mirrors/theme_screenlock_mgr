@@ -72,10 +72,11 @@ bool UnlockFuzzTest(const uint8_t *rawData, size_t size)
     if (size < LENGTH) {
         return true;
     }
-    int32_t ret = ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % 3), listener_);
+    const int ACTION_COUNT = 3;
+    int32_t ret = ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % ACTION_COUNT), listener_);
     return ret == E_SCREENLOCK_OK;
     listener_ = nullptr;
-    ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % 3), listener_);
+    ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % ACTION_COUNT), listener_);
 }
 
 bool IsLockedFuzzTest(const uint8_t *rawData, size_t size)
