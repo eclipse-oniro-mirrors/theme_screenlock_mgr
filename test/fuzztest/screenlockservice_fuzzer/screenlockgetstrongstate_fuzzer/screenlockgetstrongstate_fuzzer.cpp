@@ -47,7 +47,6 @@ sptr<StrongAuthListener> StrongAuthListenerTest1 = new (std::nothrow) StrongAuth
 sptr<DeviceLockedListener> DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(100);
 sptr<InnerListenerIfTest> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
 
-
 bool FuzzRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
 {
     SCLOCK_HILOGW("An11");
@@ -103,7 +102,6 @@ bool FuzzRegisterInnerListenerOne(const uint8_t *rawData, size_t size)
     InnerListener->UnRegisterInnerListener(state, InnerListenerOne);
     return true;
 }
-
 
 bool FuzzAddInnerListener(const uint8_t *rawData, size_t size)
 {
