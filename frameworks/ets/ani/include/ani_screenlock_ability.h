@@ -12,34 +12,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef ANI_SCREENLOCK_ABILITY_H
-#define ANI_SCREENLOCK_ABILITY_H
+#ifndef ANI_SCREENLOCK_CALL_BACK_H
+#define ANI_SCREENLOCK_CALL_BACK_H
 
-#include <cstdint>
-#include <iostream>
-
+#include "ani_event_listener.h"
+#include "screenlock_callback_stub.h"
+#include "screenlock_system_ability_interface.h"
 #include "ani.h"
-#include "screenlock_callback_interface.h"
+#include "event_handler.h"
 
 namespace OHOS {
 namespace ScreenLock {
-void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo);
-std::string GetErrorMessage(const uint32_t &code);
-ani_boolean ANI_IsScreenLocked(ani_env *env);
-ani_boolean ANI_IsLocked(ani_env *env);
-ani_boolean ANI_IsSecureMode(ani_env *env);
-void ANI_UnlockScreen(ani_env *env);
-ani_boolean ANI_Unlock(ani_env *env);
-ani_boolean ANI_Lock(ani_env *env);
-ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback);
-ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int parameter);
-void ANI_RequestStrongAuth(ani_env *env, ani_enum_item reasonFlag, ani_int userId);
-ani_boolean ANI_SetScreenLockDisabled(ani_env *env, ani_boolean disable, ani_int userId);
-ani_boolean ANI_IsScreenLockDisabled(ani_env *env, ani_int userId);
-ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_int userId, ani_object authToken);
-ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_int userId);
-ani_int ANI_GetStrongAuth(ani_env *env, ani_int userId);
-ani_boolean ANI_IsDeviceLocked(ani_env *env, ani_int userId);
+struct ScreenlockOnCallBack {
+    ani_vm *vm;
+    ani_ref callbackRef;
+    ani_resolver resolver;
+    SystemEvent systemEvent;
+    ErrorInfo errorInfo;
+    int32_t screenLockResult = -1;
+    Action action;
+};
+class ScreenlockCallback : public ScreenLockCallbackStub {
+public:
+    explicit ScreenlockCallback(const EventListener &eventListener);
+    ~ScreenlockCallback() override;
+    void OnCallBack(const int32_t screenLockResult) override;
+    void SetErrorInfo(const ErrorInfo &errorInfo);
+private:
+    EventListener eventListener_;
+    ErrorInfo errorInfo_;
+    static std::shared_ptr<AppExecFwk::EventHandler> handler_;
+    void SendCallBackEvent(std::shared_ptr<ScreenlockOnCallBack> screenlockOnCallBack);
+};
 } // namespace ScreenLock
 } // namespace OHOS
-#endif //  ANI_SCREENLOCK_ABILITY_H
+#endif //  ANI_SCREENLOCK_CALL_BACK_H

@@ -20,84 +20,88 @@
 #include <cstdint>
 
 #include "ani.h"
-#include "hilog/log.h"
+#include "sclock_log.h"
 
-
-namespace OHOS::ScreenLock {
-    using namespace std;
-    using namespace OHOS::HiviewDFX;
-    constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LogType::LOG_CORE, 0xD001C30, "SclockKit"};
-
-    constexpr const char* BUSINESS_ERROR_CLASS = "@ohos.base.BusinessError";
-    class ErrorHandler {
-    public:
-        static ani_status Throw(ani_env *env, int32_t code, const string &errMsg)
-        {
-            return Throw(env, BUSINESS_ERROR_CLASS, code, errMsg);
+namespace OHOS {
+namespace ScreenLock {
+using namespace std;
+using namespace OHOS::HiviewDFX;
+constexpr const char *BUSINESS_ERROR_CLASS = "@ohos.base.BusinessError";
+class ErrorHandler {
+public:
+    static ani_object CreateError(ani_env *env, int32_t code, const string &errMsg)
+    {
+        if (env == nullptr) {
+            SCLOCK_HILOGE("Invalid env");
+            return nullptr;
         }
-    private:
-        static ani_object WrapError(ani_env *env, const std::string &msg)
-        {
-            if (env == nullptr) {
-                return nullptr;
-            }
-            ani_class cls = nullptr;
-            ani_method method = nullptr;
-            ani_object obj = nullptr;
-            ani_string aniMsg = nullptr;
-            if (env->String_NewUTF8(msg.c_str(), msg.size(), &aniMsg) != ANI_OK) {
-                HiLog::Error(LABEL, "StringToAniStr failed");
-                return nullptr;
-            }
-            ani_ref undefRef;
-            env->GetUndefined(&undefRef);
-            ani_status status = env->FindClass("escompat.Error", &cls);
-            if (status != ANI_OK) {
-                HiLog::Error(LABEL, "FindClass : %{public}d", status);
-                return nullptr;
-            }
-            status = env->Class_FindMethod(cls, "<ctor>", "C{std.core.String}C{escompat.ErrorOptions}:", &method);
-            if (status != ANI_OK) {
-                HiLog::Error(LABEL, "Class_FindMethod : %{public}d", status);
-                return nullptr;
-            }
-            status = env->Object_New(cls, method, &obj, aniMsg, undefRef);
-            if (status != ANI_OK) {
-                HiLog::Error(LABEL, "Object_New : %{public}d", status);
-                return nullptr;
-            }
-            return obj;
+        ani_class cls;
+        if (ANI_OK != env->FindClass(BUSINESS_ERROR_CLASS, &cls)) {
+            SCLOCK_HILOGE("Not found class BusinessError");
+            return nullptr;
         }
+        ani_method method;
+        if (ANI_OK != env->Class_FindMethod(cls, "<ctor>", "iC{escompat.Error}:", &method)) {
+            SCLOCK_HILOGE("Not found method of BusinessError");
+            return nullptr;
+        }
+        ani_object error = WrapError(env, errMsg);
+        if (error == nullptr) {
+            SCLOCK_HILOGE("WrapError failed");
+            return nullptr;
+        }
+        ani_object obj;
+        if (env->Object_New(cls, method, &obj, code, error) != ANI_OK) {
+            SCLOCK_HILOGE("Object_New error fail");
+            return nullptr;
+        }
+        return obj;
+    }
 
-        static ani_status Throw(ani_env *env, const char *className, int32_t code, const string &errMsg)
-        {
-            if (env == nullptr) {
-                HiLog::Error(LABEL, "Invalid env");
-                return ANI_INVALID_ARGS;
-            }
-            ani_class cls;
-            if (ANI_OK != env->FindClass(className, &cls)) {
-                HiLog::Error(LABEL, "Not found class BusinessError");
-                return ANI_ERROR;
-            }
-            ani_method method;
-            if (ANI_OK != env->Class_FindMethod(cls, "<ctor>", "iC{escompat.Error}:", &method)) {
-                HiLog::Error(LABEL, "Not found method of BusinessError");
-                return ANI_ERROR;
-            }
-            ani_object error = WrapError(env, errMsg);
-            if (error == nullptr) {
-                HiLog::Error(LABEL, "WrapError failed");
-                return ANI_ERROR;
-            }
-            ani_object obj;
-            if (env->Object_New(cls, method, &obj, code, error) != ANI_OK) {
-                HiLog::Error(LABEL, "Object_New error fail");
-                return ANI_ERROR;
-            }
-            return env->ThrowError(static_cast<ani_error>(obj));
+    static ani_status Throw(ani_env *env, int32_t code, const string &errMsg)
+    {
+        ani_object obj = CreateError(env, code, errMsg);
+        if (obj == nullptr) {
+            return ANI_ERROR;
         }
-    };
-}  // namespace OHOS::ScreenLock
+        return env->ThrowError(static_cast<ani_error>(obj));
+    }
+
+private:
+    static ani_object WrapError(ani_env *env, const std::string &msg)
+    {
+        if (env == nullptr) {
+            return nullptr;
+        }
+        ani_class cls = nullptr;
+        ani_method method = nullptr;
+        ani_object obj = nullptr;
+        ani_string aniMsg = nullptr;
+        if (env->String_NewUTF8(msg.c_str(), msg.size(), &aniMsg) != ANI_OK) {
+            SCLOCK_HILOGE("StringToAniStr failed");
+            return nullptr;
+        }
+        ani_ref undefRef;
+        env->GetUndefined(&undefRef);
+        ani_status status = env->FindClass("escompat.Error", &cls);
+        if (status != ANI_OK) {
+            SCLOCK_HILOGE("FindClass : %{public}d", status);
+            return nullptr;
+        }
+        status = env->Class_FindMethod(cls, "<ctor>", "C{std.core.String}C{escompat.ErrorOptions}:", &method);
+        if (status != ANI_OK) {
+            SCLOCK_HILOGE("Class_FindMethod : %{public}d", status);
+            return nullptr;
+        }
+        status = env->Object_New(cls, method, &obj, aniMsg, undefRef);
+        if (status != ANI_OK) {
+            SCLOCK_HILOGE("Object_New : %{public}d", status);
+            return nullptr;
+        }
+        return obj;
+    }
+};
+}  // namespace ScreenLock
+}  // namespace OHOS
 
 #endif

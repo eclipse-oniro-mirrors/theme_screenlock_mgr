@@ -25,8 +25,9 @@ namespace OHOS {
 namespace ScreenLock {
 
 struct EventListener {
-    ani_env *env;
+    ani_vm *vm;
     ani_ref callbackRef = nullptr;
+    ani_resolver resolver;
     Action action;
 };
 } // namespace ScreenLock

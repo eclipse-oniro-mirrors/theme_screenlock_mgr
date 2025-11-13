@@ -67,11 +67,11 @@ export namespace screenLock {
 
   native function isSecureMode_inner(): boolean;
 
-  native function unlockScreen_inner(): void;
+  native function unlockScreen_inner(): Promise<boolean>;
 
-  native function unlock_inner(): boolean;
+  native function unlock_inner(): Promise<boolean>;
 
-  native function lock_inner(): boolean;
+  native function lock_inner(): Promise<boolean>;
 
   native function sendScreenLockEvent_inner(event: string, parameter: int): boolean;
 
@@ -115,7 +115,7 @@ export namespace screenLock {
         resolve(ret as boolean);
       })
       .catch((ret: NullishType): void => {
-        reject(ret as Error);
+        reject(ret as BusinessError);
       });
     })
   }
@@ -142,90 +142,96 @@ export namespace screenLock {
         resolve(ret as boolean);
       })
       .catch((ret: NullishType): void => {
-        reject(ret as Error);
+        reject(ret as BusinessError);
       });
     })
   }
 
   export function unlockScreen(callback: AsyncCallback<void>): void {
-    taskpool.execute((): void => {
+    let p = taskpool.execute((): Promise<boolean> => {
       return unlockScreen_inner();
-    })
-    .then((ret: NullishType): void => {
-      callback(null, ret as undefined);
-    })
-    .catch((ret: NullishType): void => {
-      let data: undefined;
-      callback(ret as BusinessError, data);
     });
+    p.then(
+      (ret: NullishType): void => {
+        callback(null, ret as undefined);
+      }, (ret: NullishType): void => {
+        let data: undefined;
+        callback(ret as BusinessError, data);
+      }
+    );
   }
 
   export function unlockScreen(): Promise<void> {
     return new Promise<void>((resolve, reject): void => {
-      taskpool.execute((): void => {
+      let p = taskpool.execute((): Promise<boolean> => {
         return unlockScreen_inner();
-      })
-      .then((ret: NullishType): void => {
-        resolve(ret as undefined);
-      })
-      .catch((ret: NullishType): void => {
-        reject(ret as Error);
       });
-    })
+      p.then(
+        (ret: NullishType): void => {
+          resolve(ret as undefined);
+        }, (ret: NullishType): void => {
+          reject(ret as BusinessError);
+        }
+      );
+    });
   }
 
   export function unlock(callback: AsyncCallback<boolean>): void {
-    taskpool.execute((): boolean => {
+    let p = taskpool.execute((): Promise<boolean> => {
       return unlock_inner();
-    })
-    .then((ret: NullishType): void => {
-      callback(null, ret as boolean);
-    })
-    .catch((ret: NullishType): void => {
-      let data: boolean;
-      callback(ret as BusinessError, data);
     });
+    p.then(
+      (ret: NullishType): void => {
+        callback(null, ret as boolean);
+      }, (ret: NullishType): void => {
+        let data: boolean;
+        callback(ret as BusinessError, data);
+      }
+    );
   }
 
   export function unlock(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject): void => {
-      taskpool.execute((): boolean => {
+      let p = taskpool.execute((): Promise<boolean> => {
         return unlock_inner();
-      })
-      .then((ret: NullishType): void => {
-        resolve(ret as boolean);
-      })
-      .catch((ret: NullishType): void => {
-        reject(ret as Error);
       });
-    })
+      p.then(
+        (ret: NullishType): void => {
+          resolve(ret as boolean);
+        }, (ret: NullishType): void => {
+          reject(ret as BusinessError);
+        }
+      );
+    });
   }
 
   export function lock(callback: AsyncCallback<boolean>): void {
-    taskpool.execute((): boolean => {
+    let p = taskpool.execute((): Promise<boolean> => {
       return lock_inner();
-    })
-    .then((ret: NullishType): void => {
-      callback(null, ret as boolean);
-    })
-    .catch((ret: NullishType): void => {
-      let data: boolean;
-      callback(ret as BusinessError, data);
     });
+    p.then(
+      (ret: NullishType): void => {
+        callback(null, ret as boolean);
+      }, (ret: NullishType): void => {
+        let data: boolean;
+        callback(ret as BusinessError, data);
+      }
+    );
   }
 
   export function lock(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject): void => {
-      taskpool.execute((): boolean => {
+      let p = taskpool.execute((): Promise<boolean> => {
         return lock_inner();
-      })
-      .then((ret: NullishType): void => {
-        resolve(ret as boolean);
-      })
-      .catch((ret: NullishType): void => {
-        reject(ret as Error);
       });
-    })
+      p.then(
+        (ret: NullishType): void => {
+          resolve(ret as boolean);
+        }, (ret: NullishType): void => {
+          reject(ret as BusinessError);
+        }
+      );
+    });
   }
 
   export function sendScreenLockEvent(event: string, parameter: int, callback: AsyncCallback<boolean>): void {
@@ -250,7 +256,7 @@ export namespace screenLock {
         resolve(ret as boolean);
       })
       .catch((ret: NullishType): void => {
-        reject(ret as Error);
+        reject(ret as BusinessError);
       });
     })
   }
@@ -264,7 +270,7 @@ export namespace screenLock {
         resolve(ret as undefined);
       })
       .catch((ret: NullishType): void => {
-        reject(ret as Error);
+        reject(ret as BusinessError);
       });
     })
   }
@@ -291,7 +297,7 @@ export namespace screenLock {
         resolve(ret as boolean);
       })
       .catch((ret: NullishType): void => {
-        reject(ret as Error);
+        reject(ret as BusinessError);
       });
     })
   }
@@ -305,7 +311,7 @@ export namespace screenLock {
         resolve(ret as boolean);
       })
       .catch((ret: NullishType): void => {
-        reject(ret as Error);
+        reject(ret as BusinessError);
       });
     })
   }
