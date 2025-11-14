@@ -58,9 +58,10 @@ bool FuzzScreenlockManager(const uint8_t *rawData, size_t size)
     if (code == RANDNUM_TWO) {
         sptr<ScreenlockCallback> listener_ = new ScreenlockCallback(eventListener);
         int32_t ret = ScreenLockManager::GetInstance()->Lock(listener_);
-        return ret == E_SCREENLOCK_OK;
+        
         listener_ = nullptr;
         ScreenLockManager::GetInstance()->Lock(listener_);
+        return ret == E_SCREENLOCK_OK;
     }
     return true;
 }
@@ -74,9 +75,10 @@ bool UnlockFuzzTest(const uint8_t *rawData, size_t size)
     }
     int32_t count = 3;
     int32_t ret = ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % count), listener_);
-    return ret == E_SCREENLOCK_OK;
+    
     listener_ = nullptr;
     ScreenLockManager::GetInstance()->Unlock(static_cast<Action>(rawData[0] % count), listener_);
+    return ret == E_SCREENLOCK_OK;
 }
 
 bool IsLockedFuzzTest(const uint8_t *rawData, size_t size)
@@ -98,9 +100,10 @@ bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
     if (code == RANDNUM_ZERO) {
         sptr<ScreenlockSystemAbilityCallback> listener_ = new ScreenlockSystemAbilityCallback(eventListener);
         int32_t ret = ScreenLockManager::GetInstance()->OnSystemEvent(listener_);
-        return ret == E_SCREENLOCK_OK;
+        
         listener_ = nullptr;
         ScreenLockManager::GetInstance()->OnSystemEvent(listener_);
+        return ret == E_SCREENLOCK_OK;
     }
     if (code == RANDNUM_ONE) {
         int param = 0;
