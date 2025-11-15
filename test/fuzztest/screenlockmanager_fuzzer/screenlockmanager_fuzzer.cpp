@@ -100,9 +100,6 @@ bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
     if (code == RANDNUM_ZERO) {
         sptr<ScreenlockSystemAbilityCallback> listener_ = new ScreenlockSystemAbilityCallback(eventListener);
         int32_t ret = ScreenLockManager::GetInstance()->OnSystemEvent(listener_);
-        
-        listener_ = nullptr;
-        ScreenLockManager::GetInstance()->OnSystemEvent(listener_);
         return ret == E_SCREENLOCK_OK;
     }
     if (code == RANDNUM_ONE) {
