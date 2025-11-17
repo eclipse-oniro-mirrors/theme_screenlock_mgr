@@ -49,7 +49,8 @@
         "runtime_core",
         "nfc",
         "data_share",
-        "hisysevent"
+        "hisysevent",
+        "sensor"
       ],
       "third_party": []
     },

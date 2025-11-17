@@ -101,6 +101,13 @@ public:
      */
     bool IsPaymentApp();
 
+    /**
+     * 佩戴状态变更
+     *
+     * @param isWearOn 是否佩戴
+     */
+    void WearStateChange(bool isWearOn);
+
 public:
     class AppStateObserver : public AppExecFwk::ApplicationStateObserverStub {
     public:
@@ -213,7 +220,10 @@ private:
     int32_t GetUserIdFromCallingUid();
     std::string boolToString(bool value);
     WatchAppLockManager();
+    bool IsFinishUnlock();
 
+    bool isWearOn_ = false;
+    bool isWristUnlock_ = false;
     sptr<AppStateObserver> appStateObserver_;
     sptr<LeaveWristSettingObserver> leaveWristSettingObserver_;
     UnlockedRecord unlockedRecord;
