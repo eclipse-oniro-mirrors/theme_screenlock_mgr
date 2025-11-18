@@ -97,10 +97,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return isScreenLocked_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -111,10 +111,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return isScreenLocked_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -124,10 +124,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return isSecureMode_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -138,10 +138,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return isSecureMode_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -151,10 +151,10 @@ export namespace screenLock {
     taskpool.execute((): void => {
       return unlockScreen_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as undefined);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: undefined;
       callback(ret as BusinessError, data);
     });
@@ -165,10 +165,10 @@ export namespace screenLock {
       taskpool.execute((): void => {
         return unlockScreen_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as undefined);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -178,10 +178,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return unlock_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -192,10 +192,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return unlock_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -205,10 +205,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return lock_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -219,10 +219,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return lock_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -232,10 +232,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return sendScreenLockEvent_inner(event, parameter);
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -246,10 +246,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return sendScreenLockEvent_inner(event, parameter);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -260,10 +260,10 @@ export namespace screenLock {
       taskpool.execute((): void => {
         return requestStrongAuth_inner(reasonFlag, userId);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as undefined);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -273,10 +273,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return setScreenLockDisabled_inner(disable, userId);
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -287,10 +287,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return setScreenLockDisabled_inner(disable, userId);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
@@ -301,10 +301,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return setScreenLockAuthState_inner(state, userId, authToken);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as Error);
       });
     })
