@@ -37,7 +37,8 @@ ohos_shared_library("watch_screenlock") {
   sources = [
     "src/setting_manager.cpp",
     "src/watch_applock_manager.cpp",
-    "src/hisysevent_report.cpp"
+    "src/hisysevent_report.cpp",
+    "src/wear_detection_observer.cpp"
   ]
 
   public_configs = [ ":screenlock_mgr_watch_config" ]
@@ -68,7 +69,8 @@ ohos_shared_library("watch_screenlock") {
     "data_share:datashare_consumer",
     "ability_runtime:app_manager",
     "bundle_framework:appexecfwk_core",
-    "hisysevent:libhisysevent"
+    "hisysevent:libhisysevent",
+    "sensor:sensor_interface_native"
   ]
   subsystem_name = "theme"
   part_name = "screenlock_mgr"
@@ -88,7 +90,8 @@ ohos_static_library("watch_screenlock_static") {
   sources = [
     "src/setting_manager.cpp",
     "src/watch_applock_manager.cpp",
-    "src/hisysevent_report.cpp"
+    "src/hisysevent_report.cpp",
+    "src/wear_detection_observer.cpp"
   ]
 
   public_configs = [ ":screenlock_mgr_watch_config" ]
@@ -103,7 +106,8 @@ ohos_static_library("watch_screenlock_static") {
     "data_share:datashare_consumer",
     "ability_runtime:app_manager",
     "bundle_framework:appexecfwk_core",
-    "hisysevent:libhisysevent"
+    "hisysevent:libhisysevent",
+    "sensor:sensor_interface_native"
   ]
   subsystem_name = "theme"
   part_name = "screenlock_mgr"

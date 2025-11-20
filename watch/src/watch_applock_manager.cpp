@@ -28,15 +28,25 @@
 #include "syspara/parameters.h"
 #include "screenlock_common.h"
 #include "hisysevent_report.h"
+#include "wear_detection_observer.h"
 
 namespace OHOS {
 namespace ScreenLock {
+sptr<WearDetectionObserver> wearDetectionObserver_;
 WatchAppLockManager::WatchAppLockManager()
-{}
+{
+    wearDetectionObserver_ = sptr<WearDetectionObserver>::MakeSptr();
+    if (wearDetectionObserver_) {
+        wearDetectionObserver_->RegisterSensorListener();
+    }
+}
 
 WatchAppLockManager::~WatchAppLockManager()
 {
     unlockedRecord.clear();
+    if (wearDetectionObserver_) {
+        wearDetectionObserver_->UnRegisterSensorListener();
+    }
 }
 
 bool WatchAppLockManager::isSecureMode()
@@ -48,14 +58,15 @@ bool WatchAppLockManager::isSecureMode()
 
 bool WatchAppLockManager::IsScreenLocked(bool isOHScreenLocked)
 {
+    if (!HasPin()) {
+        return false;
+    }
     bool isLeaveWrist = IsLeaveWrist();
     bool isScreenLocked = false;
     if (isLeaveWrist) {
-        isScreenLocked = isOHScreenLocked;
+        isScreenLocked = IsDeviceScope() ? isOHScreenLocked : !IsFinishUnlock();
     } else {
-        uint32_t callingUid = IPCSkeleton::GetCallingUid();
-        std::string bundleName = GetBundleNameByUid(callingUid);
-        isScreenLocked = !unlockedRecord.contains(bundleName);
+        isScreenLocked = !IsFinishUnlock();
     }
     SCLOCK_HILOGI("isLeaveWrist = %{public}s, isOHScreenLocked = %{public}s,isScreenLocked = %{public}s",
         boolToString(isLeaveWrist).c_str(),
@@ -75,9 +86,27 @@ int32_t WatchAppLockManager::unlockScreen(bool isScreenLocked)
     bool isStartIAM = BeginWidgetAuth();
     if (isStartIAM) {
         unlockedRecord.add(bundleName);
+        bool isLeaveWrist = IsLeaveWrist();
+        if (isLeaveWrist && isWearOn_) {
+            isWristUnlock_ = true;
+        }
+        SCLOCK_HILOGI("isLeaveWrist = %{public}s, isWearOn_ = %{public}s, isWristUnlock_ = %{public}s",
+            boolToString(isLeaveWrist).c_str(),
+            boolToString(isWearOn_).c_str(),
+            boolToString(isWristUnlock_).c_str());
     }
     SCLOCK_HILOGI("isStartIAM = %{public}s", boolToString(isStartIAM).c_str());
     return isStartIAM ? E_SCREENLOCK_OK : E_SCREENLOCK_NOT_FOCUS_APP;
+}
+
+void WatchAppLockManager::WearStateChange(bool isWearOn)
+{
+    SCLOCK_HILOGI("isWearOn = %{public}s", boolToString(isWearOn).c_str());
+    isWearOn_ = isWearOn;
+    if (!isWearOn) {
+        unlockedRecord.clear();
+        isWristUnlock_ = false;
+    }
 }
 
 void WatchAppLockManager::AppStateObserver::OnProcessStateChanged(const AppExecFwk::ProcessData &processData)
@@ -87,23 +116,24 @@ void WatchAppLockManager::AppStateObserver::OnProcessCreated(const AppExecFwk::P
 {}
 
 void WatchAppLockManager::AppStateObserver::OnProcessDied(const AppExecFwk::ProcessData &processData)
+{}
+
+void WatchAppLockManager::AppStateObserver::OnWindowShow(const AppExecFwk::ProcessData &processData)
+{}
+
+void WatchAppLockManager::AppStateObserver::OnWindowHidden(const AppExecFwk::ProcessData &processData)
 {
     if (WatchAppLockManager::GetInstance().unlockedRecord.remove(processData.bundleName)) {
         SCLOCK_HILOGI("process=%{public}s died", processData.bundleName.c_str());
     }
 }
 
-void WatchAppLockManager::AppStateObserver::OnWindowShow(const AppExecFwk::ProcessData &processData)
-{}
-
-void WatchAppLockManager::AppStateObserver::OnWindowHidden(const AppExecFwk::ProcessData &processData)
-{}
-
 void WatchAppLockManager::LeaveWristSettingObserver::OnChange()
 {
     if (!WatchAppLockManager::GetInstance().IsLeaveWrist()) {
         SCLOCK_HILOGI("clear unlockedRecord");
         WatchAppLockManager::GetInstance().unlockedRecord.clear();
+        WatchAppLockManager::GetInstance().isWristUnlock_ = false;
     }
 }
 
@@ -113,6 +143,9 @@ bool WatchAppLockManager::UnlockedRecord::add(const std::string &element)
     if (elements.empty()) {
         WatchAppLockManager::GetInstance().registerAppStateObserver();
         WatchAppLockManager::GetInstance().registerLeaveWristSettingObserver();
+        if (wearDetectionObserver_) {
+            wearDetectionObserver_->RegisterSensorListener();
+        }
     }
     auto result = elements.insert(element);
     return result.second;
@@ -366,6 +399,16 @@ bool WatchAppLockManager::IsPaymentApp()
 std::string WatchAppLockManager::boolToString(bool value)
 {
     return value ? STATE_TRUE : STATE_FALSE;
+}
+bool WatchAppLockManager::IsFinishUnlock()
+{
+    if (isWristUnlock_) {
+        SCLOCK_HILOGD("already unlocked on the wrist");
+        return true;
+    }
+    uint32_t callingUid = IPCSkeleton::GetCallingUid();
+    std::string bundleName = GetBundleNameByUid(callingUid);
+    return unlockedRecord.contains(bundleName);
 }
 } // namespace ScreenLock
 } // namespace OHOS
