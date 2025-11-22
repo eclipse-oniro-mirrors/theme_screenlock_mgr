@@ -25,7 +25,6 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace std;
-using namespace OHOS::HiviewDFX;
 constexpr const char *BUSINESS_ERROR_CLASS = "@ohos.base.BusinessError";
 class ErrorHandler {
 public:
