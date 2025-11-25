@@ -221,6 +221,7 @@ private:
     bool CheckSystemPermission();
     void AppendPrintOtherInfo(std::string &output);
     void printCallerPid(std::string invokeName);
+    sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
 
     ServiceRunningState state_;
     static std::mutex instanceLock_;
