@@ -111,7 +111,7 @@ std::string ANIUtils_ANIStringToStdString(ani_env *env, ani_string aniStr)
 ani_boolean ANI_IsScreenLocked(ani_env *env)
 {
     SCLOCK_HILOGD("ANI_IsScreenLocked begin");
-    int32_t status = ScreenLockManager::GetInstance()->IsScreenLocked();
+    bool status = ScreenLockManager::GetInstance()->IsScreenLocked();
     SCLOCK_HILOGD("ANI_IsScreenLocked exec status = %{public}d ", status);
     return status;
 }
@@ -136,103 +136,93 @@ ani_boolean ANI_IsLocked(ani_env *env)
 ani_boolean ANI_IsSecureMode(ani_env *env)
 {
     SCLOCK_HILOGD("ANI_IsSecureMode begin");
-    int32_t status = ScreenLockManager::GetInstance()->GetSecure();
+    bool status = ScreenLockManager::GetInstance()->GetSecure();
     SCLOCK_HILOGD("ANI_IsSecureMode exec status = %{public}d ", status);
     return status;
 }
 
-void ANI_UnlockScreen(ani_env *env)
+void ScreenLockRequest(ani_env *env, EventListener eventListener)
 {
-    SCLOCK_HILOGD("ANI_UnlockScreen begin");
-    EventListener *eventListener = new (std::nothrow) EventListener{.env = env, .action = Action::UNLOCKSCREEN};
-    if (eventListener == nullptr) {
-        return;
-    }
-    sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
-    if (callback == nullptr) {
-        SCLOCK_HILOGE("ANI_UnlockScreen create callback object fail");
-        delete eventListener;
-        return;
-    }
-    int32_t status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
-    if (status != E_SCREENLOCK_OK) {
-        ErrorInfo errInfo;
-        errInfo.errorCode_ = static_cast<uint32_t>(status);
-        GetErrorInfo(status, errInfo);
-        callback->SetErrorInfo(errInfo);
-        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
-    }
-    if (eventListener) {
-        delete eventListener;
-        eventListener = nullptr;
-    }
-}
-
-ani_boolean ANI_Unlock(ani_env *env)
-{
-    SCLOCK_HILOGD("ANI_Unlock begin");
-    EventListener *eventListener = new (std::nothrow) EventListener{.env = env, .action = Action::UNLOCK};
-    if (eventListener == nullptr) {
-        return false;
-    }
-    sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
-    if (callback == nullptr) {
-        SCLOCK_HILOGE("ANI_Unlock create callback object fail");
-        delete eventListener;
-        return false;
-    }
-    int32_t status = ScreenLockManager::GetInstance()->Unlock(eventListener->action, callback);
-    if (status != E_SCREENLOCK_OK) {
-        ErrorInfo errInfo;
-        errInfo.errorCode_ = static_cast<uint32_t>(status);
-        GetErrorInfo(status, errInfo);
-        callback->SetErrorInfo(errInfo);
-        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
-        if (eventListener) {
-            delete eventListener;
-            eventListener = nullptr;
-        }
-        return false;
-    }
-    if (eventListener) {
-        delete eventListener;
-        eventListener = nullptr;
-    }
-    return true;
-}
-
-ani_boolean ANI_Lock(ani_env *env)
-{
-    SCLOCK_HILOGD("ANI_Lock begin");
-    EventListener *eventListener = new (std::nothrow) EventListener{.env = env, .action = Action::LOCK};
-    if (eventListener == nullptr) {
-        return false;
-    }
-    sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(*eventListener);
+    sptr<ScreenlockCallback> callback = new (std::nothrow) ScreenlockCallback(eventListener);
     if (callback == nullptr) {
         SCLOCK_HILOGE("ANI_Lock create callback object fail");
-        delete eventListener;
-        return false;
+        return;
     }
-    int32_t status = ScreenLockManager::GetInstance()->Lock(callback);
-    SCLOCK_HILOGD("ANI_Lock exec status = %{public}d ", status);
-    if (status != E_SCREENLOCK_OK) {
+
+    int32_t retCode = 0;
+    if (eventListener.action == Action::LOCK) {
+        retCode = ScreenLockManager::GetInstance()->Lock(callback);
+    } else if (eventListener.action == Action::UNLOCK || eventListener.action == Action::UNLOCKSCREEN) {
+        retCode = ScreenLockManager::GetInstance()->Unlock(eventListener.action, callback);
+    }
+    SCLOCK_HILOGD("ScreenLockRequest exec status = %{public}d ", retCode);
+
+    if (retCode != E_SCREENLOCK_OK) {
         ErrorInfo errInfo;
-        errInfo.errorCode_ = static_cast<uint32_t>(status);
-        GetErrorInfo(status, errInfo);
+        errInfo.errorCode_ = static_cast<uint32_t>(retCode);
+        GetErrorInfo(retCode, errInfo);
         callback->SetErrorInfo(errInfo);
-        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
-        if (eventListener) {
-            delete eventListener;
-            eventListener = nullptr;
-        }
-        return false;
+        callback->OnCallBack(retCode);
     }
-    if (eventListener) {
-        delete eventListener;
-        eventListener = nullptr;
+}
+
+ani_object ANI_UnlockScreen(ani_env *env)
+{
+    SCLOCK_HILOGD("ANI_UnlockScreen begin");
+    ani_object aniPromise {};
+    ani_resolver aniResolver {};
+    if (ANI_OK != env->Promise_New(&aniResolver, &aniPromise)) {
+        SCLOCK_HILOGE("Promise_New faild");
+        return nullptr;
     }
-    return true;
+    ani_vm *vm = nullptr;
+    if (ANI_OK != env->GetVM(&vm)) {
+        SCLOCK_HILOGE("env GetVM faild");
+        return nullptr;
+    }
+    EventListener eventListener = EventListener{.vm = vm, .resolver = aniResolver, .action = Action::UNLOCKSCREEN};
+    ScreenLockRequest(env, eventListener);
+    return aniPromise;
+}
+
+ani_object ANI_Unlock(ani_env *env)
+{
+    SCLOCK_HILOGD("ANI_Unlock begin");
+    ani_object aniPromise {};
+    ani_resolver aniResolver {};
+    if (ANI_OK != env->Promise_New(&aniResolver, &aniPromise)) {
+        SCLOCK_HILOGE("Promise_New faild");
+        return nullptr;
+    }
+    ani_vm *vm = nullptr;
+    if (ANI_OK != env->GetVM(&vm)) {
+        SCLOCK_HILOGE("env GetVM faild");
+        return nullptr;
+    }
+    EventListener eventListener = EventListener{.vm = vm, .resolver = aniResolver, .action = Action::UNLOCK};
+
+    ScreenLockRequest(env, eventListener);
+    return aniPromise;
+}
+
+ani_object ANI_Lock(ani_env *env)
+{
+    SCLOCK_HILOGD("ANI_Lock_Promise in");
+    ani_object aniPromise {};
+    ani_resolver aniResolver {};
+    if (ANI_OK != env->Promise_New(&aniResolver, &aniPromise)) {
+        SCLOCK_HILOGE("Promise_New faild");
+        return nullptr;
+    }
+    ani_vm *vm = nullptr;
+    if (ANI_OK != env->GetVM(&vm)) {
+        SCLOCK_HILOGE("env GetVM faild");
+        return nullptr;
+    }
+    EventListener eventListener = EventListener{.vm = vm, .resolver = aniResolver, .action = Action::LOCK};
+    
+    ScreenLockRequest(env, eventListener);
+    return aniPromise;
 }
 
 ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback)
@@ -240,13 +230,19 @@ ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback)
     SCLOCK_HILOGD("ANI_OnSystemEvent begin");
     bool status = false;
 
+    ani_vm *vm = nullptr;
+    if ((status = env->GetVM(&vm)) != ANI_OK) {
+        SCLOCK_HILOGE("GetVM failed");
+        return status;
+    }
+    
     ani_ref callbackRef;
     if (ANI_OK != env->GlobalReference_Create(callback, &callbackRef)) {
         SCLOCK_HILOGE("GlobalReference_Create failed");
         return status;
     }
 
-    EventListener eventListener{ .env = env, .callbackRef = callbackRef };
+    EventListener eventListener = EventListener{ .vm = vm, .callbackRef = callbackRef };
     sptr<ScreenlockSystemAbilityCallback> listener = new (std::nothrow) ScreenlockSystemAbilityCallback(eventListener);
     if (listener != nullptr) {
         ScreenlockSystemAbilityCallback::GetEventHandler();
@@ -256,6 +252,7 @@ ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback)
             ErrorInfo errInfo;
             errInfo.errorCode_ = static_cast<uint32_t>(retCode);
             GetErrorInfo(retCode, errInfo);
+            env->GlobalReference_Delete(callbackRef);
             ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
             status = false;
         } else {
@@ -274,6 +271,7 @@ ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int para
         SCLOCK_HILOGE("ANIUtils_ANIStringToStdString convert failed");
         return false;
     }
+
     if (!(stdEvent == UNLOCK_SCREEN_RESULT || stdEvent == SCREEN_DRAWDONE || stdEvent == LOCK_SCREEN_RESULT)) {
         ErrorInfo errInfo;
         errInfo.errorCode_ = static_cast<uint32_t>(E_SCREENLOCK_PARAMETERS_INVALID);
@@ -281,6 +279,7 @@ ani_boolean ANI_SendScreenLockEvent(ani_env *env, ani_string event, ani_int para
         ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
         return false;
     }
+    
     int32_t retCode = ScreenLockManager::GetInstance()->SendScreenLockEvent(stdEvent, parameter);
     if (retCode != E_SCREENLOCK_OK) {
         ErrorInfo errInfo;
@@ -454,8 +453,8 @@ static ani_boolean BindMethods(ani_env *env)
         ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)},
         ani_native_function{"isDeviceLocked", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_IsDeviceLocked)}};
 
-    if (env->Namespace_BindNativeFunctions(spc, methods.data(), methods.size()) != ANI_OK) {
-        SCLOCK_HILOGE("Cannot bind native methods to %{public}s ", spaceName);
+    if ((ret = env->Namespace_BindNativeFunctions(spc, methods.data(), methods.size())) != ANI_OK) {
+        SCLOCK_HILOGE("Cannot bind native methods to %{public}d ", ret);
         return ANI_ERROR;
     }
     return ANI_OK;
