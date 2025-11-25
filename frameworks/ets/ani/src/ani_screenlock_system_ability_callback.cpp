@@ -111,6 +111,10 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 
 ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()
 {
+    auto env = AniScreenLockUtil::GetAniEnv(eventListener_.vm);
+    if (env != nullptr) {
+        env->GlobalReference_Delete(this->eventListener_.callbackRef);
+    }
 }
 
 std::shared_ptr<AppExecFwk::EventHandler> ScreenlockSystemAbilityCallback::GetEventHandler()
