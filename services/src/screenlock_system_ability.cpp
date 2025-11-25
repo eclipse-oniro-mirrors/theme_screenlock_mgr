@@ -394,8 +394,8 @@ std::shared_ptr<ScreenLockSystemAbility::AccountSubscriber> ScreenLockSystemAbil
 
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::getScreenLockSystemAbility()
 {
-	std::lock_guard<std::mutex> autoLock(instanceLock_);
-	return sptr<ScreenLockSystemAbility>(instance_);
+    std::lock_guard<std::mutex> autoLock(instanceLock_);
+    return sptr<ScreenLockSystemAbility>(instance_);
 }
 
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
@@ -404,7 +404,7 @@ void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowe
     SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
         static_cast<int>(status));
     sptr<ScreenLockSystemAbility> curInstance = getScreenLockSystemAbility();
-	if (curInstance == nullptr) {
+    if (curInstance == nullptr) {
         SCLOCK_HILOGE("ScreenLockDisplayPowerEventListener instance_ nullptr");
         return;
     }
