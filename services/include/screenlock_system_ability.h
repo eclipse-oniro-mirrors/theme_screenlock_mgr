@@ -226,6 +226,7 @@ private:
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<ffrt::queue> queue_;
+    static std::mutex queueLock_;
     std::map<AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE, std::shared_ptr<AccountSubscriber>> accountSubscribers_;
     std::mutex accountSubscriberMutex_;
     sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_;
