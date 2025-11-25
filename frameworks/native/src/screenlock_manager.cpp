@@ -409,6 +409,7 @@ sptr<ScreenLockManagerInterface> ScreenLockManager::GetProxy()
 
 void ScreenLockManager::RemoveDeathRecipient()
 {
+    std::lock_guard<std::mutex> autoLock(managerProxyLock_);
     if (screenlockManagerProxy_ != nullptr && deathRecipient_ != nullptr) {
         screenlockManagerProxy_->AsObject()->RemoveDeathRecipient(deathRecipient_);
     }

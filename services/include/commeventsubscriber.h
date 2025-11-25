@@ -53,6 +53,7 @@ private:
     };
 
     std::shared_ptr<CommEventSubscriber> subscriber_ = nullptr;
+    std::mutex lock_;
 };
 } // namespace ScreenLock
 } // namespace OHOS

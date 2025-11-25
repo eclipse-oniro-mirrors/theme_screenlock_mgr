@@ -58,6 +58,7 @@ void CommeventMgr::OnReceiveEvent(const AAFwk::Want &want)
 void CommeventMgr::SubscribeEvent()
 {
     SCLOCK_HILOGD("SubscribeEvent start.");
+    std::lock_guard<std::mutex> autoLock(lock_);
     if (subscriber_) {
         SCLOCK_HILOGI("Common Event is already subscribered.");
         return;
@@ -79,6 +80,7 @@ void CommeventMgr::SubscribeEvent()
 
 void CommeventMgr::UnSubscribeEvent()
 {
+    std::lock_guard<std::mutex> autoLock(lock_);
     if (subscriber_) {
         bool subscribeResult = EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
         SCLOCK_HILOGI("subscribeResult = %{public}d", subscribeResult);
