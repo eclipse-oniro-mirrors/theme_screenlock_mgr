@@ -72,6 +72,7 @@ const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
 const char IAM_EVENT_KEY[] = "bootevent.useriam.fwkready";
 std::mutex ScreenLockSystemAbility::instanceLock_;
+std::mutex ScreenLockSystemAbility::queueLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
 constexpr int32_t MAX_RETRY_TIMES = 20;
 std::shared_ptr<ffrt::queue> ScreenLockSystemAbility::queue_;
