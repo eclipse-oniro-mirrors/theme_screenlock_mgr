@@ -172,8 +172,11 @@ int32_t ScreenLockSystemAbility::Init()
 void ScreenLockSystemAbility::OnStart()
 {
     SCLOCK_HILOGI("ScreenLockSystemAbility::Enter OnStart.");
-    if (instance_ == nullptr) {
-        instance_ = this;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (instance_ == nullptr) {
+            instance_ = this;
+        }
     }
     if (state_ == ServiceRunningState::STATE_RUNNING) {
         SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
@@ -182,7 +185,12 @@ void ScreenLockSystemAbility::OnStart()
     InitServiceHandler();
     if (Init() != ERR_OK) {
         auto callback = [=]() { Init(); };
-        queue_->submit(callback, ffrt::task_attr().delay(INIT_INTERVAL));
+        {
+            std::lock_guard<std::mutex> autoLock(queueLock_);
+            if (queue_) {
+                queue_->submit(callback, ffrt::task_attr().delay(INIT_INTERVAL));
+            }
+        }
         SCLOCK_HILOGW("ScreenLockSystemAbility Init failed. Try again 5s later");
     }
     AddSystemAbilityListener(DISPLAY_MANAGER_SERVICE_SA_ID);
@@ -238,7 +246,12 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
     if (systemReady_ == false && times <= MAX_RETRY_TIMES) {
         SCLOCK_HILOGW("RegisterDisplayPowerEventListener failed");
         auto callback = [this, times]() { RegisterDisplayPowerEventListener(times); };
-        queue_->submit(callback, ffrt::task_attr().delay(DELAY_TIME));
+        {
+            std::lock_guard<std::mutex> autoLock(queueLock_);
+            if (queue_) {
+                queue_->submit(callback, ffrt::task_attr().delay(DELAY_TIME));
+            }
+        }
     } else if (systemReady_) {
         state_ = ServiceRunningState::STATE_RUNNING;
         SCLOCK_HILOGI("systemReady_ is true");
@@ -248,6 +261,7 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
 
 void ScreenLockSystemAbility::InitServiceHandler()
 {
+    std::lock_guard<std::mutex> autoLock(queueLock_);
     if (queue_ != nullptr) {
         SCLOCK_HILOGI("InitServiceHandler already init.");
         return;
@@ -335,8 +349,14 @@ void ScreenLockSystemAbility::OnStop()
     if (state_ != ServiceRunningState::STATE_RUNNING) {
         return;
     }
-    queue_ = nullptr;
-    instance_ = nullptr;
+    {
+        std::lock_guard<std::mutex> autoLock(queueLock_);
+        queue_ = nullptr;
+    }
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        instance_ = nullptr;
+    }
     state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
 #ifndef IS_SO_CROP_H
@@ -376,25 +396,30 @@ void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowe
 {
     SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
         static_cast<int>(status));
-    if (instance_ == nullptr) {
-        SCLOCK_HILOGE("ScreenLockDisplayPowerEventListener instance_ nullptr");
-        return;
+    sptr<ScreenLockSystemAbility> curInstance;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (instance_ == nullptr) {
+            SCLOCK_HILOGE("ScreenLockDisplayPowerEventListener instance_ nullptr");
+            return;
+        }
+        curInstance = instance_;
     }
     switch (event) {
         case DisplayPowerEvent::WAKE_UP:
-            instance_->OnWakeUp(status);
+            curInstance->OnWakeUp(status);
             break;
         case DisplayPowerEvent::SLEEP:
-            instance_->OnSleep(status);
+            curInstance->OnSleep(status);
             break;
         case DisplayPowerEvent::DISPLAY_ON:
-            instance_->OnScreenOn(status);
+            curInstance->OnScreenOn(status);
             break;
         case DisplayPowerEvent::DISPLAY_OFF:
-            instance_->OnScreenOff(status);
+            curInstance->OnScreenOff(status);
             break;
         case DisplayPowerEvent::DESKTOP_READY:
-            instance_->OnExitAnimation();
+            curInstance->OnExitAnimation();
             break;
         default:
             break;
@@ -1067,6 +1092,7 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
 
 void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)
 {
+    std::lock_guard<std::mutex> autoLock(queueLock_);
     if (queue_ == nullptr) {
         SCLOCK_HILOGE("NotifyDisplayEvent queue_ is nullptr.");
         return;
@@ -1077,6 +1103,7 @@ void ScreenLockSystemAbility::NotifyDisplayEvent(DisplayEvent event)
 
 void ScreenLockSystemAbility::ResetFfrtQueue()
 {
+    std::lock_guard<std::mutex> autoLock(queueLock_);
     queue_.reset();
 }
 
