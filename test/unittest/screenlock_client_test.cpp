@@ -503,7 +503,7 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest025, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test dumpHelper.Dispatch");
     std::vector<std::string> args;
-    DumpHelper dumpHelper = DumpHelper::GetInstance();
+    DumpHelper& dumpHelper = DumpHelper::GetInstance();
     bool result = dumpHelper.Dispatch(0, args);
     EXPECT_EQ(result, false);
 }
