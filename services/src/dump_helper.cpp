@@ -27,6 +27,7 @@ DumpHelper &DumpHelper::GetInstance()
 
 void DumpHelper::RegisterCommand(std::shared_ptr<Command> &cmd)
 {
+    std::lock_guard<std::mutex> autoLock(lock_);
     cmdHandler.insert(std::make_pair(cmd->GetOption(), cmd));
 }
 
@@ -40,7 +41,7 @@ bool DumpHelper::Dispatch(int fd, const std::vector<std::string> &args)
         }
         return false;
     }
-
+    std::lock_guard<std::mutex> autoLock(lock_);
     auto handler = cmdHandler.find(args.at(0));
     if (handler != cmdHandler.end()) {
         std::string output;
