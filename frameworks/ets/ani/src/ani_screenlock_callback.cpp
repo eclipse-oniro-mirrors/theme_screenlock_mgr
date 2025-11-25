@@ -89,14 +89,12 @@ void ScreenlockCallback::SendCallBackEvent(std::shared_ptr<ScreenlockOnCallBack>
             if (ANI_OK != (status = env->PromiseResolver_Resolve(screenlockOnCallBack->resolver, static_cast<ani_ref>(ret)))) {
                 SCLOCK_HILOGE("PromiseResolver_Resolve faild. status %{public}d", status);
             }
-            SCLOCK_HILOGE("PromiseResolver_Resolve. status %{public}d", status);
         } else {
             ani_error rejection = static_cast<ani_error>(
                 ErrorHandler::CreateError(env, screenlockOnCallBack->errorInfo.errorCode_, screenlockOnCallBack->errorInfo.message_));
             if (ANI_OK != (status = env->PromiseResolver_Reject(screenlockOnCallBack->resolver, rejection))) {
                 SCLOCK_HILOGE("PromiseResolver_Resolve faild. status %{public}d", status);
             }
-            SCLOCK_HILOGE("PromiseResolver_Reject. status %{public}d", status);
         }
         env->DestroyLocalScope();
     };
