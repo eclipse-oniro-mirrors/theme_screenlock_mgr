@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "command.h"
 
@@ -33,6 +34,7 @@ public:
 
 private:
     std::map<std::string, std::shared_ptr<Command>> cmdHandler;
+    std::mutex lock_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
