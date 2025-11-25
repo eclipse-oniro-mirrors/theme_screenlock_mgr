@@ -19,26 +19,30 @@
 #include "screenlock_callback_stub.h"
 #include "screenlock_system_ability_interface.h"
 #include "ani.h"
+#include "event_handler.h"
 
 namespace OHOS {
 namespace ScreenLock {
-class ScreenlockCallback : public ScreenLockCallbackStub {
-public:
-    explicit ScreenlockCallback(const EventListener &eventListener);
-    ~ScreenlockCallback() override;
-    void SetErrorInfo(const ErrorInfo &errorInfo);
-private:
-    EventListener eventListener_;
-    ErrorInfo errorInfo_;
-};
-
 struct ScreenlockOnCallBack {
-    ani_env *env;
+    ani_vm *vm;
     ani_ref callbackRef;
+    ani_resolver resolver;
     SystemEvent systemEvent;
     ErrorInfo errorInfo;
     int32_t screenLockResult = -1;
     Action action;
+};
+class ScreenlockCallback : public ScreenLockCallbackStub {
+public:
+    explicit ScreenlockCallback(const EventListener &eventListener);
+    ~ScreenlockCallback() override;
+    void OnCallBack(const int32_t screenLockResult) override;
+    void SetErrorInfo(const ErrorInfo &errorInfo);
+private:
+    EventListener eventListener_;
+    ErrorInfo errorInfo_;
+    static std::shared_ptr<AppExecFwk::EventHandler> handler_;
+    void SendCallBackEvent(std::shared_ptr<ScreenlockOnCallBack> screenlockOnCallBack);
 };
 } // namespace ScreenLock
 } // namespace OHOS

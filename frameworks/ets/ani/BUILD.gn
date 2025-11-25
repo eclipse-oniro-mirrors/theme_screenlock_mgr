@@ -45,7 +45,8 @@ ohos_shared_library("screenlock_ani") {
     sources = [
       "src/ani_screenlock_ability.cpp",
       "src/ani_screenlock_callback.cpp",
-      "src/ani_screenlock_system_ability_callback.cpp"
+      "src/ani_screenlock_system_ability_callback.cpp",
+      "src/ani_screenlock_util.cpp"
     ]
 
     deps = [
