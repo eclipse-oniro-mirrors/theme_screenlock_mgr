@@ -20,6 +20,7 @@
 #include "ani_screenlock_callback.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
+#include "ani_screenlock_util.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -79,12 +80,14 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         return;
     }
     auto entry = std::make_shared<ScreenlockOnCallBack>();
-    entry->env = eventListener_.env;
+    entry->vm = eventListener_.vm;
     entry->callbackRef = eventListener_.callbackRef;
     entry->systemEvent = systemEvent;
     auto task = [entry]() {
+        ani_env *env = nullptr;
+        env = AniScreenLockUtil::GetAniEnv(entry->vm);
         ani_size nr_refs = 16;
-        entry->env->CreateLocalScope(nr_refs);
+        env->CreateLocalScope(nr_refs);
 
         ani_ref result;
         auto fnObj = static_cast<ani_fn_object>(entry->callbackRef);
@@ -94,22 +97,24 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         }
 
         std::vector<ani_ref> args;
-        auto argsObj = GetSystemEventImpl(entry->env, entry->systemEvent.eventType_, entry->systemEvent.params_);
+        auto argsObj = GetSystemEventImpl(env, entry->systemEvent.eventType_, entry->systemEvent.params_);
         args.push_back(argsObj);
-        ani_status callStatus = entry->env->FunctionalObject_Call(fnObj, args.size(), args.data(), &result);
+        ani_status callStatus = env->FunctionalObject_Call(fnObj, args.size(), args.data(), &result);
         if (ANI_OK != callStatus) {
             SCLOCK_HILOGE("ani_call_function failed status : %{public}d", callStatus);
-            return;
         }
         SCLOCK_HILOGI("OnCallBack eventType:%{public}s", entry->systemEvent.eventType_.c_str());
-        entry->env->DestroyLocalScope();
+        env->DestroyLocalScope();
     };
     handler_->PostTask(task, "ScreenlockSystemAbilityCallback");
 }
 
 ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()
 {
-    this->eventListener_.env->GlobalReference_Delete(this->eventListener_.callbackRef);
+    auto env = AniScreenLockUtil::GetAniEnv(eventListener_.vm);
+    if (env != nullptr) {
+        env->GlobalReference_Delete(this->eventListener_.callbackRef);
+    }
 }
 
 std::shared_ptr<AppExecFwk::EventHandler> ScreenlockSystemAbilityCallback::GetEventHandler()
@@ -120,5 +125,5 @@ std::shared_ptr<AppExecFwk::EventHandler> ScreenlockSystemAbilityCallback::GetEv
     }
     return handler_;
 }
-} // namespace ScreenLock
+}  // namespace ScreenLock
 } // namespace OHOS
