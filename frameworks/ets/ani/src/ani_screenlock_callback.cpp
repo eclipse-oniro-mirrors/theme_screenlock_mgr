@@ -81,17 +81,19 @@ void ScreenlockCallback::SendCallBackEvent(std::shared_ptr<ScreenlockOnCallBack>
         env->CreateLocalScope(nr_refs);
 
         bool screenLockSuccess = screenlockOnCallBack->screenLockResult == SCREEN_SUCC;
-        bool cancelUnlock = (screenlockOnCallBack->action == Action::UNLOCK && screenlockOnCallBack->screenLockResult == SCREEN_CANCEL);
+        bool cancelUnlock =
+            (screenlockOnCallBack->action == Action::UNLOCK && screenlockOnCallBack->screenLockResult == SCREEN_CANCEL);
         ani_status status = ANI_OK;
 
         if (screenLockSuccess || cancelUnlock) {
             ani_object ret = AniScreenLockUtil::CreateBoolean(env, screenLockSuccess);
-            if (ANI_OK != (status = env->PromiseResolver_Resolve(screenlockOnCallBack->resolver, static_cast<ani_ref>(ret)))) {
+            if (ANI_OK !=
+                (status = env->PromiseResolver_Resolve(screenlockOnCallBack->resolver, static_cast<ani_ref>(ret)))) {
                 SCLOCK_HILOGE("PromiseResolver_Resolve faild. status %{public}d", status);
             }
         } else {
-            ani_error rejection = static_cast<ani_error>(
-                ErrorHandler::CreateError(env, screenlockOnCallBack->errorInfo.errorCode_, screenlockOnCallBack->errorInfo.message_));
+            ani_error rejection = static_cast<ani_error>(ErrorHandler::CreateError(
+                env, screenlockOnCallBack->errorInfo.errorCode_, screenlockOnCallBack->errorInfo.message_));
             if (ANI_OK != (status = env->PromiseResolver_Reject(screenlockOnCallBack->resolver, rejection))) {
                 SCLOCK_HILOGE("PromiseResolver_Resolve faild. status %{public}d", status);
             }
