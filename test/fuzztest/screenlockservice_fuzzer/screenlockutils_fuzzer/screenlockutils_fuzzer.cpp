@@ -22,6 +22,7 @@
 #include "preferences_util.h"
 #include <random>
 #include <string>
+#include "commeventsubscriber.h"
 
 using namespace OHOS::ScreenLock;
 
@@ -35,6 +36,34 @@ int32_t RandNum(int32_t min, int32_t max)
     std::default_random_engine engine(rd());
     std::uniform_int_distribution<int32_t> randomNum(min, max);
     return randomNum(engine);
+}
+const std::string AUTH_PIN = "1";
+const std::string HAS_CREDENTIAL = "1";
+const std::string USER_CREDENTIAL_UPDATED_EVENT = "USER_CREDENTIAL_UPDATED_EVENT";
+const std::string USER_CREDENTIAL_UPDATED_NONE = "USER_CREDENTIAL_UPDATED_NONE";
+
+bool FuzzUnSubscribeEvent(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    AAFwk::Want want;
+    want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
+    want.SetParam("userId", 0);
+    want.SetParam("authType", AUTH_PIN);
+    want.SetParam("credentialCount", HAS_CREDENTIAL);
+
+    Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
+    Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+
+    want.SetAction(USER_CREDENTIAL_UPDATED_NONE);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+
+    want.SetParam("userId", rawData[0]);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+    return true;
 }
 
 bool FuzzSaveString(const uint8_t *rawData, size_t size)
@@ -270,6 +299,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     }
 
     /* Run your code on data */
+    OHOS::FuzzUnSubscribeEvent(data, size);
     OHOS::FuzzScreenlockUtils(data, size);
     OHOS::FuzzSaveString(data, size);
     OHOS::FuzzSaveInt(data, size);
