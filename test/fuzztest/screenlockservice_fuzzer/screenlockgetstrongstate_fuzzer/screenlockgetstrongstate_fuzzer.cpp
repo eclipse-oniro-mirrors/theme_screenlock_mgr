@@ -36,6 +36,7 @@
 #include <random>
 #include <string>
 #include "sclock_log.h"
+#include "commeventsubscriber.h"
 
 using namespace OHOS::ScreenLock;
 
@@ -46,6 +47,34 @@ constexpr size_t DEFAULT_USER = 100;
 sptr<StrongAuthListener> StrongAuthListenerTest1 = new (std::nothrow) StrongAuthListenerTest(100);
 sptr<DeviceLockedListener> DeviceLockedListenerTest1 = new (std::nothrow) DeviceLockedListenerTest(100);
 sptr<InnerListenerIfTest> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
+const std::string AUTH_PIN = "1";
+const std::string HAS_CREDENTIAL = "1";
+const std::string USER_CREDENTIAL_UPDATED_EVENT = "USER_CREDENTIAL_UPDATED_EVENT";
+const std::string USER_CREDENTIAL_UPDATED_NONE = "USER_CREDENTIAL_UPDATED_NONE";
+
+bool FuzzSubscribeEvent(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+
+    AAFwk::Want want;
+    want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
+    want.SetParam("userId", 0);
+    want.SetParam("authType", AUTH_PIN);
+    want.SetParam("credentialCount", HAS_CREDENTIAL);
+
+    Singleton<CommeventMgr>::GetInstance().SubscribeEvent();
+    Singleton<CommeventMgr>::GetInstance().UnSubscribeEvent();
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+
+    want.SetAction(USER_CREDENTIAL_UPDATED_NONE);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+
+    want.SetParam("userId", rawData[0]);
+    Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
+    return true;
+}
 
 bool FuzzRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
 {
@@ -225,6 +254,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::ScreenlockServiceFuzzUtils::OnRemoteRequestTest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_STRONG_AUTHSTATE), data, size);
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
+    OHOS::FuzzSubscribeEvent(data, size);
     OHOS::FuzzRegisterStrongAuthListener(data, size);
     OHOS::FuzzRegisterDeviceLockedListener(data, size);
     OHOS::FuzzRegisterInnerListenerOne(data, size);
