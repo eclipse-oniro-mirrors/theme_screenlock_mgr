@@ -17,6 +17,12 @@
 #include "sclock_log.h"
 
 namespace OHOS::ScreenLock {
+
+void ExecuteWork(uv_work_t *work)
+{
+    SCLOCK_HILOGD("Invalid work or data in ExecuteWork");
+}
+
 bool UvQueue::Call(napi_env env, ScreenlockOnCallBack *data, uv_after_work_cb afterCallback)
 {
     uv_loop_s *loop = nullptr;
@@ -34,7 +40,7 @@ bool UvQueue::Call(napi_env env, ScreenlockOnCallBack *data, uv_after_work_cb af
     }
     work->data = data;
     int ret = uv_queue_work_with_qos(
-        loop, work, [](uv_work_t *work) {}, afterCallback, uv_qos_user_initiated);
+        loop, work, ExecuteWork, afterCallback, uv_qos_user_initiated);
     if (ret != 0) {
         SCLOCK_HILOGE("uv_queue_work Failed.");
         delete data;
