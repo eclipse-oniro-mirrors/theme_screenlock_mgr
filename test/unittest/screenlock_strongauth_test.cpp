@@ -393,5 +393,574 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest018, TestSize.Level0)
     EXPECT_EQ(flag, true);
 #endif  // IS_SO_CROP_H
 }
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest19, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->GetStrongAuthTimeTrigger(otherUserId);
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest20, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+
+    authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest21, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest22, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->GetCredInfo(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest23, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest24, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+    authmanager->GetCredInfo(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest25, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest26, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest27, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest28, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest29, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->InitStrongAuthStat(otherUserId, reasonFlag);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest030, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, DEFAULT_STRONG_AUTH_TIMEOUT_MS);
+
+    authmanager->GetStrongAuthTimeTrigger(otherUserId);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest031, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest032, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest033, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
+
+    authmanager->GetStrongAuthTimeTrigger(otherUserId);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest034, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 1;
+
+    authmanager->SetStrongAuthStat(otherUserId, reasonFlag);
+
+    authmanager->SetStrongAuthStat(otherUserId, reasonFlag);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest035, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 1;
+
+    authmanager->SetStrongAuthStat(otherUserId, 2);
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest036, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 1;
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    authmanager->SetStrongAuthStat(otherUserId, 2);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest037, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 1;
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    authmanager->SetStrongAuthStat(otherUserId, 0);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest38, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+    authmanager->GetCredInfo(otherUserId);
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest039, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 1;
+
+    authmanager->SetStrongAuthStat(otherUserId, reasonFlag);
+
+    auto flag = authmanager->IsUserExitInStrongAuthInfo(otherUserId);
+
+    authmanager->DestroyStrongAuthStateInfo(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest040, TestSize.Level0)
+{
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t otherUserId = 102;
+    int32_t reasonFlag = 0;
+    authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
+
+    authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+
+    auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
+
+    authmanager->DestroyStrongAuthTimer(otherUserId);
+
+    EXPECT_EQ(flag, true);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest041, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->DestroyAllStrongAuthTimer();
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest042, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->StartStrongAuthTimer(userId);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    authmanager->DestroyAllStrongAuthTimer();
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest043, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->InitStrongAuthStat(userId, reasonFlag);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest044, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->GetCredInfo(userId);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest045, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->GetTimerId(userId);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest046, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int64_t timerInterval = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->ResetStrongAuthTimer(userId, timerInterval);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest047, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->DestroyStrongAuthTimer(userId);
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
+
+HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest048, TestSize.Level0)
+{
+    SCLOCK_HILOGD("ScreenLockStrongAuthTest");
+#ifndef IS_SO_CROP_H
+    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    ASSERT_NE(authmanager, nullptr);
+
+    int32_t userId = 100;
+    int32_t defaulVal = 1;
+    int32_t reasonFlag = 0;
+    authmanager->RegistIamEventListener();
+    authmanager->UnRegistIamEventListener();
+    authmanager->SetStrongAuthStat(userId, defaulVal);
+    int32_t val = authmanager->GetStrongAuthStat(userId);
+
+    EXPECT_EQ(defaulVal, val);
+#endif  // IS_SO_CROP_H
+}
 } // namespace ScreenLock
 } // namespace OHOS
