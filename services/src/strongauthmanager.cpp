@@ -189,11 +189,11 @@ void StrongAuthManger::RegistAuthEventListener()
 }
 
 void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
-    UserIam::UserAuth::AuthType authType, int32_t callerType, const std::string &bundleName)
+    UserIam::UserAuth::AuthType authType, const UserIam::UserAuth::AuthSuccessEventInfo &eventInfo)
 {
-    SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, callerType: %{public}d", userId,
-        static_cast<int32_t>(authType), bundleName.c_str(), callerType);
-    if (authType == AuthType::PIN) {
+    SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, isWidgetAuth: %{public}d", userId,
+        static_cast<int32_t>(authType), eventInfo.callerName.c_str(), eventInfo.isWidgetAuth);
+    if (authType == AuthType::PIN && !eventInfo.isWidgetAuth) {
         StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, static_cast<int32_t>(StrongAuthReasonFlags::NONE));
         int64_t triggerPeriod = StrongAuthManger::GetInstance()->GetStrongAuthTriggerPeriod(userId);
         StrongAuthManger::GetInstance()->ResetStrongAuthTimer(userId, triggerPeriod);

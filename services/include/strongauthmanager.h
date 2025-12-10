@@ -68,8 +68,8 @@ public:
     public:
         AuthEventListenerService() = default;
         virtual ~AuthEventListenerService() = default;
-        void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType, int32_t callerType,
-            const std::string &bundleName) override;
+        void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
+            const UserIam::UserAuth::AuthSuccessEventInfo &eventInfo) override;
     };
 
     class CredChangeListenerService : public UserIam::UserAuth::CredChangeEventListener {

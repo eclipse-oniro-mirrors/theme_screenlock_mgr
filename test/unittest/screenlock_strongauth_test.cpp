@@ -218,8 +218,8 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest10, TestSize.Level0)
 #ifndef IS_SO_CROP_H
     std::shared_ptr<StrongAuthManger::AuthEventListenerService> authSuccessListener =
         std::make_shared<StrongAuthManger::AuthEventListenerService>();
-    std::string bundleName = "test";
-    authSuccessListener->OnNotifyAuthSuccessEvent(1, AuthType::FACE, 1, bundleName);
+    AuthSuccessEventInfo eventInfo = {};
+    authSuccessListener->OnNotifyAuthSuccessEvent(1, AuthType::FACE, eventInfo);
     StrongAuthManger::authTimer timer(true, 1000, true, true);
     EXPECT_EQ(timer.repeat, true);
 #endif // IS_SO_CROP_H
@@ -230,8 +230,8 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest11, TestSize.Level0)
 #ifndef IS_SO_CROP_H
     std::shared_ptr<StrongAuthManger::AuthEventListenerService> authSuccessListener =
         std::make_shared<StrongAuthManger::AuthEventListenerService>();;
-    std::string bundleName = "test";
-    authSuccessListener->OnNotifyAuthSuccessEvent(1, AuthType::PIN, 1, bundleName);
+    AuthSuccessEventInfo eventInfo = {};
+    authSuccessListener->OnNotifyAuthSuccessEvent(1, AuthType::FACE, eventInfo);
     StrongAuthManger::authTimer timer(true, 1000, true, true);
     EXPECT_EQ(timer.repeat, true);
 #endif // IS_SO_CROP_H
