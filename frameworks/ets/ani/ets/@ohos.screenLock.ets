@@ -97,10 +97,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return isScreenLocked_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -111,10 +111,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return isScreenLocked_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as BusinessError);
       });
     })
@@ -124,10 +124,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return isSecureMode_inner();
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -138,10 +138,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return isSecureMode_inner();
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as BusinessError);
       });
     })
@@ -152,9 +152,9 @@ export namespace screenLock {
       return unlockScreen_inner();
     });
     p.then(
-      (ret: NullishType): void => {
+      (ret: Any): void => {
         callback(null, ret as undefined);
-      }, (ret: NullishType): void => {
+      }, (ret: Any): void => {
         let data: undefined;
         callback(ret as BusinessError, data);
       }
@@ -167,9 +167,9 @@ export namespace screenLock {
         return unlockScreen_inner();
       });
       p.then(
-        (ret: NullishType): void => {
+        (ret: Any): void => {
           resolve(ret as undefined);
-        }, (ret: NullishType): void => {
+        }, (ret: Any): void => {
           reject(ret as BusinessError);
         }
       );
@@ -181,9 +181,9 @@ export namespace screenLock {
       return unlock_inner();
     });
     p.then(
-      (ret: NullishType): void => {
+      (ret: Any): void => {
         callback(null, ret as boolean);
-      }, (ret: NullishType): void => {
+      }, (ret: Any): void => {
         let data: boolean;
         callback(ret as BusinessError, data);
       }
@@ -196,9 +196,9 @@ export namespace screenLock {
         return unlock_inner();
       });
       p.then(
-        (ret: NullishType): void => {
+        (ret: Any): void => {
           resolve(ret as boolean);
-        }, (ret: NullishType): void => {
+        }, (ret: Any): void => {
           reject(ret as BusinessError);
         }
       );
@@ -210,9 +210,9 @@ export namespace screenLock {
       return lock_inner();
     });
     p.then(
-      (ret: NullishType): void => {
+      (ret: Any): void => {
         callback(null, ret as boolean);
-      }, (ret: NullishType): void => {
+      }, (ret: Any): void => {
         let data: boolean;
         callback(ret as BusinessError, data);
       }
@@ -225,9 +225,9 @@ export namespace screenLock {
         return lock_inner();
       });
       p.then(
-        (ret: NullishType): void => {
+        (ret: Any): void => {
           resolve(ret as boolean);
-        }, (ret: NullishType): void => {
+        }, (ret: Any): void => {
           reject(ret as BusinessError);
         }
       );
@@ -238,10 +238,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return sendScreenLockEvent_inner(event, parameter);
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -252,10 +252,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return sendScreenLockEvent_inner(event, parameter);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as BusinessError);
       });
     })
@@ -266,10 +266,10 @@ export namespace screenLock {
       taskpool.execute((): void => {
         return requestStrongAuth_inner(reasonFlag, userId);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as undefined);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as BusinessError);
       });
     })
@@ -279,10 +279,10 @@ export namespace screenLock {
     taskpool.execute((): boolean => {
       return setScreenLockDisabled_inner(disable, userId);
     })
-    .then((ret: NullishType): void => {
+    .then((ret: Any): void => {
       callback(null, ret as boolean);
     })
-    .catch((ret: NullishType): void => {
+    .catch((ret: Any): void => {
       let data: boolean;
       callback(ret as BusinessError, data);
     });
@@ -293,10 +293,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return setScreenLockDisabled_inner(disable, userId);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as BusinessError);
       });
     })
@@ -307,10 +307,10 @@ export namespace screenLock {
       taskpool.execute((): boolean => {
         return setScreenLockAuthState_inner(state, userId, authToken);
       })
-      .then((ret: NullishType): void => {
+      .then((ret: Any): void => {
         resolve(ret as boolean);
       })
-      .catch((ret: NullishType): void => {
+      .catch((ret: Any): void => {
         reject(ret as BusinessError);
       });
     })
