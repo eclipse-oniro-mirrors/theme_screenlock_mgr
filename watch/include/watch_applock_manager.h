@@ -206,7 +206,7 @@ public:
 private:
     std::string GetBundleNameByUid(uint32_t uid);
     std::vector<uint8_t> GenerateRandom(int32_t len);
-    void GetPaymentServices(std::vector<AppExecFwk::AbilityInfo> &paymentAbilityInfos);
+    bool GetPaymentServices(std::vector<AppExecFwk::AbilityInfo> &paymentAbilityInfos);
     std::string GetSettingsValue(
         const std::string &addressUrl, const std::string &key, const std::string &defaultValue);
     bool IsDeviceScope();

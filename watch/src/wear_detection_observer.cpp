@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <string>
 #include "wear_detection_observer.h"
 #include "sclock_log.h"
@@ -25,20 +26,51 @@ void WearDetectionObserver ::RegisterSensorListener()
         (void)strcpy_s(sensorUser_.name, sizeof(sensorUser_.name), SENSOR_NAME);
         sensorUser_.userData = nullptr;
         sensorUser_.callback = &WearSensorCallback;
-        int32_t result = SubscribeSensor(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_);
-        SCLOCK_HILOGI("registered result = %{public}d", result);
-        if (result != 0) {
-            SCLOCK_HILOGW("registered fail");
-            registered_.exchange(false);
-            return;
-        }
-        SetBatch(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_, SAMPLING_INTERVAL_100MS, SAMPLING_INTERVAL_100MS);
-        ActivateSensor(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_);
-        SetMode(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_, SENSOR_ON_CHANGE);
-        SCLOCK_HILOGI("registered success");
+        RetryRegistration();
     } else {
         SCLOCK_HILOGI("already registered");
     }
+}
+
+void WearDetectionObserver ::RetryRegistration()
+{
+    const int maxRetries = MAX_RETRIES;
+    const std::chrono::seconds retryDelay(RETRY_DELAY_SECOND);
+    retryCount_ = 0;
+    auto retryTask = [this, maxRetries, retryDelay]() {
+        while (retryCount_ < maxRetries)
+        {
+            int ret = SubscribeSensor(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_);
+            SCLOCK_HILOGI("registered ret = %{public}d", ret);
+            if (ret != 0) {
+                retryCount_++;
+                SCLOCK_HILOGI("registered fail, retry = %{public}d", retryCount_);
+                std::this_thread::sleep_for(retryDelay);
+                continue;
+            }
+            ret =
+                SetBatch(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_, SAMPLING_INTERVAL_100MS, SAMPLING_INTERVAL_100MS);
+            if (ret != 0) {
+                retryCount_++;
+                SCLOCK_HILOGI("SetBatch fail, retry = %{public}d", retryCount_);
+                std::this_thread::sleep_for(retryDelay);
+                continue;
+            }
+            ret = ActivateSensor(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_);
+            if (ret != 0) {
+                retryCount_++;
+                SCLOCK_HILOGI("ActivateSensor fail, retry = %{public}d", retryCount_);
+                std::this_thread::sleep_for(retryDelay);
+                continue;
+            }
+            SCLOCK_HILOGI("registered success");
+            return;
+        }
+        registered_.exchange(false);
+        SCLOCK_HILOGW("registered fail after %{public}d retries", maxRetries);
+    };
+    std::thread taskThread(retryTask);
+    taskThread.detach();
 }
 
 void WearDetectionObserver ::UnRegisterSensorListener()

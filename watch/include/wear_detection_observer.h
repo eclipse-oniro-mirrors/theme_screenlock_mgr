@@ -17,10 +17,15 @@
 #include "sensor_agent_type.h"
 #include "sensor_agent.h"
 #include "refbase.h"
+#include <chrono>
+#include <thread>
+#include <iostream>
 
 namespace OHOS {
 namespace ScreenLock {
 const uint32_t SAMPLING_INTERVAL_100MS = 100 * 1000 * 1000;
+const int MAX_RETRIES = 5;
+const int RETRY_DELAY_SECOND = 10;
 const char SENSOR_NAME[] = "ScreenLockWatch";
 /**
  * 佩戴状态，在腕
@@ -32,9 +37,11 @@ public:
     void UnRegisterSensorListener();
 
 private:
+    int retryCount_ = 0;
     SensorUser sensorUser_{};
     std::atomic<bool> registered_{false};
     static void WearSensorCallback(SensorEvent *event);
+    void RetryRegistration();
 };
 } // namespace ScreenLock
 } // namespace OHOS

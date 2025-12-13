@@ -77,6 +77,9 @@ bool WatchAppLockManager::IsScreenLocked(bool isOHScreenLocked)
 
 int32_t WatchAppLockManager::unlockScreen(bool isScreenLocked)
 {
+    if (wearDetectionObserver_) {
+        wearDetectionObserver_->RegisterSensorListener();
+    }
     if (!isScreenLocked || !HasPin()) {
         SCLOCK_HILOGI("screen does not need to be unlocked");
         return E_SCREENLOCK_NOT_FOCUS_APP;
@@ -143,9 +146,6 @@ bool WatchAppLockManager::UnlockedRecord::add(const std::string &element)
     if (elements.empty()) {
         WatchAppLockManager::GetInstance().registerAppStateObserver();
         WatchAppLockManager::GetInstance().registerLeaveWristSettingObserver();
-        if (wearDetectionObserver_) {
-            wearDetectionObserver_->RegisterSensorListener();
-        }
     }
     auto result = elements.insert(element);
     return result.second;
@@ -216,7 +216,7 @@ std::vector<uint8_t> WatchAppLockManager::GenerateRandom(int32_t len)
     return data;
 }
 
-void WatchAppLockManager::GetPaymentServices(std::vector<AppExecFwk::AbilityInfo> &paymentAbilityInfos)
+bool WatchAppLockManager::GetPaymentServices(std::vector<AppExecFwk::AbilityInfo> &paymentAbilityInfos)
 {
     NFC::KITS::HceService &hceService = NFC::KITS::HceService::GetInstance();
     std::string identity = IPCSkeleton::ResetCallingIdentity();
@@ -227,7 +227,9 @@ void WatchAppLockManager::GetPaymentServices(std::vector<AppExecFwk::AbilityInfo
         std::string errCodeStr = std::to_string(errCode);
         HiSysEventReport::GetInstance().ReportFaultCode(bundleName, GET_PAYMENT_ERROR_CODE, errCodeStr);
         SCLOCK_HILOGI("statusCode,%{public}d,size, %{public}zu", errCode, paymentAbilityInfos.size());
+        return false;
     }
+    return true;
 }
 
 std::string WatchAppLockManager::GetSettingsValue(
@@ -337,7 +339,7 @@ void WatchAppLockManager::unregisterAppStateObserver()
 
 void WatchAppLockManager::registerLeaveWristSettingObserver()
 {
-    leaveWristSettingObserver_  = sptr<LeaveWristSettingObserver>::MakeSptr();
+    leaveWristSettingObserver_ = sptr<LeaveWristSettingObserver>::MakeSptr();
     if (leaveWristSettingObserver_ == nullptr) {
         SCLOCK_HILOGE("observer is null");
         return;
@@ -386,7 +388,10 @@ bool WatchAppLockManager::IsPaymentApp()
         return false;
     }
     std::vector<AppExecFwk::AbilityInfo> abilityInfos;
-    GetPaymentServices(abilityInfos);
+    if(!GetPaymentServices(abilityInfos)) {
+        SCLOCK_HILOGE("failed to read HCE application list");
+        return true;
+    }
 
     auto it = std::find_if(abilityInfos.begin(), abilityInfos.end(), [=](const AppExecFwk::AbilityInfo &abilityInfo) {
         SCLOCK_HILOGD("%{public}s", abilityInfo.bundleName.c_str());
