@@ -388,7 +388,7 @@ bool WatchAppLockManager::IsPaymentApp()
         return false;
     }
     std::vector<AppExecFwk::AbilityInfo> abilityInfos;
-    if(!GetPaymentServices(abilityInfos)) {
+    if (!GetPaymentServices(abilityInfos)) {
         SCLOCK_HILOGE("failed to read HCE application list");
         return true;
     }

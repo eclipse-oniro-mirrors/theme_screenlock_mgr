@@ -38,8 +38,7 @@ void WearDetectionObserver ::RetryRegistration()
     const std::chrono::seconds retryDelay(RETRY_DELAY_SECOND);
     retryCount_ = 0;
     auto retryTask = [this, maxRetries, retryDelay]() {
-        while (retryCount_ < maxRetries)
-        {
+        while (retryCount_ < maxRetries) {
             int ret = SubscribeSensor(SENSOR_TYPE_ID_WEAR_DETECTION, &sensorUser_);
             SCLOCK_HILOGI("registered ret = %{public}d", ret);
             if (ret != 0) {
