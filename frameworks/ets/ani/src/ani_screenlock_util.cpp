@@ -20,7 +20,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
-constexpr const char* CLASSNAME_BOOL = "Lstd/core/Boolean;";
+constexpr const char* CLASSNAME_BOOL = "std.core.Boolean";
 
 ani_object AniScreenLockUtil::CreateBoolean(ani_env *env, ani_boolean value)
 {
@@ -35,7 +35,7 @@ ani_object AniScreenLockUtil::CreateBoolean(ani_env *env, ani_boolean value)
         return nullptr;
     }
     ani_method ctor = nullptr;
-    if ((status = env->Class_FindMethod(cls, "<ctor>", "Z:V", &ctor)) != ANI_OK) {
+    if ((status = env->Class_FindMethod(cls, "<ctor>", "z:", &ctor)) != ANI_OK) {
         SCLOCK_HILOGE("CreateBoolean FindMethod status: %{public}d", status);
         return nullptr;
     }
