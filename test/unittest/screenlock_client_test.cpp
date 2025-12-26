@@ -503,7 +503,8 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest025, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test dumpHelper.Dispatch");
     std::vector<std::string> args;
-    bool result = DumpHelper::GetInstance().Dispatch(0, args);
+    DumpHelper dumpHelper = DumpHelper::GetInstance();	
+    bool result = dumpHelper.Dispatch(0, args);
     EXPECT_EQ(result, false);
 }
 
@@ -513,7 +514,8 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest026, TestSize.Level0)
     std::vector<std::string> args;
     std::string param("-h");
     args.emplace_back(param);
-    bool result = DumpHelper::GetInstance().Dispatch(0, args);
+    DumpHelper dumpHelper = DumpHelper::GetInstance();	
+    bool result = dumpHelper.Dispatch(0, args);
     EXPECT_EQ(result, false);
 }
 
