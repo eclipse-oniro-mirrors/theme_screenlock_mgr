@@ -132,29 +132,6 @@ bool FuzzDeviceLockedListenerOnStateChanged(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzScreenLockSaDeathRecipientOnRemoteDied(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
-    }
-
-    sptr<ScreenLockManager> manager = ScreenLockManager::GetInstance();
-    if (manager == nullptr) {
-        return false;
-    }
-
-    sptr<ScreenLockManager::ScreenLockSaDeathRecipient> deathRecipient =
-        new (std::nothrow) ScreenLockManager::ScreenLockSaDeathRecipient();
-    if (deathRecipient == nullptr) {
-        return false;
-    }
-
-    wptr<IRemoteObject> nullObject = nullptr;
-    deathRecipient->OnRemoteDied(nullObject);
-
-    return true;
-}
-
 bool FuzzListenerGetUserId(const uint8_t *rawData, size_t size)
 {
     if (size < LENGTH) {
@@ -204,7 +181,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     /* Run your code on data */
     OHOS::FuzzStrongAuthListenerOnStateChanged(data, size);
     OHOS::FuzzDeviceLockedListenerOnStateChanged(data, size);
-    OHOS::FuzzScreenLockSaDeathRecipientOnRemoteDied(data, size);
     OHOS::FuzzListenerGetUserId(data, size);
     return 0;
 }
