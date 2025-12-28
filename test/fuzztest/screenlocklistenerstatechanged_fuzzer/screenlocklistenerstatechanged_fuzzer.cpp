@@ -19,12 +19,7 @@
 #include <cstdint>
 #include <string_ex.h>
 
-#define private public
-#define protected public
 #include "screenlock_manager.h"
-#undef private
-#undef protected
-
 #include "screenlock_common.h"
 #include "sclock_log.h"
 
@@ -34,6 +29,7 @@ namespace OHOS {
 constexpr int32_t THRESHOLD = 4;
 constexpr size_t LENGTH = 1;
 constexpr int32_t DEFAULT_USER = 100;
+constexpr int32_t STATE_TWO = 2;
 
 class StrongAuthListenerFuzzTest : public StrongAuthListener {
 public:
@@ -117,7 +113,7 @@ bool FuzzDeviceLockedListenerOnStateChanged(const uint8_t *rawData, size_t size)
     listener->OnStateChanged(DEFAULT_USER, 0);
     listener->OnStateChanged(DEFAULT_USER, 1);
     listener->OnStateChanged(DEFAULT_USER, -1);
-    listener->OnStateChanged(DEFAULT_USER, 2);
+    listener->OnStateChanged(DEFAULT_USER, STATE_TWO);
 
     int32_t randomUserId = static_cast<int32_t>((rawData[0] << 8) | rawData[1]);
     int32_t randomState = static_cast<int32_t>((rawData[2] << 8) | rawData[3]);
@@ -179,13 +175,15 @@ bool FuzzListenerGetUserId(const uint8_t *rawData, size_t size)
         (void)ret;
     }
 
-    sptr<StrongAuthListenerFuzzTest> strongListenerDefault = new (std::nothrow) StrongAuthListenerFuzzTest(DEFAULT_USER);
+    sptr<StrongAuthListenerFuzzTest> strongListenerDefault =
+        new (std::nothrow) StrongAuthListenerFuzzTest(DEFAULT_USER);
     if (strongListenerDefault != nullptr) {
         int32_t ret = strongListenerDefault->GetUserId();
         (void)ret;
     }
 
-    sptr<DeviceLockedListenerFuzzTest> deviceListenerDefault = new (std::nothrow) DeviceLockedListenerFuzzTest(DEFAULT_USER);
+    sptr<DeviceLockedListenerFuzzTest> deviceListenerDefault =
+        new (std::nothrow) DeviceLockedListenerFuzzTest(DEFAULT_USER);
     if (deviceListenerDefault != nullptr) {
         int32_t ret = deviceListenerDefault->GetUserId();
         (void)ret;
