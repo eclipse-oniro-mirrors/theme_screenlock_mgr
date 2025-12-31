@@ -108,6 +108,11 @@ public:
      */
     void WearStateChange(bool isWearOn);
 
+    /**
+     * 灭屏
+     */
+    void OnScreenOffEnd();
+
 public:
     class AppStateObserver : public AppExecFwk::ApplicationStateObserverStub {
     public:

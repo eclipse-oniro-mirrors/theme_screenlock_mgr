@@ -414,5 +414,35 @@ void ScreenLockManager::RemoveDeathRecipient()
         screenlockManagerProxy_->AsObject()->RemoveDeathRecipient(deathRecipient_);
     }
 }
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockManager::IsLockedWatch(bool isPaymentApp, bool &isLocked)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("IsLockedWatch quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->IsLockedWatch(isPaymentApp, isLocked);
+    SCLOCK_HILOGD("IsLockedWatch out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::UnlockWatch(bool isPaymentApp, const sptr<ScreenLockCallbackInterface> &listener)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("UnlockWatch quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->UnlockWatch(isPaymentApp, listener);
+    SCLOCK_HILOGD("UnlockWatch out, status=%{public}d", status);
+    return status;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS

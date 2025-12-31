@@ -155,6 +155,10 @@ public:
                                   const sptr<InnerListenerIf>& listener) override;
     int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                          const sptr<InnerListenerIf>& listener) override;
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    int32_t IsLockedWatch(bool isPaymentApp, bool &isLocked) override;
+    int32_t UnlockWatch(bool isPaymentApp, const sptr<ScreenLockCallbackInterface> &listener) override;
+#endif // SUPPORT_WEAR_PAYMENT_APP
     int Dump(int fd, const std::vector<std::u16string> &args) override;
     void SetScreenlocked(bool isScreenlocked, const int32_t userId);
     void RegisterDisplayPowerEventListener(int32_t times);

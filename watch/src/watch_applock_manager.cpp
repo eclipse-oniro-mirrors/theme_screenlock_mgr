@@ -102,6 +102,11 @@ int32_t WatchAppLockManager::unlockScreen(bool isScreenLocked)
     return isStartIAM ? E_SCREENLOCK_OK : E_SCREENLOCK_NOT_FOCUS_APP;
 }
 
+void WatchAppLockManager::OnScreenOffEnd()
+{
+    WatchAppLockManager::GetInstance().unlockedRecord.clear();
+}
+
 void WatchAppLockManager::WearStateChange(bool isWearOn)
 {
     SCLOCK_HILOGI("isWearOn = %{public}s", boolToString(isWearOn).c_str());

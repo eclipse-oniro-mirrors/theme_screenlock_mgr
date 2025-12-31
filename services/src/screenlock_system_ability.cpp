@@ -440,6 +440,9 @@ void ScreenLockSystemAbility::OnScreenOff(EventStatus status)
     } else if (status == EventStatus::END) {
         stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_END_OFF));
         systemEvent.eventType_ = END_SCREEN_OFF;
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    WatchAppLockManager::GetInstance().OnScreenOffEnd();
+#endif // SUPPORT_WEAR_PAYMENT_APP
     }
     SystemEventCallBack(systemEvent);
 }
@@ -1232,5 +1235,44 @@ void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
     auto callerPid = IPCSkeleton::GetCallingPid();
     SCLOCK_HILOGI("%{public}s callerPid:%{public}d", invokeName.c_str(), callerPid);
 }
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockSystemAbility::IsLockedWatch(bool isPaymentApp, bool &isLocked)
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
+        SCLOCK_HILOGI("calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    if (isPaymentApp) {
+        isLocked = WatchAppLockManager::GetInstance().IsScreenLocked(IsScreenLocked());
+    } else {
+        isLocked = IsScreenLocked();
+    }
+    SCLOCK_HILOGI("isLocked:%{public}d", isLocked);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockSystemAbility::UnlockWatch(bool isPaymentApp, const sptr<ScreenLockCallbackInterface> &listener)
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
+        SCLOCK_HILOGI("calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    bool isScreenLocked = IsScreenLocked();
+    if (!isScreenLocked && isPaymentApp) {
+        SCLOCK_HILOGI("app lock");
+        bool isAppLocked = WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
+        WatchAppLockManager::GetInstance().unlockScreen(isAppLocked);
+    } else {
+        SCLOCK_HILOGI("device lock");
+        UnlockScreen(listener);
+    }
+    return E_SCREENLOCK_OK;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS

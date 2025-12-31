@@ -71,6 +71,12 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnUnRegistInnerListener;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_USER_SCREEN_LOCKED)] =
         &ScreenLockManagerStub::OnIsLockedWithUserId;
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED_WATCH)] =
+        &ScreenLockManagerStub::OnIsLockedWatch;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_WATCH)] =
+        &ScreenLockManagerStub::OnUnlockWatch;
+#endif // SUPPORT_WEAR_PAYMENT_APP
 }
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -341,5 +347,37 @@ int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, Message
     }
     return ERR_NONE;
 }
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockManagerStub::OnIsLockedWatch(MessageParcel &data, MessageParcel &reply)
+{
+    bool isLocked = false;
+    bool isPaymentApp = data.ReadBool();
+    int32_t ret = IsLockedWatch(isPaymentApp, isLocked);
+    reply.WriteInt32(ret);
+    if (ret == E_SCREENLOCK_OK) {
+        reply.WriteBool(isLocked);
+    }
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnUnlockWatch(MessageParcel &data, MessageParcel &reply)
+{
+    bool isPaymentApp = data.ReadBool();
+    sptr<IRemoteObject> remote = data.ReadRemoteObject();
+    if (remote == nullptr) {
+        SCLOCK_HILOGE("remote is nullptr");
+        return ERR_INVALID_DATA;
+    }
+    sptr<ScreenLockCallbackInterface> listener = iface_cast<ScreenLockCallbackInterface>(remote);
+    if (listener.GetRefPtr() == nullptr) {
+        SCLOCK_HILOGE("listener is null");
+        return ERR_INVALID_DATA;
+    }
+    int32_t ret = UnlockWatch(isPaymentApp, listener);
+    reply.WriteInt32(ret);
+    return ERR_NONE;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS
