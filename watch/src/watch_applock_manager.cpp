@@ -33,19 +33,24 @@
 namespace OHOS {
 namespace ScreenLock {
 sptr<WearDetectionObserver> wearDetectionObserver_;
+sptr<WearDisplayPowerEventObserver> wearDisplayPowerEventObserver_;
 WatchAppLockManager::WatchAppLockManager()
 {
     wearDetectionObserver_ = sptr<WearDetectionObserver>::MakeSptr();
     if (wearDetectionObserver_) {
         wearDetectionObserver_->RegisterSensorListener();
     }
+    wearDisplayPowerEventObserver_ = sptr<WearDisplayPowerEventObserver>::MakeSptr();
+    if (wearDisplayPowerEventObserver_) {
+        wearDisplayPowerEventObserver_->RegisterDisplayPowerEventListener();
+    }
 }
 
 WatchAppLockManager::~WatchAppLockManager()
 {
     unlockedRecord.clear();
-    if (wearDetectionObserver_) {
-        wearDetectionObserver_->UnRegisterSensorListener();
+    if (wearDisplayPowerEventObserver_) {
+        wearDisplayPowerEventObserver_->UnRegisterDisplayPowerEventListener();
     }
 }
 
@@ -79,6 +84,9 @@ int32_t WatchAppLockManager::unlockScreen(bool isScreenLocked)
 {
     if (wearDetectionObserver_) {
         wearDetectionObserver_->RegisterSensorListener();
+    }
+    if (wearDisplayPowerEventObserver_) {
+        wearDisplayPowerEventObserver_->RegisterDisplayPowerEventListener();
     }
     if (!isScreenLocked || !HasPin()) {
         SCLOCK_HILOGI("screen does not need to be unlocked");

@@ -43,6 +43,23 @@ private:
     static void WearSensorCallback(SensorEvent *event);
     void RetryRegistration();
 };
+
+class WearDisplayPowerEventObserver : public RefBase {
+public:
+    void RegisterDisplayPowerEventListener();
+    void UnRegisterDisplayPowerEventListener();
+    class WearDisplayPowerEventListener : public Rosen::IDisplayPowerEventListener {
+    public:
+        void OnDisplayPowerEvent(Rosen::DisplayPowerEvent event, Rosen::EventStatus status) override;
+    };
+
+private:
+    int retryCount_ = 0;
+    sptr<Rosen::IDisplayPowerEventListener> displayPowerEventListener_ =
+        new WearDisplayPowerEventObserver::WearDisplayPowerEventListener();
+    std::atomic<bool> registered_{false};
+    void RetryRegistration();
+};
 } // namespace ScreenLock
 } // namespace OHOS
 #endif // WEAR_DETECTION_OBSERVER_H

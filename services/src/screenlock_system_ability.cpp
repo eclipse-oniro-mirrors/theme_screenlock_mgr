@@ -440,9 +440,6 @@ void ScreenLockSystemAbility::OnScreenOff(EventStatus status)
     } else if (status == EventStatus::END) {
         stateValue_.SetScreenState(static_cast<int32_t>(ScreenState::SCREEN_STATE_END_OFF));
         systemEvent.eventType_ = END_SCREEN_OFF;
-#ifdef SUPPORT_WEAR_PAYMENT_APP
-    WatchAppLockManager::GetInstance().OnScreenOffEnd();
-#endif // SUPPORT_WEAR_PAYMENT_APP
     }
     SystemEventCallBack(systemEvent);
 }
