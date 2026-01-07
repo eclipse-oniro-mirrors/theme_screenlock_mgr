@@ -70,8 +70,8 @@ public:
     SCREENLOCK_API int32_t RegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener);
     SCREENLOCK_API int32_t UnRegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener);
 #ifdef SUPPORT_WEAR_PAYMENT_APP
-    SCREENLOCK_API int32_t IsLockedWatch(bool isPaymentApp, bool &isLocked);
-    SCREENLOCK_API int32_t UnlockWatch(bool isPaymentApp, const sptr<ScreenLockCallbackInterface> &listener);
+    SCREENLOCK_API int32_t IsLockedWatch(bool &isLocked);
+    SCREENLOCK_API int32_t UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener);
 #endif // SUPPORT_WEAR_PAYMENT_APP
 private:
     class ScreenLockSaDeathRecipient : public IRemoteObject::DeathRecipient {

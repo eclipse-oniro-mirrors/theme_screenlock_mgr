@@ -416,19 +416,19 @@ void ScreenLockManager::RemoveDeathRecipient()
 }
 
 #ifdef SUPPORT_WEAR_PAYMENT_APP
-int32_t ScreenLockManager::IsLockedWatch(bool isPaymentApp, bool &isLocked)
+int32_t ScreenLockManager::IsLockedWatch(bool &isLocked)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
         SCLOCK_HILOGE("IsLockedWatch quit because redoing GetProxy failed.");
         return E_SCREENLOCK_NULLPTR;
     }
-    int32_t status = proxy->IsLockedWatch(isPaymentApp, isLocked);
+    int32_t status = proxy->IsLockedWatch(isLocked);
     SCLOCK_HILOGD("IsLockedWatch out, status=%{public}d", status);
     return status;
 }
 
-int32_t ScreenLockManager::UnlockWatch(bool isPaymentApp, const sptr<ScreenLockCallbackInterface> &listener)
+int32_t ScreenLockManager::UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener)
 {
     auto proxy = GetProxy();
     if (proxy == nullptr) {
@@ -439,7 +439,7 @@ int32_t ScreenLockManager::UnlockWatch(bool isPaymentApp, const sptr<ScreenLockC
         SCLOCK_HILOGE("listener is nullptr.");
         return E_SCREENLOCK_NULLPTR;
     }
-    int32_t status = proxy->UnlockWatch(isPaymentApp, listener);
+    int32_t status = proxy->UnlockWatch(listener);
     SCLOCK_HILOGD("UnlockWatch out, status=%{public}d", status);
     return status;
 }

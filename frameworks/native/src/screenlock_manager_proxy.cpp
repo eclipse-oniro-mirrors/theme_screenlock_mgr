@@ -450,13 +450,12 @@ int32_t ScreenLockManagerProxy::UnRegisterInnerListener(const int32_t userId, co
 }
 
 #ifdef SUPPORT_WEAR_PAYMENT_APP
-int32_t ScreenLockManagerProxy::IsLockedWatch(bool isPaymentApp, bool &isLocked)
+int32_t ScreenLockManagerProxy::IsLockedWatch(bool &isLocked)
 {
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
-    data.WriteBool(isPaymentApp);
     int32_t ret = Remote()->SendRequest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED_WATCH), data, reply, option);
     if (ret != ERR_NONE) {
@@ -473,13 +472,12 @@ int32_t ScreenLockManagerProxy::IsLockedWatch(bool isPaymentApp, bool &isLocked)
     return E_SCREENLOCK_OK;
 }
 
-int32_t ScreenLockManagerProxy::UnlockWatch(bool isPaymentApp, const sptr<ScreenLockCallbackInterface> &listener)
+int32_t ScreenLockManagerProxy::UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener)
 {
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     data.WriteInterfaceToken(GetDescriptor());
-    data.WriteBool(isPaymentApp);
     SCLOCK_HILOGD("started.");
     if (listener == nullptr) {
         SCLOCK_HILOGE("listener is nullptr");

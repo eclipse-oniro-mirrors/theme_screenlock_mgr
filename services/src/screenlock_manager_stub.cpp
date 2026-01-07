@@ -352,8 +352,7 @@ int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, Message
 int32_t ScreenLockManagerStub::OnIsLockedWatch(MessageParcel &data, MessageParcel &reply)
 {
     bool isLocked = false;
-    bool isPaymentApp = data.ReadBool();
-    int32_t ret = IsLockedWatch(isPaymentApp, isLocked);
+    int32_t ret = IsLockedWatch(isLocked);
     reply.WriteInt32(ret);
     if (ret == E_SCREENLOCK_OK) {
         reply.WriteBool(isLocked);
@@ -363,7 +362,6 @@ int32_t ScreenLockManagerStub::OnIsLockedWatch(MessageParcel &data, MessageParce
 
 int32_t ScreenLockManagerStub::OnUnlockWatch(MessageParcel &data, MessageParcel &reply)
 {
-    bool isPaymentApp = data.ReadBool();
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
         SCLOCK_HILOGE("remote is nullptr");
@@ -374,7 +372,7 @@ int32_t ScreenLockManagerStub::OnUnlockWatch(MessageParcel &data, MessageParcel 
         SCLOCK_HILOGE("listener is null");
         return ERR_INVALID_DATA;
     }
-    int32_t ret = UnlockWatch(isPaymentApp, listener);
+    int32_t ret = UnlockWatch(listener);
     reply.WriteInt32(ret);
     return ERR_NONE;
 }
