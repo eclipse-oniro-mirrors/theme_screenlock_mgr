@@ -68,7 +68,7 @@
           "//base/theme/screenlock_mgr:screenlock_mgr_packages"
         ]
       },
-      "inner_api": [
+      "inner_kits": [
         {
           "name": "//base/theme/screenlock_mgr/interfaces/inner_api:screenlock_client", 
           "header": {
