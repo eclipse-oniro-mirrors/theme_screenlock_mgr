@@ -49,7 +49,7 @@ WatchAppLockManager::WatchAppLockManager()
 WatchAppLockManager::~WatchAppLockManager()
 {
     unlockedRecord.clear();
-     if (wearDetectionObserver_) {
+    if (wearDetectionObserver_) {
         wearDetectionObserver_->UnRegisterSensorListener();
     }
     if (wearDisplayPowerEventObserver_) {
