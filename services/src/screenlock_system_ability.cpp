@@ -1242,7 +1242,8 @@ int32_t ScreenLockSystemAbility::IsLockedWatch(bool &isLocked)
         SCLOCK_HILOGI("calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    isLocked = WatchAppLockManager::GetInstance().IsScreenLocked(IsScreenLocked());
+    bool isScreenLocked = IsScreenLocked();
+    isLocked = isScreenLocked || WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
     SCLOCK_HILOGI("isLocked:%{public}d", isLocked);
     return E_SCREENLOCK_OK;
 }

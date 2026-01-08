@@ -103,12 +103,13 @@ void WearDetectionObserver ::WearSensorCallback(SensorEvent *event)
     }
 }
 
-void WearDisplayPowerEventObserver ::WearDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event, EventStatus status)
+void WearDisplayPowerEventObserver ::WearDisplayPowerEventListener::OnDisplayPowerEvent(
+    DisplayPowerEvent event, EventStatus status)
 {
     SCLOCK_HILOGI(
         "OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event), static_cast<int>(status));
     if (event == DisplayPowerEvent::SLEEP && status == EventStatus::END) {
-        WatchAppLockManager::GetInstance().onScreenOffEnd();
+        WatchAppLockManager::GetInstance().OnScreenOffEnd();
     }
 }
 
@@ -130,7 +131,7 @@ void WearDisplayPowerEventObserver ::RetryRegistration()
         while (retryCount_ < maxRetries) {
             DMError ret = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
             SCLOCK_HILOGI("registered ret = %{public}d", ret);
-            if (ret != 0) {
+            if (ret != DMError::DM_OK) {
                 retryCount_++;
                 SCLOCK_HILOGI("registered fail, retry = %{public}d", retryCount_);
                 std::this_thread::sleep_for(retryDelay);

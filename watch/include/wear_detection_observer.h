@@ -20,6 +20,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include "dm_common.h"
 
 namespace OHOS {
 namespace ScreenLock {
