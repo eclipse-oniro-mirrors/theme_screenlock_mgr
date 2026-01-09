@@ -1232,5 +1232,41 @@ void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
     auto callerPid = IPCSkeleton::GetCallingPid();
     SCLOCK_HILOGI("%{public}s callerPid:%{public}d", invokeName.c_str(), callerPid);
 }
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockSystemAbility::IsLockedWatch(bool &isLocked)
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
+        SCLOCK_HILOGI("calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    bool isScreenLocked = IsScreenLocked();
+    isLocked = isScreenLocked || WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
+    SCLOCK_HILOGI("isLocked:%{public}d", isLocked);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockSystemAbility::UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener)
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
+        SCLOCK_HILOGI("calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    bool isScreenLocked = IsScreenLocked();
+    if (isScreenLocked) {
+        SCLOCK_HILOGI("device lock");
+        UnlockScreen(listener);
+    } else {
+        SCLOCK_HILOGI("app lock");
+        bool isAppLocked = WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
+        WatchAppLockManager::GetInstance().unlockScreen(isAppLocked);
+    }
+    return E_SCREENLOCK_OK;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS

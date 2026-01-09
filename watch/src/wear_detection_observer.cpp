@@ -17,7 +17,9 @@
 #include "wear_detection_observer.h"
 #include "sclock_log.h"
 #include "watch_applock_manager.h"
+#include "display_manager.h"
 
+using namespace OHOS::Rosen;
 namespace OHOS {
 namespace ScreenLock {
 void WearDetectionObserver ::RegisterSensorListener()
@@ -98,6 +100,60 @@ void WearDetectionObserver ::WearSensorCallback(SensorEvent *event)
         WearDetectionData *wearDetectionData = reinterpret_cast<WearDetectionData *>(event->data);
         bool isWearOn = wearDetectionData->value == WEAR_ON;
         WatchAppLockManager::GetInstance().WearStateChange(isWearOn);
+    }
+}
+
+void WearDisplayPowerEventObserver ::WearDisplayPowerEventListener::OnDisplayPowerEvent(
+    DisplayPowerEvent event, EventStatus status)
+{
+    SCLOCK_HILOGI(
+        "OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event), static_cast<int>(status));
+    if (event == DisplayPowerEvent::SLEEP && status == EventStatus::END) {
+        WatchAppLockManager::GetInstance().OnScreenOffEnd();
+    }
+}
+
+void WearDisplayPowerEventObserver ::RegisterDisplayPowerEventListener()
+{
+    if (!registered_.exchange(true)) {
+        RetryRegistration();
+    } else {
+        SCLOCK_HILOGI("already registered");
+    }
+}
+
+void WearDisplayPowerEventObserver ::RetryRegistration()
+{
+    const int maxRetries = MAX_RETRIES;
+    const std::chrono::seconds retryDelay(RETRY_DELAY_SECOND);
+    retryCount_ = 0;
+    auto retryTask = [this, maxRetries, retryDelay]() {
+        while (retryCount_ < maxRetries) {
+            DMError ret = DisplayManager::GetInstance().RegisterDisplayPowerEventListener(displayPowerEventListener_);
+            SCLOCK_HILOGI("registered ret = %{public}d", ret);
+            if (ret != DMError::DM_OK) {
+                retryCount_++;
+                SCLOCK_HILOGI("registered fail, retry = %{public}d", retryCount_);
+                std::this_thread::sleep_for(retryDelay);
+                continue;
+            }
+            SCLOCK_HILOGI("registered success");
+            return;
+        }
+        registered_.exchange(false);
+        SCLOCK_HILOGW("registered fail after %{public}d retries", maxRetries);
+    };
+    std::thread taskThread(retryTask);
+    taskThread.detach();
+}
+
+void WearDisplayPowerEventObserver ::UnRegisterDisplayPowerEventListener()
+{
+    if (registered_.exchange(false)) {
+        DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+        SCLOCK_HILOGI("unregistered success");
+    } else {
+        SCLOCK_HILOGI("not registered");
     }
 }
 }

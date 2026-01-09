@@ -50,6 +50,10 @@ public:
                                           const sptr<InnerListenerIf>& listener) = 0;
     virtual int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                             const sptr<InnerListenerIf>& listener) = 0;
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    virtual int32_t IsLockedWatch(bool &isLocked) = 0;
+    virtual int32_t UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener) = 0;
+#endif // SUPPORT_WEAR_PAYMENT_APP
 };
 } // namespace ScreenLock
 } // namespace OHOS
