@@ -97,7 +97,6 @@ bool FuzzSendScreenLockEvent(const uint8_t *rawData, size_t size)
 
     const std::string eventOne = UNLOCK_SCREEN_RESULT;
     int param = 0;
-    param = rawData[0];
     systemAbility->SendScreenLockEvent(eventOne, param);
 
     const std::string eventTwo = SCREEN_DRAWDONE;
@@ -106,6 +105,7 @@ bool FuzzSendScreenLockEvent(const uint8_t *rawData, size_t size)
     const std::string eventThree = LOCK_SCREEN_RESULT;
     systemAbility->SendScreenLockEvent(eventThree, param);
 
+    param = rawData[0];
     systemAbility->SendScreenLockEvent(eventOne, param);
     systemAbility->SendScreenLockEvent(eventTwo, param);
     systemAbility->SendScreenLockEvent(eventThree, param);
