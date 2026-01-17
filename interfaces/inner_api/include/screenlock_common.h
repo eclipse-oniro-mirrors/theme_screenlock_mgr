@@ -27,26 +27,26 @@ namespace ScreenLock {
 #define PARAM_ONE 1
 #define PARAM_TWO 2
 
-const std::string BEGIN_WAKEUP = "beginWakeUp";
-const std::string END_WAKEUP = "endWakeUp";
-const std::string BEGIN_SCREEN_ON = "beginScreenOn";
-const std::string END_SCREEN_ON = "endScreenOn";
-const std::string BEGIN_SLEEP = "beginSleep";
-const std::string END_SLEEP = "endSleep";
-const std::string BEGIN_SCREEN_OFF = "beginScreenOff";
-const std::string END_SCREEN_OFF = "endScreenOff";
-const std::string STRONG_AUTH_CHANGED = "strongAuthChanged";
-const std::string CHANGE_USER = "changeUser";
-const std::string SCREENLOCK_ENABLED = "screenlockEnabled";
-const std::string EXIT_ANIMATION = "beginExitAnimation";
-const std::string UNLOCKSCREEN = "unlockScreen";
-const std::string UNLOCK_SCREEN_RESULT = "unlockScreenResult";
-const std::string LOCKSCREEN = "lockScreen";
-const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
-const std::string SCREEN_DRAWDONE = "screenDrawDone";
-const std::string SYSTEM_READY = "systemReady";
-const std::string SERVICE_RESTART = "serviceRestart";
-const std::string USERIAM_READY = "useriamReady";
+inline const std::string BEGIN_WAKEUP = "beginWakeUp";
+inline const std::string END_WAKEUP = "endWakeUp";
+inline const std::string BEGIN_SCREEN_ON = "beginScreenOn";
+inline const std::string END_SCREEN_ON = "endScreenOn";
+inline const std::string BEGIN_SLEEP = "beginSleep";
+inline const std::string END_SLEEP = "endSleep";
+inline const std::string BEGIN_SCREEN_OFF = "beginScreenOff";
+inline const std::string END_SCREEN_OFF = "endScreenOff";
+inline const std::string STRONG_AUTH_CHANGED = "strongAuthChanged";
+inline const std::string CHANGE_USER = "changeUser";
+inline const std::string SCREENLOCK_ENABLED = "screenlockEnabled";
+inline const std::string EXIT_ANIMATION = "beginExitAnimation";
+inline const std::string UNLOCKSCREEN = "unlockScreen";
+inline const std::string UNLOCK_SCREEN_RESULT = "unlockScreenResult";
+inline const std::string LOCKSCREEN = "lockScreen";
+inline const std::string LOCK_SCREEN_RESULT = "lockScreenResult";
+inline const std::string SCREEN_DRAWDONE = "screenDrawDone";
+inline const std::string SYSTEM_READY = "systemReady";
+inline const std::string SERVICE_RESTART = "serviceRestart";
+inline const std::string USERIAM_READY = "useriamReady";
 const int USER_NULL = -10000;
 enum ScreenLockModule {
     SCREENLOCK_MODULE_SERVICE_ID = 0x04,
