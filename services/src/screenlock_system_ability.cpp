@@ -628,10 +628,6 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("IsScreenLocked restart.");
-    }
-
     int32_t userId = GetUserIdFromCallingUid();
     std::unique_lock<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
