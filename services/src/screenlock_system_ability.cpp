@@ -628,7 +628,10 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
-    int32_t userId = GetUserIdFromCallingUid();
+    int32_t userId = stateValue_.GetCurrentUser();
+    if (userId == 0) {
+        userId = GetUserIdFromCallingUid();
+    }
     std::lock_guard<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
 #ifdef SUPPORT_WEAR_PAYMENT_APP
