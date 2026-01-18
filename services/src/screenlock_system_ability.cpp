@@ -630,7 +630,7 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
     int32_t userId = stateValue_.GetCurrentUser();
-    if (userId == 0) {
+    if (userId == USER_NULL) {
         userId = GetUserIdFromCallingUid();
     }
     std::lock_guard<std::mutex> slm(screenLockMutex_);
