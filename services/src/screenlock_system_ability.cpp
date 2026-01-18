@@ -554,10 +554,11 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     }
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     int32_t userId = GetUserIdFromCallingUid();
+    bool isScreenLocked = true;
     {
         std::lock_guard<std::mutex> slm(screenLockMutex_);
         auto iter = isScreenlockedMap_.find(userId);
-        bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
+        isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
     }
     if (!isScreenLocked && WatchAppLockManager::GetInstance().IsPaymentApp()) {
         auto watchUnlockResult = WatchAppLockManager::GetInstance().unlockScreen(IsScreenLocked());
