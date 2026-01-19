@@ -645,6 +645,7 @@ bool ScreenLockSystemAbility::IsScreenLocked()
             SCLOCK_HILOGI("IsScreenLocked restart.");
         }
     }
+    int32_t userId = GetUserIdFromCallingUid();
     std::lock_guard<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
 #ifdef SUPPORT_WEAR_PAYMENT_APP
