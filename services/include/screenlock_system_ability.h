@@ -231,6 +231,7 @@ private:
     static sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
 
     ServiceRunningState state_;
+    std::mutex runningStateMutex_;
     static std::mutex instanceLock_;
     static sptr<ScreenLockSystemAbility> instance_;
     static std::shared_ptr<ffrt::queue> queue_;
