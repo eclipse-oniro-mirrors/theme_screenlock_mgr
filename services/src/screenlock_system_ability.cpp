@@ -182,9 +182,12 @@ void ScreenLockSystemAbility::OnStart()
             instance_ = this;
         }
     }
-    if (state_ == ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
-        return;
+    {
+ 	         std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+ 	         if (state_ == ServiceRunningState::STATE_RUNNING) {
+ 	             SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
+ 	             return;
+ 	         }
     }
     InitServiceHandler();
     if (Init() != ERR_OK) {
@@ -257,6 +260,7 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
             }
         }
     } else if (systemReady_) {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
         state_ = ServiceRunningState::STATE_RUNNING;
         SCLOCK_HILOGI("systemReady_ is true");
     }
@@ -350,8 +354,12 @@ void ScreenLockSystemAbility::InitUserId()
 void ScreenLockSystemAbility::OnStop()
 {
     SCLOCK_HILOGI("OnStop started.");
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        return;
+    {
+ 	    std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            return;
+        }
+        state_ = ServiceRunningState::STATE_NOT_START;
     }
     {
         std::lock_guard<std::mutex> autoLock(queueLock_);
@@ -361,7 +369,6 @@ void ScreenLockSystemAbility::OnStop()
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         instance_ = nullptr;
     }
-    state_ = ServiceRunningState::STATE_NOT_START;
     DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
 #ifndef IS_SO_CROP_H
     StrongAuthManger::GetInstance()->UnRegistIamEventListener();
@@ -540,8 +547,11 @@ int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockCallbackInterface> 
 
 int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterface> &listener)
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("UnlockScreen restart.");
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGI("UnlockScreen restart.");
+        }
     }
     AccessTokenID callerTokenId = IPCSkeleton::GetCallingTokenID();
     // check whether the page of app request unlock is the focus page
@@ -628,8 +638,11 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("IsScreenLocked restart.");
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGI("IsScreenLocked restart.");
+        }
     }
 
     int32_t userId = GetUserIdFromCallingUid();
@@ -669,8 +682,11 @@ int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLock
 
 bool ScreenLockSystemAbility::GetSecure()
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
+        }
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure started.");
     int callingUid = IPCSkeleton::GetCallingUid();
