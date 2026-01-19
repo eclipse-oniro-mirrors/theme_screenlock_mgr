@@ -183,11 +183,11 @@ void ScreenLockSystemAbility::OnStart()
         }
     }
     {
- 	         std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
- 	         if (state_ == ServiceRunningState::STATE_RUNNING) {
- 	             SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
- 	             return;
- 	         }
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ == ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
+            return;
+        }
     }
     InitServiceHandler();
     if (Init() != ERR_OK) {
