@@ -246,9 +246,7 @@ int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, Mes
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = GetScreenLockAuthState(userId, authState);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteInt32(authState);
-    }
+    reply.WriteInt32(authState);
     return ERR_NONE;
 }
 
@@ -269,9 +267,7 @@ int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParce
     int32_t retCode = GetStrongAuth(userId, reasonFlag);
     SCLOCK_HILOGI("userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteInt32(reasonFlag);
-    }
+    reply.WriteInt32(reasonFlag);
     return ERR_NONE;
 }
 
@@ -324,14 +320,12 @@ int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &
 
 int32_t ScreenLockManagerStub::OnIsDeviceLocked(MessageParcel &data, MessageParcel &reply)
 {
-    bool isDeviceLocked = false;
+    bool isDeviceLocked = true;
     int32_t userId = data.ReadInt32();
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsDeviceLocked(userId, isDeviceLocked);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteBool(isDeviceLocked);
-    }
+    reply.WriteBool(isDeviceLocked);
     return ERR_NONE;
 }
 
@@ -342,9 +336,7 @@ int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, Message
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsLockedWithUserId(userId, isLocked);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteBool(isLocked);
-    }
+    reply.WriteBool(isLocked);
     return ERR_NONE;
 }
 
