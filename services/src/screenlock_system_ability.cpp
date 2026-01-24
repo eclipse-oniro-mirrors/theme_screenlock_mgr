@@ -210,9 +210,11 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     SCLOCK_HILOGI("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
     if (systemAbilityId == DISPLAY_MANAGER_SERVICE_SA_ID) {
         int times = 0;
+        std::unique_lock<std::mutex> autoLock(instanceLock_);
         if (displayPowerEventListener_ == nullptr) {
             displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
         }
+        autoLock.unlock();
         RegisterDisplayPowerEventListener(times);
     }
     if (systemAbilityId == SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN) {
@@ -360,9 +362,11 @@ void ScreenLockSystemAbility::OnStop()
     {
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         instance_ = nullptr;
+        if (displayPowerEventListener_ != nullptr) {
+            DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+        }
     }
     state_ = ServiceRunningState::STATE_NOT_START;
-    DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
 #ifndef IS_SO_CROP_H
     StrongAuthManger::GetInstance()->UnRegistIamEventListener();
     StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
