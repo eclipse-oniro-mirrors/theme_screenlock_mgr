@@ -38,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
     /* Run your code on data */
     OHOS::ScreenlockServiceFuzzUtils::OnRemoteRequestTest(
-        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED), data, size);
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_SECURE_MODE), data, size);
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
     return 0;
 }
