@@ -16,7 +16,7 @@
 #include "screenlock_manager_stub.h"
 
 #include <string>
-#include <share_mutex>
+#include <mutex>
 #include "ipc_skeleton.h"
 #include "parcel.h"
 #include "sclock_log.h"
