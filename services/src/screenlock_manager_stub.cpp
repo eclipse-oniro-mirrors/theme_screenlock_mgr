@@ -90,7 +90,7 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    std::shared_lock<std::shared_mutex> lock(rw_mutex)
+    std::shared_lock<std::shared_mutex> lock(rw_mutex);
     auto itFunc = handleFuncMap.find(code);
     if (itFunc != handleFuncMap.end()) {
         auto requestFunc = itFunc->second;
