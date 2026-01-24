@@ -16,7 +16,7 @@
 #include "screenlock_manager_stub.h"
 
 #include <string>
-
+#include <share_mutex>
 #include "ipc_skeleton.h"
 #include "parcel.h"
 #include "sclock_log.h"
@@ -28,8 +28,10 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
+std::shared_mutex rw_mutex;
 ScreenLockManagerStub::ScreenLockManagerStub()
 {
+    std::unique_lock<std::shared_mutex> lock(rw_mutex);
     InitHandleMap();
 }
 
@@ -88,7 +90,7 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-
+    std::shared_lock<std::shared_mutex> lock(rw_mutex)
     auto itFunc = handleFuncMap.find(code);
     if (itFunc != handleFuncMap.end()) {
         auto requestFunc = itFunc->second;
