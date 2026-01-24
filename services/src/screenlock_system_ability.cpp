@@ -375,7 +375,6 @@ void ScreenLockSystemAbility::OnStop()
             DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
         }
     }
-    DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
 #ifndef IS_SO_CROP_H
     StrongAuthManger::GetInstance()->UnRegistIamEventListener();
     StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
