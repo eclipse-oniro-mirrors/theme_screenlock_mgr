@@ -634,6 +634,8 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest032, TestSize.Level0)
     int32_t reasonFlag = 0;
 
     authmanager->GetStrongAuthTriggerPeriod(otherUserId);
+    authmanager->RegistAuthEventListener();
+    authmanager->UnRegistAuthEventListener();
 
     authmanager->ResetStrongAuthTimer(otherUserId, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS);
 
@@ -642,6 +644,8 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest032, TestSize.Level0)
     authmanager->DestroyStrongAuthTimer(otherUserId);
 
     EXPECT_EQ(flag, true);
+    otherUserId = 0;
+    authmanager->DestroyStrongAuthTimer(otherUserId);
 #endif  // IS_SO_CROP_H
 }
 
