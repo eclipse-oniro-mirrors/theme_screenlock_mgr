@@ -642,7 +642,6 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest032, TestSize.Level0)
     auto flag = authmanager->IsUserHasStrongAuthTimer(otherUserId);
 
     authmanager->DestroyStrongAuthTimer(otherUserId);
-    
     otherUserId = 0;
     authmanager->DestroyStrongAuthTimer(otherUserId);
 
