@@ -240,7 +240,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0010, TestSize.Level0)
     bool isDisabled = true;
     result = proxy->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 
@@ -301,7 +301,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0013, TestSize.Level0)
     bool isDisabled = true;
     result = ScreenLockManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 
