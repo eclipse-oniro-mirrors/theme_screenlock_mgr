@@ -647,6 +647,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, LockTest028, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestLock.");
+    const sptr<ScreenLockSystemAbilityInterface> &listener = nullptr;
+    std::string test = "test";
+    ScreenLockSystemAbility::GetInstance()->AppendPrintOtherInfo(test);
+    ScreenLockSystemAbility::GetInstance()->OnSystemEvent(listener);
+    ScreenLockSystemAbility::GetInstance()->RemoveSubscribeUserIamReady();
+    ScreenLockSystemAbility::GetInstance()->RegisterDumpCommand();
+    ScreenLockSystemAbility::GetInstance()->OnStop();
     int32_t userId = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
     bool ret = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER");
@@ -1077,118 +1084,6 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest044, TestSize.Level0)
     InnerListenerManager::GetInstance()->OnDeviceLockStateChanged(userId, 0);
     SCLOCK_HILOGI("ScreenLockTest041.[result]:%{public}d", result);
     EXPECT_EQ(result, E_SCREENLOCK_OK);
-}
-
-/**
- * @tc.name: ScreenLockTest045
- * @tc.desc: Test OnStop.
- * @tc.type: FUNC
- * @tc.require:
- * @tc.author:
- */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest045, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test OnStop.");
-    int32_t userId = 0;
-    int reasonFlag = 1;
-    int32_t result = ScreenLockSystemAbility::GetInstance()->RequestStrongAuth(reasonFlag, userId);
-    ScreenLockSystemAbility::GetInstance()->OnStop();
-    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
-    if (ret) {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    } else {
-        EXPECT_EQ(result, E_SCREENLOCK_OK);
-    }
-}
-
-/**
- * @tc.name: ScreenLockTest046
- * @tc.desc: Test OnSystemEvent.
- * @tc.type: FUNC
- * @tc.require:
- * @tc.author:
- */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest046, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test OnSystemEvent.");
-    const sptr<ScreenLockSystemAbilityInterface> &listener = nullptr;
-    int32_t userId = 0;
-    int reasonFlag = 1;
-    int32_t result = ScreenLockSystemAbility::GetInstance()->RequestStrongAuth(reasonFlag, userId);
-    ScreenLockSystemAbility::GetInstance()->OnSystemEvent(listener);
-    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
-    if (ret) {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    } else {
-        EXPECT_EQ(result, E_SCREENLOCK_OK);
-    }
-}
-
-/**
- * @tc.name: ScreenLockTest047
- * @tc.desc: Test RegisterDumpCommand.
- * @tc.type: FUNC
- * @tc.require:
- * @tc.author:
- */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest047, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test RegisterDumpCommand.");
-    int32_t userId = 0;
-    int reasonFlag = 1;
-    int32_t result = ScreenLockSystemAbility::GetInstance()->RequestStrongAuth(reasonFlag, userId);
-    ScreenLockSystemAbility::GetInstance()->RegisterDumpCommand();
-    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
-    if (ret) {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    } else {
-        EXPECT_EQ(result, E_SCREENLOCK_OK);
-    }
-}
-
-/**
- * @tc.name: ScreenLockTest048
- * @tc.desc: Test AppendPrintOtherInfo.
- * @tc.type: FUNC
- * @tc.require:
- * @tc.author:
- */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest048, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test AppendPrintOtherInfo.");
-    std::string test = "test";
-    int32_t userId = 0;
-    int reasonFlag = 1;
-    int32_t result = ScreenLockSystemAbility::GetInstance()->RequestStrongAuth(reasonFlag, userId);
-    ScreenLockSystemAbility::GetInstance()->AppendPrintOtherInfo(test);
-    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
-    if (ret) {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    } else {
-        EXPECT_EQ(result, E_SCREENLOCK_OK);
-    }
-}
-
-/**
- * @tc.name: ScreenLockTest049
- * @tc.desc: Test RemoveSubscribeUserIamReady.
- * @tc.type: FUNC
- * @tc.require:
- * @tc.author:
- */
-HWTEST_F(ScreenLockServiceTest, ScreenLockTest049, TestSize.Level0)
-{
-    SCLOCK_HILOGD("Test RemoveSubscribeUserIamReady.");
-    int32_t userId = 0;
-    int reasonFlag = 1;
-    int32_t result = ScreenLockSystemAbility::GetInstance()->RequestStrongAuth(reasonFlag, userId);
-    ScreenLockSystemAbility::GetInstance()->RemoveSubscribeUserIamReady();
-    bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
-    if (ret) {
-        EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
-    } else {
-        EXPECT_EQ(result, E_SCREENLOCK_OK);
-    }
 }
 } // namespace ScreenLock
 } // namespace OHOS
