@@ -434,6 +434,8 @@ HWTEST_F(ScreenLockClientTest, LockTest0019, TestSize.Level0)
     bool isLocked = false;
     int32_t retCode = 0;
     bool isDeviceLocked = false;
+    const wptr<IRemoteObject> &remote = 0;
+    ScreenLockManager::GetInstance()->OnRemoteSaDied(remote);
     retCode = ScreenLockManager::GetInstance()->IsLockedWithUserId(userId, isDeviceLocked);
     SCLOCK_HILOGI("LockTest0019.[retCode]:%{public}d", retCode);
     EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
