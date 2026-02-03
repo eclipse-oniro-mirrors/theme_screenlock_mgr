@@ -830,8 +830,11 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest035, TestSize.Level0)
     int fd = 1;
     std::vector<std::u16string> args = {u"arg1", u"arg2"};
 
-    sptr<InnerListenerIf> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
+    sptr<InnerListenerIf> InnerListenerIfTest1 = nullptr;
     int32_t userId = 100;
+    ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(
+        userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
     int result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(
         userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
     bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
@@ -917,6 +920,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest038, TestSize.Level0)
     int32_t result = InnerListenerManager::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH,
                                                                                 InnerListenerIfTest1);
     InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, 0);
+    userId = static_cast<int32_t>(SpecialUserId::USER_CURRENT);
+    InnerListenerManager::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    InnerListenerIfTest1 = nullptr;
+    InnerListenerManager::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
     SCLOCK_HILOGI("ScreenLockTest038.[result]:%{public}d", result);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
@@ -1075,6 +1082,11 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest044, TestSize.Level0)
     int32_t userId = 100;
 
     sptr<InnerListenerIf> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
+    sptr<InnerListenerIf> InnerListenerIfTest2 = nullptr;
+    InnerListenerManager::GetInstance()->AddDeathRecipient(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListenerManager::GetInstance()->AddDeathRecipient(ListenType::DEVICE_LOCK, InnerListenerIfTest2);
+    InnerListenerManager::GetInstance()->RemoveDeathRecipient(InnerListenerIfTest1);
+    InnerListenerManager::GetInstance()->RemoveDeathRecipient(InnerListenerIfTest2);
 
     int32_t result =
         InnerListenerManager::GetInstance()->RemoveInnerListener(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
