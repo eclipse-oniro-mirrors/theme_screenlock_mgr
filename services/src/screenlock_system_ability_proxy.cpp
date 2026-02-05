@@ -43,9 +43,13 @@ void ScreenLockSystemAbilityProxy::OnCallBack(const SystemEvent &systemEvent)
         SCLOCK_HILOGE("write string failed");
         return;
     }
-    int32_t error = Remote()->SendRequest(ON_CALLBACK, data, reply, option);
-    if (error != 0) {
-        SCLOCK_HILOGE("SendRequest failed, error %{public}d", error);
+    if (Remote() != nullptr) {
+        int32_t error = Remote()->SendRequest(ON_CALLBACK, data, reply, option);
+        if (error != 0) {
+            SCLOCK_HILOGE("SendRequest failed, error %{public}d", error);
+        }
+    } else {
+        SCLOCK_HILOGE("proxy is null");
     }
     SCLOCK_HILOGD("ScreenLockSystemAbilityProxy::OnCallBack End");
 }
