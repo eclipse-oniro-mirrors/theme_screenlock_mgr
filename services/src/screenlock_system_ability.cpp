@@ -723,7 +723,7 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::uniuqe_lock<std::mutex> lck(listenerMutex_);
+    std::unique_lock<std::mutex> lck(listenerMutex_);
     systemEventListener_ = listener;
     lck.unlock();
     stateValue_.Reset();
