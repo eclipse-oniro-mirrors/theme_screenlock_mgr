@@ -97,7 +97,7 @@ void AniScreenLockUtil::GetNullLog(ani_env *env, ani_ref *result)
 void AniScreenLockUtil::GetUndefinedLog(ani_env *env, ani_ref *result)
 {
     if (env->GetUndefined(result) != ANI_OK) {
-        SCLOCK_HILOGE("GetNull failed");
+        SCLOCK_HILOGE("GetUndefinedLog failed");
         return;
     }
 }
