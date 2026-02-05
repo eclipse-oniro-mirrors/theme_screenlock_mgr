@@ -728,7 +728,7 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     lck.unlock();
     stateValue_.Reset();
     auto callback = [this]() { OnSystemReady(); };
-    std::uniuqe_lock<std::mutex> queueLock(queueLock_);
+    std::unique_lock<std::mutex> queueLock(queueLock_);
     if (queue_ != nullptr) {
         queue_->submit(callback);
     }
