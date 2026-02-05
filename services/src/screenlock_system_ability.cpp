@@ -723,13 +723,16 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::lock_guard<std::mutex> lck(listenerMutex_);
+     std::uniuqe_lock<std::mutex> lck(listenerMutex_);
     systemEventListener_ = listener;
+    lck.unlock();
     stateValue_.Reset();
     auto callback = [this]() { OnSystemReady(); };
+    std::uniuqe_lock<std::mutex> queueLock(queueLock_)
     if (queue_ != nullptr) {
         queue_->submit(callback);
     }
+    queueLock.unlock();
     int32_t userId = GetUserIdFromCallingUid();
     stateValue_.SetCurrentUser(userId);
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent end.");
