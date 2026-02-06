@@ -448,5 +448,58 @@ int32_t ScreenLockManagerProxy::UnRegisterInnerListener(const int32_t userId, co
     SCLOCK_HILOGD("UnRegisterInnerListener end retCode is %{public}d.", retCode);
     return retCode;
 }
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockManagerProxy::IsLockedWatch(bool &isLocked)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED_WATCH), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy IsLockedWatch, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    if (retCode != E_SCREENLOCK_OK) {
+        SCLOCK_HILOGE("IsLockedWatch, errCode = %{public}d", retCode);
+        return retCode;
+    }
+    isLocked = reply.ReadBool();
+    SCLOCK_HILOGD("IsLockedWatch end retCode is %{public}d, %{public}d.", retCode, isLocked);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockManagerProxy::UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    SCLOCK_HILOGD("started.");
+    if (listener == nullptr) {
+        SCLOCK_HILOGE("listener is nullptr");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    if (!data.WriteRemoteObject(listener->AsObject().GetRefPtr())) {
+        SCLOCK_HILOGE("write parcel failed.");
+        return E_SCREENLOCK_WRITE_PARCEL_ERROR;
+    }
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_WATCH), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("RequestUnlockWatch, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    if (retCode != E_SCREENLOCK_OK) {
+        SCLOCK_HILOGE("UnlockWatch, errCode = %{public}d", retCode);
+        return retCode;
+    }
+    return E_SCREENLOCK_OK;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS

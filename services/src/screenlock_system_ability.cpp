@@ -47,12 +47,12 @@
 #include "commeventsubscriber.h"
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
+#include "innerlistenermanager.h"
+#include "common_helper.h"
 #ifndef IS_SO_CROP_H
 #include "command.h"
 #include "dump_helper.h"
 #include "strongauthmanager.h"
-#include "innerlistenermanager.h"
-#include "common_helper.h"
 #endif // IS_SO_CROP_H
 #ifdef SUPPORT_WEAR_PAYMENT_APP
 #include "watch_applock_manager.h"
@@ -132,8 +132,10 @@ void AccountUnlocked(const int lastUser, const int targetUser)
 }
 
 ScreenLockSystemAbility::ScreenLockSystemAbility(int32_t systemAbilityId, bool runOnCreate)
-    : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
-{}
+    : SystemAbility(systemAbilityId, runOnCreate),
+      state_(ServiceRunningState::STATE_NOT_START)
+{
+}
 
 ScreenLockSystemAbility::~ScreenLockSystemAbility() {}
 
@@ -182,9 +184,12 @@ void ScreenLockSystemAbility::OnStart()
             instance_ = this;
         }
     }
-    if (state_ == ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
-        return;
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ == ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGW("ScreenLockSystemAbility is already running.");
+            return;
+        }
     }
     InitServiceHandler();
     if (Init() != ERR_OK) {
@@ -210,9 +215,11 @@ void ScreenLockSystemAbility::OnAddSystemAbility(int32_t systemAbilityId, const 
     SCLOCK_HILOGI("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
     if (systemAbilityId == DISPLAY_MANAGER_SERVICE_SA_ID) {
         int times = 0;
+        std::unique_lock<std::mutex> autoLock(instanceLock_);
         if (displayPowerEventListener_ == nullptr) {
             displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
         }
+        autoLock.unlock();
         RegisterDisplayPowerEventListener(times);
     }
     if (systemAbilityId == SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN) {
@@ -257,6 +264,7 @@ void ScreenLockSystemAbility::RegisterDisplayPowerEventListener(int32_t times)
             }
         }
     } else if (systemReady_) {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
         state_ = ServiceRunningState::STATE_RUNNING;
         SCLOCK_HILOGI("systemReady_ is true");
     }
@@ -286,7 +294,7 @@ void ScreenLockSystemAbility::OnRemoveUser(const int32_t userId)
     }
     authLock.unlock();
 
-    std::unique_lock<std::mutex> screenStateLock(screenLockMutex_);
+    std::lock_guard<std::mutex> screenStateLock(screenLockMutex_);
     auto lockIter = isScreenlockedMap_.find(userId);
     if (lockIter != isScreenlockedMap_.end()) {
         isScreenlockedMap_.erase(lockIter);
@@ -294,7 +302,6 @@ void ScreenLockSystemAbility::OnRemoveUser(const int32_t userId)
     } else {
         SCLOCK_HILOGI("OnRemoveUser screenStateLock user not exit, userId: %{public}d", userId);
     }
-    screenStateLock.unlock();
 }
 
 void ScreenLockSystemAbility::OnActiveUser(const int lastUser, const int targetUser)
@@ -350,8 +357,12 @@ void ScreenLockSystemAbility::InitUserId()
 void ScreenLockSystemAbility::OnStop()
 {
     SCLOCK_HILOGI("OnStop started.");
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        return;
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            return;
+        }
+        state_ = ServiceRunningState::STATE_NOT_START;
     }
     {
         std::lock_guard<std::mutex> autoLock(queueLock_);
@@ -360,9 +371,10 @@ void ScreenLockSystemAbility::OnStop()
     {
         std::lock_guard<std::mutex> autoLock(instanceLock_);
         instance_ = nullptr;
+        if (displayPowerEventListener_ != nullptr) {
+            DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
+        }
     }
-    state_ = ServiceRunningState::STATE_NOT_START;
-    DisplayManager::GetInstance().UnregisterDisplayPowerEventListener(displayPowerEventListener_);
 #ifndef IS_SO_CROP_H
     StrongAuthManger::GetInstance()->UnRegistIamEventListener();
     StrongAuthManger::GetInstance()->DestroyAllStrongAuthTimer();
@@ -402,7 +414,7 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::getScreenLockSystemAbilit
 }
 
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
-    EventStatus status)
+                                                                                       EventStatus status)
 {
     SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
         static_cast<int>(status));
@@ -540,8 +552,11 @@ int32_t ScreenLockSystemAbility::Unlock(const sptr<ScreenLockCallbackInterface> 
 
 int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterface> &listener)
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("UnlockScreen restart.");
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGI("UnlockScreen restart.");
+        }
     }
     AccessTokenID callerTokenId = IPCSkeleton::GetCallingTokenID();
     // check whether the page of app request unlock is the focus page
@@ -555,10 +570,12 @@ int32_t ScreenLockSystemAbility::UnlockInner(const sptr<ScreenLockCallbackInterf
     }
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     int32_t userId = GetUserIdFromCallingUid();
-    std::unique_lock<std::mutex> slm(screenLockMutex_);
-    auto iter = isScreenlockedMap_.find(userId);
-    bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
-    slm.unlock();
+    bool isScreenLocked = true;
+    {
+        std::lock_guard<std::mutex> slm(screenLockMutex_);
+        auto iter = isScreenlockedMap_.find(userId);
+        isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
+    }
     if (!isScreenLocked && WatchAppLockManager::GetInstance().IsPaymentApp()) {
         auto watchUnlockResult = WatchAppLockManager::GetInstance().unlockScreen(IsScreenLocked());
         if (watchUnlockResult != E_SCREENLOCK_OK) {
@@ -628,12 +645,11 @@ int32_t ScreenLockSystemAbility::IsLocked(bool &isLocked)
 
 bool ScreenLockSystemAbility::IsScreenLocked()
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("IsScreenLocked restart.");
+    int32_t userId = stateValue_.GetCurrentUser();
+    if (userId == USER_NULL || userId == 0) {
+        userId = GetUserIdFromCallingUid();
     }
-
-    int32_t userId = GetUserIdFromCallingUid();
-    std::unique_lock<std::mutex> slm(screenLockMutex_);
+    std::lock_guard<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     if (WatchAppLockManager::GetInstance().IsPaymentApp()) {
@@ -655,7 +671,7 @@ int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLock
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
-    std::unique_lock<std::mutex> slm(screenLockMutex_);
+    std::lock_guard<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
     if (iter != isScreenlockedMap_.end()) {
         isLocked = iter->second;
@@ -669,8 +685,11 @@ int32_t ScreenLockSystemAbility::IsLockedWithUserId(int32_t userId, bool &isLock
 
 bool ScreenLockSystemAbility::GetSecure()
 {
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
-        SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
+    {
+        std::lock_guard<std::mutex> runningStateLock(runningStateMutex_);
+        if (state_ != ServiceRunningState::STATE_RUNNING) {
+            SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
+        }
     }
     SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure started.");
     int callingUid = IPCSkeleton::GetCallingUid();
@@ -704,13 +723,16 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::lock_guard<std::mutex> lck(listenerMutex_);
+    std::unique_lock<std::mutex> lck(listenerMutex_);
     systemEventListener_ = listener;
+    lck.unlock();
     stateValue_.Reset();
     auto callback = [this]() { OnSystemReady(); };
+    std::unique_lock<std::mutex> queueLock(queueLock_);
     if (queue_ != nullptr) {
         queue_->submit(callback);
     }
+    queueLock.unlock();
     int32_t userId = GetUserIdFromCallingUid();
     stateValue_.SetCurrentUser(userId);
     SCLOCK_HILOGI("ScreenLockSystemAbility::OnSystemEvent end.");
@@ -873,7 +895,7 @@ int32_t ScreenLockSystemAbility::GetStrongAuth(int userId, int32_t &reasonFlag)
 }
 
 int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, const ListenType listenType,
-                                                       const sptr<InnerListenerIf>& listener)
+                                                       const sptr<InnerListenerIf> &listener)
 {
     if (CheckSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
@@ -883,12 +905,12 @@ int32_t ScreenLockSystemAbility::RegisterInnerListener(const int32_t userId, con
     if (listenType == ListenType::STRONG_AUTH && !CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    
+
     return InnerListenerManager::GetInstance()->RegisterInnerListener(userId, listenType, listener);
 }
 
 int32_t ScreenLockSystemAbility::UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
-                                                         const sptr<InnerListenerIf>& listener)
+                                                         const sptr<InnerListenerIf> &listener)
 {
     if (CheckSystemPermission()) {
         SCLOCK_HILOGE("Calling app is not system app");
@@ -905,7 +927,7 @@ int32_t ScreenLockSystemAbility::UnRegisterInnerListener(const int32_t userId, c
 void ScreenLockSystemAbility::SetScreenlocked(bool isScreenlocked, const int32_t userId)
 {
     SCLOCK_HILOGI("SetScreenlocked state:%{public}d, userId:%{public}d", isScreenlocked, userId);
-    std::unique_lock<std::mutex> slm(screenLockMutex_);
+    std::lock_guard<std::mutex> slm(screenLockMutex_);
     auto iter = isScreenlockedMap_.find(userId);
     if (iter != isScreenlockedMap_.end()) {
         iter->second = isScreenlocked;
@@ -958,7 +980,7 @@ int ScreenLockSystemAbility::Dump(int fd, const std::vector<std::u16string> &arg
 
     DumpHelper::GetInstance().Dispatch(fd, argsStr);
     return ERR_OK;
-#endif // IS_SO_CROP_H
+#endif  // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::RegisterDumpCommand()
@@ -983,17 +1005,18 @@ void ScreenLockSystemAbility::RegisterDumpCommand()
             authStateLock.unlock();
 
             std::vector<int32_t> userIdArray;
-            std::unique_lock<std::mutex> screenLockedLock(screenLockMutex_);
-            for (auto iter = isScreenlockedMap_.begin(); iter != isScreenlockedMap_.end(); iter++) {
-                int32_t userId = iter->first;
-                userIdArray.push_back(userId);
-                bool isLocked = iter->second;
-                string temp_screenLocked = "";
-                isLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
-                string temp_userId = std::to_string(static_cast<int>(userId));
-                output.append(" * screenLocked  \t\t" + temp_screenLocked + "\t\t" + temp_userId + "\n");
+            {
+                std::lock_guard<std::mutex> screenLockedLock(screenLockMutex_);
+                for (auto iter = isScreenlockedMap_.begin(); iter != isScreenlockedMap_.end(); iter++) {
+                    int32_t userId = iter->first;
+                    userIdArray.push_back(userId);
+                    bool isLocked = iter->second;
+                    string temp_screenLocked = "";
+                    isLocked ? temp_screenLocked = "true" : temp_screenLocked = "false";
+                    string temp_userId = std::to_string(static_cast<int>(userId));
+                    output.append(" * screenLocked  \t\t" + temp_screenLocked + "\t\t" + temp_userId + "\n");
+                }
             }
-            screenLockedLock.unlock();
 
             for (auto iter = userIdArray.begin(); iter != userIdArray.end(); ++iter) {
                 auto reasonFlag = StrongAuthManger::GetInstance()->GetStrongAuthStat(*iter);
@@ -1083,7 +1106,7 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId)
 {
     SCLOCK_HILOGI("eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
-        systemEvent.params_.c_str());
+                  systemEvent.params_.c_str());
     {
         std::lock_guard<std::mutex> lck(listenerMutex_);
         if (systemEventListener_ == nullptr) {
@@ -1091,13 +1114,16 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
             return;
         }
     }
+
     if (traceTaskId != HITRACE_BUTT) {
         StartAsyncTrace(
             HITRACE_TAG_MISC, "ScreenLockSystemAbility::" + systemEvent.eventType_ + "begin callback", traceTaskId);
     }
-    std::lock_guard<std::mutex> lck(listenerMutex_);
-    if (systemEventListener_ != nullptr) {
-        systemEventListener_->OnCallBack(systemEvent);
+    {
+        std::lock_guard<std::mutex> lck(listenerMutex_);
+        if (systemEventListener_ != nullptr) {
+            systemEventListener_->OnCallBack(systemEvent);
+        }
     }
     if (traceTaskId != HITRACE_BUTT) {
         FinishAsyncTrace(
@@ -1192,12 +1218,11 @@ void ScreenLockSystemAbility::AuthStateInit(const int32_t userId)
     }
     authLock.unlock();
 
-    std::unique_lock<std::mutex> screenStateLock(screenLockMutex_);
+    std::lock_guard<std::mutex> screenStateLock(screenLockMutex_);
     auto lockIter = isScreenlockedMap_.find(userId);
     if (lockIter == isScreenlockedMap_.end()) {
         isScreenlockedMap_.insert(std::make_pair(userId, true));
     }
-    screenStateLock.unlock();
 }
 
 void ScreenLockSystemAbility::SubscribeUserIamReady()
@@ -1232,5 +1257,41 @@ void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
     auto callerPid = IPCSkeleton::GetCallingPid();
     SCLOCK_HILOGI("%{public}s callerPid:%{public}d", invokeName.c_str(), callerPid);
 }
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockSystemAbility::IsLockedWatch(bool &isLocked)
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
+        SCLOCK_HILOGI("calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    bool isScreenLocked = IsScreenLocked();
+    isLocked = isScreenLocked || WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
+    SCLOCK_HILOGI("isLocked:%{public}d", isLocked);
+    return E_SCREENLOCK_OK;
+}
+
+int32_t ScreenLockSystemAbility::UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener)
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_HAP && !IsSystemApp()) {
+        SCLOCK_HILOGI("calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    bool isScreenLocked = IsScreenLocked();
+    if (isScreenLocked) {
+        SCLOCK_HILOGI("device lock");
+        UnlockScreen(listener);
+    } else {
+        SCLOCK_HILOGI("app lock");
+        bool isAppLocked = WatchAppLockManager::GetInstance().IsScreenLocked(isScreenLocked);
+        WatchAppLockManager::GetInstance().unlockScreen(isAppLocked);
+    }
+    return E_SCREENLOCK_OK;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS

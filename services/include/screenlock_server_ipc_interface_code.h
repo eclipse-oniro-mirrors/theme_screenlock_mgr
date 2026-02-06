@@ -42,6 +42,10 @@ enum class ScreenLockServerIpcInterfaceCode {
     REGISTER_INNER_LISTENER,
     UNREGISTER_INNER_LISTENER,
     IS_USER_SCREEN_LOCKED,
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    IS_LOCKED_WATCH,
+    UNLOCK_WATCH
+#endif // SUPPORT_WEAR_PAYMENT_APP
 };
 } // namespace ScreenLock
 } // namespace OHOS

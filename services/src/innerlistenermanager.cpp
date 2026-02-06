@@ -290,7 +290,6 @@ void InnerListenerManager::InnerListenerDeathRecipient::OnRemoteDied(const wptr<
             auto result = InnerListenerManager::GetInstance()->UnRegisterInnerListener(iter.second.first, iter.first);
             if (result != E_SCREENLOCK_OK) {
                 SCLOCK_HILOGE("UnRegisterInnerListener fail");
-                return;
             }
         }
     }

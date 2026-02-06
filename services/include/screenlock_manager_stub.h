@@ -54,6 +54,10 @@ private:
     int32_t OnRegistInnerListener(MessageParcel &data, MessageParcel &reply);
     int32_t OnUnRegistInnerListener(MessageParcel &data, MessageParcel &reply);
     int32_t OnIsLockedWithUserId(MessageParcel &data, MessageParcel &reply);
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    int32_t OnIsLockedWatch(MessageParcel &data, MessageParcel &reply);
+    int32_t OnUnlockWatch(MessageParcel &data, MessageParcel &reply);
+#endif // SUPPORT_WEAR_PAYMENT_APP
 
 private:
     HandleFuncMap handleFuncMap;

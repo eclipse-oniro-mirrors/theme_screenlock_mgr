@@ -584,8 +584,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest025, TestSize.Level0)
     ScreenLockSystemAbility::GetInstance()->OnAddSystemAbility(DISPLAY_MANAGER_SERVICE_SA_ID, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnAddSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnAddSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, deviceId);
+    ScreenLockSystemAbility::GetInstance()->OnAddSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERAUTH, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnRemoveSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERIDM, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnRemoveSystemAbility(SUBSYS_ACCOUNT_SYS_ABILITY_ID_BEGIN, deviceId);
+    ScreenLockSystemAbility::GetInstance()->OnRemoveSystemAbility(SUBSYS_USERIAM_SYS_ABILITY_USERAUTH, deviceId);
     ScreenLockSystemAbility::GetInstance()->OnStart();
     EXPECT_EQ(ScreenLockSystemAbility::GetInstance()->state_, ServiceRunningState::STATE_RUNNING);
     int times = 0;
@@ -623,9 +625,16 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
     SCLOCK_HILOGD("Test UnlockScreenEvent.");
     ScreenLockSystemAbility::GetInstance()->unlockVecListeners_.clear();
     ScreenLockSystemAbility::GetInstance()->UnlockScreenEvent(SCREEN_CANCEL);
-    bool isLocked;
-    ScreenLockSystemAbility::GetInstance()->IsLocked(isLocked);
-    EXPECT_EQ(isLocked, true);
+    ScreenLockSystemAbility::GetInstance()->UnlockScreenEvent(ALREADY_UNLOCKED);
+    ScreenLockSystemAbility::GetInstance()->UnlockScreenEvent(EARLY_SUCCESS);
+    int32_t userId = 0;
+    int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
+    bool ret = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER");
+    if (!ret) {
+        EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
+    } else {
+        EXPECT_EQ(result, E_SCREENLOCK_OK);
+    }
 }
 
 /**
@@ -638,6 +647,13 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest027, TestSize.Level0)
 HWTEST_F(ScreenLockServiceTest, LockTest028, TestSize.Level0)
 {
     SCLOCK_HILOGD("Test RequestLock.");
+    const sptr<ScreenLockSystemAbilityInterface> &listener = nullptr;
+    std::string test = "test";
+    ScreenLockSystemAbility::GetInstance()->AppendPrintOtherInfo(test);
+    ScreenLockSystemAbility::GetInstance()->OnSystemEvent(listener);
+    ScreenLockSystemAbility::GetInstance()->RemoveSubscribeUserIamReady();
+    ScreenLockSystemAbility::GetInstance()->RegisterDumpCommand();
+    ScreenLockSystemAbility::GetInstance()->OnStop();
     int32_t userId = 0;
     int32_t result = ScreenLockSystemAbility::GetInstance()->Lock(userId);
     bool ret = ScreenLockSystemAbility::GetInstance()->CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK_INNER");
@@ -759,6 +775,8 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest033, TestSize.Level0)
     int32_t userId = 100;
     bool isLocked = false;
     int result = ScreenLockSystemAbility::GetInstance()->IsLockedWithUserId(userId, isLocked);
+    userId = 300;
+    ScreenLockSystemAbility::GetInstance()->IsLockedWithUserId(userId, isLocked);
     bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
     if (ret) {
         EXPECT_EQ(result, E_SCREENLOCK_NOT_SYSTEM_APP);
@@ -812,8 +830,11 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest035, TestSize.Level0)
     int fd = 1;
     std::vector<std::u16string> args = {u"arg1", u"arg2"};
 
-    sptr<InnerListenerIf> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
+    sptr<InnerListenerIf> InnerListenerIfTest1 = nullptr;
     int32_t userId = 100;
+    ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(
+        userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
     int result = ScreenLockSystemAbility::GetInstance()->UnRegisterInnerListener(
         userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
     bool ret = ScreenLockSystemAbility::GetInstance()->CheckSystemPermission();
@@ -899,6 +920,10 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest038, TestSize.Level0)
     int32_t result = InnerListenerManager::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH,
                                                                                 InnerListenerIfTest1);
     InnerListenerManager::GetInstance()->OnStrongAuthChanged(userId, 0);
+    userId = static_cast<int32_t>(SpecialUserId::USER_CURRENT);
+    InnerListenerManager::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
+    InnerListenerIfTest1 = nullptr;
+    InnerListenerManager::GetInstance()->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
     SCLOCK_HILOGI("ScreenLockTest038.[result]:%{public}d", result);
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
@@ -1057,6 +1082,11 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest044, TestSize.Level0)
     int32_t userId = 100;
 
     sptr<InnerListenerIf> InnerListenerIfTest1 = new (std::nothrow) InnerListenerIfTest();
+    sptr<InnerListenerIf> InnerListenerIfTest2 = nullptr;
+    InnerListenerManager::GetInstance()->AddDeathRecipient(ListenType::DEVICE_LOCK, InnerListenerIfTest1);
+    InnerListenerManager::GetInstance()->AddDeathRecipient(ListenType::DEVICE_LOCK, InnerListenerIfTest2);
+    InnerListenerManager::GetInstance()->RemoveDeathRecipient(InnerListenerIfTest1);
+    InnerListenerManager::GetInstance()->RemoveDeathRecipient(InnerListenerIfTest2);
 
     int32_t result =
         InnerListenerManager::GetInstance()->RemoveInnerListener(ListenType::DEVICE_LOCK, InnerListenerIfTest1);

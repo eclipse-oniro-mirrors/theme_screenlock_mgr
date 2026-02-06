@@ -16,7 +16,7 @@
 #include "screenlock_manager_stub.h"
 
 #include <string>
-
+#include <mutex>
 #include "ipc_skeleton.h"
 #include "parcel.h"
 #include "sclock_log.h"
@@ -28,8 +28,10 @@
 namespace OHOS {
 namespace ScreenLock {
 using namespace OHOS::HiviewDFX;
+std::shared_mutex rw_mutex;
 ScreenLockManagerStub::ScreenLockManagerStub()
 {
+    std::unique_lock<std::shared_mutex> lock(rw_mutex);
     InitHandleMap();
 }
 
@@ -71,6 +73,12 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnUnRegistInnerListener;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_USER_SCREEN_LOCKED)] =
         &ScreenLockManagerStub::OnIsLockedWithUserId;
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED_WATCH)] =
+        &ScreenLockManagerStub::OnIsLockedWatch;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::UNLOCK_WATCH)] =
+        &ScreenLockManagerStub::OnUnlockWatch;
+#endif // SUPPORT_WEAR_PAYMENT_APP
 }
 
 int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -82,7 +90,7 @@ int32_t ScreenLockManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &dat
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-
+    std::shared_lock<std::shared_mutex> lock(rw_mutex);
     auto itFunc = handleFuncMap.find(code);
     if (itFunc != handleFuncMap.end()) {
         auto requestFunc = itFunc->second;
@@ -240,9 +248,7 @@ int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, Mes
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = GetScreenLockAuthState(userId, authState);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteInt32(authState);
-    }
+    reply.WriteInt32(authState);
     return ERR_NONE;
 }
 
@@ -263,9 +269,7 @@ int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParce
     int32_t retCode = GetStrongAuth(userId, reasonFlag);
     SCLOCK_HILOGI("userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteInt32(reasonFlag);
-    }
+    reply.WriteInt32(reasonFlag);
     return ERR_NONE;
 }
 
@@ -318,14 +322,12 @@ int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &
 
 int32_t ScreenLockManagerStub::OnIsDeviceLocked(MessageParcel &data, MessageParcel &reply)
 {
-    bool isDeviceLocked = false;
+    bool isDeviceLocked = true;
     int32_t userId = data.ReadInt32();
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsDeviceLocked(userId, isDeviceLocked);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
-        reply.WriteBool(isDeviceLocked);
-    }
+    reply.WriteBool(isDeviceLocked);
     return ERR_NONE;
 }
 
@@ -336,10 +338,38 @@ int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, Message
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsLockedWithUserId(userId, isLocked);
     reply.WriteInt32(retCode);
-    if (retCode == E_SCREENLOCK_OK) {
+    reply.WriteBool(isLocked);
+    return ERR_NONE;
+}
+
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+int32_t ScreenLockManagerStub::OnIsLockedWatch(MessageParcel &data, MessageParcel &reply)
+{
+    bool isLocked = false;
+    int32_t ret = IsLockedWatch(isLocked);
+    reply.WriteInt32(ret);
+    if (ret == E_SCREENLOCK_OK) {
         reply.WriteBool(isLocked);
     }
     return ERR_NONE;
 }
+
+int32_t ScreenLockManagerStub::OnUnlockWatch(MessageParcel &data, MessageParcel &reply)
+{
+    sptr<IRemoteObject> remote = data.ReadRemoteObject();
+    if (remote == nullptr) {
+        SCLOCK_HILOGE("remote is nullptr");
+        return ERR_INVALID_DATA;
+    }
+    sptr<ScreenLockCallbackInterface> listener = iface_cast<ScreenLockCallbackInterface>(remote);
+    if (listener.GetRefPtr() == nullptr) {
+        SCLOCK_HILOGE("listener is null");
+        return ERR_INVALID_DATA;
+    }
+    int32_t ret = UnlockWatch(listener);
+    reply.WriteInt32(ret);
+    return ERR_NONE;
+}
+#endif // SUPPORT_WEAR_PAYMENT_APP
 } // namespace ScreenLock
 } // namespace OHOS

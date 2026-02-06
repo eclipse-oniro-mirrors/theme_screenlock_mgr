@@ -54,6 +54,10 @@ public:
                                   const sptr<InnerListenerIf>& listener) override;
     int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                     const sptr<InnerListenerIf>& listener) override;
+#ifdef SUPPORT_WEAR_PAYMENT_APP
+    int32_t IsLockedWatch(bool &isLocked) override;
+    int32_t UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener) override;
+#endif // SUPPORT_WEAR_PAYMENT_APP
 private:
     int32_t UnlockInner(MessageParcel &reply, int32_t command, const sptr<ScreenLockCallbackInterface> &listener);
     int32_t IsScreenLockedInner(MessageParcel &reply, uint32_t command);

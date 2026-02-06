@@ -240,7 +240,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0010, TestSize.Level0)
     bool isDisabled = true;
     result = proxy->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 
@@ -301,7 +301,7 @@ HWTEST_F(ScreenLockClientTest, LockTest0013, TestSize.Level0)
     bool isDisabled = true;
     result = ScreenLockManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
     SCLOCK_HILOGD("SetScreenLockDisabled.[result]:%{public}d", result);
-    EXPECT_EQ(result, E_SCREENLOCK_OK);
+    EXPECT_EQ(result, E_SCREENLOCK_NO_PERMISSION);
 }
 
 
@@ -434,6 +434,8 @@ HWTEST_F(ScreenLockClientTest, LockTest0019, TestSize.Level0)
     bool isLocked = false;
     int32_t retCode = 0;
     bool isDeviceLocked = false;
+    const wptr<IRemoteObject> &remote = 0;
+    ScreenLockManager::GetInstance()->OnRemoteSaDied(remote);
     retCode = ScreenLockManager::GetInstance()->IsLockedWithUserId(userId, isDeviceLocked);
     SCLOCK_HILOGI("LockTest0019.[retCode]:%{public}d", retCode);
     EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);

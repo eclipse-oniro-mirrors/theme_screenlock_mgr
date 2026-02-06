@@ -77,6 +77,9 @@ ohos_shared_library("screenlock_client") {
       "ipc:ipc_single",
       "samgr:samgr_proxy",
     ]
+    if (screenlock_mgr_wearable_enable_payment_app == true) {
+      defines = [ "SUPPORT_WEAR_PAYMENT_APP" ]
+    }
     subsystem_name = "theme"
     innerapi_tags = [
       "platformsdk",
@@ -120,6 +123,9 @@ ohos_static_library("screenlock_client_static") {
       "ipc:ipc_single",
       "samgr:samgr_proxy",
     ]
+    if (screenlock_mgr_wearable_enable_payment_app == true) {
+      defines = [ "SUPPORT_WEAR_PAYMENT_APP" ]
+    }
     subsystem_name = "theme"
     part_name = "screenlock_mgr"
   }
