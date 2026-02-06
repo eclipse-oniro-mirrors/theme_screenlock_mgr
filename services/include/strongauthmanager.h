@@ -96,7 +96,7 @@ public:
         void SetUserId(int32_t userId);
 
     private:
-        int32_t userId_ = 0;
+        std::atomic<int32_t> userId_  = 0;
         std::function<void(int32_t)> callBack_ = nullptr;
     };
 
