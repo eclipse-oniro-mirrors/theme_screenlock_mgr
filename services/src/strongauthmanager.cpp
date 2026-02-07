@@ -395,7 +395,7 @@ void StrongAuthManger::SetStrongAuthStat(int32_t userId, int32_t reasonFlag)
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     auto iter = strongAuthStateInfo.find(userId);
     if (iter == strongAuthStateInfo.end()) {
-        SCLOCK_HILOGI("SetStrongAuthStat fail, user not exit in strongAuthStateInfo");
+        SCLOCK_HILOGI("Insert new user into strongAuthStateInfo, user not exit in strongAuthStateInfo");
         strongAuthStateInfo.insert(std::make_pair(userId, reasonFlag));
         NotifyStrongAuthChange(userId, reasonFlag);
         return;

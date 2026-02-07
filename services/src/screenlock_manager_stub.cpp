@@ -314,8 +314,8 @@ int32_t ScreenLockManagerStub::OnUnRegistInnerListener(MessageParcel &data, Mess
 
 int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t useId = data.ReadInt32();
-    int32_t retCode = Lock(useId);
+    int32_t userId = data.ReadInt32();
+    int32_t retCode = Lock(userId);
     reply.WriteInt32(retCode);
     return ERR_NONE;
 }

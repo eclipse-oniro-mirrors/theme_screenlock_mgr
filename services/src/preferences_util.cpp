@@ -139,7 +139,7 @@ bool PreferencesUtil::IsExistKey(const std::string &key)
 {
     std::shared_ptr<NativePreferences::Preferences> ptr = GetProfiles(path_, errCode_);
     if (ptr == nullptr) {
-        return NativePreferences::E_ERROR;
+        return false;
     }
     return ptr->HasKey(key);
 }

@@ -115,9 +115,9 @@ void AccountActive(const int lastUser, const int targetUser)
     return;
 }
 
-void AcccountRemove(const int lastUser, const int targetUser)
+void AccountRemove(const int lastUser, const int targetUser)
 {
-    SCLOCK_HILOGW("AcccountRemove.[osAccountId]:%{public}d", targetUser);
+    SCLOCK_HILOGW("AccountRemove.[osAccountId]:%{public}d", targetUser);
     ScreenLockSystemAbility::GetInstance()->OnRemoveUser(targetUser);
     return;
 }
@@ -330,7 +330,7 @@ void ScreenLockSystemAbility::InitUserId()
     accountSubscribers_[AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATED] =
         SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::ACTIVATED, AccountActive);
     accountSubscribers_[AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED] =
-        SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED, AcccountRemove);
+        SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::REMOVED, AccountRemove);
 #ifndef IS_SO_CROP_H
     accountSubscribers_[AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::UNLOCKED] =
         SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE::UNLOCKED, AccountUnlocked);
