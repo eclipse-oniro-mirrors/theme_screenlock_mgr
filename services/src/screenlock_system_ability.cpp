@@ -823,6 +823,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
             InnerListenerManager::GetInstance()->OnDeviceLockStateChanged(userId, static_cast<int32_t>(nextState));
         }
         iter->second = authState;
+        PreAuthStateNotify(userId, authState);
         return E_SCREENLOCK_OK;
     }
     authStateInfo.insert(std::make_pair(userId, authState));
