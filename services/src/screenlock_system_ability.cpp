@@ -1203,8 +1203,9 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
 
 bool ScreenLockSystemAbility::GetDeviceLockedStateByAuth(int32_t authState)
 {
-    int32_t authBoundary = static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL);
-    if (authState >= authBoundary) {
+    if (authState == static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL) ||
+        authState == static_cast<int32_t>(AuthState::AUTHED_BY_FINGERPRINT) ||
+        authState == static_cast<int32_t>(AuthState::AUTHED_BY_FACE)) {
         return false;
     }
     return true;
