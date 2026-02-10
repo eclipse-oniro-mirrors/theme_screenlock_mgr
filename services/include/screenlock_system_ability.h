@@ -124,6 +124,9 @@ enum class AuthState : int32_t {
     AUTHED_BY_CREDENTIAL = 4,
     AUTHED_BY_FINGERPRINT = 5,
     AUTHED_BY_FACE = 6,
+    PRE_AUTHED_RESULT_BY_CREDENTIAL = 7,
+    PRE_AUTHED_RESULT_BY_FINGERPRINT = 8,
+    PRE_AUTHED_RESULT_BY_FACE = 9,
 };
 
 class ScreenLockSystemAbility : public SystemAbility, public ScreenLockManagerStub {
@@ -229,6 +232,7 @@ private:
     void AppendPrintOtherInfo(std::string &output);
     void printCallerPid(std::string invokeName);
     static sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
+    void PreAuthStateNotify(int32_t userId, int32_t authState);
 
     ServiceRunningState state_;
     std::mutex runningStateMutex_;
