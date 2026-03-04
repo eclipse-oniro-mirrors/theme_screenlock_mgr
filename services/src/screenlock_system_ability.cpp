@@ -814,7 +814,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
     }
-    std::unique_lock<std::mutex> lock(authStateMutex_);
+    std::unique_lock<std::mutex> authLock(authStateMutex_);
     auto iter = authStateInfo.find(userId);
     if (iter != authStateInfo.end()) {
         bool nextState = GetDeviceLockedStateByAuth(authState);
@@ -823,9 +823,11 @@ int32_t ScreenLockSystemAbility::SetScreenLockAuthState(int authState, int32_t u
             InnerListenerManager::GetInstance()->OnDeviceLockStateChanged(userId, static_cast<int32_t>(nextState));
         }
         iter->second = authState;
+        PreAuthStateNotify(userId, authState);
         return E_SCREENLOCK_OK;
     }
     authStateInfo.insert(std::make_pair(userId, authState));
+    PreAuthStateNotify(userId, authState);
     return E_SCREENLOCK_OK;
 }
 
@@ -1202,8 +1204,9 @@ bool ScreenLockSystemAbility::CheckPermission(const std::string &permissionName)
 
 bool ScreenLockSystemAbility::GetDeviceLockedStateByAuth(int32_t authState)
 {
-    int32_t authBoundary = static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL);
-    if (authState >= authBoundary) {
+    if (authState == static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL) ||
+        authState == static_cast<int32_t>(AuthState::AUTHED_BY_FINGERPRINT) ||
+        authState == static_cast<int32_t>(AuthState::AUTHED_BY_FACE)) {
         return false;
     }
     return true;
@@ -1243,6 +1246,20 @@ void ScreenLockSystemAbility::UserIamReadyNotify(const char *value)
     SystemEvent systemEvent(USERIAM_READY);
     systemEvent.params_ = value;
     SystemEventCallBack(systemEvent);
+}
+
+void ScreenLockSystemAbility::PreAuthStateNotify(int32_t userId, int32_t authState)
+{
+    if (userId != stateValue_.GetCurrentUser()) {
+        SCLOCK_HILOGW("PreAuthState not current userId %{public}d", userId);
+        return;
+    }
+    if (authState == static_cast<int32_t>(AuthState::PRE_AUTHED_RESULT_BY_CREDENTIAL) ||
+        authState == static_cast<int32_t>(AuthState::PRE_AUTHED_RESULT_BY_FINGERPRINT)) {
+        SCLOCK_HILOGW("PreAuthStateNotify userId %{public}d, authState %{public}d", userId, authState);
+        SystemEvent systemEvent(PRE_AUTH_RESULT);
+        SystemEventCallBack(systemEvent);
+    }
 }
 
 bool ScreenLockSystemAbility::CheckSystemPermission()
