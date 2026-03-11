@@ -95,7 +95,7 @@ int32_t WatchAppLockManager::unlockScreen(bool isScreenLocked)
         SCLOCK_HILOGI("screen does not need to be unlocked");
         return E_SCREENLOCK_NOT_FOCUS_APP;
     }
-    uint32_t callingUid = IPCSkeleton::GetCallingUid();
+    int callingUid = IPCSkeleton::GetCallingUid();
     std::string bundleName = GetBundleNameByUid(callingUid);
     bool isStartIAM = BeginWidgetAuth();
     if (isStartIAM) {
@@ -398,7 +398,7 @@ int32_t WatchAppLockManager::GetUserIdFromCallingUid()
 
 bool WatchAppLockManager::IsPaymentApp()
 {
-    uint32_t callingUid = IPCSkeleton::GetCallingUid();
+    int callingUid = IPCSkeleton::GetCallingUid();
     std::string bundleName = GetBundleNameByUid(callingUid);
     if (bundleName.empty()) {
         return false;
@@ -427,7 +427,7 @@ bool WatchAppLockManager::IsFinishUnlock()
         SCLOCK_HILOGD("already unlocked on the wrist");
         return true;
     }
-    uint32_t callingUid = IPCSkeleton::GetCallingUid();
+    int callingUid = IPCSkeleton::GetCallingUid();
     std::string bundleName = GetBundleNameByUid(callingUid);
     return unlockedRecord.contains(bundleName);
 }
