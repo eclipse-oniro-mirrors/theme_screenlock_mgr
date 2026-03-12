@@ -415,6 +415,30 @@ void ScreenLockManager::RemoveDeathRecipient()
     }
 }
 
+int32_t ScreenLockManager::SetUnlockPolicy(int userId, int32_t policy)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("SetUnlockPolicy quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->SetUnlockPolicy(userId, policy);
+    SCLOCK_HILOGD("SetUnlockPolicy out, status=%{public}d", status);
+    return status;
+}
+
+int32_t ScreenLockManager::GetUnlockPolicy(int userId, int32_t &policy)
+{
+    auto proxy = GetProxy();
+    if (proxy == nullptr) {
+        SCLOCK_HILOGE("GetUnlockPolicy quit because redoing GetProxy failed.");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    int32_t status = proxy->GetUnlockPolicy(userId, policy);
+    SCLOCK_HILOGI("GetUnlockPolicy out, status=%{public}d, %{public}d", status, policy);
+    return status;
+}
+
 #ifdef SUPPORT_WEAR_PAYMENT_APP
 int32_t ScreenLockManager::IsLockedWatch(bool &isLocked)
 {
