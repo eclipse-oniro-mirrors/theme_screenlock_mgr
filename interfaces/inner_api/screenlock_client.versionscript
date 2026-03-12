@@ -35,6 +35,8 @@
       *OHOS::ScreenLock::ScreenLockManager::UnRegisterStrongAuthListener*;
       *OHOS::ScreenLock::ScreenLockManager::RegisterDeviceLockedListener*;
       *OHOS::ScreenLock::ScreenLockManager::UnRegisterDeviceLockedListener*;
+      *OHOS::ScreenLock::ScreenLockManager::SetUnlockPolicy*;
+      *OHOS::ScreenLock::ScreenLockManager::GetUnlockPolicy*;
       *OHOS::ScreenLock::ScreenLockCallbackStub*;
       *OHOS::ScreenLock::ScreenLockInnerListenerStub*;
       *OHOS::ScreenLock::InnerListenerWrapper*;
