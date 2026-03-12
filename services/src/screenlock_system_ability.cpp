@@ -27,8 +27,6 @@
 
 #include "ability_manager_client.h"
 #include "common_event_support.h"
-
-
 #include "accesstoken_kit.h"
 #include "common_event_manager.h"
 #include "display_manager.h"
