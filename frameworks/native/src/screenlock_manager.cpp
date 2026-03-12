@@ -435,7 +435,7 @@ int32_t ScreenLockManager::GetUnlockPolicy(int userId, int32_t &policy)
         return E_SCREENLOCK_NULLPTR;
     }
     int32_t status = proxy->GetUnlockPolicy(userId, policy);
-    SCLOCK_HILOGI("GetUnlockPolicy out, status=%{public}d, %{public}d", status, policy);
+    SCLOCK_HILOGD("GetUnlockPolicy out, status=%{public}d, %{public}d", status, policy);
     return status;
 }
 
