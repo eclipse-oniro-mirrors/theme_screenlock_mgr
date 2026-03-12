@@ -101,6 +101,8 @@ private:
     std::map<sptr<InnerListener>, sptr<InnerListenerWrapper>> InnerListenerWrapperMap;
     int32_t RegisterListenerInner(const ListenType listenType, const sptr<InnerListener>& listener);
     int32_t UnRegisterListenerInner(const ListenType listenType, const sptr<InnerListener>& listener);
+    SCREENLOCK_API int32_t SetUnlockPolicy(int32_t userId, int32_t policy);
+    SCREENLOCK_API int32_t GetUnlockPolicy(int32_t userId, int32_t &policy);
 };
 } // namespace ScreenLock
 } // namespace OHOS
