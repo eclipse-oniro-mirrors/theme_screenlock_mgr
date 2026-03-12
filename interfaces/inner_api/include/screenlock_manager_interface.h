@@ -50,6 +50,8 @@ public:
                                           const sptr<InnerListenerIf>& listener) = 0;
     virtual int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                             const sptr<InnerListenerIf>& listener) = 0;
+    virtual int32_t SetUnlockPolicy(int32_t userId, int32_t policy) = 0;
+    virtual int32_t GetUnlockPolicy(int32_t userId, int32_t &policy) = 0;
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     virtual int32_t IsLockedWatch(bool &isLocked) = 0;
     virtual int32_t UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener) = 0;
