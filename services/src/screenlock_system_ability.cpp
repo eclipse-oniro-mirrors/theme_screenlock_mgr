@@ -1275,8 +1275,9 @@ void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
     SCLOCK_HILOGI("%{public}s callerPid:%{public}d", invokeName.c_str(), callerPid);
 }
 
-int32_t ScreenLockSystemAbility::SetUnlockPolicy(int32_t userId, int32_t policy) {
-     SCLOCK_HILOGI("SetUnlockPolicy userId=%{public}d ,policy=%{public}d", userId, policy);
+int32_t ScreenLockSystemAbility::SetUnlockPolicy(int32_t userId, int32_t policy)
+{
+    SCLOCK_HILOGI("SetUnlockPolicy userId=%{public}d ,policy=%{public}d", userId, policy);
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
@@ -1298,7 +1299,8 @@ int32_t ScreenLockSystemAbility::SetUnlockPolicy(int32_t userId, int32_t policy)
     return E_SCREENLOCK_OK;
 }
 
-int32_t ScreenLockSystemAbility::GetUnlockPolicy(int32_t userId, int32_t &policy) {
+int32_t ScreenLockSystemAbility::GetUnlockPolicy(int32_t userId, int32_t &policy)
+{
     SCLOCK_HILOGI("GetUnlockPolicy userId=%{public}d", userId);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
