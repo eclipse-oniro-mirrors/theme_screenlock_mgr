@@ -302,6 +302,7 @@ void ScreenLockSystemAbility::OnRemoveUser(const int32_t userId)
     } else {
         SCLOCK_HILOGI("OnRemoveUser screenStateLock user not exit, userId: %{public}d", userId);
     }
+    DeleteUnlockPolicyForUser(userId);
 }
 
 void ScreenLockSystemAbility::OnActiveUser(const int lastUser, const int targetUser)
