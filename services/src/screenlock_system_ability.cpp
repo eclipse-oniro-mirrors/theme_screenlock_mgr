@@ -1326,6 +1326,18 @@ void ScreenLockSystemAbility::UnlockPolicyChanged(int32_t userId, int32_t policy
     SystemEventCallBack(systemEvent);
 }
 
+void ScreenLockSystemAbility::DeleteUnlockPolicyForUser(int32_t userId)
+{
+    SCLOCK_HILOGI("DeleteUnlockPolicyForUser userId %{public}d", userId);
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return;
+    }
+    std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
+    preferencesUtil->RemoveKey(preferKey);
+}
+
 #ifdef SUPPORT_WEAR_PAYMENT_APP
 int32_t ScreenLockSystemAbility::IsLockedWatch(bool &isLocked)
 {
