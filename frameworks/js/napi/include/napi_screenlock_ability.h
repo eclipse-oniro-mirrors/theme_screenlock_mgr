@@ -88,19 +88,6 @@ struct ScreenLockStrongAuthInfo : public AsyncCall::Context {
     ~ScreenLockStrongAuthInfo() override{};
 };
 
-struct ScreenLockUnlockPolicy : public AsyncCall::Context {
-    int32_t userId;
-    int32_t policy;
-    napi_status status;
-    bool allowed;
-    ScreenLockUnlockPolicy()
-        : Context(nullptr, nullptr), userId(-1), policy(0), status(napi_generic_failure)
-        {};
-    ScreenLockUnlockPolicy(InputAction input, OutputAction output)
-        : Context(std::move(input), std::move(output)), userId(-1), policy(0), status(napi_generic_failure){};
-    ~ScreenLockUnlockPolicy() override{};
-};
-
 napi_status IsValidEvent(const std::string &type);
 napi_status CheckParamNumber(size_t argc, std::uint32_t paramNumber);
 napi_status CheckParamType(napi_env env, napi_value jsType, napi_status status);
