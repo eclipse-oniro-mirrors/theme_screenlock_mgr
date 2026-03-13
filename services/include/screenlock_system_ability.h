@@ -236,6 +236,7 @@ private:
     static sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
     void PreAuthStateNotify(int32_t userId, int32_t authState);
     void UnlockPolicyChanged(int32_t userId, int32_t policy);
+    void DeleteUnlockPolicyForUser(int32_t userId);
 
     ServiceRunningState state_;
     std::mutex runningStateMutex_;
