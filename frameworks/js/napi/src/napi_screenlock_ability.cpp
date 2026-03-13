@@ -82,7 +82,6 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("requestStrongAuth", OHOS::ScreenLock::NAPI_RequestStrongAuth),
         DECLARE_NAPI_FUNCTION("getStrongAuth", OHOS::ScreenLock::NAPI_GetStrongAuth),
         DECLARE_NAPI_FUNCTION("isDeviceLocked", OHOS::ScreenLock::NAPI_IsDeviceLocked),
-        DECLARE_NAPI_FUNCTION("setUnlockPolicy", OHOS::ScreenLock::NAPI_SetUnlockPolicy),
         DECLARE_NAPI_FUNCTION("getUnlockPolicy", OHOS::ScreenLock::NAPI_GetUnlockPolicy),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
@@ -795,51 +794,6 @@ napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info)
     SCLOCK_HILOGI("NAPI_IsDeviceLocked [isDeviceLoced]=%{public}d", isDeviceLoced);
     napi_get_boolean(env, isDeviceLoced, &result);
     return result;
-}
-
-napi_value NAPI_SetUnlockPolicy(napi_env env, napi_callback_info info)
-{
-    ScreenLockUnlockPolicy *context = new ScreenLockUnlockPolicy();
-    auto input = [context](napi_env env, size_t argc, napi_value argv[], napi_value self) -> napi_status {
-        if (CheckParamNumber(argc, ARGS_SIZE_TWO) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-            return napi_invalid_arg;
-        }
-        if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-            return napi_invalid_arg;
-        }
-        napi_get_value_int32(env, argv[ARGV_ZERO], &context->policy);
-
-        if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
-            ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-            return napi_invalid_arg;
-        }
-        napi_get_value_int32(env, argv[ARGV_ONE], &context->userId);
-        return napi_ok;
-    };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_status status = napi_get_boolean(env, context->allowed, result);
-        SCLOCK_HILOGD("output ---- napi_get_boolean[%{public}d]", status);
-        return napi_ok;
-    };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        int32_t retCode = ScreenLockManager::GetInstance()->SetUnlockPolicy(context->userId,
-            context->policy);
-        if (retCode != E_SCREENLOCK_OK) {
-            ErrorInfo errInfo;
-            errInfo.errorCode_ = static_cast<uint32_t>(retCode);
-            GetErrorInfo(retCode, errInfo);
-            context->SetErrorInfo(errInfo);
-            context->allowed = false;
-        } else {
-            context->SetStatus(napi_ok);
-            context->allowed = true;
-        }
-    };
-    context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, context, ARGS_SIZE_TWO);
-    return asyncCall.Call(env, exec, "setUnlockPolicy");
 }
 
 napi_value NAPI_GetUnlockPolicy(napi_env env, napi_callback_info info)
