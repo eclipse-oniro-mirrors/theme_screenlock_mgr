@@ -123,7 +123,6 @@ napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info);
 napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info);
 napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info);
 napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info);
-napi_value NAPI_SetUnlockPolicy(napi_env env, napi_callback_info info);
 napi_value NAPI_GetUnlockPolicy(napi_env env, napi_callback_info info);
 } // namespace ScreenLock
 } // namespace OHOS
