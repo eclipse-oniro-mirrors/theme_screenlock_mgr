@@ -1335,10 +1335,18 @@ int32_t ScreenLockSystemAbility::GetUnlockPolicy(int32_t userId, int32_t &policy
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return E_SCREENLOCK_NULLPTR;
     }
-    std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
-    policy = preferencesUtil->ObtainInt(preferKey, 0);
-    SCLOCK_HILOGI("GetUnlockPolicy policy=%{public}d", policy);
-    return E_SCREENLOCK_OK;
+    std::unique_lock<std::mutex> lock(authStateMutex_);
+    auto iter = authStateInfo.find(userId);
+    if (iter != authStateInfo.end()) {
+        std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
+        policy = preferencesUtil->ObtainInt(preferKey, 0);
+        SCLOCK_HILOGI("GetUnlockPolicy policy=%{public}d", policy);
+        return E_SCREENLOCK_OK;
+    } else {
+        policy = 0;
+        SCLOCK_HILOGE("user not set. userId=%{public}d, policy=%{public}d", userId, policy);
+        return E_SCREENLOCK_USER_ID_INVALID;
+    }
 }
 
 void ScreenLockSystemAbility::UnlockPolicyChanged(int32_t userId, int32_t policy)
