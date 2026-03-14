@@ -471,7 +471,8 @@ static ani_boolean BindMethods(ani_env *env)
         ani_native_function{
             "getScreenLockAuthState", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetScreenLockAuthState)},
         ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)},
-        ani_native_function{"getUnlockPolicy", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetUnlockPolicy)},
+        ani_native_function{
+            "getUnlockPolicy", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetUnlockPolicy)},
         ani_native_function{"isDeviceLocked", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_IsDeviceLocked)}};
 
     if ((ret = env->Namespace_BindNativeFunctions(spc, methods.data(), methods.size())) != ANI_OK) {
