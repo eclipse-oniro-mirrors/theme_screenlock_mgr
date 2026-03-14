@@ -235,6 +235,7 @@ private:
     void printCallerPid(std::string invokeName);
     static sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
     void PreAuthStateNotify(int32_t userId, int32_t authState);
+    bool IsNativeAccess();
     void UnlockPolicyChanged(int32_t userId, int32_t policy);
     void DeleteUnlockPolicyForUser(int32_t userId);
 
