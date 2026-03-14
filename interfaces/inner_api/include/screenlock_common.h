@@ -49,7 +49,6 @@ inline const std::string SERVICE_RESTART = "serviceRestart";
 inline const std::string USERIAM_READY = "useriamReady";
 inline const std::string PRE_AUTH_RESULT = "preAuthResult";
 inline const std::string UNLOCK_POLICY_CHANGE = "unlockPolicyChanged";
-inline const std::string UNLOCK_POLICY_KEY_PREFIX = "unlockPolicy_";
 const int USER_NULL = -10000;
 enum ScreenLockModule {
     SCREENLOCK_MODULE_SERVICE_ID = 0x04,
