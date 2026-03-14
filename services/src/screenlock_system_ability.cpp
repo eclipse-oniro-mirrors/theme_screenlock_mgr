@@ -1304,14 +1304,18 @@ int32_t ScreenLockSystemAbility::SetUnlockPolicy(int32_t userId, int32_t policy)
 int32_t ScreenLockSystemAbility::GetUnlockPolicy(int32_t userId, int32_t &policy)
 {
     SCLOCK_HILOGI("GetUnlockPolicy userId=%{public}d", userId);
-    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
-    if (preferencesUtil == nullptr) {
-        SCLOCK_HILOGE("preferencesUtil is nullptr!");
-        return E_SCREENLOCK_NULLPTR;
+    if (CheckSystemPermission()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
     }
     if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
+    }
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return E_SCREENLOCK_NULLPTR;
     }
     std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
     policy = preferencesUtil->ObtainInt(preferKey, 0);
