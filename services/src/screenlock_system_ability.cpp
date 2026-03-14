@@ -1271,6 +1271,13 @@ bool ScreenLockSystemAbility::CheckSystemPermission()
     return !IsSystemApp() && tokenType != TOKEN_NATIVE;
 }
 
+bool ScreenLockSystemAbility::IsNativeAccess()
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    return tokenType == TOKEN_NATIVE;
+}
+
 void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
 {
     auto callerPid = IPCSkeleton::GetCallingPid();
@@ -1284,21 +1291,27 @@ int32_t ScreenLockSystemAbility::SetUnlockPolicy(int32_t userId, int32_t policy)
         SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
         return E_SCREENLOCK_NO_PERMISSION;
     }
+    if (!IsNativeAccess()) {
+        SCLOCK_HILOGE("is not sa!");
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
         return E_SCREENLOCK_NULLPTR;
     }
-    std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
-    int curPolicy = preferencesUtil->ObtainInt(preferKey, 0);
-    if (curPolicy == policy) {
-        SCLOCK_HILOGI("SetUnlockPolicy No update needed");
+    std::unique_lock<std::mutex> lock(authStateMutex_);
+    auto iter = authStateInfo.find(userId);
+    if (iter != authStateInfo.end()) {
+        std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
+        policy = preferencesUtil->ObtainInt(preferKey, 0);
+        SCLOCK_HILOGI("GetUnlockPolicy policy=%{public}d", policy);
         return E_SCREENLOCK_OK;
+    } else {
+        policy = 0;
+        SCLOCK_HILOGI("user not set. userId=%{public}d, policy=%{public}d", userId, policy);
+        return E_SCREENLOCK_USER_ID_INVALID;
     }
-    preferencesUtil->SaveInt(preferKey, policy);
-    preferencesUtil->Refresh();
-    UnlockPolicyChanged(userId, policy);
-    return E_SCREENLOCK_OK;
 }
 
 int32_t ScreenLockSystemAbility::GetUnlockPolicy(int32_t userId, int32_t &policy)
