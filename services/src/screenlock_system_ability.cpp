@@ -74,6 +74,7 @@ const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
 const char IAM_EVENT_KEY[] = "bootevent.useriam.fwkready";
+const std::string UNLOCK_POLICY_KEY_PREFIX = "unlockPolicy_";
 std::mutex ScreenLockSystemAbility::instanceLock_;
 std::mutex ScreenLockSystemAbility::queueLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
