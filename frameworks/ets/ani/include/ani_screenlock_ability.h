@@ -40,6 +40,7 @@ ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_in
 ani_enum_item ANI_GetScreenLockAuthState(ani_env *env, ani_int userId);
 ani_int ANI_GetStrongAuth(ani_env *env, ani_int userId);
 ani_boolean ANI_IsDeviceLocked(ani_env *env, ani_int userId);
+ani_enum_item ANI_GetUnlockPolicy(ani_env *env, ani_int userId);
 } // namespace ScreenLock
 } // namespace OHOS
 #endif //  ANI_SCREENLOCK_ABILITY_H
