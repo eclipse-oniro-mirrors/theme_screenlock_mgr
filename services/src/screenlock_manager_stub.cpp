@@ -361,7 +361,7 @@ int32_t ScreenLockManagerStub::OnGetUnlockPolicy(MessageParcel &data, MessagePar
 {
     int32_t userId = data.ReadInt32();
     int32_t policy = 0;
-    SCLOCK_HILOGD("OnSetUnlockPolicy userId=%{public}d, %{public}d", userId, policy);
+    SCLOCK_HILOGD("OnGetUnlockPolicy userId=%{public}d, %{public}d", userId, policy);
     int32_t retCode = GetUnlockPolicy(userId, policy);
     reply.WriteInt32(retCode);
     reply.WriteInt32(policy);
