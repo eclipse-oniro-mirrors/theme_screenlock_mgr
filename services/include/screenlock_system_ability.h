@@ -33,6 +33,7 @@
 #include "os_account_manager.h"
 #include "preferences_util.h"
 #include "os_account_subscribe_info.h"
+#include "user_idm_client.h"
 
 namespace OHOS {
 namespace ScreenLock {
@@ -195,6 +196,15 @@ public:
         std::function<void(const int lastUser, const int targetUser)> callback_;
     };
 
+    class CredChangeListenerService : public UserIam::UserAuth::CredChangeEventListener {
+    public:
+        CredChangeListenerService() = default;
+        virtual ~CredChangeListenerService() = default;
+        void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
+            UserIam::UserAuth::CredChangeEventType eventType,
+            const UserIam::UserAuth::CredChangeEventInfo &changeInfo) override;
+    };
+
 protected:
     void OnStart() override;
     void OnStop() override;
@@ -233,6 +243,9 @@ private:
     void printCallerPid(std::string invokeName);
     static sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
     void PreAuthStateNotify(int32_t userId, int32_t authState);
+    void RegistIamEventListener();
+    void UnRegistIamEventListener(); 
+    int32_t FreshDisabledState(bool disable, int userId);
 
     ServiceRunningState state_;
     std::mutex runningStateMutex_;
@@ -256,6 +269,7 @@ private:
     std::mutex authStateMutex_;
     std::map<int32_t, bool> isScreenlockedMap_;
     std::mutex screenLockMutex_;
+    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> credChangeListener_;
 };
 } // namespace ScreenLock
 } // namespace OHOS
