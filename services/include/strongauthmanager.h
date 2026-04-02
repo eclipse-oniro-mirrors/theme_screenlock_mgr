@@ -122,7 +122,6 @@ private:
     std::map<int32_t, int32_t> strongAuthStateInfo;
     std::map<int32_t, TimerInfo> strongAuthTimerInfo;
     std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> authSuccessListener_;
-    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> credChangeListener_;
 };
 } // namespace OHOS
 } // namespace ScreenLock
