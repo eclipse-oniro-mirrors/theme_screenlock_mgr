@@ -249,7 +249,7 @@ private:
     void UnlockPolicyChanged(int32_t userId, int32_t policy);
     void DeleteUnlockPolicyForUser(int32_t userId);
     void RegistIamEventListener();
-    void UnRegistIamEventListener(); 
+    void UnRegistIamEventListener();
     int32_t FreshDisabledState(bool disable, int userId);
 
     ServiceRunningState state_;
