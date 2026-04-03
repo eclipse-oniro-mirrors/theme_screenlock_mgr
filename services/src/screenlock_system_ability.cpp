@@ -1373,6 +1373,59 @@ void ScreenLockSystemAbility::DeleteUnlockPolicyForUser(int32_t userId)
     preferencesUtil->RemoveKey(preferKey);
 }
 
+void ScreenLockSystemAbility::RegistIamEventListener()
+{
+    SCLOCK_HILOGD("RegistIamEventListener start");
+    std::vector<UserIam::UserAuth::AuthType> authTypeList;
+    authTypeList.emplace_back(AuthType::PIN);
+    authTypeList.emplace_back(AuthType::FACE);
+    authTypeList.emplace_back(AuthType::FINGERPRINT);
+
+    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> tmpListener;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (credChangeListener_ == nullptr) {
+            credChangeListener_ = std::make_shared<CredChangeListenerService>();
+        }
+        tmpListener = credChangeListener_;
+    }
+    int32_t ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
+        authTypeList, tmpListener);
+    SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
+}
+
+void ScreenLockSystemAbility::UnRegistIamEventListener()
+{
+    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> tmpListener;
+    {
+        std::lock_guard<std::mutex> autoLock(instanceLock_);
+        if (credChangeListener_ != nullptr) {
+            tmpListener = credChangeListener_;
+            credChangeListener_ = nullptr;
+        }
+    }
+    if (tmpListener != nullptr) {
+        int32_t ret = UserIam::UserAuth::
+            UserIdmClient::GetInstance().UnRegistCredChangeEventListener(tmpListener);
+        SCLOCK_HILOGI("UnRegistCredChangeEventListener ret: %{public}d", ret);
+    }
+}
+
+void ScreenLockSystemAbility::CredChangeListenerService::OnNotifyCredChangeEvent(int32_t userId,
+    UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType,
+    const UserIam::UserAuth::CredChangeEventInfo &changeInfo)
+{
+    SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
+        static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(changeInfo.isSilentCredChange));
+    
+    if (GetCurrentActiveOsAccountId() == userId && authType == AuthType::PIN && eventType == ADD_CRED) {
+        ScreenLockSystemAbility::GetInstance()->FreshDisabledState(false, userId);
+    }
+#ifndef IS_SO_CROP_H
+    StrongAuthManger::GetInstance()->OnNotifyCredChangeEvent(userId, authType, eventType, changeInfo);
+#endif // IS_SO_CROP_H
+}
+
 #ifdef SUPPORT_WEAR_PAYMENT_APP
 int32_t ScreenLockSystemAbility::IsLockedWatch(bool &isLocked)
 {
