@@ -244,7 +244,7 @@ private:
     static sptr<ScreenLockSystemAbility> getScreenLockSystemAbility();
     void PreAuthStateNotify(int32_t userId, int32_t authState);
     void RegistIamEventListener();
-    void UnRegistIamEventListener(); 
+    void UnRegistIamEventListener();
     int32_t FreshDisabledState(bool disable, int userId);
 
     ServiceRunningState state_;
