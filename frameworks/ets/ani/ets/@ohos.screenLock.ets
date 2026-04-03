@@ -43,7 +43,8 @@ export namespace screenLock {
     | 'endSleep'
     | 'changeUser'
     | 'screenlockEnabled'
-    | 'serviceRestart';
+    | 'serviceRestart'
+    | 'unlockPolicyChanged';
 
   enum StrongAuthReasonFlags {
     NONE = 0x00000000,
@@ -51,6 +52,12 @@ export namespace screenLock {
     AFTER_TIMEOUT = 0x00000002,
     ACTIVE_REQUEST = 0x00000004,
     POLICY_RESTRICTION = 0x00000008
+  }
+
+  enum UnlockPolicy {
+    DEFAULT = 0,
+    EXTENDED_AUTH_ONLY = 1,
+    EXTENDED_AUTH_AND_SYSTEM = 2
   }
 
   interface SystemEvent {
@@ -92,6 +99,8 @@ export namespace screenLock {
   export native function getStrongAuth(userId: int): int;
 
   export native function isDeviceLocked(userId: int): boolean;
+
+  export native function getUnlockPolicy(userId: int): UnlockPolicy;
 
   export function isScreenLocked(callback: AsyncCallback<boolean>): void {
     taskpool.execute((): boolean => {

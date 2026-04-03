@@ -411,6 +411,26 @@ ani_boolean ANI_IsDeviceLocked(ani_env *env, ani_int userId)
     return isDeviceLocked;
 }
 
+ani_enum_item ANI_GetUnlockPolicy(ani_env *env, ani_int userId)
+{
+    SCLOCK_HILOGD("ANI_GetUnlockPolicy begin");
+    ani_enum_item result = nullptr;
+    ani_enum enumType;
+    env->FindEnum("@ohos.screenLock.screenLock.UnlockPolicy", &enumType);
+    int32_t policy = 0;
+    int32_t status = ScreenLockManager::GetInstance()->GetUnlockPolicy(userId, policy);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ErrorHandler::Throw(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    SCLOCK_HILOGI("ANI_GetUnlockPolicy [policy]=%{public}d", policy);
+    env->Enum_GetEnumItemByIndex(enumType, ani_size(policy), &result);
+    return result;
+}
+
 } // namespace ScreenLock
 } // namespace OHOS
 
@@ -451,6 +471,8 @@ static ani_boolean BindMethods(ani_env *env)
         ani_native_function{
             "getScreenLockAuthState", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetScreenLockAuthState)},
         ani_native_function{"getStrongAuth", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetStrongAuth)},
+        ani_native_function{
+            "getUnlockPolicy", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_GetUnlockPolicy)},
         ani_native_function{"isDeviceLocked", nullptr, reinterpret_cast<void *>(OHOS::ScreenLock::ANI_IsDeviceLocked)}};
 
     if ((ret = env->Namespace_BindNativeFunctions(spc, methods.data(), methods.size())) != ANI_OK) {

@@ -64,6 +64,8 @@ public:
                                           const sptr<InnerListenerIf> &listener);
     virtual int32_t UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
                                             const sptr<InnerListenerIf> &listener);
+    virtual int32_t SetUnlockPolicy(int32_t userId, int32_t policy);
+    virtual int32_t GetUnlockPolicy(int32_t userId, int32_t &policy);
 private:
     bool mFlag = false;
 };

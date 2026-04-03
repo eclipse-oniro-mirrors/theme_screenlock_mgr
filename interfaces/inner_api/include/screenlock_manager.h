@@ -69,6 +69,8 @@ public:
     SCREENLOCK_API int32_t IsLockedWithUserId(int userId, bool &isLocked);
     SCREENLOCK_API int32_t RegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener);
     SCREENLOCK_API int32_t UnRegisterDeviceLockedListener(const sptr<DeviceLockedListener> &listener);
+    SCREENLOCK_API int32_t SetUnlockPolicy(int32_t userId, int32_t policy);
+    SCREENLOCK_API int32_t GetUnlockPolicy(int32_t userId, int32_t &policy);
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     SCREENLOCK_API int32_t IsLockedWatch(bool &isLocked);
     SCREENLOCK_API int32_t UnlockWatch(const sptr<ScreenLockCallbackInterface> &listener);

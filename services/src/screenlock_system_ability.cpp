@@ -74,6 +74,7 @@ const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
 const char IAM_EVENT_KEY[] = "bootevent.useriam.fwkready";
+const std::string UNLOCK_POLICY_KEY_PREFIX = "unlockPolicy_";
 std::mutex ScreenLockSystemAbility::instanceLock_;
 std::mutex ScreenLockSystemAbility::queueLock_;
 sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::instance_;
@@ -302,6 +303,7 @@ void ScreenLockSystemAbility::OnRemoveUser(const int32_t userId)
     } else {
         SCLOCK_HILOGI("OnRemoveUser screenStateLock user not exit, userId: %{public}d", userId);
     }
+    DeleteUnlockPolicyForUser(userId);
 }
 
 void ScreenLockSystemAbility::OnActiveUser(const int lastUser, const int targetUser)
@@ -1269,10 +1271,102 @@ bool ScreenLockSystemAbility::CheckSystemPermission()
     return !IsSystemApp() && tokenType != TOKEN_NATIVE;
 }
 
+bool ScreenLockSystemAbility::IsNativeAccess()
+{
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    return tokenType == TOKEN_NATIVE;
+}
+
 void ScreenLockSystemAbility::printCallerPid(std::string invokeName)
 {
     auto callerPid = IPCSkeleton::GetCallingPid();
     SCLOCK_HILOGI("%{public}s callerPid:%{public}d", invokeName.c_str(), callerPid);
+}
+
+int32_t ScreenLockSystemAbility::SetUnlockPolicy(int32_t userId, int32_t policy)
+{
+    SCLOCK_HILOGI("SetUnlockPolicy userId=%{public}d ,policy=%{public}d", userId, policy);
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+    if (!IsNativeAccess()) {
+        SCLOCK_HILOGE("is not sa!");
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    std::unique_lock<std::mutex> lock(authStateMutex_);
+    auto iter = authStateInfo.find(userId);
+    if (iter != authStateInfo.end()) {
+        std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
+        int curPolicy = preferencesUtil->ObtainInt(preferKey, 0);
+        if (curPolicy == policy) {
+            SCLOCK_HILOGI("SetUnlockPolicy No update needed");
+            return E_SCREENLOCK_OK;
+        }
+        preferencesUtil->SaveInt(preferKey, policy);
+        preferencesUtil->Refresh();
+        UnlockPolicyChanged(userId, policy);
+        return E_SCREENLOCK_OK;
+    } else {
+        SCLOCK_HILOGE("invaid user: userId=%{public}d", userId);
+        return E_SCREENLOCK_USER_ID_INVALID;
+    }
+}
+
+int32_t ScreenLockSystemAbility::GetUnlockPolicy(int32_t userId, int32_t &policy)
+{
+    SCLOCK_HILOGI("GetUnlockPolicy userId=%{public}d", userId);
+    if (CheckSystemPermission()) {
+        SCLOCK_HILOGE("Calling app is not system app");
+        return E_SCREENLOCK_NOT_SYSTEM_APP;
+    }
+    if (!CheckPermission("ohos.permission.ACCESS_SCREEN_LOCK")) {
+        SCLOCK_HILOGE("no permission: userId=%{public}d", userId);
+        return E_SCREENLOCK_NO_PERMISSION;
+    }
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return E_SCREENLOCK_NULLPTR;
+    }
+    std::unique_lock<std::mutex> lock(authStateMutex_);
+    auto iter = authStateInfo.find(userId);
+    if (iter != authStateInfo.end()) {
+        std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
+        policy = preferencesUtil->ObtainInt(preferKey, 0);
+        SCLOCK_HILOGI("GetUnlockPolicy policy=%{public}d", policy);
+        return E_SCREENLOCK_OK;
+    } else {
+        policy = 0;
+        SCLOCK_HILOGE("user not set. userId=%{public}d, policy=%{public}d", userId, policy);
+        return E_SCREENLOCK_USER_ID_INVALID;
+    }
+}
+
+void ScreenLockSystemAbility::UnlockPolicyChanged(int32_t userId, int32_t policy)
+{
+    SCLOCK_HILOGI("UnlockPolicyChanged");
+    SystemEvent systemEvent(UNLOCK_POLICY_CHANGE);
+    systemEvent.params_ = "{ \"userId\": " + std::to_string(userId) + ", \"policy\": " + std::to_string(policy) + " }";
+    SystemEventCallBack(systemEvent);
+}
+
+void ScreenLockSystemAbility::DeleteUnlockPolicyForUser(int32_t userId)
+{
+    SCLOCK_HILOGI("DeleteUnlockPolicyForUser userId %{public}d", userId);
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    if (preferencesUtil == nullptr) {
+        SCLOCK_HILOGE("preferencesUtil is nullptr!");
+        return;
+    }
+    std::string preferKey = UNLOCK_POLICY_KEY_PREFIX + std::to_string(userId);
+    preferencesUtil->RemoveKey(preferKey);
 }
 
 #ifdef SUPPORT_WEAR_PAYMENT_APP
