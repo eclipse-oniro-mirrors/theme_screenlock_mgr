@@ -73,6 +73,10 @@ void ScreenLockManagerStub::InitHandleMap()
         &ScreenLockManagerStub::OnUnRegistInnerListener;
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_USER_SCREEN_LOCKED)] =
         &ScreenLockManagerStub::OnIsLockedWithUserId;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_UNLOCK_POLICY)] =
+        &ScreenLockManagerStub::OnSetUnlockPolicy;
+    handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_UNLOCK_POLICY)] =
+        &ScreenLockManagerStub::OnGetUnlockPolicy;
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     handleFuncMap[static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::IS_LOCKED_WATCH)] =
         &ScreenLockManagerStub::OnIsLockedWatch;
@@ -339,6 +343,28 @@ int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, Message
     int32_t retCode = IsLockedWithUserId(userId, isLocked);
     reply.WriteInt32(retCode);
     reply.WriteBool(isLocked);
+    return ERR_NONE;
+}
+
+int32_t ScreenLockManagerStub::OnSetUnlockPolicy(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t userId = data.ReadInt32();
+    int32_t policy = data.ReadInt32();
+    SCLOCK_HILOGD("OnSetUnlockPolicy userId=%{public}d, %{public}d", userId, policy);
+    int32_t retCode = SetUnlockPolicy(userId, policy);
+    reply.WriteInt32(retCode);
+    return ERR_NONE;
+}
+
+
+int32_t ScreenLockManagerStub::OnGetUnlockPolicy(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t userId = data.ReadInt32();
+    int32_t policy = 0;
+    SCLOCK_HILOGD("OnGetUnlockPolicy userId=%{public}d, %{public}d", userId, policy);
+    int32_t retCode = GetUnlockPolicy(userId, policy);
+    reply.WriteInt32(retCode);
+    reply.WriteInt32(policy);
     return ERR_NONE;
 }
 

@@ -82,6 +82,7 @@ napi_status Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("requestStrongAuth", OHOS::ScreenLock::NAPI_RequestStrongAuth),
         DECLARE_NAPI_FUNCTION("getStrongAuth", OHOS::ScreenLock::NAPI_GetStrongAuth),
         DECLARE_NAPI_FUNCTION("isDeviceLocked", OHOS::ScreenLock::NAPI_IsDeviceLocked),
+        DECLARE_NAPI_FUNCTION("getUnlockPolicy", OHOS::ScreenLock::NAPI_GetUnlockPolicy),
     };
     napi_define_properties(env, exports, sizeof(exportFuncs) / sizeof(*exportFuncs), exportFuncs);
     return napi_ok;
@@ -792,6 +793,39 @@ napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info)
     }
     SCLOCK_HILOGI("NAPI_IsDeviceLocked [isDeviceLoced]=%{public}d", isDeviceLoced);
     napi_get_boolean(env, isDeviceLoced, &result);
+    return result;
+}
+
+napi_value NAPI_GetUnlockPolicy(napi_env env, napi_callback_info info)
+{
+    SCLOCK_HILOGD("NAPI_GetUnlockPolicy in");
+    napi_value result = nullptr;
+    size_t argc = ARGS_SIZE_ONE;
+    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value thisVar = nullptr;
+    void *data = nullptr;
+    int userId = -1;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    if (CheckParamNumber(argc, ARGS_SIZE_ONE) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    if (CheckParamType(env, argv[ARGV_ZERO], napi_number) != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
+    napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    int32_t policy = 0;
+    int32_t status = ScreenLockManager::GetInstance()->GetUnlockPolicy(userId, policy);
+    if (status != E_SCREENLOCK_OK) {
+        ErrorInfo errInfo;
+        errInfo.errorCode_ = static_cast<uint32_t>(status);
+        GetErrorInfo(status, errInfo);
+        ThrowError(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    SCLOCK_HILOGI("NAPI_GetUnlockPolicy [policy]=%{public}d", policy);
+    napi_create_int32(env, policy, &result);
     return result;
 }
 

@@ -449,6 +449,44 @@ int32_t ScreenLockManagerProxy::UnRegisterInnerListener(const int32_t userId, co
     return retCode;
 }
 
+int32_t ScreenLockManagerProxy::SetUnlockPolicy(int32_t userId, int32_t policy)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+    data.WriteInt32(policy);
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::SET_UNLOCK_POLICY), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy SetUnlockPolicy, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy SetUnlockPolicy end retCode is %{public}d.", retCode);
+    return retCode;
+}
+
+int32_t ScreenLockManagerProxy::GetUnlockPolicy(int32_t userId, int32_t &policy)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    data.WriteInterfaceToken(GetDescriptor());
+    data.WriteInt32(userId);
+    int32_t ret = Remote()->SendRequest(
+        static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::GET_UNLOCK_POLICY), data, reply, option);
+    if (ret != ERR_NONE) {
+        SCLOCK_HILOGE("ScreenLockManagerProxy GetUnlockPolicy, ret = %{public}d", ret);
+        return E_SCREENLOCK_SENDREQUEST_FAILED;
+    }
+    int32_t retCode = reply.ReadInt32();
+    policy = reply.ReadInt32();
+    SCLOCK_HILOGD("ScreenLockManagerProxy GetUnlockPolicy end retCode is %{public}d, %{public}d", retCode, policy);
+    return retCode;
+}
+
 #ifdef SUPPORT_WEAR_PAYMENT_APP
 int32_t ScreenLockManagerProxy::IsLockedWatch(bool &isLocked)
 {

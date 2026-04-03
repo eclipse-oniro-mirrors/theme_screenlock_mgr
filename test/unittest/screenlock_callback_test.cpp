@@ -172,5 +172,15 @@ int32_t ScreenLockManagerStubTest::UnRegisterInnerListener(const int32_t userId,
 {
     return 0;
 }
+
+int32_t ScreenLockManagerStubTest::SetUnlockPolicy(int32_t userId, int32_t policy)
+{
+    return 0;
+}
+
+int32_t ScreenLockManagerStubTest::GetUnlockPolicy(int32_t userId, int32_t &policy)
+{
+    return 0;
+}
 } // namespace ScreenLock
 } // namespace OHOS
