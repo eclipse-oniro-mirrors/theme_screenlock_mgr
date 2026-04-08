@@ -141,32 +141,6 @@ uint64_t StrongAuthManger::GetTimerId(int32_t userId)
     return timerId;
 }
 
-void StrongAuthManger::RegistIamEventListener()
-{
-    SCLOCK_HILOGD("RegistIamEventListener start");
-    if (OHOS::system::GetDeviceType() == "2in1") {
-        SCLOCK_HILOGD("2in1 device no need to registCredChangeListener");
-        return;
-    }
-
-    std::vector<UserIam::UserAuth::AuthType> authTypeList;
-    authTypeList.emplace_back(AuthType::PIN);
-    authTypeList.emplace_back(AuthType::FACE);
-    authTypeList.emplace_back(AuthType::FINGERPRINT);
-
-    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> tmpListener;
-    {
-        std::lock_guard<std::mutex> autoLock(instanceLock_);
-        if (credChangeListener_ == nullptr) {
-            credChangeListener_ = std::make_shared<CredChangeListenerService>();
-        }
-        tmpListener = credChangeListener_;
-    }
-    int32_t ret = UserIam::UserAuth::UserIdmClient::GetInstance().RegistCredChangeEventListener(
-        authTypeList, tmpListener);
-    SCLOCK_HILOGI("RegistCredChangeEventListener ret: %{public}d", ret);
-}
-
 void StrongAuthManger::RegistAuthEventListener()
 {
     SCLOCK_HILOGD("RegistAuthEventListener start");
@@ -201,21 +175,12 @@ void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_
     return;
 }
 
-void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_t userId,
+void StrongAuthManger::OnNotifyCredChangeEvent(int32_t userId,
     UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType,
     const UserIam::UserAuth::CredChangeEventInfo &changeInfo)
 {
-    SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
-        static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(changeInfo.isSilentCredChange));
-    
     if (OHOS::system::GetDeviceType() == "2in1") {
-        // PC只有无密码到有密码需要创建定时器
-        if (authType == AuthType::PIN && eventType == ADD_CRED &&
-            StrongAuthManger::GetInstance()->IsUserExitInStrongAuthInfo(userId) &&
-            !StrongAuthManger::GetInstance()->IsUserHasStrongAuthTimer(userId)) {
-            SCLOCK_HILOGD("2in1 device only deal add cred");
-            StrongAuthManger::GetInstance()->StartStrongAuthTimer(userId);
-        }
+        SCLOCK_HILOGD("2in1 device no need to registCredChangeListener");
         return;
     }
 
@@ -233,23 +198,6 @@ void StrongAuthManger::CredChangeListenerService::OnNotifyCredChangeEvent(int32_
         }
     }
     return;
-}
-
-void StrongAuthManger::UnRegistIamEventListener()
-{
-    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> tmpListener;
-    {
-        std::lock_guard<std::mutex> autoLock(instanceLock_);
-        if (credChangeListener_ != nullptr) {
-            tmpListener = credChangeListener_;
-            credChangeListener_ = nullptr;
-        }
-    }
-    if (tmpListener != nullptr) {
-        int32_t ret = UserIam::UserAuth::
-            UserIdmClient::GetInstance().UnRegistCredChangeEventListener(tmpListener);
-        SCLOCK_HILOGI("UnRegistCredChangeEventListener ret: %{public}d", ret);
-    }
 }
 
 void StrongAuthManger::UnRegistAuthEventListener()

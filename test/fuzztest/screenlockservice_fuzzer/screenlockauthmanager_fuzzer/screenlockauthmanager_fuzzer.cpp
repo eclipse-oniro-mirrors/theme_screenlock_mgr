@@ -97,10 +97,8 @@ bool FuzzGetTimerId(const uint8_t *rawData, size_t size)
     }
     int32_t userId = 100;
     authmanager->GetTimerId(userId);
-    authmanager->RegistIamEventListener();
     userId = rawData[0];
     authmanager->GetTimerId(userId);
-    authmanager->RegistIamEventListener();
 #endif  // IS_SO_CROP_H
     return true;
 }
@@ -181,7 +179,6 @@ bool FuzzSetStrongAuthStat(const uint8_t *rawData, size_t size)
     }
     int32_t invalidUserId = rawData[0];
     authmanager->SetStrongAuthStat(invalidUserId, 0);
-    authmanager->UnRegistIamEventListener();
 #endif  // IS_SO_CROP_H
     return true;
 }

@@ -53,8 +53,6 @@ public:
     void DestroyAllStrongAuthTimer();
     void SetStrongAuthStat(int32_t userId, int32_t reasonFlag);
     int32_t GetStrongAuthStat(int32_t userId);
-    void RegistIamEventListener();
-    void UnRegistIamEventListener();
     void RegistAuthEventListener();
     void UnRegistAuthEventListener();
     void InitStrongAuthStat(int32_t userId, int32_t reasonFlag);
@@ -62,6 +60,8 @@ public:
     bool GetCredInfo(int32_t userId);
     int32_t GetStrongAuthTimeTrigger(int32_t userId);
     void AccountUnlocked(int32_t userId);
+    void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
+        UserIam::UserAuth::CredChangeEventType eventType, const UserIam::UserAuth::CredChangeEventInfo &changeInfo);
 
 public:
     class AuthEventListenerService : public UserIam::UserAuth::AuthSuccessEventListener {
@@ -70,15 +70,6 @@ public:
         virtual ~AuthEventListenerService() = default;
         void OnNotifyAuthSuccessEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
             const UserIam::UserAuth::AuthSuccessEventInfo &eventInfo) override;
-    };
-
-    class CredChangeListenerService : public UserIam::UserAuth::CredChangeEventListener {
-    public:
-        CredChangeListenerService() = default;
-        virtual ~CredChangeListenerService() = default;
-        void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
-            UserIam::UserAuth::CredChangeEventType eventType,
-            const UserIam::UserAuth::CredChangeEventInfo &changeInfo) override;
     };
 
     class authTimer : public MiscServices::ITimerInfo {
@@ -131,7 +122,6 @@ private:
     std::map<int32_t, int32_t> strongAuthStateInfo;
     std::map<int32_t, TimerInfo> strongAuthTimerInfo;
     std::shared_ptr<UserIam::UserAuth::AuthSuccessEventListener> authSuccessListener_;
-    std::shared_ptr<UserIam::UserAuth::CredChangeEventListener> credChangeListener_;
 };
 } // namespace OHOS
 } // namespace ScreenLock
