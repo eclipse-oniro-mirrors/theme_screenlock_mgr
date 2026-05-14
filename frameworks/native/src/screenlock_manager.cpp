@@ -354,9 +354,10 @@ int32_t ScreenLockManager::OnSystemEvent(const sptr<ScreenLockSystemAbilityInter
         SCLOCK_HILOGE("listener is nullptr.");
         return E_SCREENLOCK_NULLPTR;
     }
-    listenerLock_.lock();
-    systemEventListener_ = listener;
-    listenerLock_.unlock();
+    {
+        std::lock_guard<std::mutex> lock(listenerLock_);
+        systemEventListener_ = listener;
+    }
     int32_t status = proxy->OnSystemEvent(listener);
     SCLOCK_HILOGD("ScreenLockManager::OnSystemEvent out, status=%{public}d", status);
     return status;
