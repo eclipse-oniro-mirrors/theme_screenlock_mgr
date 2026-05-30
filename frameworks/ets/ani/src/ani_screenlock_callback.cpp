@@ -106,9 +106,9 @@ void ScreenlockCallback::SendCallBackEvent(std::shared_ptr<ScreenlockOnCallBack>
     }
     handler_ = std::make_shared<OHOS::AppExecFwk::EventHandler>(runner);
     if (handler_ == nullptr) {
- 	    SCLOCK_HILOGE("Failed to create event handler");
- 	    return;
- 	}
+        SCLOCK_HILOGE("Failed to create event handler");
+        return;
+    }
     auto state = handler_->PostTask(task, "", 0, OHOS::AppExecFwk::EventQueue::Priority::HIGH, {});
     SCLOCK_HILOGE("task PostTask ret: %{public}d", state);
 }

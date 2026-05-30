@@ -39,10 +39,10 @@ int32_t ScreenLockCallbackStub::OnRemoteRequest(uint32_t code, MessageParcel &da
     switch (code) {
         case ON_CALLBACK: {
             int32_t screenLockResult = 0;
- 	        if (!data.ReadInt32(screenLockResult)) {
- 	            SCLOCK_HILOGE("Read screenLockResult failed");
- 	            return E_SCREENLOCK_READ_PARCEL_ERROR;
- 	        }
+            if (!data.ReadInt32(screenLockResult)) {
+                SCLOCK_HILOGE("Read screenLockResult failed");
+                return E_SCREENLOCK_READ_PARCEL_ERROR;
+            }
             OnCallBack(screenLockResult);
             break;
         }
