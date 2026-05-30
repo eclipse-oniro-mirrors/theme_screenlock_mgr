@@ -346,7 +346,11 @@ ani_boolean ANI_SetScreenLockAuthState(ani_env *env, ani_enum_item state, ani_in
 {
     SCLOCK_HILOGD("ANI_SetScreenLockAuthState begin");
     ani_int stateInt;
-    env->EnumItem_GetValue_Int(state, &stateInt);
+    ani_status status = env->EnumItem_GetValue_Int(state, &stateInt);
+    if (status != ANI_OK) {
+        SCLOCK_HILOGE("ANI_SetScreenLockAuthState failed, status=%{public}d", status);
+        return false;
+    }
     ani_string authTokenANIStr = static_cast<ani_string>(authToken);
     std::string authTokenStr = ANIUtils_ANIStringToStdString(env, authTokenANIStr);
     int32_t retCode = ScreenLockManager::GetInstance()->SetScreenLockAuthState(stateInt, userId, authTokenStr);

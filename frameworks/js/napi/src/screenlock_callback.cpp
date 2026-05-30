@@ -41,6 +41,29 @@ ScreenlockCallback::~ScreenlockCallback()
 {
 }
 
+bool ScopeStatusCheck(uv_work_t *work, napi_handle_scope &scope, ScreenlockOnCallBack **callBackPtr)
+{
+    if (work == nullptr) {
+        SCLOCK_HILOGE("UvWorkOnCallBack, work is null");
+        return false;
+    }
+    ScreenlockOnCallBack *callBackPtrAll = static_cast<ScreenlockOnCallBack *>(work->data);
+    if (callBackPtrAll == nullptr) {
+        SCLOCK_HILOGE("UvWorkOnCallBack, callBackPtrAll is null");
+        SAFE_DELETE(work);
+        return false;
+    }
+    napi_status scopeStatus = napi_open_handle_scope(callBackPtrAll->env, &scope);
+    if (scopeStatus != napi_ok) {
+        SCLOCK_HILOGE("Failed to open handle scope");
+        delete callBackPtrAll;
+        delete work;
+        return false;
+    }
+    *callBackPtr = callBackPtrAll;
+    return true;
+}
+
 void ScreenlockCallback::SetErrorInfo(const ErrorInfo &errorInfo)
 {
     errorInfo_ = errorInfo;
@@ -48,19 +71,12 @@ void ScreenlockCallback::SetErrorInfo(const ErrorInfo &errorInfo)
 
 void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
 {
-    if (work == nullptr) {
-        SCLOCK_HILOGE("UvWorkOnCallBack, work is null");
-        return;
-    }
-    ScreenlockOnCallBack *callBackPtr = static_cast<ScreenlockOnCallBack *>(work->data);
-    if (callBackPtr == nullptr) {
-        SCLOCK_HILOGE("UvWorkOnCallBack, callBackPtr is null");
-        SAFE_DELETE(work);
-        return;
-    }
     napi_handle_scope scope = nullptr;
-    napi_open_handle_scope(callBackPtr->env, &scope);
-    napi_value result[ARGS_SIZE_TWO] = { 0 };
+    ScreenlockOnCallBack *callBackPtr = nullptr;
+    if (!ScopeStatusCheck(work, scope, &callBackPtr)) {
+        return;
+    }
+    napi_value result[ARGS_SIZE_TWO] = {0};
     bool screenLockSuccess = callBackPtr->screenLockResult == SCREEN_SUCC;
     bool cancelUnlock = (callBackPtr->action == Action::UNLOCK && callBackPtr->screenLockResult == SCREEN_CANCEL);
     if (callBackPtr->action == Action::UNLOCKSCREEN) {
