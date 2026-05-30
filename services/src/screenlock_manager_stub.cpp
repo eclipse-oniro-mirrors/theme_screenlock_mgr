@@ -204,7 +204,7 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
 
 int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
 {
-    std::string event;
+    std::string event = data.ReadString();
     int param = 0;
     if (event == UNLOCK_SCREEN_RESULT || event == LOCK_SCREEN_RESULT || event == SCREEN_DRAWDONE) {
         if (!data.ReadInt32(param)) {
