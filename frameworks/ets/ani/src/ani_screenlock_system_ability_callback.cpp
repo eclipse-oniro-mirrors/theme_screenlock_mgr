@@ -75,7 +75,8 @@ ani_object GetSystemEventImpl(ani_env *env, std::string eventTypeStr, std::strin
 
 void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 {
-    if (handler_ == nullptr) {
+    auto handler = handler_;
+    if (handler == nullptr) {
         SCLOCK_HILOGE("eventHandler is nullptr");
         return;
     }
@@ -106,7 +107,7 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         SCLOCK_HILOGI("OnCallBack eventType:%{public}s", entry->systemEvent.eventType_.c_str());
         env->DestroyLocalScope();
     };
-    handler_->PostTask(task, "ScreenlockSystemAbilityCallback");
+    handler->PostTask(task, "ScreenlockSystemAbilityCallback");
 }
 
 ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()

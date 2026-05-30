@@ -22,11 +22,11 @@ namespace OHOS::ScreenLock {
 AsyncCall::AsyncCall(napi_env env, napi_callback_info info, Context *context, size_t pos)
 {
     context_ = new AsyncContext();
-    context_->env = env;
     if (context_ == nullptr) {
         SCLOCK_HILOGD("AsyncCall context_ is null");
         return;
     }
+    context_->env = env;
     size_t argc = 6;
     napi_value self = nullptr;
     napi_value argv[6] = { nullptr };

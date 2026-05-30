@@ -204,8 +204,15 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
 
 int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
 {
-    std::string event = data.ReadString();
-    int param = data.ReadInt32();
+    std::string event;
+ 	int param = 0;
+ 	if (event == UNLOCK_SCREEN_RESULT || event == LOCK_SCREEN_RESULT || event == SCREEN_DRAWDONE) {
+ 	    if (!data.ReadInt32(param)) {
+ 	        SCLOCK_HILOGE("Read parameters failed");
+ 	        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+ 	        return ERR_INVALID_DATA;
+ 	    }
+ 	}
     SCLOCK_HILOGD("event=%{public}s, param=%{public}d", event.c_str(), param);
     int32_t retCode = SendScreenLockEvent(event, param);
     reply.WriteInt32(retCode);
@@ -237,9 +244,14 @@ int32_t ScreenLockManagerStub::OnSetScreenLockDisabled(MessageParcel &data, Mess
 
 int32_t ScreenLockManagerStub::OnSetScreenLockAuthState(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t authState = data.ReadInt32();
-    int32_t userId = data.ReadInt32();
-    std::string authToken = data.ReadString();
+    int32_t authState = 0;
+ 	int32_t userId = 0;
+ 	std::string authToken;
+ 	if (!data.ReadInt32(authState) || !data.ReadInt32(userId)) {
+ 	    SCLOCK_HILOGE("Read auth parameters failed");
+ 	    reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+ 	    return ERR_INVALID_DATA;
+ 	}
     int32_t retCode = SetScreenLockAuthState(authState, userId, authToken);
     reply.WriteInt32(retCode);
     return ERR_NONE;
