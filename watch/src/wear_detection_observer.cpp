@@ -18,6 +18,7 @@
 #include "sclock_log.h"
 #include "watch_applock_manager.h"
 #include "display_manager.h"
+#include <securec.h>
 
 using namespace OHOS::Rosen;
 namespace OHOS {
