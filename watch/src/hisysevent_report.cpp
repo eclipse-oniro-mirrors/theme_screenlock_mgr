@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "hisysevent_report.h"
+#include <securec.h>
 
 namespace OHOS {
 namespace ScreenLock {
