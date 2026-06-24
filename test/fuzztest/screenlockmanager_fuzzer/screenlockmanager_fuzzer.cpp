@@ -233,6 +233,32 @@ bool FuzzLock(const uint8_t *rawData, size_t size)
     }
 }
 
+bool FuzzSetUnlockPolicy(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int32_t policy = rawData[0] % 3;
+    int32_t ret = ScreenLockManager::GetInstance()->SetUnlockPolicy(userId, policy);
+    userId = rawData[0];
+    ScreenLockManager::GetInstance()->SetUnlockPolicy(userId, policy);
+    return ret == E_SCREENLOCK_OK;
+}
+
+bool FuzzGetUnlockPolicy(const uint8_t *rawData, size_t size)
+{
+    if (size < LENGTH) {
+        return true;
+    }
+    int32_t userId = 100;
+    int32_t policy = 0;
+    int32_t ret = ScreenLockManager::GetInstance()->GetUnlockPolicy(userId, policy);
+    userId = rawData[0];
+    ScreenLockManager::GetInstance()->GetUnlockPolicy(userId, policy);
+    return ret == E_SCREENLOCK_OK;
+}
+
 }  // namespace OHOS
 
 /* Fuzzer entry point */
@@ -256,5 +282,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzIsDeviceLocked(data, size);
     OHOS::FuzzIsLockedWithUserId(data, size);
     OHOS::FuzzLock(data, size);
+    OHOS::FuzzSetUnlockPolicy(data, size);
+    OHOS::FuzzGetUnlockPolicy(data, size);
     return 0;
 }
