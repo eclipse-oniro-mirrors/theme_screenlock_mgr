@@ -114,11 +114,6 @@ screenlocklockscreen_test = {
   configFuzzer = "screenlocklockscreen_fuzzer"
   source = "screenlocklockscreen_fuzzer/screenlocklockscreen_fuzzer.cpp"
 }
-screenlockmanagerstub_test = {
-  targetName = "ScreenlockManagerStubFuzzTest"
-  configFuzzer = "screenlockmanagerstub_fuzzer"
-  source = "screenlockmanagerstub_fuzzer/screenlockmanagerstub_fuzzer.cpp"
-}
 screenlockisdevicelocked_test = {
   targetName = "ScreenlockIsDeviceLockedFuzzTest"
   configFuzzer = "screenlockisdevicelocked_fuzzer"
@@ -170,7 +165,6 @@ screenlock_fuzztests = [
   screenlockunlockscreen_test,
   screenlockunlock_test,
   screenlocklockscreen_test,
-  screenlockmanagerstub_test,
   screenlockisdevicelocked_test,
   screenlockislockedwithuserid_test,
   screenlockregisterinnerlistener_test,
@@ -256,7 +250,6 @@ group("fuzztest") {
     ":ScreenlockIslockedFuzzTest",
     ":ScreenlockLockFuzzTest",
     ":ScreenlockLockScreenFuzzTest",
-    ":ScreenlockManagerStubFuzzTest",
     ":ScreenlockOnSystemEventFuzzTest",
     ":ScreenlockRegisterInnerListenerFuzzTest",
     ":ScreenlockRequestStrongFuzzTest",
