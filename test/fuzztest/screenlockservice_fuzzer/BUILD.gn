@@ -114,6 +114,11 @@ screenlocklockscreen_test = {
   configFuzzer = "screenlocklockscreen_fuzzer"
   source = "screenlocklockscreen_fuzzer/screenlocklockscreen_fuzzer.cpp"
 }
+screenlockmanagerstub_test = {
+  targetName = "ScreenlockManagerStubFuzzTest"
+  configFuzzer = "screenlockmanagerstub_fuzzer"
+  source = "screenlockmanagerstub_fuzzer/screenlockmanagerstub_fuzzer.cpp"
+}
 screenlockisdevicelocked_test = {
   targetName = "ScreenlockIsDeviceLockedFuzzTest"
   configFuzzer = "screenlockisdevicelocked_fuzzer"
@@ -133,6 +138,16 @@ screenlockunregisterinnerlistener_test = {
   targetName = "ScreenlockUnregisterInnerListenerFuzzTest"
   configFuzzer = "screenlockunregisterinnerlistener_fuzzer"
   source = "screenlockunregisterinnerlistener_fuzzer/screenlockunregisterinnerlistener_fuzzer.cpp"
+}
+screenlocksetunlockpolicy_test = {
+  targetName = "ScreenlockSetUnlockPolicyFuzzTest"
+  configFuzzer = "screenlocksetunlockpolicy_fuzzer"
+  source = "screenlocksetunlockpolicy_fuzzer/screenlocksetunlockpolicy_fuzzer.cpp"
+}
+screenlockgetunlockpolicy_test = {
+  targetName = "ScreenlockGetUnlockPolicyFuzzTest"
+  configFuzzer = "screenlockgetunlockpolicy_fuzzer"
+  source = "screenlockgetunlockpolicy_fuzzer/screenlockgetunlockpolicy_fuzzer.cpp"
 }
 
 screenlock_fuzztests = [
@@ -155,10 +170,13 @@ screenlock_fuzztests = [
   screenlockunlockscreen_test,
   screenlockunlock_test,
   screenlocklockscreen_test,
+  screenlockmanagerstub_test,
   screenlockisdevicelocked_test,
   screenlockislockedwithuserid_test,
   screenlockregisterinnerlistener_test,
   screenlockunregisterinnerlistener_test,
+  screenlocksetunlockpolicy_test,
+  screenlockgetunlockpolicy_test,
 ]
 
 foreach(item, screenlock_fuzztests) {
@@ -195,6 +213,8 @@ foreach(item, screenlock_fuzztests) {
       "ability_runtime:ability_manager",
       "access_token:libaccesstoken_sdk",
       "access_token:libtokenid_sdk",
+      "access_token:libtoken_setproc",
+      "access_token:libnativetoken_shared",
       "c_utils:utils",
       "eventhandler:libeventhandler",
       "ffrt:libffrt",
@@ -236,6 +256,7 @@ group("fuzztest") {
     ":ScreenlockIslockedFuzzTest",
     ":ScreenlockLockFuzzTest",
     ":ScreenlockLockScreenFuzzTest",
+    ":ScreenlockManagerStubFuzzTest",
     ":ScreenlockOnSystemEventFuzzTest",
     ":ScreenlockRegisterInnerListenerFuzzTest",
     ":ScreenlockRequestStrongFuzzTest",
@@ -246,6 +267,8 @@ group("fuzztest") {
     ":ScreenlockUnlockScreenFuzzTest",
     ":ScreenlockUnregisterInnerListenerFuzzTest",
     ":ScreenlockUtilsFuzzTest",
+    ":ScreenlockSetUnlockPolicyFuzzTest",
+    ":ScreenlockGetUnlockPolicyFuzzTest",
   ]
 }
 ###############################################################################
