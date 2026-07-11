@@ -91,8 +91,8 @@ SettingManager::ResultCode SettingManager::Query(Uri &uri, const std::string &ke
     predicates.EqualTo(SETTING_KEY, key);
     auto result = settingHelper->Query(uri, predicates, columns, &errorCode);
     if (result == nullptr) {
-        const char *message = errorCode.GetMessage().c_str();
-        SCLOCK_HILOGW("query error, code:%{public}d message:%{public}s", errorCode.GetCode(), message);
+        std::string errorMsg = errorCode.GetMessage();
+        SCLOCK_HILOGW("query error, code:%{public}d message:%{public}s", errorCode.GetCode(), errorMsg.c_str());
         return FAIL;
     }
     int code = result->GoToFirstRow();
