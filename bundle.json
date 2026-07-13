@@ -28,6 +28,7 @@
       "components": [
         "safwk",
         "napi",
+        "node",
         "samgr",
         "common_event_service",
         "ipc",
