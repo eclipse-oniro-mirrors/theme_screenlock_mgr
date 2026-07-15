@@ -70,6 +70,7 @@ ohos_shared_library("screenlock") {
       "hilog:libhilog",
       "hitrace:hitrace_meter",
       "ipc:ipc_single",
+      "libuv:uv",
       "napi:ace_napi",
       "node:node_header_notice",
     ]

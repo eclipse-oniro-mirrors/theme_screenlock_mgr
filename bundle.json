@@ -27,6 +27,7 @@
     "deps": {
       "components": [
         "safwk",
+        "libuv",
         "napi",
         "node",
         "samgr",
