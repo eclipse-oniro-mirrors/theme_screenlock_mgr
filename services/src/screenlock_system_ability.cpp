@@ -704,13 +704,13 @@ bool ScreenLockSystemAbility::GetSecure()
     if (WatchAppLockManager::GetInstance().IsPaymentApp()) {
         return WatchAppLockManager::GetInstance().isSecureMode();
     }
- #endif // SUPPORT_WEAR_PAYMENT_APP
- 	std::vector<UserIam::UserAuth::CredentialInfo> credInfo;
- 	int32_t result = UserIdmClient::GetInstance().GetCredentialInfoSync(userId, AuthType::PIN, credInfo);
- 	SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
- 	if (result == UserIam::UserAuth::ResultCode::SUCCESS && credInfo.size() > 0) {
- 	    return true;
- 	}
+#endif // SUPPORT_WEAR_PAYMENT_APP
+    std::vector<UserIam::UserAuth::CredentialInfo> credInfo;
+    int32_t result = UserIdmClient::GetInstance().GetCredentialInfoSync(userId, AuthType::PIN, credInfo);
+    SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
+    if (result == UserIam::UserAuth::ResultCode::SUCCESS && credInfo.size() > 0) {
+        return true;
+    }
     return false;
 }
 
