@@ -47,6 +47,7 @@
 #include "commeventsubscriber.h"
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
+#include "user_idm_client_defines.h"
 #include "innerlistenermanager.h"
 #include "common_helper.h"
 #ifndef IS_SO_CROP_H
@@ -699,15 +700,15 @@ bool ScreenLockSystemAbility::GetSecure()
         AccountSA::OsAccountManager::GetForegroundOsAccountLocalId(userId);
     }
     SCLOCK_HILOGD("userId=%{public}d", userId);
-    auto getInfoCallback = std::make_shared<ScreenLockGetInfoCallback>();
-    int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
-    SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
 #ifdef SUPPORT_WEAR_PAYMENT_APP
     if (WatchAppLockManager::GetInstance().IsPaymentApp()) {
         return WatchAppLockManager::GetInstance().isSecureMode();
     }
 #endif // SUPPORT_WEAR_PAYMENT_APP
-    if (result == static_cast<int32_t>(ResultCode::SUCCESS)) {
+    std::vector<UserIam::UserAuth::CredentialInfo> credInfo;
+    int32_t result = UserIdmClient::GetInstance().GetCredentialInfoSync(userId, AuthType::PIN, credInfo);
+    SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
+    if (result == UserIam::UserAuth::ResultCode::SUCCESS && credInfo.size() > 0) {
         return true;
     }
     return false;
