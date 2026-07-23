@@ -466,7 +466,7 @@ int32_t ScreenLockManagerProxy::SetUnlockPolicy(int32_t userId, int32_t policy)
     int32_t retCode = E_SCREENLOCK_OK;
     if (!reply.ReadInt32(retCode)) {
         SCLOCK_HILOGI("ScreenLockManagerProxy failed to read retCode");
-        return E_SCREENLOCK_READ_PARCEL_ERROR
+        return E_SCREENLOCK_READ_PARCEL_ERROR;
     }
     SCLOCK_HILOGD("ScreenLockManagerProxy SetUnlockPolicy end retCode is %{public}d.", retCode);
     return retCode;
