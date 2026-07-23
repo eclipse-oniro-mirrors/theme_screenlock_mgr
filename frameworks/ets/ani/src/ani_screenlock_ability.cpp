@@ -420,7 +420,11 @@ ani_enum_item ANI_GetUnlockPolicy(ani_env *env, ani_int userId)
     SCLOCK_HILOGD("ANI_GetUnlockPolicy begin");
     ani_enum_item result = nullptr;
     ani_enum enumType;
-    env->FindEnum("@ohos.screenLock.screenLock.UnlockPolicy", &enumType);
+    ani_status ret = env->FindEnum("@ohos.screenLock.screenLock.UnlockPolicy", &enumType);
+    if (ret != ANI_OK) {
+        SCLOCK_HILOGI("ANI_GetUnlockPolicy FindEnum ret err");
+        return nullptr;
+    }
     int32_t policy = 0;
     int32_t status = ScreenLockManager::GetInstance()->GetUnlockPolicy(userId, policy);
     if (status != E_SCREENLOCK_OK) {
@@ -431,6 +435,10 @@ ani_enum_item ANI_GetUnlockPolicy(ani_env *env, ani_int userId)
         return result;
     }
     SCLOCK_HILOGI("ANI_GetUnlockPolicy [policy]=%{public}d", policy);
+    if (result == nullptr) {
+        SCLOCK_HILOGI("ANI_GetUnlockPolicy result=nullptr");
+        return nullptr
+    }
     env->Enum_GetEnumItemByIndex(enumType, ani_size(policy), &result);
     return result;
 }
