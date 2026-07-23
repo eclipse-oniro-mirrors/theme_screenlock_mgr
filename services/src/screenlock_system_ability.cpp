@@ -796,6 +796,7 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 
 int32_t ScreenLockSystemAbility::FreshDisabledState(bool disable, int userId)
 {
+    std::unique_lock<std::mutex> lock(authStateMutex_);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
