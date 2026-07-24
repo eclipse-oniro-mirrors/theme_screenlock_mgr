@@ -437,7 +437,7 @@ ani_enum_item ANI_GetUnlockPolicy(ani_env *env, ani_int userId)
     SCLOCK_HILOGI("ANI_GetUnlockPolicy [policy]=%{public}d", policy);
     if (result == nullptr) {
         SCLOCK_HILOGI("ANI_GetUnlockPolicy result=nullptr");
-        return nullptr
+        return nullptr;
     }
     env->Enum_GetEnumItemByIndex(enumType, ani_size(policy), &result);
     return result;
