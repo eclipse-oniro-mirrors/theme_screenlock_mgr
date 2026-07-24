@@ -814,8 +814,8 @@ napi_value NAPI_GetUnlockPolicy(napi_env env, napi_callback_info info)
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
         return result;
     }
-    napi_status status = napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
-    if (status != napi_ok) {
+    napi_status statusOne = napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    if (statusOne != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
         return result;
     }
