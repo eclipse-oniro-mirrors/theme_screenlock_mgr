@@ -247,7 +247,7 @@ int32_t ScreenLockManagerStub::OnSetScreenLockAuthState(MessageParcel &data, Mes
     int32_t authState = 0;
     int32_t userId = 0;
     std::string authToken;
-    if (!data.ReadInt32(authState) || !data.ReadInt32(userId)) {
+    if (!data.ReadInt32(authState) || !data.ReadInt32(userId) || !data.ReadString(authToken)) {
         SCLOCK_HILOGE("Read auth parameters failed");
         reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
         return ERR_INVALID_DATA;
