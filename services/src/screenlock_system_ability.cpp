@@ -73,6 +73,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, tr
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
+const int IDM_UID = 1088;
 const char IAM_EVENT_KEY[] = "bootevent.useriam.fwkready";
 const std::string UNLOCK_POLICY_KEY_PREFIX = "unlockPolicy_";
 std::mutex ScreenLockSystemAbility::instanceLock_;
@@ -796,7 +797,6 @@ int32_t ScreenLockSystemAbility::SetScreenLockDisabled(bool disable, int userId)
 
 int32_t ScreenLockSystemAbility::FreshDisabledState(bool disable, int userId)
 {
-    std::unique_lock<std::mutex> lock(authStateMutex_);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
@@ -1418,6 +1418,10 @@ void ScreenLockSystemAbility::CredChangeListenerService::OnNotifyCredChangeEvent
     UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType,
     const UserIam::UserAuth::CredChangeEventInfo &changeInfo)
 {
+    if (IPCSkeleton::GetCallingUid() != IDM_UID) {
+        SCLOCK_HILOGE("not call by idm");
+        return;
+    }
     SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
         static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(changeInfo.isSilentCredChange));
     
