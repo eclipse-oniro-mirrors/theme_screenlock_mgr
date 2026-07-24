@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "ipc_skeleton.h"
 #include "screenlock_callback_stub.h"
 
 #include "sclock_log.h"
@@ -20,6 +21,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
+const int FOUNDATION_UID = 5523;
 ScreenLockCallbackStub::~ScreenLockCallbackStub()
 {
 }
@@ -34,6 +36,10 @@ int32_t ScreenLockCallbackStub::OnRemoteRequest(uint32_t code, MessageParcel &da
     auto descriptorToken = data.ReadInterfaceToken();
     if (descriptorToken != GetDescriptor()) {
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
+        return E_SCREENLOCK_TRANSACT_ERROR;
+    }
+    if (IPCSkeleton::GetCallingUid() != FOUNDATION_UID) {
+        SCLOCK_HILOGE("Remote IPCSkeleton not find by screenlock");
         return E_SCREENLOCK_TRANSACT_ERROR;
     }
     switch (code) {
