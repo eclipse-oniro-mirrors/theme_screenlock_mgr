@@ -103,8 +103,10 @@ void ScreenlockCallback::UvWorkOnCallBack(uv_work_t *work, int32_t status)
     } else {
         napi_value callbackFunc = nullptr;
         napi_value callbackResult = nullptr;
-        napi_get_reference_value(callBackPtr->env, callBackPtr->callbackRef, &callbackFunc);
-        napi_call_function(callBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, result, &callbackResult);
+        napi_status status = napi_get_reference_value(callBackPtr->env, callBackPtr->callbackRef, &callbackFunc);
+        if (status == napi_ok && callbackFunc != nullptr) {
+            napi_call_function(callBackPtr->env, nullptr, callbackFunc, ARGS_SIZE_TWO, result, &callbackResult);
+        }
         napi_delete_reference(callBackPtr->env, callBackPtr->callbackRef);
     }
     napi_close_handle_scope(callBackPtr->env, scope);
