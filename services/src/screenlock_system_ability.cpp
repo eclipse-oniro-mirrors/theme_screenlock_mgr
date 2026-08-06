@@ -753,7 +753,7 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
 
 int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
 {
-    SCLOCK_HILOGD("SendScreenLockEvent event=%{public}s ,param=%{public}d", event.c_str(), param);
+    SCLOCK_HILOGI("SendScreenLockEvent event=%{public}s ,param=%{public}d", event.c_str(), param);
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
