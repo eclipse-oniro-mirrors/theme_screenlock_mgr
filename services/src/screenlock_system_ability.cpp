@@ -74,6 +74,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(ScreenLockSystemAbility, SCREENLOCK_SERVICE_ID, tr
 const std::int64_t TIME_OUT_MILLISECONDS = 10000L;
 const std::int64_t INIT_INTERVAL = 5000000L;
 const std::int64_t DELAY_TIME = 1000000L;
+const int IDM_UID = 1088;
 const char IAM_EVENT_KEY[] = "bootevent.useriam.fwkready";
 const std::string UNLOCK_POLICY_KEY_PREFIX = "unlockPolicy_";
 std::mutex ScreenLockSystemAbility::instanceLock_;
@@ -115,6 +116,17 @@ void AccountActive(const int lastUser, const int targetUser)
     SCLOCK_HILOGW("OnAccountsChanged.[osAccountId]:%{public}d, [lastId]:%{public}d", targetUser, lastUser);
     ScreenLockSystemAbility::GetInstance()->OnActiveUser(lastUser, targetUser);
     return;
+}
+
+bool PowerEventType(const std::string eventType)
+{
+    if (eventType == BEGIN_WAKEUP || eventType == END_WAKEUP || eventType == BEGIN_SCREEN_ON ||
+        eventType == END_SCREEN_ON || eventType == BEGIN_SLEEP || eventType == END_SLEEP ||
+        eventType == BEGIN_SCREEN_OFF || eventType == END_SCREEN_OFF) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void AccountRemove(const int lastUser, const int targetUser)
@@ -416,7 +428,7 @@ sptr<ScreenLockSystemAbility> ScreenLockSystemAbility::getScreenLockSystemAbilit
 void ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener::OnDisplayPowerEvent(DisplayPowerEvent event,
                                                                                        EventStatus status)
 {
-    SCLOCK_HILOGI("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
+    SCLOCK_HILOGD("OnDisplayPowerEvent event=%{public}d,status= %{public}d", static_cast<int>(event),
         static_cast<int>(status));
     sptr<ScreenLockSystemAbility> curInstance = getScreenLockSystemAbility();
     if (curInstance == nullptr) {
@@ -691,7 +703,7 @@ bool ScreenLockSystemAbility::GetSecure()
             SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure restart.");
         }
     }
-    SCLOCK_HILOGI("ScreenLockSystemAbility GetSecure started.");
+    SCLOCK_HILOGD("ScreenLockSystemAbility GetSecure started.");
     int callingUid = IPCSkeleton::GetCallingUid();
     SCLOCK_HILOGD("ScreenLockSystemAbility::GetSecure callingUid=%{public}d", callingUid);
     int userId = 0;
@@ -707,7 +719,7 @@ bool ScreenLockSystemAbility::GetSecure()
 #endif // SUPPORT_WEAR_PAYMENT_APP
     std::vector<UserIam::UserAuth::CredentialInfo> credInfo;
     int32_t result = UserIdmClient::GetInstance().GetCredentialInfoSync(userId, AuthType::PIN, credInfo);
-    SCLOCK_HILOGI("GetCredentialInfo AuthType::PIN result = %{public}d", result);
+    SCLOCK_HILOGD("GetCredentialInfo AuthType::PIN result = %{public}d", result);
     if (result == UserIam::UserAuth::ResultCode::SUCCESS && credInfo.size() > 0) {
         return true;
     }
@@ -741,7 +753,7 @@ int32_t ScreenLockSystemAbility::OnSystemEvent(const sptr<ScreenLockSystemAbilit
 
 int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, int param)
 {
-    SCLOCK_HILOGI("SendScreenLockEvent event=%{public}s ,param=%{public}d", event.c_str(), param);
+    SCLOCK_HILOGD("SendScreenLockEvent event=%{public}s ,param=%{public}d", event.c_str(), param);
     if (!IsSystemApp()) {
         SCLOCK_HILOGE("Calling app is not system app");
         return E_SCREENLOCK_NOT_SYSTEM_APP;
@@ -762,7 +774,7 @@ int32_t ScreenLockSystemAbility::SendScreenLockEvent(const std::string &event, i
 
 int32_t ScreenLockSystemAbility::IsScreenLockDisabled(int userId, bool &isDisabled)
 {
-    SCLOCK_HILOGI("IsScreenLockDisabled userId=%{public}d", userId);
+    SCLOCK_HILOGD("IsScreenLockDisabled userId=%{public}d", userId);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         SCLOCK_HILOGE("preferencesUtil is nullptr!");
@@ -773,7 +785,7 @@ int32_t ScreenLockSystemAbility::IsScreenLockDisabled(int userId, bool &isDisabl
         return E_SCREENLOCK_NO_PERMISSION;
     }
     isDisabled = preferencesUtil->ObtainBool(std::to_string(userId), false);
-    SCLOCK_HILOGI("IsScreenLockDisabled isDisabled=%{public}d", isDisabled);
+    SCLOCK_HILOGD("IsScreenLockDisabled isDisabled=%{public}d", isDisabled);
     return E_SCREENLOCK_OK;
 }
 
@@ -956,7 +968,7 @@ int32_t ScreenLockSystemAbility::IsDeviceLocked(int userId, bool &isDeviceLocked
     if (iter != authStateInfo.end()) {
         int32_t authState = iter->second;
         isDeviceLocked = GetDeviceLockedStateByAuth(authState);
-        SCLOCK_HILOGI("IsDeviceLocked. userId=%{public}d, isDeviceLocked=%{public}d", userId, isDeviceLocked);
+        SCLOCK_HILOGD("IsDeviceLocked. userId=%{public}d, isDeviceLocked=%{public}d", userId, isDeviceLocked);
         return E_SCREENLOCK_OK;
     } else {
         isDeviceLocked = true;
@@ -1116,8 +1128,12 @@ void ScreenLockSystemAbility::UnlockScreenEvent(int stateResult)
 
 void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent, TraceTaskId traceTaskId)
 {
-    SCLOCK_HILOGI("eventType is %{public}s, params is %{public}s", systemEvent.eventType_.c_str(),
-                  systemEvent.params_.c_str());
+    if (!PowerEventType(systemEvent.eventType_)) {
+        SCLOCK_HILOGI("eventType is %{public}s, params is %{public}s",
+                      systemEvent.eventType_.c_str(),
+                      systemEvent.params_.c_str());
+    }
+
     {
         std::lock_guard<std::mutex> lck(listenerMutex_);
         if (systemEventListener_ == nullptr) {
@@ -1418,6 +1434,10 @@ void ScreenLockSystemAbility::CredChangeListenerService::OnNotifyCredChangeEvent
     UserIam::UserAuth::AuthType authType, UserIam::UserAuth::CredChangeEventType eventType,
     const UserIam::UserAuth::CredChangeEventInfo &changeInfo)
 {
+    if (IPCSkeleton::GetCallingUid() != IDM_UID) {
+        SCLOCK_HILOGE("not call by idm");
+        return;
+    }
     SCLOCK_HILOGI("OnNotifyCredChangeEvent: %{public}d, %{public}d, %{public}d, %{public}u", userId,
         static_cast<int32_t>(authType), eventType, static_cast<uint16_t>(changeInfo.isSilentCredChange));
     
