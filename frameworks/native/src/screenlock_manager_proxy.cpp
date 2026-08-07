@@ -54,7 +54,7 @@ int32_t ScreenLockManagerProxy::IsLocked(bool &isLocked)
     }
     int errCode = reply.ReadInt32();
     if (errCode != E_SCREENLOCK_OK) {
-        SCLOCK_HILOGE("IsLocked, errCode = %{public}d", errCode);
+        SCLOCK_HILOGD("IsLocked, errCode = %{public}d", errCode);
         return errCode;
     }
     isLocked = reply.ReadBool();
@@ -194,7 +194,7 @@ int32_t ScreenLockManagerProxy::Lock(int32_t userId)
         return E_SCREENLOCK_WRITE_PARCEL_ERROR;
     }
     int32_t ret = Remote()->SendRequest(static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::LOCK_SCREEN), data,
-        reply, option);
+                                        reply, option);
     if (ret != ERR_NONE) {
         SCLOCK_HILOGE("RequestLock failed, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
@@ -394,7 +394,7 @@ int32_t ScreenLockManagerProxy::IsDeviceLocked(int userId, bool &isDeviceLocked)
 }
 
 int32_t ScreenLockManagerProxy::RegisterInnerListener(const int32_t userId, const ListenType listenType,
-                                                      const sptr<InnerListenerIf>& listener)
+                                                      const sptr<InnerListenerIf> &listener)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -422,7 +422,7 @@ int32_t ScreenLockManagerProxy::RegisterInnerListener(const int32_t userId, cons
 }
 
 int32_t ScreenLockManagerProxy::UnRegisterInnerListener(const int32_t userId, const ListenType listenType,
-                                                        const sptr<InnerListenerIf>& listener)
+                                                        const sptr<InnerListenerIf> &listener)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -463,7 +463,11 @@ int32_t ScreenLockManagerProxy::SetUnlockPolicy(int32_t userId, int32_t policy)
         SCLOCK_HILOGE("ScreenLockManagerProxy SetUnlockPolicy, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
     }
-    int32_t retCode = reply.ReadInt32();
+    int32_t retCode = E_SCREENLOCK_OK;
+    if (!reply.ReadInt32(retCode)) {
+        SCLOCK_HILOGI("ScreenLockManagerProxy failed to read retCode");
+        return E_SCREENLOCK_READ_PARCEL_ERROR;
+    }
     SCLOCK_HILOGD("ScreenLockManagerProxy SetUnlockPolicy end retCode is %{public}d.", retCode);
     return retCode;
 }
@@ -481,8 +485,15 @@ int32_t ScreenLockManagerProxy::GetUnlockPolicy(int32_t userId, int32_t &policy)
         SCLOCK_HILOGE("ScreenLockManagerProxy GetUnlockPolicy, ret = %{public}d", ret);
         return E_SCREENLOCK_SENDREQUEST_FAILED;
     }
-    int32_t retCode = reply.ReadInt32();
-    policy = reply.ReadInt32();
+    int32_t retCode = E_SCREENLOCK_OK;
+    if (!reply.ReadInt32(retCode)) {
+        SCLOCK_HILOGE("GetUnlockPolicy failed to read retCode");
+        return E_SCREENLOCK_READ_PARCEL_ERROR;
+    }
+    if (!reply.ReadInt32(policy)) {
+        SCLOCK_HILOGE("GetUnlockPolicy failed to read policy");
+        policy = 0;
+    }
     SCLOCK_HILOGD("ScreenLockManagerProxy GetUnlockPolicy end retCode is %{public}d, %{public}d", retCode, policy);
     return retCode;
 }

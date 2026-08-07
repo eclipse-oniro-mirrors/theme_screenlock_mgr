@@ -37,6 +37,17 @@ ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()
 {
 }
 
+bool PowerEventType(const std::string eventType)
+{
+    if (eventType == BEGIN_WAKEUP || eventType == END_WAKEUP || eventType == BEGIN_SCREEN_ON ||
+        eventType == END_SCREEN_ON || eventType == BEGIN_SLEEP || eventType == END_SLEEP ||
+        eventType == BEGIN_SCREEN_OFF || eventType == END_SCREEN_OFF) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 {
     if (handler_ == nullptr) {
@@ -62,7 +73,9 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         napi_set_named_property(entry->env, result, "params", params);
         napi_value output = nullptr;
         napi_call_function(entry->env, nullptr, callbackFunc, ARGS_SIZE_ONE, &result, &output);
-        SCLOCK_HILOGI("OnCallBack eventType:%{public}s", entry->systemEvent.eventType_.c_str());
+        if (!PowerEventType(entry->systemEvent.eventType_)) {
+            SCLOCK_HILOGI("OnCallBack eventType:%{public}s", entry->systemEvent.eventType_.c_str());
+        }
         napi_close_handle_scope(entry->env, scope);
     };
     handler_->PostTask(task, "ScreenlockSystemAbilityCallback");

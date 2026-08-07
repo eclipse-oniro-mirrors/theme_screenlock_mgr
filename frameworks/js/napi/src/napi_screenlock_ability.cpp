@@ -149,7 +149,7 @@ void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo)
         errorInfo.errorCode_ = iter->second;
         errorInfo.message_ = GetErrorMessage(errorInfo.errorCode_);
         SCLOCK_HILOGD("GetErrorInfo errorInfo.code: %{public}d, errorInfo.message: %{public}s", errorInfo.errorCode_,
-            errorInfo.message_.c_str());
+                      errorInfo.message_.c_str());
     } else {
         SCLOCK_HILOGD("GetErrorInfo errCode: %{public}d", errorCode);
     }
@@ -545,7 +545,7 @@ napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info)
         ThrowError(env, errInfo.errorCode_, errInfo.message_);
         return result;
     }
-    SCLOCK_HILOGI("NAPI_IsScreenLockDisabled [isDisabled]=%{public}d", isDisabled);
+    SCLOCK_HILOGD("NAPI_IsScreenLockDisabled [isDisabled]=%{public}d", isDisabled);
     napi_get_boolean(env, isDisabled, &result);
     return result;
 }
@@ -768,7 +768,7 @@ napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info)
     SCLOCK_HILOGD("NAPI_IsDeviceLocked in");
     napi_value result = nullptr;
     size_t argc = ARGS_SIZE_ONE;
-    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value argv[ARGS_SIZE_ONE] = {0};
     napi_value thisVar = nullptr;
     void *data = nullptr;
     int userId = static_cast<int>(SpecialUserId::USER_CURRENT);
@@ -814,7 +814,11 @@ napi_value NAPI_GetUnlockPolicy(napi_env env, napi_callback_info info)
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
         return result;
     }
-    napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    napi_status statusOne = napi_get_value_int32(env, argv[ARGV_ZERO], &userId);
+    if (statusOne != napi_ok) {
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
+        return result;
+    }
     int32_t policy = 0;
     int32_t status = ScreenLockManager::GetInstance()->GetUnlockPolicy(userId, policy);
     if (status != E_SCREENLOCK_OK) {
@@ -840,13 +844,13 @@ static napi_value ScreenlockInit(napi_env env, napi_value exports)
 
 extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
-    napi_module module = { .nm_version = 1, // NAPI v1
-        .nm_flags = 0,                      // normal
-        .nm_filename = nullptr,
-        .nm_register_func = ScreenlockInit,
-        .nm_modname = "screenLock",
-        .nm_priv = nullptr,
-        .reserved = {} };
+    napi_module module = {.nm_version = 1,  // NAPI v1
+                          .nm_flags = 0,    // normal
+                          .nm_filename = nullptr,
+                          .nm_register_func = ScreenlockInit,
+                          .nm_modname = "screenLock",
+                          .nm_priv = nullptr,
+                          .reserved = {}};
     napi_module_register(&module);
 }
 } // namespace ScreenLock
