@@ -69,6 +69,7 @@ ohos_shared_library("watch_screenlock") {
     "data_share:datashare_consumer",
     "ability_runtime:app_manager",
     "bundle_framework:appexecfwk_core",
+    "hilog:libhilog",
     "hisysevent:libhisysevent",
     "sensor:sensor_interface_native",
     "window_manager:libdm"
@@ -107,6 +108,7 @@ ohos_static_library("watch_screenlock_static") {
     "data_share:datashare_consumer",
     "ability_runtime:app_manager",
     "bundle_framework:appexecfwk_core",
+    "hilog:libhilog",
     "hisysevent:libhisysevent",
     "sensor:sensor_interface_native",
     "window_manager:libdm"
