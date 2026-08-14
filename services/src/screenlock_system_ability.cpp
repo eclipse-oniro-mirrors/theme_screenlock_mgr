@@ -350,8 +350,7 @@ void ScreenLockSystemAbility::handlePendingIamReady()
                 isExist = true;
             }
         }
-        if (isExist)
-        {
+        if (isExist) {
             bool result = StrongAuthManger::GetInstance()->GetCredInfo(userId, true);
             if (!result) {
                 SCLOCK_HILOGE("handlePendingIamReady error!");
