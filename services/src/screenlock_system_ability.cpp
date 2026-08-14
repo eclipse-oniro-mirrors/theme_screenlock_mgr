@@ -333,6 +333,7 @@ void ScreenLockSystemAbility::OnActiveUser(const int lastUser, const int targetU
 
 void ScreenLockSystemAbility::handlePendingIamReady()
 {
+#ifndef IS_SO_CROP_H
     std::vector<int> iamReadys;
     {
         std::lock_guard<std::mutex> autoLock(lockIamReadyMutex_);
@@ -359,6 +360,7 @@ void ScreenLockSystemAbility::handlePendingIamReady()
             }
         }
     }
+#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::InitUserId()
