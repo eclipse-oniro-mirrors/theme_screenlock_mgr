@@ -107,7 +107,9 @@ void UserIamReadyCallback(const char *key, const char *value, void *context)
         SCLOCK_HILOGE("event key mismatch");
         return;
     }
+#ifndef IS_SO_CROP_H
     ScreenLockSystemAbility::GetInstance()->handlePendingIamReady();
+#endif // IS_SO_CROP_H
     ScreenLockSystemAbility::GetInstance()->UserIamReadyNotify(value);
 }
 
