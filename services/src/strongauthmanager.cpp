@@ -413,9 +413,12 @@ void StrongAuthManger::InitStrongAuthStat(int32_t userId, int32_t reasonFlag)
     return;
 }
 
-bool StrongAuthManger::GetCredInfo(int32_t userId)
+bool StrongAuthManger::GetCredInfo(int32_t userId, bool forceUpdate)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
+    if (forceUpdate) {
+        strongAuthStateInfo.erase(userId);
+    }
     if (strongAuthStateInfo.find(userId) != strongAuthStateInfo.end()) {
         return true;
     }
@@ -425,8 +428,9 @@ bool StrongAuthManger::GetCredInfo(int32_t userId)
     int32_t result = UserIdmClient::GetInstance().GetCredentialInfo(userId, AuthType::PIN, getInfoCallback);
     if (result != static_cast<int32_t>(ResultCode::SUCCESS)) {
         SCLOCK_HILOGE("GetCredentialInfo AuthType::PIN result = %{public}d", result);
+        return false;
     }
-    return result;
+    return true;
 }
 
 void StrongAuthManger::StrongAuthGetSecurity::OnCredentialInfo(
