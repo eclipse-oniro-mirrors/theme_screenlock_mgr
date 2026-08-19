@@ -43,6 +43,8 @@ constexpr const char *ILLEGAL_USE = "Invalid use.";
 constexpr const char *NON_SYSTEM_APP = "Permission verification failed, application which is not a system application "
                                        "uses system API.";
 constexpr const char *USER_ID_INVALID = "The userId is not same as the caller, and is not allowed for the caller.";
+const int32_t UNLOCPOLICY_DEFAULT = 0;
+const int32_t UNLOCPOLICY_EXTENDED_AUTH_AND_SYSTEM = 2;
 
 const std::map<int, uint32_t> ERROR_CODE_CONVERSION = {
     { E_SCREENLOCK_NO_PERMISSION, JsErrorCode::ERR_NO_PERMISSION },
@@ -826,6 +828,11 @@ napi_value NAPI_GetUnlockPolicy(napi_env env, napi_callback_info info)
         errInfo.errorCode_ = static_cast<uint32_t>(status);
         GetErrorInfo(status, errInfo);
         ThrowError(env, errInfo.errorCode_, errInfo.message_);
+        return result;
+    }
+    if (policy < UNLOCPOLICY_DEFAULT || policy > UNLOCPOLICY_EXTENDED_AUTH_AND_SYSTEM) {
+        SCLOCK_HILOGE("NAPI_GetUnlockPolicy invalid policy=%{public}d", policy);
+        ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
         return result;
     }
     SCLOCK_HILOGI("NAPI_GetUnlockPolicy [policy]=%{public}d", policy);
