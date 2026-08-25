@@ -413,12 +413,9 @@ void StrongAuthManger::InitStrongAuthStat(int32_t userId, int32_t reasonFlag)
     return;
 }
 
-bool StrongAuthManger::GetCredInfo(int32_t userId, bool forceUpdate)
+bool StrongAuthManger::GetCredInfo(int32_t userId)
 {
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
-    if (forceUpdate) {
-        strongAuthStateInfo.erase(userId);
-    }
     if (strongAuthStateInfo.find(userId) != strongAuthStateInfo.end()) {
         return true;
     }
