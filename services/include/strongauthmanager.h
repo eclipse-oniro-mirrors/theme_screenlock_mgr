@@ -57,7 +57,7 @@ public:
     void UnRegistAuthEventListener();
     void InitStrongAuthStat(int32_t userId, int32_t reasonFlag);
     void DestroyStrongAuthStateInfo(int32_t userId);
-    bool GetCredInfo(int32_t userId, bool forceUpdate = false);
+    bool GetCredInfo(int32_t userId);
     int32_t GetStrongAuthTimeTrigger(int32_t userId);
     void AccountUnlocked(int32_t userId);
     void OnNotifyCredChangeEvent(int32_t userId, UserIam::UserAuth::AuthType authType,
