@@ -172,7 +172,6 @@ public:
     void StrongAuthChanged(int32_t userId, int32_t reasonFlag);
     int32_t Lock(int32_t userId) override;
     void UserIamReadyNotify(const char *value);
-    void handlePendingIamReady();
     void OnActiveUser(const int lastUser, const int targetUser);
     void OnRemoveUser(const int userId);
     /*This function is only exposed to the test classes externally.
@@ -269,8 +268,6 @@ private:
     std::vector<int> unlockVecUserIds_;
     std::mutex lockListenerMutex_;
     std::vector<sptr<ScreenLockCallbackInterface>> lockVecListeners_;
-    std::mutex lockIamReadyMutex_;
-    std::vector<int> pendingIamReady_;
     StateValue stateValue_;
     std::atomic<bool> systemReady_ = false;
     std::map<int32_t, int32_t> authStateInfo;

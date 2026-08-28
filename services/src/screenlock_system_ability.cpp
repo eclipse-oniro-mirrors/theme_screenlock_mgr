@@ -107,9 +107,6 @@ void UserIamReadyCallback(const char *key, const char *value, void *context)
         SCLOCK_HILOGE("event key mismatch");
         return;
     }
-#ifndef IS_SO_CROP_H
-    ScreenLockSystemAbility::GetInstance()->handlePendingIamReady();
-#endif // IS_SO_CROP_H
     ScreenLockSystemAbility::GetInstance()->UserIamReadyNotify(value);
 }
 
@@ -311,11 +308,7 @@ void ScreenLockSystemAbility::OnRemoveUser(const int32_t userId)
 void ScreenLockSystemAbility::OnActiveUser(const int lastUser, const int targetUser)
 {
 #ifndef IS_SO_CROP_H
-    bool result = StrongAuthManger::GetInstance()->GetCredInfo(targetUser);
-    if (!result) {
-        std::lock_guard<std::mutex> autoLock(lockIamReadyMutex_);
-        pendingIamReady_.push_back(targetUser);
-    }
+    StrongAuthManger::GetInstance()->GetCredInfo(targetUser);
 #endif // IS_SO_CROP_H
     ScreenLockSystemAbility::GetInstance()->AuthStateInit(targetUser);
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
@@ -329,38 +322,6 @@ void ScreenLockSystemAbility::OnActiveUser(const int lastUser, const int targetU
     preferencesUtil->SaveBool(std::to_string(targetUser), false);
     preferencesUtil->Refresh();
     return;
-}
-
-void ScreenLockSystemAbility::handlePendingIamReady()
-{
-#ifndef IS_SO_CROP_H
-    std::vector<int> iamReadys;
-    {
-        std::lock_guard<std::mutex> autoLock(lockIamReadyMutex_);
-        if (pendingIamReady_.size() > 0) {
-            iamReadys = pendingIamReady_;
-            pendingIamReady_.clear();
-        }
-    }
-    size_t len =  iamReadys.size();
-    for (size_t i = 0; i < len; i++) {
-        int userId = iamReadys[i];
-        bool isExist = false;
-        {
-            std::lock_guard<std::mutex> authLock(authStateMutex_);
-            auto authIter = authStateInfo.find(userId);
-            if (authIter != authStateInfo.end()) {
-                isExist = true;
-            }
-        }
-        if (isExist) {
-            bool result = StrongAuthManger::GetInstance()->GetCredInfo(userId, true);
-            if (!result) {
-                SCLOCK_HILOGE("handlePendingIamReady error!");
-            }
-        }
-    }
-#endif // IS_SO_CROP_H
 }
 
 void ScreenLockSystemAbility::InitUserId()
