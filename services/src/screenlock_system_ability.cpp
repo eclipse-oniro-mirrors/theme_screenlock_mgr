@@ -44,6 +44,7 @@
 #include "user_idm_client.h"
 #include "want.h"
 #include "window_manager.h"
+#include "window_manager_lite.h"
 #include "focus_change_info.h"
 #include "commeventsubscriber.h"
 #include "user_auth_client_callback.h"
@@ -1183,16 +1184,16 @@ bool ScreenLockSystemAbility::IsAppInForeground(int32_t callingPid, uint32_t cal
 #ifdef CONFIG_FACTORY_MODE
     return true;
 #endif
+    int32_t userId = GetUserIdFromCallingUid();
     std::unordered_map<DisplayId, DisplayGroupId> displayId2GroupIdMap;
-    std::vector<sptr<Rosen::FocusChangeInfo>> allFocusInfoList;
-    WindowManager::GetInstance().GetAllGroupInfo(displayId2GroupIdMap, allFocusInfoList);
-    auto iter = allFocusInfoList.begin();
-    while (iter != allFocusInfoList.end()) {
-        if (callingPid == (*iter)->pid_) {
-            SCLOCK_HILOGI("callingPid:%{public}d focusInfo.pid_:%{public}d", callingPid, (*iter)->pid_);
+    std::vector<sptr<FocusChangeInfo>> focusWindowInfoPtr;
+    WindowManagerLite::GetInstance(userId).GetAllGroupInfo(displayId2GroupIdMap, focusWindowInfoPtr);
+    SCLOCK_HILOGI("focusWindowInfoPtr size:%{public}zu", focusWindowInfoPtr.size());
+    for (const auto &info : focusWindowInfoPtr) {
+        if (info != nullptr && callingPid == info->pid_) {
+            SCLOCK_HILOGI("callingPid:%{public}d", callingPid);
             return true;
         }
-        iter++;
     }
     bool isFocused = false;
     std::string identity = IPCSkeleton::ResetCallingIdentity();
