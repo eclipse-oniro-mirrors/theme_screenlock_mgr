@@ -44,6 +44,7 @@
 #include "user_idm_client.h"
 #include "want.h"
 #include "window_manager.h"
+#include "window_manager_lite.h"
 #include "commeventsubscriber.h"
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
@@ -1182,10 +1183,16 @@ bool ScreenLockSystemAbility::IsAppInForeground(int32_t callingPid, uint32_t cal
 #ifdef CONFIG_FACTORY_MODE
     return true;
 #endif
-    FocusChangeInfo focusInfo;
-    WindowManager::GetInstance().GetFocusWindowInfo(focusInfo);
-    if (callingPid == focusInfo.pid_) {
-        return true;
+    int32_t userId = GetUserIdFromCallingUid();
+    std::unordered_map<DisplayId, DisplayGroupId> displayId2GroupIdMap;
+    std::vector<sptr<FocusChangeInfo>> focusWindowInfoPtr;
+    WindowManagerLite::GetInstance(userId).GetAllGroupInfo(displayId2GroupIdMap, focusWindowInfoPtr);
+    SCLOCK_HILOGI("focusWindowInfoPtr size:%{public}zu", focusWindowInfoPtr.size());
+    for (const auto &info : focusWindowInfoPtr) {
+        if (info != nullptr && callingPid == info->pid_) {
+            SCLOCK_HILOGI("callingPid:%{public}d", callingPid);
+            return true;
+        }
     }
     bool isFocused = false;
     std::string identity = IPCSkeleton::ResetCallingIdentity();
