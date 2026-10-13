@@ -45,7 +45,6 @@
 #include "want.h"
 #include "window_manager.h"
 #include "window_manager_lite.h"
-#include "focus_change_info.h"
 #include "commeventsubscriber.h"
 #include "user_auth_client_callback.h"
 #include "user_auth_client_impl.h"
