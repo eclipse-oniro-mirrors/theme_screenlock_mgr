@@ -1151,8 +1151,18 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
         auto callback = [this, screenLockResult, curUserId]() {
             std::lock_guard<std::mutex> guard(unlockListenerMutex_);
             for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                unlockVecListeners_[i]->OnCallBack(unlockVecUserIds_[i] == curUserId ? screenLockResult :
-                    ScreenChange::SCREEN_FAIL);
+                if (unlockVecUserIds_[i] == curUserId) {
+                    unlockVecListeners_[i]->OnCallBack(screenLockResult);
+                } else {
+                    int32_t result = ScreenChange::SCREEN_FAIL;
+                    {
+                        std::lock_guard<std::mutex> slm(screenLockMutex_);
+                        auto iter = isScreenlockedMap_.find(unlockVecUserIds_[i]);
+                        bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
+                        result = (!isScreenLocked) ? ScreenChange::SCREEN_SUCC : ScreenChange::SCREEN_FAIL;
+                    }
+                    unlockVecListeners_[i]->OnCallBack(result);
+                }
             }
             unlockVecListeners_.clear();
             unlockVecUserIds_.clear();
