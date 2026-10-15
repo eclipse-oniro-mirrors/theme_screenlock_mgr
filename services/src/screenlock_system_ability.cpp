@@ -1143,6 +1143,22 @@ void ScreenLockSystemAbility::SystemEventCallBack(const SystemEvent &systemEvent
     }
 }
 
+void ScreenLockSystemAbility::CallbackUnlockListener(size_t i, const int32_t screenLockResult, int curUserId)
+{
+    if (unlockVecUserIds_[i] == curUserId) {
+        unlockVecListeners_[i]->OnCallBack(screenLockResult);
+    } else {
+        int32_t result = ScreenChange::SCREEN_FAIL;
+        {
+            std::lock_guard<std::mutex> slm(screenLockMutex_);
+            auto iter = isScreenlockedMap_.find(unlockVecUserIds_[i]);
+            bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
+            result = (!isScreenLocked) ? ScreenChange::SCREEN_SUCC : ScreenChange::SCREEN_FAIL;
+        }
+        unlockVecListeners_[i]->OnCallBack(result);
+    }
+}
+
 void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResult)
 {
     int curUserId = GetUserIdFromCallingUid();
@@ -1151,18 +1167,7 @@ void ScreenLockSystemAbility::NotifyUnlockListener(const int32_t screenLockResul
         auto callback = [this, screenLockResult, curUserId]() {
             std::lock_guard<std::mutex> guard(unlockListenerMutex_);
             for (size_t i = 0; i < unlockVecListeners_.size(); i++) {
-                if (unlockVecUserIds_[i] == curUserId) {
-                    unlockVecListeners_[i]->OnCallBack(screenLockResult);
-                } else {
-                    int32_t result = ScreenChange::SCREEN_FAIL;
-                    {
-                        std::lock_guard<std::mutex> slm(screenLockMutex_);
-                        auto iter = isScreenlockedMap_.find(unlockVecUserIds_[i]);
-                        bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
-                        result = (!isScreenLocked) ? ScreenChange::SCREEN_SUCC : ScreenChange::SCREEN_FAIL;
-                    }
-                    unlockVecListeners_[i]->OnCallBack(result);
-                }
+                CallbackUnlockListener(i, screenLockResult, curUserId);
             }
             unlockVecListeners_.clear();
             unlockVecUserIds_.clear();
