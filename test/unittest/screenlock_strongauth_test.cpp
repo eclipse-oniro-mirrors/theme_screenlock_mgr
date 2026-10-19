@@ -29,6 +29,7 @@
 #undef protected
 #endif // IS_SO_CROP_H
 #include "commeventsubscriber.h"
+#include "preferences_util.h"
 #include "screenlock_strongauth_test.h"
 #include "user_idm_client_defines.h"
 #include "os_account_manager.h"
@@ -137,18 +138,30 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest004, TestSize.Level0)
 #endif // IS_SO_CROP_H
 }
 
+/**
+* @tc.name: ScreenLockStrongAuthTest005
+* @tc.desc: Test CommeventMgr OnReceiveEvent removes preference key when pin credential updated.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest005, TestSize.Level0)
 {
 #ifndef IS_SO_CROP_H
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    ASSERT_NE(preferencesUtil, nullptr);
+    const std::string key = "0";
+    const std::string defaulVal = "default";
+    preferencesUtil->SaveString(key, "saved");
+    EXPECT_EQ(preferencesUtil->ObtainString(key, defaulVal), "saved");
     AAFwk::Want want;
     want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
-    want.SetParam("userId", 0);
+    want.SetParam("userId", "0");
     want.SetParam("authType", AUTH_PIN);
     want.SetParam("credentialCount", HAS_CREDENTIAL);
     Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
-    StrongAuthManger::authTimer timer(true, 1000, true, true);
-    EXPECT_EQ(timer.repeat, true);
-    EXPECT_EQ(timer.interval, 1000);
+    EXPECT_EQ(preferencesUtil->ObtainString(key, defaulVal), defaulVal);
+    EXPECT_EQ(preferencesUtil->ObtainString(key, key), key);
 #endif // IS_SO_CROP_H
 }
 
@@ -167,18 +180,31 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest006, TestSize.Level0)
 #endif // IS_SO_CROP_H
 }
 
+/**
+* @tc.name: ScreenLockStrongAuthTest007
+* @tc.desc: Test CommeventMgr OnReceiveEvent keeps preference key when authType is not pin.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest007, TestSize.Level0)
 {
 #ifndef IS_SO_CROP_H
+    auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
+    ASSERT_NE(preferencesUtil, nullptr);
+    const std::string key = "0";
+    const std::string defaulVal = "default";
+    preferencesUtil->SaveString(key, "saved");
+    EXPECT_EQ(preferencesUtil->ObtainString(key, defaulVal), "saved");
     AAFwk::Want want;
     want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
-    want.SetParam("userId", 0);
+    want.SetParam("userId", "0");
     want.SetParam("authType", NO_AUTH_PIN);
     want.SetParam("credentialCount", HAS_CREDENTIAL);
     Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
-    StrongAuthManger::authTimer timer(true, 1000, true, true);
-    EXPECT_EQ(timer.repeat, true);
-    EXPECT_EQ(timer.interval, 1000);
+    EXPECT_EQ(preferencesUtil->ObtainString(key, defaulVal), "saved");
+    preferencesUtil->RemoveKey(key);
+    preferencesUtil->Refresh();
 #endif // IS_SO_CROP_H
 }
 
