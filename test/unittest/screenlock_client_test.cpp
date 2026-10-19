@@ -581,7 +581,6 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest027, TestSize.Level0)
     infoList.emplace_back(createntialInfo);
     callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS, infoList);
     EXPECT_EQ(callback.IsSecure(), true);
- 
 }
 
 /**
