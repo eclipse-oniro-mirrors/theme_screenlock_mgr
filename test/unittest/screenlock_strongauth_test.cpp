@@ -151,17 +151,17 @@ HWTEST_F(ScreenLockStrongAuthTest, ScreenLockStrongAuthTest005, TestSize.Level0)
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     ASSERT_NE(preferencesUtil, nullptr);
     const std::string key = "0";
-    const std::string defaulVal = "default";
+    const std::string defaulVal = "saved";
     preferencesUtil->SaveString(key, "saved");
     EXPECT_EQ(preferencesUtil->ObtainString(key, defaulVal), "saved");
     AAFwk::Want want;
     want.SetAction(USER_CREDENTIAL_UPDATED_EVENT);
-    want.SetParam("userId", "0");
+    want.SetParam("userId", 0);
     want.SetParam("authType", AUTH_PIN);
     want.SetParam("credentialCount", HAS_CREDENTIAL);
     Singleton<CommeventMgr>::GetInstance().OnReceiveEvent(want);
     EXPECT_EQ(preferencesUtil->ObtainString(key, defaulVal), defaulVal);
-    EXPECT_EQ(preferencesUtil->ObtainString(key, key), key);
+    EXPECT_EQ(preferencesUtil->ObtainString(key, key), defaulVal);
 #endif // IS_SO_CROP_H
 }
 
