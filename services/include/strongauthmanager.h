@@ -34,10 +34,14 @@ namespace ScreenLock {
     
 // 强认证默认时间 3days
 const std::int64_t DEFAULT_STRONG_AUTH_TIMEOUT_MS = 3 * 24 * 60 * 60 * 1000;
-// 变更口令后，第一次强认证时间为4h
-const std::int64_t CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS = 4 * 60 * 60 * 1000;
-// 变更口令后，第二次强认证时间为24h
-const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 24 * 60 * 60 * 1000;
+// 变更口令后，第一次强认证时间为1h
+const std::int64_t CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS = 60 * 60 * 1000;
+// 变更口令后，第二次强认证时间为3h
+const std::int64_t CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS = 3 * 60 * 60 * 1000;
+// 变更口令后，第三次强认证时间为8h
+const std::int64_t CRED_CHANGE_THIRD_STRONG_AUTH_TIMEOUT_MS = 8 * 60 * 60 * 1000;
+// 变更口令后，第四次强认证时间为24h
+const std::int64_t CRED_CHANGE_FOURTH_STRONG_AUTH_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 class StrongAuthManger : public RefBase {
 public:

@@ -112,6 +112,7 @@ enum class StrongAuthReasonFlags : int32_t {
     ACTIVE_REQUEST = 0x00000004,
     DPM_RESTRICT = 0x00000008,
     SECURITY_ENHANCEMENT = 0x00000016,
+    AFTER_CREDENTIAL_CHANGED = 0x00000020,
 };
 
 enum class SpecialUserId : int32_t {
