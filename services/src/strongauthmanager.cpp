@@ -102,7 +102,10 @@ void StrongAuthManger::authTimer::SetUserId(int32_t userId)
 static void StrongAuthTimerCallback(int32_t userId)
 {
     SCLOCK_HILOGI("%{public}s, enter", __FUNCTION__);
-    int32_t reasonFlag = static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
+    int32_t triggerPeriod = StrongAuthManger::GetInstance()->GetStrongAuthTimeTrigger(userId);
+    int32_t reasonFlag = (triggerPeriod > 0 && triggerPeriod < DEFAULT_STRONG_AUTH_TIMEOUT_MS)
+        ? static_cast<int32_t>(StrongAuthReasonFlags::AFTER_CREDENTIAL_CHANGED)
+        : static_cast<int32_t>(StrongAuthReasonFlags::AFTER_TIMEOUT);
     StrongAuthManger::GetInstance()->SetStrongAuthStat(userId, reasonFlag);
     return;
 }
@@ -281,27 +284,34 @@ void StrongAuthManger::SetCredChangeTriggerPeriod(int32_t userId, int64_t trigge
 
 int64_t StrongAuthManger::GetStrongAuthTriggerPeriod(int32_t userId)
 {
+    int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
     std::unique_lock<std::mutex> lock(strongAuthTimerMutex);
     auto iter = strongAuthTimerInfo.find(userId);
     if (iter == strongAuthTimerInfo.end()) {
         SCLOCK_HILOGI("GetStrongAuthTriggerPeriod userId:%{public}d not exit", userId);
         return DEFAULT_STRONG_AUTH_TIMEOUT_MS;
     }
-    int64_t currentTime = MiscServices::TimeServiceClient::GetInstance()->GetBootTimeMs();
-    if (iter->second.triggerPeriod == CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
-        if (currentTime - iter->second.credChangeTimerStamp > CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS) {
-            iter->second.triggerPeriod = CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS;
-            iter->second.credChangeTimerStamp = currentTime;
-            return iter->second.triggerPeriod;
+    
+    struct PeriodStage {
+        int64_t current;
+        int64_t next;
+    };
+    static const PeriodStage stages[] = {
+        {CRED_CHANGE_FIRST_STRONG_AUTH_TIMEOUT_MS, CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS},
+        {CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS, CRED_CHANGE_THIRD_STRONG_AUTH_TIMEOUT_MS},
+        {CRED_CHANGE_THIRD_STRONG_AUTH_TIMEOUT_MS, CRED_CHANGE_FOURTH_STRONG_AUTH_TIMEOUT_MS},
+        {CRED_CHANGE_FOURTH_STRONG_AUTH_TIMEOUT_MS, DEFAULT_STRONG_AUTH_TIMEOUT_MS},
+    };
+    for (const auto &stage : stages) {
+        if (iter->second.triggerPeriod != stage.current) {
+            continue;
         }
-        return iter->second.triggerPeriod;
-    }
-
-    if (iter->second.triggerPeriod == CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-        if (currentTime - iter->second.credChangeTimerStamp >
-            CRED_CHANGE_SECOND_STRONG_AUTH_TIMEOUT_MS) {
-            iter->second.triggerPeriod = DEFAULT_STRONG_AUTH_TIMEOUT_MS;
-            return iter->second.triggerPeriod;
+        if (currentTime - iter->second.credChangeTimerStamp > stage.current) {
+            int64_t oldTriggerPeriod = iter->second.triggerPeriod;
+            iter->second.triggerPeriod = stage.next;
+            iter->second.credChangeTimerStamp = currentTime;
+            SCLOCK_HILOGI("StrongAuth triggerPeriod changed from %{public}lld to %{public}lld",
+                static_cast<long long>(oldTriggerPeriod), static_cast<long long>(iter->second.triggerPeriod));
         }
         return iter->second.triggerPeriod;
     }
