@@ -441,23 +441,47 @@ HWTEST_F(ScreenLockClientTest, LockTest0019, TestSize.Level0)
     EXPECT_EQ(retCode, E_SCREENLOCK_NOT_SYSTEM_APP);
 }
 
+class RecordStrongAuthListener : public StrongAuthListener {
+public:
+    explicit RecordStrongAuthListener(int32_t userId) : StrongAuthListener(userId) {};
+    ~RecordStrongAuthListener() override = default;
+    void OnStrongAuthChanged(int32_t userId, int32_t authenticated) override
+    {
+        lastUserId_ = userId;
+        lastState_ = authenticated;
+        ++callCount_;
+    }
+    int32_t lastUserId_ = -1;
+    int32_t lastState_ = -1;
+    int32_t callCount_ = 0;
+};
+
 /**
 * @tc.name: LockTest0020
-* @tc.desc: Test SetScreenLockAuthState.
+* @tc.desc: Test InnerListenerWrapper OnStateChanged with null and valid listener.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:
 */
 HWTEST_F(ScreenLockClientTest, LockTest0020, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test SetScreenLockAuthState.");
-    int userId = 0;
-    int state = 0;
-    sptr<StrongAuthListener> listener = nullptr;
-    sptr<InnerListenerWrapper> wrapper = new (std::nothrow) InnerListenerWrapper(listener);
+    SCLOCK_HILOGD("Test InnerListenerWrapper OnStateChanged.");
+    int userId = 100;
+    int state = 1;
+    sptr<RecordStrongAuthListener> record = new (std::nothrow) RecordStrongAuthListener(userId);
+    ASSERT_NE(record, nullptr);
+    sptr<InnerListener> nullListener = nullptr;
+    sptr<InnerListenerWrapper> wrapper = new (std::nothrow) InnerListenerWrapper(nullListener);
+    ASSERT_NE(wrapper, nullptr);
     wrapper->OnStateChanged(userId, state);
-    listener = new (std::nothrow) StrongAuthListenerTest(userId);
-    wrapper->OnStateChanged(userId, state);
+    EXPECT_EQ(record->callCount_, 0);
+    sptr<InnerListener> validListener = record;
+    sptr<InnerListenerWrapper> wrapperWithListener = new (std::nothrow) InnerListenerWrapper(validListener);
+    ASSERT_NE(wrapperWithListener, nullptr);
+    wrapperWithListener->OnStateChanged(userId, state);
+    EXPECT_EQ(record->callCount_, 1);
+    EXPECT_EQ(record->lastUserId_, userId);
+    EXPECT_EQ(record->lastState_, state);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
@@ -469,15 +493,34 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest021, TestSize.Level0)
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
+/**
+* @tc.name: SetScreenLockTest022
+* @tc.desc: Test AccountSubscriber OnAccountsChanged callback with lastUser and targetUser.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest022, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test OnRemoveUser state");
+    SCLOCK_HILOGD("Test AccountSubscriber OnAccountsChanged.");
     AccountSA::OsAccountSubscribeInfo info;
-    ScreenLockSystemAbility::AccountSubscriber acount(info, [](const int lastUser, const int targetUser) { return; });
-    acount.OnAccountsChanged(0);
-    sptr<ScreenLockCallbackInterface> listener = nullptr;
-    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
+    int32_t lastUser = -100;
+    int32_t targetUser = -100;
+    int32_t callCount = 0;
+    auto callback = [&lastUser, &targetUser, &callCount](const int last, const int target) {
+        lastUser = last;
+        targetUser = target;
+        ++callCount;
+    };
+    ScreenLockSystemAbility::AccountSubscriber acount(info, callback);
+    acount.OnAccountsChanged(102);
+    EXPECT_EQ(callCount, 1);
+    EXPECT_EQ(lastUser, -1);
+    EXPECT_EQ(targetUser, 102);
+    acount.OnAccountsChanged(103);
+    EXPECT_EQ(callCount, 2);
+    EXPECT_EQ(lastUser, 102);
+    EXPECT_EQ(targetUser, 103);
 }
 
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest023, TestSize.Level0)
@@ -519,41 +562,64 @@ HWTEST_F(ScreenLockClientTest, SetScreenLockTest026, TestSize.Level0)
     EXPECT_EQ(result, false);
 }
 
+/**
+* @tc.name: SetScreenLockTest027
+* @tc.desc: Test ScreenLockGetInfoCallback OnCredentialInfo with non-empty infoList.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest027, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test duScreenLockGetInfoCallbackpHelper.OnCredentialInfo");
+    SCLOCK_HILOGD("Test ScreenLockGetInfoCallback OnCredentialInfo.");
     ScreenLockGetInfoCallback callback;
+    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> emptyInfoList;
+    callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS, emptyInfoList);
+    EXPECT_EQ(callback.IsSecure(), false);
+    OHOS::UserIam::UserAuth::CredentialInfo createntialInfo;
     std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
-    callback.OnCredentialInfo(0, infoList);
-    sptr<ScreenLockCallbackInterface> listener = nullptr;
-    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
+    infoList.emplace_back(createntialInfo);
+    callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS, infoList);
+    EXPECT_EQ(callback.IsSecure(), true);
 }
 
+/**
+* @tc.name: SetScreenLockTest028
+* @tc.desc: Test ScreenLockGetInfoCallback OnCredentialInfo with abnormal result code.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest028, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test duScreenLockGetInfoCallbackpHelper.OnCredentialInfo");
+    SCLOCK_HILOGD("Test ScreenLockGetInfoCallback OnCredentialInfo.");
     ScreenLockGetInfoCallback callback;
-    OHOS::UserIam::UserAuth::CredentialInfo createntialInfo;
-    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
-    infoList.emplace_back(createntialInfo);
-    callback.OnCredentialInfo(0, infoList);
-    sptr<ScreenLockCallbackInterface> listener = nullptr;
-    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
+    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> emptyInfoList;
+    callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS, emptyInfoList);
+    EXPECT_EQ(callback.IsSecure(), false);
+    callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS + 10001, emptyInfoList);
+    EXPECT_EQ(callback.IsSecure(), true);
 }
 
+/**
+* @tc.name: SetScreenLockTest029
+* @tc.desc: Test ScreenLockGetInfoCallback OnCredentialInfo with not enrolled result.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(ScreenLockClientTest, SetScreenLockTest029, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test duScreenLockGetInfoCallbackpHelper.OnCredentialInfo");
+    SCLOCK_HILOGD("Test ScreenLockGetInfoCallback OnCredentialInfo.");
     ScreenLockGetInfoCallback callback;
+    std::vector<OHOS::UserIam::UserAuth::CredentialInfo> emptyInfoList;
+    callback.OnCredentialInfo(UserIam::UserAuth::NOT_ENROLLED, emptyInfoList);
+    EXPECT_EQ(callback.IsSecure(), false);
     OHOS::UserIam::UserAuth::CredentialInfo createntialInfo;
     std::vector<OHOS::UserIam::UserAuth::CredentialInfo> infoList;
     infoList.emplace_back(createntialInfo);
-    callback.OnCredentialInfo(UserIam::UserAuth::SUCCESS + 10001, infoList);
-    sptr<ScreenLockCallbackInterface> listener = nullptr;
-    int32_t result = ScreenLockManager::GetInstance()->Lock(listener);
-    EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
+    callback.OnCredentialInfo(UserIam::UserAuth::NOT_ENROLLED, infoList);
+    EXPECT_EQ(callback.IsSecure(), true);
 }
 
 } // namespace ScreenLock

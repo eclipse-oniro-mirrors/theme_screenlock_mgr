@@ -166,9 +166,18 @@ HWTEST_F(ScreenLockPreferenceTest, ScreenLockPreferenceTest006, TestSize.Level0)
     SCLOCK_HILOGD("ScreenLockPreferenceTest RmvAll");
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     ASSERT_NE(preferencesUtil, nullptr);
-    preferencesUtil->RemoveAll();
-    preferencesUtil->RefreshSync();
-    EXPECT_NE(preferencesUtil, nullptr);
+    int userId = 0;
+    std::string defaulVal = "test";
+    int saveResult = preferencesUtil->SaveString(std::to_string(userId), defaulVal);
+    EXPECT_EQ(saveResult, NativePreferences::E_OK);
+    std::string val = preferencesUtil->ObtainString(std::to_string(userId), "");
+    EXPECT_EQ(val, defaulVal);
+    int result = preferencesUtil->RemoveAll();
+    EXPECT_EQ(result, NativePreferences::E_OK);
+    int refreshResult = preferencesUtil->RefreshSync();
+    EXPECT_EQ(refreshResult, NativePreferences::E_OK);
+    std::string valAfterRemove = preferencesUtil->ObtainString(std::to_string(userId), "");
+    EXPECT_EQ(valAfterRemove, std::string(""));
 }
 
 

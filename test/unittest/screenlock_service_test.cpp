@@ -950,25 +950,59 @@ HWTEST_F(ScreenLockServiceTest, ScreenLockTest039, TestSize.Level0)
     EXPECT_EQ(result, E_SCREENLOCK_NULLPTR);
 }
 
+class RecordSystemEventListener : public ScreenLockSystemAbilityStub {
+public:
+    RecordSystemEventListener() = default;
+    ~RecordSystemEventListener() override = default;
+    void OnCallBack(const SystemEvent &systemEvent) override
+    {
+        lastEventType_ = systemEvent.eventType_;
+        ++callCount_;
+    }
+    std::string lastEventType_;
+    int32_t callCount_ = 0;
+};
+ 
 /**
  * @tc.name: ScreenLockTest040
- * @tc.desc: Test UserIamReadyCallback.
+ * @tc.desc: Test OnRemoveUser, OnActiveUser and OnSystemReady.
  * @tc.type: FUNC
  * @tc.require:
  * @tc.author:
  */
 HWTEST_F(ScreenLockServiceTest, ScreenLockTest040, TestSize.Level0)
 {
-    SCLOCK_HILOGD("Test UserIamReadyCallback.");
-    int fd = 1;
+    SCLOCK_HILOGD("Test OnRemoveUser, OnActiveUser and OnSystemReady.");
+    auto ability = ScreenLockSystemAbility::GetInstance();
+    ASSERT_NE(ability, nullptr);
 
     int32_t userId = 100;
 
     int32_t otherUserId = 102;
-    ScreenLockSystemAbility::GetInstance()->OnRemoveUser(otherUserId);
-    ScreenLockSystemAbility::GetInstance()->OnActiveUser(userId, otherUserId);
-    ScreenLockSystemAbility::GetInstance()->OnRemoveUser(otherUserId);
-    ScreenLockSystemAbility::GetInstance()->OnSystemReady();
+    ability->authStateInfo[otherUserId] = static_cast<int32_t>(AuthState::AUTHED_BY_CREDENTIAL);
+    ability->isScreenlockedMap_[otherUserId] = false;
+    ability->OnRemoveUser(otherUserId);
+    EXPECT_EQ(ability->authStateInfo.find(otherUserId), ability->authStateInfo.end());
+    EXPECT_EQ(ability->isScreenlockedMap_.find(otherUserId), ability->isScreenlockedMap_.end());
+    ability->OnRemoveUser(otherUserId);
+    EXPECT_EQ(ability->authStateInfo.find(otherUserId), ability->authStateInfo.end());
+    ability->OnActiveUser(userId, otherUserId);
+    EXPECT_NE(ability->authStateInfo.find(otherUserId), ability->authStateInfo.end());
+    EXPECT_EQ(ability->authStateInfo[otherUserId], static_cast<int32_t>(AuthState::UNAUTH));
+    EXPECT_TRUE(ability->isScreenlockedMap_[otherUserId]);
+    ability->OnRemoveUser(otherUserId);
+    EXPECT_EQ(ability->authStateInfo.find(otherUserId), ability->authStateInfo.end());
+    EXPECT_EQ(ability->isScreenlockedMap_.find(otherUserId), ability->isScreenlockedMap_.end());
+ 
+    sptr<RecordSystemEventListener> record = new (std::nothrow) RecordSystemEventListener();
+    ASSERT_NE(record, nullptr);
+    ability->systemEventListener_ = record;
+    ability->systemReady_ = true;
+    ability->OnSystemReady();
+    EXPECT_EQ(record->callCount_, 1);
+    EXPECT_EQ(record->lastEventType_, SYSTEM_READY);
+    ability->systemEventListener_ = nullptr;
+    ability->systemReady_ = false;
 }
 
 /**
