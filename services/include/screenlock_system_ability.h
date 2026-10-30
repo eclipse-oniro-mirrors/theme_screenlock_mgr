@@ -233,6 +233,7 @@ private:
     bool IsSystemApp();
     bool CheckPermission(const std::string &permissionName);
     void NotifyUnlockListener(const int32_t screenLockResult);
+    void CallbackUnlockListener(size_t i, const int32_t screenLockResult, int curUserId);
     void NotifyDisplayEvent(Rosen::DisplayEvent event);
     bool GetDeviceLockedStateByAuth(int authState);
     std::shared_ptr<AccountSubscriber> SubscribeAcccount(AccountSA::OS_ACCOUNT_SUBSCRIBE_TYPE subscribeType,
