@@ -1153,7 +1153,7 @@ void ScreenLockSystemAbility::CallbackUnlockListener(size_t i, const int32_t scr
             std::lock_guard<std::mutex> slm(screenLockMutex_);
             auto iter = isScreenlockedMap_.find(unlockVecUserIds_[i]);
             bool isScreenLocked = iter != isScreenlockedMap_.end() ? iter->second : true;
-            result = (!isScreenLocked) ? ScreenChange::SCREEN_SUCC : ScreenChange::SCREEN_FAIL;
+            result = isScreenLocked ? ScreenChange::SCREEN_FAIL : ScreenChange::SCREEN_SUCC;
         }
         unlockVecListeners_[i]->OnCallBack(result);
     }
