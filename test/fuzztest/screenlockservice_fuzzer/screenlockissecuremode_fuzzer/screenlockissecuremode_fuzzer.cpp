@@ -21,11 +21,7 @@
 
 #include "fuzzer/FuzzedDataProvider.h"
 #include "token_setproc.h"
-#define private public
-#define protected public
 #include "screenlock_system_ability.h"
-#undef protected
-#undef private
 
 using namespace OHOS::ScreenLock;
 
@@ -56,8 +52,6 @@ extern "C" int LLVMFuzzerInitialize(int *argc, char ***argv)
     if (p_systemAbility == nullptr) {
         return -1;
     }
-
-    p_systemAbility->OnStart();
     return 0;
 }
 
