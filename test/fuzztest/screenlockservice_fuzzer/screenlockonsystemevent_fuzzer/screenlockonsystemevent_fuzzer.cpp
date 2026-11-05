@@ -40,6 +40,7 @@ using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 constexpr int32_t THRESHOLD = 4;
+constexpr size_t MAX_AUTH_TOKEN_LENGTH = 64;
 
 class ScreenLockCallbackTest : public IRemoteStub<ScreenLockCallbackInterface> {
 public:
@@ -172,7 +173,7 @@ bool FuzzSetScreenLockAuthState(FuzzedDataProvider &fdp)
 
     userId = fdp.ConsumeIntegral<int32_t>();
     authState = fdp.ConsumeIntegral<int32_t>();
-    authToken = fdp.ConsumeRandomLengthString(64);
+    authToken = fdp.ConsumeRandomLengthString(MAX_AUTH_TOKEN_LENGTH);
     systemAbility->SetScreenLockAuthState(authState, userId, authToken);
     systemAbility->GetScreenLockAuthState(userId, authState);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
