@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "fuzzer/FuzzedDataProvider.h"
 #include "message_parcel.h"
 #include "screenlock_callback.h"
 #include "screenlock_manager.h"
@@ -29,7 +30,6 @@ using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
-constexpr int32_t OFFSET = 4;
 constexpr size_t LENGTH = 1;
 constexpr size_t RANDNUM_ZERO = 0;
 constexpr size_t RANDNUM_ONE = 1;
@@ -41,7 +41,8 @@ uint32_t ConvertToUint32(const uint8_t *ptr)
     if (ptr == nullptr) {
         return 0;
     }
-    uint32_t bigvar = (ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | (ptr[3]);
+    uint32_t bigvar = (static_cast<uint32_t>(ptr[0]) << 24) | (static_cast<uint32_t>(ptr[1]) << 16) |
+        (static_cast<uint32_t>(ptr[2]) << 8) | static_cast<uint32_t>(ptr[3]);
     return bigvar;
 }
 
@@ -91,11 +92,9 @@ bool IsLockedFuzzTest(const uint8_t *rawData, size_t size)
     return ret == E_SCREENLOCK_OK;
 }
 
-bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
+bool FuzzScreenlockAppManager(FuzzedDataProvider &fdp, const uint8_t *rawData, size_t size)
 {
     uint32_t code = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
-    size = size - OFFSET;
     EventListener eventListener;
     if (code == RANDNUM_ZERO) {
         sptr<ScreenlockSystemAbilityCallback> listener_ = new ScreenlockSystemAbilityCallback(eventListener);
@@ -104,7 +103,7 @@ bool FuzzScreenlockAppManager(const uint8_t *rawData, size_t size)
     }
     if (code == RANDNUM_ONE) {
         int param = 0;
-        std::string event(reinterpret_cast<const char *>(rawData), size);
+        std::string event = fdp.ConsumeRandomLengthString(64);
         int32_t ret = ScreenLockManager::GetInstance()->SendScreenLockEvent(event, param);
         return ret == E_SCREENLOCK_OK;
     }
@@ -264,15 +263,17 @@ bool FuzzGetUnlockPolicy(const uint8_t *rawData, size_t size)
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
+
     if (size < OHOS::THRESHOLD) {
         return 0;
     }
 
     /* Run your code on data */
+    FuzzedDataProvider fdp(data, size);
     OHOS::FuzzScreenlockManager(data, size);
     OHOS::UnlockFuzzTest(data, size);
     OHOS::IsLockedFuzzTest(data, size);
-    OHOS::FuzzScreenlockAppManager(data, size);
+    OHOS::FuzzScreenlockAppManager(fdp, data, size);
     OHOS::FuzzScreenlockIsDisabled(data, size);
     OHOS::FuzzScreenlockSetDisabled(data, size);
     OHOS::FuzzScreenlockSetAuthState(data, size);
