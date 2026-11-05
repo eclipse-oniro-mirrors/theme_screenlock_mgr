@@ -29,6 +29,10 @@ using namespace OHOS::ScreenLock;
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr size_t LENGTH = 1;
+constexpr int32_t MIN_VALUE = 1;
+constexpr int32_t MAX_VALUE = 100;
+constexpr int32_t MAX_LONG_VALUE = 200;
+constexpr size_t MAX_STRING_LENGTH = 10;
 
 const std::string AUTH_PIN = "1";
 const std::string HAS_CREDENTIAL = "1";
@@ -75,8 +79,8 @@ bool FuzzSaveString(FuzzedDataProvider &fdp)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
-    stringlVal = fdp.ConsumeRandomLengthString(10);
+    userId = fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_VALUE);
+    stringlVal = fdp.ConsumeRandomLengthString(MAX_STRING_LENGTH);
     preferencesUtil->SaveString(std::to_string(userId), stringlVal);
     preferencesUtil->ObtainString(std::to_string(userId), stringlVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -100,8 +104,8 @@ bool FuzzSaveInt(FuzzedDataProvider &fdp)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
-    defaulVal = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
+    userId = fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_VALUE);
+    defaulVal = fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_VALUE);
     preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
     preferencesUtil->ObtainInt(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -155,8 +159,8 @@ bool FuzzSaveLong(FuzzedDataProvider &fdp)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
-    longVal = static_cast<int64_t>(fdp.ConsumeIntegralInRange<int32_t>(1, 200));
+    userId = fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_VALUE);
+    longVal = static_cast<int64_t>(fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_LONG_VALUE));
     preferencesUtil->SaveLong(std::to_string(userId), longVal);
     preferencesUtil->ObtainLong(std::to_string(userId), longVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -180,8 +184,8 @@ bool FuzzSaveFloat(FuzzedDataProvider &fdp)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
-    floatVal = static_cast<float>(fdp.ConsumeIntegralInRange<int32_t>(1, 100));
+    userId = fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_VALUE);
+    floatVal = static_cast<float>(fdp.ConsumeIntegralInRange<int32_t>(MIN_VALUE, MAX_VALUE));
     preferencesUtil->SaveFloat(std::to_string(userId), floatVal);
     preferencesUtil->ObtainFloat(std::to_string(userId), floatVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
