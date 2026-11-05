@@ -24,8 +24,8 @@
 #define private public
 #define protected public
 #include "screenlock_system_ability.h"
-#undef private
 #undef protected
+#undef private
 
 using namespace OHOS::ScreenLock;
 
