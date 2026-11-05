@@ -28,23 +28,39 @@
 #include "screenlock_server_ipc_interface_code.h"
 #include "screenlock_service_fuzz_utils.h"
 #include "screenlock_callback_interface.h"
+#include "screenlock_system_ability_interface.h"
 #include "screenlock_common.h"
 #include "system_ability_definition.h"
-#include <random>
+#include "iremote_stub.h"
+#include "message_parcel.h"
+#include <fuzzer/FuzzedDataProvider.h>
 #include <string>
 
 using namespace OHOS::ScreenLock;
 
 namespace OHOS {
 constexpr int32_t THRESHOLD = 4;
-constexpr size_t LENGTH = 1;
 
-bool FuzzIsLocked(const uint8_t *rawData, size_t size)
-{
-    if (size < LENGTH) {
-        return true;
+class ScreenLockCallbackTest : public IRemoteStub<ScreenLockCallbackInterface> {
+public:
+    void OnCallBack(int32_t screenLockResult) override {}
+    int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override
+    {
+        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
+};
 
+class ScreenlockSystemAbilityCallbackTest : public IRemoteStub<ScreenLockSystemAbilityInterface> {
+public:
+    void OnCallBack(const SystemEvent &systemEvent) override {}
+    int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override
+    {
+        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+    }
+};
+
+bool FuzzIsLocked(FuzzedDataProvider &fdp)
+{
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -54,18 +70,13 @@ bool FuzzIsLocked(const uint8_t *rawData, size_t size)
     bool isLocked = 0;
     systemAbility->IsLocked(isLocked);
 
-    const int rawValue = 2;
-    isLocked = static_cast<bool>(rawData[0] % rawValue);
+    isLocked = fdp.ConsumeBool();
     systemAbility->IsLocked(isLocked);
     return true;
 }
 
-bool FuzzIsLockedWithUserId(const uint8_t *rawData, size_t size)
+bool FuzzIsLockedWithUserId(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -76,20 +87,15 @@ bool FuzzIsLockedWithUserId(const uint8_t *rawData, size_t size)
     bool isLocked = 0;
     systemAbility->IsLockedWithUserId(userId, isLocked);
 
-    const int rawValue = 2;
-    userId = rawData[0];
-    isLocked = static_cast<bool>(rawData[0] % rawValue);
+    userId = fdp.ConsumeIntegral<int32_t>();
+    isLocked = fdp.ConsumeBool();
     systemAbility->IsLockedWithUserId(userId, isLocked);
     systemAbility->GetSecure();
     return true;
 }
 
-bool FuzzSendScreenLockEvent(const uint8_t *rawData, size_t size)
+bool FuzzSendScreenLockEvent(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -105,21 +111,20 @@ bool FuzzSendScreenLockEvent(const uint8_t *rawData, size_t size)
     const std::string eventThree = LOCK_SCREEN_RESULT;
     systemAbility->SendScreenLockEvent(eventThree, param);
 
-    param = rawData[0];
+    param = fdp.ConsumeIntegral<int32_t>();
     systemAbility->SendScreenLockEvent(eventOne, param);
     systemAbility->SendScreenLockEvent(eventTwo, param);
     systemAbility->SendScreenLockEvent(eventThree, param);
     sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
+    if (fdp.ConsumeBool()) {
+        listener = new ScreenlockSystemAbilityCallbackTest();
+    }
     systemAbility->OnSystemEvent(listener);
     return true;
 }
 
-bool FuzzIsScreenLockDisabled(const uint8_t *rawData, size_t size)
+bool FuzzIsScreenLockDisabled(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -129,19 +134,14 @@ bool FuzzIsScreenLockDisabled(const uint8_t *rawData, size_t size)
     bool isDisabled = 0;
     systemAbility->IsScreenLockDisabled(userId, isDisabled);
 
-    userId = rawData[0];
-    const int rawValue = 2;
-    isDisabled = static_cast<bool>(rawData[0] % rawValue);
+    userId = fdp.ConsumeIntegral<int32_t>();
+    isDisabled = fdp.ConsumeBool();
     systemAbility->IsScreenLockDisabled(userId, isDisabled);
     return true;
 }
 
-bool FuzzSetScreenLockDisabled(const uint8_t *rawData, size_t size)
+bool FuzzSetScreenLockDisabled(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -151,19 +151,14 @@ bool FuzzSetScreenLockDisabled(const uint8_t *rawData, size_t size)
     bool disable = 0;
     systemAbility->SetScreenLockDisabled(disable, userId);
 
-    userId = rawData[0];
-    const int rawValue = 2;
-    disable = static_cast<bool>(rawData[0] % rawValue);
+    userId = fdp.ConsumeIntegral<int32_t>();
+    disable = fdp.ConsumeBool();
     systemAbility->SetScreenLockDisabled(disable, userId);
     return true;
 }
 
-bool FuzzSetScreenLockAuthState(const uint8_t *rawData, size_t size)
+bool FuzzSetScreenLockAuthState(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -175,35 +170,21 @@ bool FuzzSetScreenLockAuthState(const uint8_t *rawData, size_t size)
     systemAbility->SetScreenLockAuthState(authState, userId, authToken);
     systemAbility->GetScreenLockAuthState(userId, authState);
 
-    userId = rawData[0];
-    authState = rawData[0] + 1;
-    const int minValue = 32;
-    const int maxValue = 126;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(minValue, maxValue);
-
-    int length = dis(gen) % 10 + 1;  // 随机长度1到10
-
-    authToken.clear();
-
-    for (int i = 0; i < length; ++i) {
-        char c = static_cast<char>(dis(gen));
-        authToken += c;
-    }
+    userId = fdp.ConsumeIntegral<int32_t>();
+    authState = fdp.ConsumeIntegral<int32_t>();
+    authToken = fdp.ConsumeRandomLengthString(64);
     systemAbility->SetScreenLockAuthState(authState, userId, authToken);
     systemAbility->GetScreenLockAuthState(userId, authState);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
+    if (fdp.ConsumeBool()) {
+        listener = new ScreenLockCallbackTest();
+    }
     systemAbility->Lock(listener);
     return true;
 }
 
-bool FuzzRequestStrongAuth(const uint8_t *rawData, size_t size)
+bool FuzzRequestStrongAuth(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -213,20 +194,19 @@ bool FuzzRequestStrongAuth(const uint8_t *rawData, size_t size)
     int32_t userId = 100;
     systemAbility->RequestStrongAuth(reasonFlag, userId);
 
-    userId = rawData[0];
-    reasonFlag = rawData[0] + 1;
+    userId = fdp.ConsumeIntegral<int32_t>();
+    reasonFlag = fdp.ConsumeIntegral<int32_t>();
     systemAbility->RequestStrongAuth(reasonFlag, userId);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
+    if (fdp.ConsumeBool()) {
+        listener = new ScreenLockCallbackTest();
+    }
     systemAbility->UnlockScreen(listener);
     return true;
 }
 
-bool FuzzIsDeviceLocked(const uint8_t *rawData, size_t size)
+bool FuzzIsDeviceLocked(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -236,19 +216,14 @@ bool FuzzIsDeviceLocked(const uint8_t *rawData, size_t size)
     bool isDisabled = 0;
     systemAbility->IsDeviceLocked(userId, isDisabled);
 
-    userId = rawData[0];
-    const int rawValue = 2;
-    isDisabled = static_cast<bool>(rawData[0] % rawValue);
+    userId = fdp.ConsumeIntegral<int32_t>();
+    isDisabled = fdp.ConsumeBool();
     systemAbility->IsDeviceLocked(userId, isDisabled);
     return true;
 }
 
-bool FuzzRegisterInnerListener(const uint8_t *rawData, size_t size)
+bool FuzzRegisterInnerListener(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -262,7 +237,7 @@ bool FuzzRegisterInnerListener(const uint8_t *rawData, size_t size)
     systemAbility->RegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
     systemAbility->UnRegisterInnerListener(userId, ListenType::STRONG_AUTH, InnerListenerIfTest1);
 
-    userId = rawData[0];
+    userId = fdp.ConsumeIntegral<int32_t>();
     systemAbility->RegisterInnerListener(userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
     systemAbility->UnRegisterInnerListener(userId, ListenType::DEVICE_LOCK, InnerListenerIfTest1);
 
@@ -271,12 +246,8 @@ bool FuzzRegisterInnerListener(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzSetScreenlocked(const uint8_t *rawData, size_t size)
+bool FuzzSetScreenlocked(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -287,19 +258,15 @@ bool FuzzSetScreenlocked(const uint8_t *rawData, size_t size)
     systemAbility->SetScreenlocked(true, userId);
     systemAbility->IsScreenLocked();
 
-    userId = rawData[0];
+    userId = fdp.ConsumeIntegral<int32_t>();
     systemAbility->SetScreenlocked(false, userId);
     systemAbility->IsScreenLocked();
     systemAbility->SetScreenlocked(true, userId);
     return true;
 }
 
-bool FuzzStrongAuthChanged(const uint8_t *rawData, size_t size)
+bool FuzzStrongAuthChanged(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -309,19 +276,18 @@ bool FuzzStrongAuthChanged(const uint8_t *rawData, size_t size)
     int32_t reasonFlag = 0;
     systemAbility->StrongAuthChanged(userId, reasonFlag);
 
-    userId = rawData[0];
+    userId = fdp.ConsumeIntegral<int32_t>();
     systemAbility->StrongAuthChanged(userId, reasonFlag);
     sptr<ScreenLockCallbackInterface> listener = nullptr;
+    if (fdp.ConsumeBool()) {
+        listener = new ScreenLockCallbackTest();
+    }
     systemAbility->Unlock(listener);
     return true;
 }
 
-bool FuzzLock(const uint8_t *rawData, size_t size)
+bool FuzzLock(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -330,17 +296,13 @@ bool FuzzLock(const uint8_t *rawData, size_t size)
     int32_t userId = 100;
     systemAbility->Lock(userId);
 
-    userId = rawData[0];
+    userId = fdp.ConsumeIntegral<int32_t>();
     systemAbility->Lock(userId);
     return true;
 }
 
-bool FuzzOnActiveUser(const uint8_t *rawData, size_t size)
+bool FuzzOnActiveUser(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto systemAbility = ScreenLockSystemAbility::GetInstance();
     if (systemAbility == nullptr) {
         return false;
@@ -351,8 +313,8 @@ bool FuzzOnActiveUser(const uint8_t *rawData, size_t size)
     systemAbility->OnActiveUser(userId, otherUserId);
     systemAbility->OnRemoveUser(otherUserId);
 
-    userId = rawData[0];
-    otherUserId = rawData[0] + 1;
+    userId = fdp.ConsumeIntegral<int32_t>();
+    otherUserId = fdp.ConsumeIntegral<int32_t>();
     systemAbility->OnActiveUser(userId, otherUserId);
     systemAbility->OnRemoveUser(otherUserId);
     return true;
@@ -370,18 +332,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::ScreenlockServiceFuzzUtils::OnRemoteRequestTest(
         static_cast<uint32_t>(ScreenLockServerIpcInterfaceCode::ONSYSTEMEVENT), data, size);
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
-    OHOS::FuzzIsLocked(data, size);
-    OHOS::FuzzIsLockedWithUserId(data, size);
-    OHOS::FuzzSendScreenLockEvent(data, size);
-    OHOS::FuzzIsScreenLockDisabled(data, size);
-    OHOS::FuzzSetScreenLockDisabled(data, size);
-    OHOS::FuzzSetScreenLockAuthState(data, size);
-    OHOS::FuzzRequestStrongAuth(data, size);
-    OHOS::FuzzIsDeviceLocked(data, size);
-    OHOS::FuzzRegisterInnerListener(data, size);
-    OHOS::FuzzSetScreenlocked(data, size);
-    OHOS::FuzzStrongAuthChanged(data, size);
-    OHOS::FuzzLock(data, size);
-    OHOS::FuzzOnActiveUser(data, size);
+    FuzzedDataProvider fdp(data, size);
+    OHOS::FuzzIsLocked(fdp);
+    OHOS::FuzzIsLockedWithUserId(fdp);
+    OHOS::FuzzSendScreenLockEvent(fdp);
+    OHOS::FuzzIsScreenLockDisabled(fdp);
+    OHOS::FuzzSetScreenLockDisabled(fdp);
+    OHOS::FuzzSetScreenLockAuthState(fdp);
+    OHOS::FuzzRequestStrongAuth(fdp);
+    OHOS::FuzzIsDeviceLocked(fdp);
+    OHOS::FuzzRegisterInnerListener(fdp);
+    OHOS::FuzzSetScreenlocked(fdp);
+    OHOS::FuzzStrongAuthChanged(fdp);
+    OHOS::FuzzLock(fdp);
+    OHOS::FuzzOnActiveUser(fdp);
     return 0;
 }
