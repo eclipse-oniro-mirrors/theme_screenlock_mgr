@@ -20,8 +20,8 @@
 #include <string_ex.h>
 
 #include "preferences_util.h"
-#include <random>
 #include <string>
+#include <fuzzer/FuzzedDataProvider.h>
 #include "commeventsubscriber.h"
 
 using namespace OHOS::ScreenLock;
@@ -30,13 +30,6 @@ namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr size_t LENGTH = 1;
 
-int32_t RandNum(int32_t min, int32_t max)
-{
-    std::random_device rd;
-    std::default_random_engine engine(rd());
-    std::uniform_int_distribution<int32_t> randomNum(min, max);
-    return randomNum(engine);
-}
 const std::string AUTH_PIN = "1";
 const std::string HAS_CREDENTIAL = "1";
 const std::string USER_CREDENTIAL_UPDATED_EVENT = "USER_CREDENTIAL_UPDATED_EVENT";
@@ -66,12 +59,8 @@ bool FuzzUnSubscribeEvent(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzSaveString(const uint8_t *rawData, size_t size)
+bool FuzzSaveString(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         return false;
@@ -86,21 +75,8 @@ bool FuzzSaveString(const uint8_t *rawData, size_t size)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = rawData[0];
-    const int minValue = 32;
-    const int maxValue = 126;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(minValue, maxValue);
-
-    int length = dis(gen) % 10 + 1;  // 随机长度1到10
-
-    stringlVal.clear();
-
-    for (int i = 0; i < length; ++i) {
-        char c = static_cast<char>(dis(gen));
-        stringlVal += c;
-    }
+    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
+    stringlVal = fdp.ConsumeRandomLengthString(10);
     preferencesUtil->SaveString(std::to_string(userId), stringlVal);
     preferencesUtil->ObtainString(std::to_string(userId), stringlVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -108,12 +84,8 @@ bool FuzzSaveString(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzSaveInt(const uint8_t *rawData, size_t size)
+bool FuzzSaveInt(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         return false;
@@ -128,10 +100,8 @@ bool FuzzSaveInt(const uint8_t *rawData, size_t size)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = rawData[0];
-    const int minValue = 1;
-    const int maxValue = 100;
-    defaulVal = RandNum(minValue, maxValue);
+    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
+    defaulVal = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
     preferencesUtil->SaveInt(std::to_string(userId), defaulVal);
     preferencesUtil->ObtainInt(std::to_string(userId), defaulVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -169,12 +139,8 @@ bool FuzzSaveBool(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzSaveLong(const uint8_t *rawData, size_t size)
+bool FuzzSaveLong(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         return false;
@@ -189,10 +155,8 @@ bool FuzzSaveLong(const uint8_t *rawData, size_t size)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = rawData[0];
-    const int minValue = 1;
-    const int maxValue = 200;
-    longVal = static_cast<int64_t>(RandNum(minValue, maxValue));
+    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
+    longVal = static_cast<int64_t>(fdp.ConsumeIntegralInRange<int32_t>(1, 200));
     preferencesUtil->SaveLong(std::to_string(userId), longVal);
     preferencesUtil->ObtainLong(std::to_string(userId), longVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -200,12 +164,8 @@ bool FuzzSaveLong(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzSaveFloat(const uint8_t *rawData, size_t size)
+bool FuzzSaveFloat(FuzzedDataProvider &fdp)
 {
-    if (size < LENGTH) {
-        return true;
-    }
-
     auto preferencesUtil = DelayedSingleton<PreferencesUtil>::GetInstance();
     if (preferencesUtil == nullptr) {
         return false;
@@ -220,10 +180,8 @@ bool FuzzSaveFloat(const uint8_t *rawData, size_t size)
     preferencesUtil->RemoveKey(std::to_string(userId));
     preferencesUtil->Refresh();
 
-    userId = rawData[0];
-    const int minValue = 1;
-    const int maxValue = 100;
-    floatVal = static_cast<float>(RandNum(minValue, maxValue));
+    userId = fdp.ConsumeIntegralInRange<int32_t>(1, 100);
+    floatVal = static_cast<float>(fdp.ConsumeIntegralInRange<int32_t>(1, 100));
     preferencesUtil->SaveFloat(std::to_string(userId), floatVal);
     preferencesUtil->ObtainFloat(std::to_string(userId), floatVal);
     preferencesUtil->RemoveKey(std::to_string(userId));
@@ -301,11 +259,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     /* Run your code on data */
     OHOS::FuzzUnSubscribeEvent(data, size);
     OHOS::FuzzScreenlockUtils(data, size);
-    OHOS::FuzzSaveString(data, size);
-    OHOS::FuzzSaveInt(data, size);
+    FuzzedDataProvider fdp(data, size);
+    OHOS::FuzzSaveString(fdp);
+    OHOS::FuzzSaveInt(fdp);
     OHOS::FuzzSaveBool(data, size);
-    OHOS::FuzzSaveLong(data, size);
-    OHOS::FuzzSaveFloat(data, size);
+    OHOS::FuzzSaveLong(fdp);
+    OHOS::FuzzSaveFloat(fdp);
     OHOS::FuzzObtainBool(data, size);
     OHOS::FuzzRemoveKey(data, size);
     return 0;
