@@ -29,6 +29,9 @@ public:
     explicit StrongAuthListenerTest(int32_t userId) : StrongAuthListener(userId) {};
     virtual ~StrongAuthListenerTest() = default;
     void OnStrongAuthChanged(int32_t userId, int32_t authenticated) override;
+private:
+    int32_t lastUserId_;
+    int32_t lastAuthenticated_;
 };
 
 class DeviceLockedListenerTest : public DeviceLockedListener {
@@ -36,6 +39,9 @@ public:
     explicit DeviceLockedListenerTest(int32_t userId) : DeviceLockedListener(userId) {};
     virtual ~DeviceLockedListenerTest() = default;
     void OnDeviceLockStateChanged(int userId, bool isDeviceLocked) override;
+private:
+    int32_t lastUserId_;
+    bool lastIsDeviceLocked_;
 };
 
 class InnerListenerIfTest : public IRemoteStub<InnerListenerIf> {
@@ -46,6 +52,10 @@ public:
                                            MessageOption& option) override;
                                            
     void OnStateChanged(int32_t userId, int32_t state) override;
+private:
+    uint32_t lastCode_;
+    int32_t lastUserId_;
+    int32_t lastState_;
 };
 
 }
