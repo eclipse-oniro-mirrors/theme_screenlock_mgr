@@ -204,7 +204,12 @@ int32_t ScreenLockManagerStub::OnScreenLockOn(MessageParcel &data, MessageParcel
 
 int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, MessageParcel &reply)
 {
-    std::string event = data.ReadString();
+    std::string event;
+    if (!data.ReadString(event)) {
+        SCLOCK_HILOGE("Read event failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     int param = 0;
     if (event == UNLOCK_SCREEN_RESULT || event == LOCK_SCREEN_RESULT || event == SCREEN_DRAWDONE) {
         if (!data.ReadInt32(param)) {
@@ -222,7 +227,12 @@ int32_t ScreenLockManagerStub::OnSendScreenLockEvent(MessageParcel &data, Messag
 int32_t ScreenLockManagerStub::OnIsScreenLockDisabled(MessageParcel &data, MessageParcel &reply)
 {
     bool isDisabled = false;
-    int userId = data.ReadInt32();
+    int32_t userId = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsScreenLockDisabled(userId, isDisabled);
     reply.WriteInt32(retCode);
@@ -234,8 +244,13 @@ int32_t ScreenLockManagerStub::OnIsScreenLockDisabled(MessageParcel &data, Messa
 
 int32_t ScreenLockManagerStub::OnSetScreenLockDisabled(MessageParcel &data, MessageParcel &reply)
 {
-    bool disable = data.ReadBool();
-    int userId = data.ReadInt32();
+    bool disable = false;
+    int32_t userId = 0;
+    if (!data.ReadBool(disable) || !data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read parameters failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("disable=%{public}d, userId=%{public}d", disable, userId);
     int32_t retCode = SetScreenLockDisabled(disable, userId);
     reply.WriteInt32(retCode);
@@ -260,7 +275,12 @@ int32_t ScreenLockManagerStub::OnSetScreenLockAuthState(MessageParcel &data, Mes
 int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, MessageParcel &reply)
 {
     int32_t authState = -1;
-    int32_t userId = data.ReadInt32();
+    int32_t userId = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = GetScreenLockAuthState(userId, authState);
     reply.WriteInt32(retCode);
@@ -270,8 +290,13 @@ int32_t ScreenLockManagerStub::OnGetScreenLockAuthState(MessageParcel &data, Mes
 
 int32_t ScreenLockManagerStub::OnRequestStrongAuth(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t reasonFlag = data.ReadInt32();
-    int32_t userId = data.ReadInt32();
+    int32_t reasonFlag = 0;
+    int32_t userId = 0;
+    if (!data.ReadInt32(reasonFlag) || !data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read parameters failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("OnRequestStrongAuth. reasonFlag=%{public}d", reasonFlag);
     int32_t retCode = RequestStrongAuth(reasonFlag, userId);
     reply.WriteInt32(retCode);
@@ -281,7 +306,12 @@ int32_t ScreenLockManagerStub::OnRequestStrongAuth(MessageParcel &data, MessageP
 int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParcel &reply)
 {
     int32_t reasonFlag = -1;
-    int32_t userId = data.ReadInt32();
+    int32_t userId = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     int32_t retCode = GetStrongAuth(userId, reasonFlag);
     SCLOCK_HILOGI("userId=%{public}d, reasonFlag=%{public}d", userId, reasonFlag);
     reply.WriteInt32(retCode);
@@ -291,8 +321,18 @@ int32_t ScreenLockManagerStub::OnGetStrongAuth(MessageParcel &data, MessageParce
 
 int32_t ScreenLockManagerStub::OnRegistInnerListener(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t userId = data.ReadInt32();
-    int32_t listenType = data.ReadInt32();
+    int32_t userId = 0;
+    int32_t listenType = 0;
+    if (!data.ReadInt32(userId) || !data.ReadInt32(listenType)) {
+        SCLOCK_HILOGE("ReadInt32 failed for userId or listenType");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
+    if (listenType < 0 || listenType >= static_cast<int32_t>(ListenType::LISTEN_TYPE_BUT)) {
+        SCLOCK_HILOGE("invalid listenType=%{public}d", listenType);
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
 
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
@@ -311,8 +351,19 @@ int32_t ScreenLockManagerStub::OnRegistInnerListener(MessageParcel &data, Messag
 
 int32_t ScreenLockManagerStub::OnUnRegistInnerListener(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t userId = data.ReadInt32();
-    ListenType listenType = static_cast<ListenType>(data.ReadInt32());
+    int32_t userId = 0;
+    int32_t listenTypeValue = 0;
+    if (!data.ReadInt32(userId) || !data.ReadInt32(listenTypeValue)) {
+        SCLOCK_HILOGE("ReadInt32 failed for userId or listenType");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
+    if (listenTypeValue < 0 || listenTypeValue >= static_cast<int32_t>(ListenType::LISTEN_TYPE_BUT)) {
+        SCLOCK_HILOGE("invalid listenType=%{public}d", listenTypeValue);
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
+    ListenType listenType = static_cast<ListenType>(listenTypeValue);
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
         SCLOCK_HILOGE("remote is nullptr");
@@ -330,7 +381,12 @@ int32_t ScreenLockManagerStub::OnUnRegistInnerListener(MessageParcel &data, Mess
 
 int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t userId = data.ReadInt32();
+    int32_t userId = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     int32_t retCode = Lock(userId);
     reply.WriteInt32(retCode);
     return ERR_NONE;
@@ -339,7 +395,12 @@ int32_t ScreenLockManagerStub::OnLockScreen(MessageParcel &data, MessageParcel &
 int32_t ScreenLockManagerStub::OnIsDeviceLocked(MessageParcel &data, MessageParcel &reply)
 {
     bool isDeviceLocked = true;
-    int32_t userId = data.ReadInt32();
+    int32_t userId = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsDeviceLocked(userId, isDeviceLocked);
     reply.WriteInt32(retCode);
@@ -350,7 +411,12 @@ int32_t ScreenLockManagerStub::OnIsDeviceLocked(MessageParcel &data, MessageParc
 int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, MessageParcel &reply)
 {
     bool isLocked = true;
-    int32_t userId = data.ReadInt32();
+    int32_t userId = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("userId=%{public}d", userId);
     int32_t retCode = IsLockedWithUserId(userId, isLocked);
     reply.WriteInt32(retCode);
@@ -360,8 +426,13 @@ int32_t ScreenLockManagerStub::OnIsLockedWithUserId(MessageParcel &data, Message
 
 int32_t ScreenLockManagerStub::OnSetUnlockPolicy(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t userId = data.ReadInt32();
-    int32_t policy = data.ReadInt32();
+    int32_t userId = 0;
+    int32_t policy = 0;
+    if (!data.ReadInt32(userId) || !data.ReadInt32(policy)) {
+        SCLOCK_HILOGE("Read parameters failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("OnSetUnlockPolicy userId=%{public}d, %{public}d", userId, policy);
     int32_t retCode = SetUnlockPolicy(userId, policy);
     reply.WriteInt32(retCode);
@@ -371,8 +442,13 @@ int32_t ScreenLockManagerStub::OnSetUnlockPolicy(MessageParcel &data, MessagePar
 
 int32_t ScreenLockManagerStub::OnGetUnlockPolicy(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t userId = data.ReadInt32();
+    int32_t userId = 0;
     int32_t policy = 0;
+    if (!data.ReadInt32(userId)) {
+        SCLOCK_HILOGE("Read userId failed");
+        reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
+        return ERR_INVALID_DATA;
+    }
     SCLOCK_HILOGD("OnGetUnlockPolicy userId=%{public}d, %{public}d", userId, policy);
     int32_t retCode = GetUnlockPolicy(userId, policy);
     reply.WriteInt32(retCode);
