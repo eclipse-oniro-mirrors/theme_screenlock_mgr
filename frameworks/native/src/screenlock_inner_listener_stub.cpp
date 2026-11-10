@@ -15,11 +15,13 @@
 
 #include "screenlock_inner_listener_stub.h"
 
+#include "ipc_skeleton.h"
 #include "sclock_log.h"
 #include "screenlock_common.h"
 
 namespace OHOS {
 namespace ScreenLock {
+const int FOUNDATION_UID = 5523;
 ScreenLockInnerListenerStub::~ScreenLockInnerListenerStub()
 {
 }
@@ -30,6 +32,10 @@ int32_t ScreenLockInnerListenerStub::OnRemoteRequest(uint32_t code, MessageParce
     auto descriptorToken = data.ReadInterfaceToken();
     if (descriptorToken != GetDescriptor()) {
         SCLOCK_HILOGE("Remote descriptor not the same as local descriptor.");
+        return E_SCREENLOCK_TRANSACT_ERROR;
+    }
+    if (IPCSkeleton::GetCallingUid() != FOUNDATION_UID) {
+        SCLOCK_HILOGE("Remote IPCSkeleton not find by screenlock");
         return E_SCREENLOCK_TRANSACT_ERROR;
     }
     switch (code) {
