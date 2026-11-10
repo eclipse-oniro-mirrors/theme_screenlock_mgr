@@ -75,7 +75,7 @@ ani_object GetSystemEventImpl(ani_env *env, std::string eventTypeStr, std::strin
 
 void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 {
-    auto handler = handler_;
+    auto handler = GetEventHandler();
     if (handler == nullptr) {
         SCLOCK_HILOGE("eventHandler is nullptr");
         return;
