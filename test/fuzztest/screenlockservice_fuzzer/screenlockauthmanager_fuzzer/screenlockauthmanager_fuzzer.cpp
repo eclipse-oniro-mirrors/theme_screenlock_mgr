@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string_ex.h>
+#include "sclock_log.h"
 #ifndef IS_SO_CROP_H
 #define private public
 #define protected public
@@ -71,7 +72,7 @@ bool FuzzStartStrongAuthTimer(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -91,7 +92,7 @@ bool FuzzGetTimerId(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -110,7 +111,7 @@ bool FuzzResetStrongAuthTimer(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -131,7 +132,7 @@ bool FuzzDestroyStrongAuthTimer(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -144,6 +145,7 @@ bool FuzzDestroyStrongAuthTimer(const uint8_t *rawData, size_t size)
     return true;
 }
 
+
 bool FuzzDestroyAllStrongAuthTimer(const uint8_t *rawData, size_t size)
 {
     if (size < LENGTH) {
@@ -151,7 +153,7 @@ bool FuzzDestroyAllStrongAuthTimer(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -173,7 +175,7 @@ bool FuzzSetStrongAuthStat(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -190,7 +192,7 @@ bool FuzzGetStrongAuthStat(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -209,7 +211,7 @@ bool FuzzDestroyStrongAuthStateInfo(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -231,7 +233,7 @@ bool FuzzInitStrongAuthStat(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -251,7 +253,7 @@ bool FuzzIsUserExitInStrongAuthInfo(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -271,7 +273,7 @@ bool FuzzIsUserHasStrongAuthTimer(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -291,7 +293,7 @@ bool FuzzGetStrongAuthTimeTrigger(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -311,7 +313,7 @@ bool FuzzGetStrongAuthTriggerPeriod(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -331,7 +333,7 @@ bool FuzzGetCredInfo(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -351,7 +353,7 @@ bool FuzzAccountUnlocked(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -372,7 +374,7 @@ bool FuzzNotifyStrongAuthChange(const uint8_t *rawData, size_t size)
     }
 
 #ifndef IS_SO_CROP_H
-    auto authmanager = DelayedSingleton<StrongAuthManger>::GetInstance();
+    auto authmanager = StrongAuthManger::GetInstance();
     if (authmanager == nullptr) {
         return false;
     }
@@ -396,7 +398,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     if (size < OHOS::THRESHOLD) {
         return 0;
     }
-
     /* Run your code on data */
     OHOS::FuzzOnReceiveEvent(data, size);
     OHOS::FuzzStartStrongAuthTimer(data, size);
@@ -415,5 +416,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::FuzzGetCredInfo(data, size);
     OHOS::FuzzAccountUnlocked(data, size);
     OHOS::FuzzNotifyStrongAuthChange(data, size);
+    SCLOCK_HILOGI("-screenlockauthmanager_fuzzer");
     return 0;
 }

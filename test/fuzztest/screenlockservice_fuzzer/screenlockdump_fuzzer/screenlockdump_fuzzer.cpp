@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <string_ex.h>
 
+#include "fuzzer/FuzzedDataProvider.h"
 #include "message_parcel.h"
 #include "screenlock_callback.h"
 #include "screenlock_manager_interface.h"
@@ -31,18 +32,9 @@ namespace OHOS {
 constexpr int32_t THRESHOLD = 4;
 const std::u16string SCREENLOCK_SYSTEMABILITY_INTERFACE_TOKEN = u"OHOS.ScreenLock.ScreenLockSystemAbilityInterface";
 
-uint32_t ConvertToUint32(const uint8_t *ptr)
+bool FuzzScreenlockCallback(FuzzedDataProvider &fdp, const uint8_t *rawData, size_t size)
 {
-    if (ptr == nullptr) {
-        return 0;
-    }
-    uint32_t bigvar = (ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | (ptr[3]);
-    return bigvar;
-}
-
-bool FuzzScreenlockCallback(const uint8_t *rawData, size_t size)
-{
-    uint32_t code = ConvertToUint32(rawData);
+    uint32_t code = fdp.ConsumeIntegral<uint32_t>();
 
     EventListener mEventListener;
     MessageParcel data;
@@ -58,10 +50,10 @@ bool FuzzScreenlockCallback(const uint8_t *rawData, size_t size)
     return true;
 }
 
-bool FuzzScreenlockDisplayPowerEvent(const uint8_t *rawData, size_t size)
+bool FuzzScreenlockDisplayPowerEvent(FuzzedDataProvider &fdp)
 {
-    uint32_t event = ConvertToUint32(rawData);
-    uint32_t status = ConvertToUint32(rawData);
+    auto event = static_cast<DisplayPowerEvent>(fdp.ConsumeIntegral<uint8_t>());
+    auto status = static_cast<EventStatus>(fdp.ConsumeIntegral<uint8_t>());
 
     sptr<ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener> displayPowerEventListener_;
     displayPowerEventListener_ = new ScreenLockSystemAbility::ScreenLockDisplayPowerEventListener();
@@ -89,8 +81,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     }
 
     /* Run your code on data */
-    OHOS::FuzzScreenlockCallback(data, size);
-    OHOS::FuzzScreenlockDisplayPowerEvent(data, size);
+    FuzzedDataProvider fdp(data, size);
+    OHOS::FuzzScreenlockCallback(fdp, data, size);
+    OHOS::FuzzScreenlockDisplayPowerEvent(fdp);
     OHOS::FuzzScreenlockDump(data, size);
     ScreenLockSystemAbility::GetInstance()->ResetFfrtQueue();
     return 0;

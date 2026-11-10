@@ -15,28 +15,40 @@
 
 #include "innerListener_fuzz_utils.h"
 
+#include "ipc_object_stub.h"
+#include "sclock_log.h"
 
 namespace OHOS {
 namespace ScreenLock {
 void StrongAuthListenerTest::OnStrongAuthChanged(int32_t userId, int32_t authenticated)
 {
-    return;
+    lastUserId_ = userId;
+    lastAuthenticated_ = authenticated;
+    SCLOCK_HILOGI("StrongAuthListenerTest OnStrongAuthChanged userId:%{public}d authenticated:%{public}d", userId,
+        authenticated);
 }
 
 void DeviceLockedListenerTest::OnDeviceLockStateChanged(int userId, bool isDeviceLocked)
 {
-    return;
+    lastUserId_ = userId;
+    lastIsDeviceLocked_ = isDeviceLocked;
+    SCLOCK_HILOGI("DeviceLockedListenerTest OnDeviceLockStateChanged userId:%{public}d isDeviceLocked:%{public}d",
+        userId, static_cast<int32_t>(isDeviceLocked));
 }
 
 int32_t InnerListenerIfTest::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
                                              MessageOption &option)
 {
-    return 0;
+    lastCode_ = code;
+    SCLOCK_HILOGI("InnerListenerIfTest OnRemoteRequest code:%{public}u", code);
+    return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
 }
 
 void InnerListenerIfTest::OnStateChanged(int32_t userId, int32_t state)
 {
-    return;
+    lastUserId_ = userId;
+    lastState_ = state;
+    SCLOCK_HILOGI("InnerListenerIfTest OnStateChanged userId:%{public}d state:%{public}d", userId, state);
 }
 }
 }

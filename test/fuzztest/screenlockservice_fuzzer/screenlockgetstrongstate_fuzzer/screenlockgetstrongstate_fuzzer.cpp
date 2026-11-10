@@ -78,7 +78,6 @@ bool FuzzSubscribeEvent(const uint8_t *rawData, size_t size)
 
 bool FuzzRegisterStrongAuthListener(const uint8_t *rawData, size_t size)
 {
-    SCLOCK_HILOGW("An11");
     if (size < LENGTH) {
         return true;
     }
@@ -220,7 +219,7 @@ bool FuzzOnDeviceLockStateChanged(const uint8_t *rawData, size_t size)
     }
 
     int32_t userId = 100;
-    int32_t lockState = 1;
+    int32_t lockState = static_cast<int32_t>(rawData[0]);
     InnerListener->OnDeviceLockStateChanged(userId, lockState);
 
     userId = rawData[0];
@@ -241,7 +240,7 @@ bool FuzzOnStateChanged(const uint8_t *rawData, size_t size)
     }
 
     int32_t userId = 100;
-    int32_t lockState = 1;
+    int32_t lockState = static_cast<int32_t>(rawData[0]);
     InnerListener->OnStateChanged(userId, lockState, ListenType::DEVICE_LOCK);
 
     InnerListener->OnStateChanged(userId, lockState, ListenType::STRONG_AUTH);
