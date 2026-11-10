@@ -39,7 +39,8 @@ ScreenlockSystemAbilityCallback::~ScreenlockSystemAbilityCallback()
 
 void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
 {
-    if (handler_ == nullptr) {
+    auto handler = GetEventHandler();
+    if (handler == nullptr) {
         SCLOCK_HILOGE("eventHandler is nullptr");
         return;
     }
@@ -65,7 +66,7 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
         SCLOCK_HILOGI("OnCallBack eventType:%{public}s", entry->systemEvent.eventType_.c_str());
         napi_close_handle_scope(entry->env, scope);
     };
-    handler_->PostTask(task, "ScreenlockSystemAbilityCallback");
+    handler->PostTask(task, "ScreenlockSystemAbilityCallback");
 }
 
 std::shared_ptr<AppExecFwk::EventHandler> ScreenlockSystemAbilityCallback::GetEventHandler()
