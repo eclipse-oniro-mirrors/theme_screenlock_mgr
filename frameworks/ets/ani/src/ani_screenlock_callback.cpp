@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include <cstdint>
+#include <mutex>
 #include <new>
 #include <string>
 
@@ -29,6 +30,7 @@ constexpr const char *CANCEL_UNLOCK_OPERATION = "The user canceled the unlock op
 constexpr const char *SCREENLOCK_FAIL = "ScreenLock failed.";
 enum class ARG_INFO { ARG_ERROR, ARG_DATA, ARG_BUTT };
 std::shared_ptr<AppExecFwk::EventHandler> ScreenlockCallback::handler_{ nullptr };
+static std::once_flag g_handlerInitFlag;
 
 ScreenlockCallback::ScreenlockCallback(const EventListener &eventListener)
 {
@@ -100,11 +102,15 @@ void ScreenlockCallback::SendCallBackEvent(std::shared_ptr<ScreenlockOnCallBack>
         }
         env->DestroyLocalScope();
     };
-    std::shared_ptr<OHOS::AppExecFwk::EventRunner> runner = OHOS::AppExecFwk::EventRunner::GetMainEventRunner();
-    if (runner == nullptr) {
-        SCLOCK_HILOGE("invalid main event runner.");
-    }
-    handler_ = std::make_shared<OHOS::AppExecFwk::EventHandler>(runner);
+    std::call_once(g_handlerInitFlag, []() {
+        std::shared_ptr<OHOS::AppExecFwk::EventRunner> runner =
+            OHOS::AppExecFwk::EventRunner::GetMainEventRunner();
+        if (runner == nullptr) {
+            SCLOCK_HILOGE("invalid main event runner.");
+            return;
+        }
+        handler_ = std::make_shared<OHOS::AppExecFwk::EventHandler>(runner);
+    });
     if (handler_ == nullptr) {
         SCLOCK_HILOGE("Failed to create event handler");
         return;
