@@ -591,6 +591,7 @@ int32_t ScreenLockManagerProxy::GetUnlockPolicy(int32_t userId, int32_t &policy)
     if (!reply.ReadInt32(policy)) {
         SCLOCK_HILOGE("GetUnlockPolicy failed to read policy");
         policy = 0;
+        return E_SCREENLOCK_READ_PARCEL_ERROR;
     }
     SCLOCK_HILOGD("ScreenLockManagerProxy GetUnlockPolicy end retCode is %{public}d, %{public}d", retCode, policy);
     return retCode;
