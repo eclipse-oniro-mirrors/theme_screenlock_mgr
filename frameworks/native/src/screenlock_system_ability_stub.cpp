@@ -31,7 +31,7 @@ void ScreenLockSystemAbilityStub::OnCallBack(const SystemEvent &systemEvent)
 }
 
 int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+                                                     MessageOption &option)
 {
     auto descriptorToken = data.ReadInterfaceToken();
     if (descriptorToken != GetDescriptor()) {
@@ -46,20 +46,24 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParce
         case ON_CALLBACK: {
             std::string eventType;
             std::string params;
-            if (!data.ReadString(eventType) || !data.ReadString(params)) {
+            if (!data.ReadString(eventType)) {
                 SCLOCK_HILOGE("Read SystemEvent fields failed.");
-                reply.WriteInt32(E_SCREENLOCK_READ_PARCEL_ERROR);
-                return E_SCREENLOCK_READ_PARCEL_ERROR;
+                eventType = 0;
+            }
+        }
+            else if (!data.ReadString(params)) {
+                SCLOCK_HILOGE("Read SystemEvent fields failed.");
+                params = 0;
             }
             SystemEvent systemEvent(eventType, params);
             OnCallBack(systemEvent);
             break;
-        }
-        default: {
-            return OHOS::UNKNOWN_TRANSACTION;
-        }
     }
-    return OHOS::NO_ERROR;
+    default: {
+        return OHOS::UNKNOWN_TRANSACTION;
+    }
+}
+return OHOS::NO_ERROR;
 }
 } // namespace ScreenLock
 } // namespace OHOS
