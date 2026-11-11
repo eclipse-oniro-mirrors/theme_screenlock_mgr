@@ -151,7 +151,7 @@ void GetErrorInfo(int32_t errorCode, ErrorInfo &errorInfo)
         errorInfo.errorCode_ = iter->second;
         errorInfo.message_ = GetErrorMessage(errorInfo.errorCode_);
         SCLOCK_HILOGD("GetErrorInfo errorInfo.code: %{public}d, errorInfo.message: %{public}s", errorInfo.errorCode_,
-            errorInfo.message_.c_str());
+                      errorInfo.message_.c_str());
     } else {
         SCLOCK_HILOGD("GetErrorInfo errCode: %{public}d", errorCode);
     }
@@ -481,7 +481,6 @@ static napi_status ParseSendEventInput(napi_env env, size_t argc, napi_value arg
     size_t len;
     if (napi_get_value_string_utf8(env, argv[ARGV_ZERO], event, MAX_VALUE_LEN, &len) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
     context->eventInfo = event;
     if (IsValidEvent(context->eventInfo) != napi_ok) {
@@ -494,7 +493,6 @@ static napi_status ParseSendEventInput(napi_env env, size_t argc, napi_value arg
     }
     if (napi_get_value_int32(env, argv[ARGV_ONE], &context->param) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
     return napi_ok;
 }
@@ -550,7 +548,6 @@ napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info)
     }
     if (napi_get_value_int32(env, argv[ARGV_ZERO], &userId) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return result;
     }
     bool isDisabled = false;
     int32_t status = ScreenLockManager::GetInstance()->IsScreenLockDisabled(userId, isDisabled);
@@ -561,7 +558,7 @@ napi_value NAPI_IsScreenLockDisabled(napi_env env, napi_callback_info info)
         ThrowError(env, errInfo.errorCode_, errInfo.message_);
         return result;
     }
-    SCLOCK_HILOGI("NAPI_IsScreenLockDisabled [isDisabled]=%{public}d", isDisabled);
+    SCLOCK_HILOGD("NAPI_IsScreenLockDisabled [isDisabled]=%{public}d", isDisabled);
     napi_get_boolean(env, isDisabled, &result);
     return result;
 }
@@ -581,7 +578,6 @@ static napi_status ParseScreenLockDisabledInput(napi_env env, size_t argc, napi_
     }
     if (napi_get_value_bool(env, argv[ARGV_ZERO], &context->disable) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
     if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
         std::string errMsg = "Parameter error. The type of \"userId\" must be number";
@@ -590,7 +586,6 @@ static napi_status ParseScreenLockDisabledInput(napi_env env, size_t argc, napi_
     }
     if (napi_get_value_int32(env, argv[ARGV_ONE], &context->userId) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
     return napi_ok;
 }
@@ -638,7 +633,6 @@ static napi_status ParseScreenLockAuthStateInput(napi_env env, size_t argc, napi
     }
     if (napi_get_value_int32(env, argv[ARGV_ZERO], &context->authState) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
 
     if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
@@ -647,7 +641,6 @@ static napi_status ParseScreenLockAuthStateInput(napi_env env, size_t argc, napi
     }
     if (napi_get_value_int32(env, argv[ARGV_ONE], &context->userId) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
 
     if (CheckParamArrayType(env, argv[ARGV_TWO], napi_uint8_array) != napi_ok) {
@@ -658,7 +651,6 @@ static napi_status ParseScreenLockAuthStateInput(napi_env env, size_t argc, napi
     size_t len;
     if (napi_get_value_string_utf8(env, argv[ARGV_TWO], authToken, MAX_VALUE_LEN, &len) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return napi_invalid_arg;
     }
     context->authToken = authToken;
 
@@ -715,7 +707,6 @@ napi_value NAPI_GetScreenLockAuthState(napi_env env, napi_callback_info info)
     }
     if (napi_get_value_int32(env, argv[ARGV_ZERO], &userId) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return result;
     }
     int32_t authState = -1;
     int32_t status = ScreenLockManager::GetInstance()->GetScreenLockAuthState(userId, authState);
@@ -745,7 +736,6 @@ napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info)
         }
         if (napi_get_value_int32(env, argv[ARGV_ZERO], &context->reasonFlag) != napi_ok) {
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-            return napi_invalid_arg;
         }
 
         if (CheckParamType(env, argv[ARGV_ONE], napi_number) != napi_ok) {
@@ -754,7 +744,6 @@ napi_value NAPI_RequestStrongAuth(napi_env env, napi_callback_info info)
         }
         if (napi_get_value_int32(env, argv[ARGV_ONE], &context->userId) != napi_ok) {
             ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-            return napi_invalid_arg;
         }
         return napi_ok;
     };
@@ -802,7 +791,6 @@ napi_value NAPI_GetStrongAuth(napi_env env, napi_callback_info info)
     }
     if (napi_get_value_int32(env, argv[ARGV_ZERO], &userId) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return result;
     }
     int32_t reasonFlag = -1;
     int32_t status = ScreenLockManager::GetInstance()->GetStrongAuth(userId, reasonFlag);
@@ -823,7 +811,7 @@ napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info)
     SCLOCK_HILOGD("NAPI_IsDeviceLocked in");
     napi_value result = nullptr;
     size_t argc = ARGS_SIZE_ONE;
-    napi_value argv[ARGS_SIZE_ONE] = { 0 };
+    napi_value argv[ARGS_SIZE_ONE] = {0};
     napi_value thisVar = nullptr;
     void *data = nullptr;
     int userId = static_cast<int>(SpecialUserId::USER_CURRENT);
@@ -838,7 +826,6 @@ napi_value NAPI_IsDeviceLocked(napi_env env, napi_callback_info info)
     }
     if (napi_get_value_int32(env, argv[ARGV_ZERO], &userId) != napi_ok) {
         ThrowError(env, JsErrorCode::ERR_INVALID_PARAMS, PARAMETER_VALIDATION_FAILED);
-        return result;
     }
     bool isDeviceLoced = true;
     int32_t status = ScreenLockManager::GetInstance()->IsDeviceLocked(userId, isDeviceLoced);
@@ -907,13 +894,13 @@ static napi_value ScreenlockInit(napi_env env, napi_value exports)
 
 extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
-    napi_module module = { .nm_version = 1, // NAPI v1
-        .nm_flags = 0,                      // normal
-        .nm_filename = nullptr,
-        .nm_register_func = ScreenlockInit,
-        .nm_modname = "screenLock",
-        .nm_priv = nullptr,
-        .reserved = {} };
+    napi_module module = {.nm_version = 1,  // NAPI v1
+                          .nm_flags = 0,    // normal
+                          .nm_filename = nullptr,
+                          .nm_register_func = ScreenlockInit,
+                          .nm_modname = "screenLock",
+                          .nm_priv = nullptr,
+                          .reserved = {}};
     napi_module_register(&module);
 }
 } // namespace ScreenLock
