@@ -48,10 +48,10 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParce
             std::string params;
             if (!data.ReadString(eventType)) {
                 SCLOCK_HILOGE("Read SystemEvent fields failed.");
-                eventType = '0';
+                eventType = "";
             } else if (!data.ReadString(params)) {
                 SCLOCK_HILOGE("Read SystemEvent fields failed.");
-                params = '0';
+                params = "";
             }
             SystemEvent systemEvent(eventType, params);
             OnCallBack(systemEvent);
