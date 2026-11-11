@@ -63,7 +63,5 @@ int32_t ScreenLockSystemAbilityStub::OnRemoteRequest(uint32_t code, MessageParce
     }
     return OHOS::NO_ERROR;
 }
-return OHOS::NO_ERROR;
-}
 } // namespace ScreenLock
 } // namespace OHOS
