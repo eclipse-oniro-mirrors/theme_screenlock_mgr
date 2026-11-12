@@ -390,11 +390,18 @@ sptr<ScreenLockManagerInterface> ScreenLockManager::GetScreenLockManagerProxy()
 void ScreenLockManager::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
 {
     SCLOCK_HILOGE("ScreenLockDeathRecipient on remote systemAbility died.");
-    std::lock_guard<std::mutex> autoLock(managerProxyLock_);
-    screenlockManagerProxy_ = GetScreenLockManagerProxy();
-    if (systemEventListener_ != nullptr) {
+    {
+        std::lock_guard<std::mutex> autoLock(managerProxyLock_);
+        screenlockManagerProxy_ = GetScreenLockManagerProxy();
+    }
+    sptr<ScreenLockSystemAbilityInterface> listener = nullptr;
+    {
+        std::lock_guard<std::mutex> autoLock(listenerLock_);
+        listener = systemEventListener_;
+    }
+    if (listener != nullptr) {
         SystemEvent systemEvent(SERVICE_RESTART);
-        systemEventListener_->OnCallBack(systemEvent);
+        listener->OnCallBack(systemEvent);
     }
 }
 

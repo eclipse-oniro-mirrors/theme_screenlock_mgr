@@ -15,6 +15,7 @@
 #ifndef IS_SO_CROP_H
 #include <cinttypes>
 #include "strongauthmanager.h"
+#include "ipc_skeleton.h"
 #include "screenlock_common.h"
 #include "sclock_log.h"
 #include "screenlock_system_ability.h"
@@ -26,6 +27,7 @@
 
 namespace OHOS {
 namespace ScreenLock {
+const int IDM_UID = 1088;
 std::mutex StrongAuthManger::instanceLock_;
 sptr<StrongAuthManger> StrongAuthManger::instance_;
 using namespace OHOS::UserIam::UserAuth;
@@ -168,6 +170,10 @@ void StrongAuthManger::RegistAuthEventListener()
 void StrongAuthManger::AuthEventListenerService::OnNotifyAuthSuccessEvent(int32_t userId,
     UserIam::UserAuth::AuthType authType, const UserIam::UserAuth::AuthSuccessEventInfo &eventInfo)
 {
+    if (IPCSkeleton::GetCallingUid() != IDM_UID) {
+        SCLOCK_HILOGE("not call by idm");
+        return;
+    }
     SCLOCK_HILOGI("OnNotifyAuthSuccessEvent: %{public}d, %{public}d, %{public}s, isWidgetAuth: %{public}d", userId,
         static_cast<int32_t>(authType), eventInfo.callerName.c_str(), eventInfo.isWidgetAuth);
     if (authType == AuthType::PIN && !eventInfo.isWidgetAuth) {
