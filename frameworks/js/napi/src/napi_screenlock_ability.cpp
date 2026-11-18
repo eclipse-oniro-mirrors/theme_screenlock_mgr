@@ -254,8 +254,13 @@ void AsyncCallFunc(napi_env env, EventListener *listener, const std::string &res
     };
     std::string name = "THEME_" + resourceName;
     napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(
+    napi_status status = napi_create_async_work(
         env, nullptr, resource, execute, CompleteAsyncWork, static_cast<void *>(listener), &(listener->work));
+    if (status != napi_ok) {
+        SCLOCK_HILOGE("napi_create_async_work failed, status = %{public}d", status);
+        CompleteAsyncWork(env, status, listener);
+        return;
+    }
     auto ret = napi_queue_async_work_with_qos(env, listener->work, napi_qos_user_initiated);
     if (ret != napi_ok) {
         CompleteAsyncWork(env, ret, listener);
