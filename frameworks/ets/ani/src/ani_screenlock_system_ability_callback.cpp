@@ -87,6 +87,10 @@ void ScreenlockSystemAbilityCallback::OnCallBack(const SystemEvent &systemEvent)
     auto task = [entry]() {
         ani_env *env = nullptr;
         env = AniScreenLockUtil::GetAniEnv(entry->vm);
+        if (env == nullptr) {
+            SCLOCK_HILOGE("%{public}s: GetAniEnv failed, env is nullptr", __func__);
+            return;
+        }
         ani_size nr_refs = 16;
         env->CreateLocalScope(nr_refs);
 

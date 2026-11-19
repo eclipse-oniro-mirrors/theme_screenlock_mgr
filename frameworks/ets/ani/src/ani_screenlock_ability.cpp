@@ -258,6 +258,9 @@ ani_boolean ANI_OnSystemEvent(ani_env *env, ani_ref callback)
         } else {
             status = true;
         }
+    } else {
+        SCLOCK_HILOGE("new ScreenlockSystemAbilityCallback failed, delete global reference");
+        env->GlobalReference_Delete(callbackRef);
     }
     SCLOCK_HILOGD("on system event status=%{public}d", status);
     return status;
